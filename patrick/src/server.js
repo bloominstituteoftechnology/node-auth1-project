@@ -14,7 +14,9 @@ server.use(bodyParser.json());
 // express-session deprecated undefined resave option; provide resave option src/server.js:15:12
 // express-session deprecated undefined saveUninitialized option; provide saveUninitialized option src/server.js:15:12
 server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+  resave: true,
+  saveUninitialized: true
 }));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
@@ -42,17 +44,17 @@ server.use((req, res, next) => {
   next();
 });
 
-// LOCAL MIDDLEWARE
-const validateNameAndPassword = ((req, res, next) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    sendUserError('Please enter BOTH a USERNAME and a PASSWORD.', res);
-    return;
-  }
-  // req.body.username = username;
-  // req.body.password = password;
-  next();
-});
+// // LOCAL MIDDLEWARE
+// const validateNameAndPassword = ((req, res, next) => {
+//   const { username, password } = req.body;
+//   if (!username || !password) {
+//     sendUserError('Please enter BOTH a USERNAME and a PASSWORD.', res);
+//     return;
+//   }
+//   // req.body.username = username;
+//   // req.body.password = password;
+//   next();
+// });
 
 // ROUTES
 server.post('/users', (req, res) => {
@@ -62,6 +64,7 @@ server.post('/users', (req, res) => {
   const { username, password } = req.body;
   const newUser = { username, password };
   // const newUser = { req.body.username, req.body.password }
+  // const newUser = { username: req.body.username, password: req.body.password };
   // When the client makes a `POST` request to `/users`, hash the given password
   bcrypt.hash(newUser.password, BCRYPT_COST, (err, hash) => {
     // console.log('Hash:', hash);
@@ -94,5 +97,14 @@ server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
+
+// server.get('/view-counter', (req, res) => {
+//   const session = req.session;
+//   if (!session.viewCount) {
+//     session.viewCount = 0;
+//   }
+//   session.viewCount++;
+//   res.json({ viewCount: session.viewCount })
+// });
 
 module.exports = { server };
