@@ -1,6 +1,8 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const bcrypt = require('bcrypt');
+const User = require('./user');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -24,6 +26,30 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+
+server.post('/users', (req, res) => {
+  const { userName, password } = req.body;
+  // const userName = req.body.userName;
+  // const password = req.body.password;
+
+  if (!userName) {
+    sendUserError('Must provide a userName', res);
+    return;
+  } else if (!password) {
+    sendUserError('Must provide a password', res);
+    return;
+  }
+  bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
+    if (err) return sendUserError(err, res);
+    if (!passwordHash) return sendUserError('The password is not valid', res);
+
+    const user = new User({ userName, passwordHash });
+    user.save((err) => {
+      if (err) return sendUserError(err, res);
+      res.json({ user });
+    });
+  });
+});
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
