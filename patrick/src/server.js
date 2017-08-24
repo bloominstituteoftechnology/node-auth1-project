@@ -29,12 +29,13 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
-server.post('/users', (request, response) => {
+server.post('/users', (req, res) => {
   // The `POST /users` route expects two parameters: `username` and `password`.
-  const { username, password } = request.body;
+  const { username, password } = req.body;
   if (!password) {
-    response.status(STATUS_USER_ERROR);
-    response.json({ error: 'Please enter a PASSWORD.' });
+    sendUserError('Please enter a PASSWORD.', res);
+    // res.status(STATUS_USER_ERROR);
+    // res.json({ error: 'Please enter a PASSWORD.' });
     return;
   }
   const newUser = { username, password };
@@ -43,18 +44,19 @@ server.post('/users', (request, response) => {
     if (err) {
       throw err;
     }
-    newUser.password = hash;
+    return newUser.passwordHash = hash;
   });
   // and create a new user in MongoDB. Send the user object as a JSON response.
   console.log(newUser);
   const user = new User(newUser);
   user.save((err) => {
     if (err) {
-      response.status(STATUS_USER_ERROR);
-      response.send({ 'Error inserting new user into users database: ': err.message });
+      sendUserError('Error inserting new user into users database: ', res);
+      // res.status(STATUS_USER_ERROR);
+      // res.send({ 'Error inserting new user into users database: ': err.message });
       return;
     }
-    response.json(user);
+    res.json(user);
   });
 });
 
