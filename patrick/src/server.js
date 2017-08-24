@@ -15,6 +15,8 @@ server.use(bodyParser.json());
 // express-session deprecated undefined saveUninitialized option; provide saveUninitialized option src/server.js:15:12
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+  // https://github.com/expressjs/session/issues/56
+  // https://github.com/expressjs/session#options
   resave: true,
   saveUninitialized: false,
 }));
