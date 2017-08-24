@@ -60,13 +60,8 @@ server.post('/users', (req, res) => {
 // server.post('/users', validateNameAndPassword, (req, res) => {
   // The `POST /users` route expects two parameters: `username` and `password`.
   const { username, password } = req.body;
-  // if (!password) {
-  //   sendUserError('Please enter a PASSWORD.', res);
-  //   // res.status(STATUS_USER_ERROR);
-  //   // res.json({ error: 'Please enter a PASSWORD.' });
-  //   return;
-  // }
   const newUser = { username, password };
+  // const newUser = { req.body.username, req.body.password }
   // When the client makes a `POST` request to `/users`, hash the given password
   bcrypt.hash(newUser.password, BCRYPT_COST, (err, hash) => {
     // console.log('Hash:', hash);
