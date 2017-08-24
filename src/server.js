@@ -29,8 +29,6 @@ const sendUserError = (err, res) => {
 
 server.post('/users', (req, res) => {
   const { userName, password } = req.body;
-  // const userName = req.body.userName;
-  // const password = req.body.password;
 
   if (!userName) {
     sendUserError('Must provide a userName', res);
