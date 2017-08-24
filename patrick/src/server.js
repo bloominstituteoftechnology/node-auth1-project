@@ -29,8 +29,8 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
-server.post('/users', (req, res) => {
-  // The `POST /users` route expects two parameters: `username` and `password`.
+// MIDDLEWARE
+server.use((req, res, next) => {
   const { username, password } = req.body;
   if (!password) {
     sendUserError('Please enter a PASSWORD.', res);
@@ -38,6 +38,25 @@ server.post('/users', (req, res) => {
     // res.json({ error: 'Please enter a PASSWORD.' });
     return;
   }
+  if (!username) {
+    sendUserError('Please enter a USERNAME.', res);
+    // res.status(STATUS_USER_ERROR);
+    // res.json({ error: 'Please enter a PASSWORD.' });
+    return;
+  }
+  next();
+});
+
+
+server.post('/users', (req, res) => {
+  // The `POST /users` route expects two parameters: `username` and `password`.
+  const { username, password } = req.body;
+  // if (!password) {
+  //   sendUserError('Please enter a PASSWORD.', res);
+  //   // res.status(STATUS_USER_ERROR);
+  //   // res.json({ error: 'Please enter a PASSWORD.' });
+  //   return;
+  // }
   const newUser = { username, password };
   // When the client makes a `POST` request to `/users`, hash the given password
   bcrypt.hash(newUser.password, BCRYPT_COST, (err, hash) => {
