@@ -64,17 +64,21 @@ server.post('/users', (req, res) => {
 // server.post('/users', validateNameAndPassword, (req, res) => {
   // The `POST /users` route expects two parameters: `username` and `password`.
   const { username, password } = req.body;
-  const newUser = { username, password };
+  const newUser = { username };
   // const newUser = { req.body.username, req.body.password }
   // const newUser = { username: req.body.username, password: req.body.password };
   // When the client makes a `POST` request to `/users`, hash the given password
-  bcrypt.hash(newUser.password, BCRYPT_COST, (err, hash) => {
+  bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
     // console.log('Hash:', hash);
     if (err) {
       // throw err;
       sendUserError(err, res);
     }
-    newUser.passwordHash = hash;
+    newUser.passwordHash = hash; // { username, passwordHash }
+    newUser.save();
+    console.log('user.passwordHash', newUser.passwordHash);
+    console.log(hash);
+    // return newUser;
   });
   // and create a new user in MongoDB. Send the user object as a JSON response.
   // console.log('newUser', newUser);
@@ -83,14 +87,14 @@ server.post('/users', (req, res) => {
   // console.log('user.username', user.username);
   // console.log('user.password', user.password);
   // console.log('user.passwordHash', user.passwordHash);
-  user.save((err) => {
+  user.save((err, theNewUser) => {
     if (err) {
       sendUserError({ 'Error inserting a new user into users database': err.message, 'ERROR STACK': err.stack }, res);
       // res.status(STATUS_USER_ERROR);
       // res.send({ 'Error inserting new user into users database: ': err.message });
       return;
     }
-    res.json(user);
+    res.json(theNewUser);
   });
 });
 
