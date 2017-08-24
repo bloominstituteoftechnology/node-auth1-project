@@ -63,6 +63,7 @@ server.post('/users', (req, res) => {
     if (err) {
       sendUserError(err, res);
     }
+    return hash;
   });
   const newUser = new User({ username, passwordHash });
   // console.log(newUser);
@@ -72,7 +73,8 @@ server.post('/users', (req, res) => {
       sendUserError(err, res);
       return;
     }
-    res.status(200);
+    // res.status(200);
+    // res.session({ success: true });
     res.json(user);
   });
 });
