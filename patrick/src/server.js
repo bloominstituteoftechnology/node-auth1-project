@@ -16,7 +16,7 @@ server.use(bodyParser.json());
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
   resave: true,
-  saveUninitialized: true
+  saveUninitialized: false,
 }));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
