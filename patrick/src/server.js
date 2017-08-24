@@ -2,12 +2,17 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 
+const User = require('./user.js'); // <~~~ I put this here
+const bcrypt = require('bcrypt');  // <~~~ I put this here
+
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
 const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
+// express-session deprecated undefined resave option; provide resave option src/server.js:15:12
+// express-session deprecated undefined saveUninitialized option; provide saveUninitialized option src/server.js:15:12
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
 }));
@@ -24,6 +29,34 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+server.post('/users', (request, response) => {
+  // The `POST /users` route expects two parameters: `username` and `password`.
+  const { username, password } = request.body;
+  if (!password) {
+    response.status(STATUS_USER_ERROR);
+    response.json({ error: 'Please enter a PASSWORD.' });
+    return;
+  }
+  const newUser = { username, password };
+  // When the client makes a `POST` request to `/users`, hash the given password
+  bcrypt.hash(newUser.password, BCRYPT_COST, (err, hash) => {
+    if (err) {
+      throw err;
+    }
+    newUser.password = hash;
+  });
+  // and create a new user in MongoDB. Send the user object as a JSON response.
+  console.log(newUser);
+  const user = new User(newUser);
+  user.save((err) => {
+    if (err) {
+      response.status(STATUS_USER_ERROR);
+      response.send({ 'Error inserting new user into users database: ': err.message });
+      return;
+    }
+    response.json(user);
+  });
+});
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
