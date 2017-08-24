@@ -47,11 +47,12 @@ server.post('/users', (req, res) => {
     return newUser.passwordHash = hash;
   });
   // and create a new user in MongoDB. Send the user object as a JSON response.
-  console.log(newUser);
+  // console.log(newUser);
   const user = new User(newUser);
+  console.log(user);
   user.save((err) => {
     if (err) {
-      sendUserError({ 'Error inserting new user into users database: ': err.message }, res);
+      sendUserError({ 'Error inserting new user into users database': err.message }, res);
       // res.status(STATUS_USER_ERROR);
       // res.send({ 'Error inserting new user into users database: ': err.message });
       return;
