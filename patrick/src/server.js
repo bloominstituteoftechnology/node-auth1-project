@@ -57,7 +57,7 @@ server.post('/users', (req, res) => {
   console.log('user.passwordHash', user.passwordHash);
   user.save((err) => {
     if (err) {
-      sendUserError({ 'Error inserting a new user into users database': err.message }, res);
+      sendUserError({ 'Error inserting a new user into users database': err.message, 'ERROR STACK': err.stack }, res);
       // res.status(STATUS_USER_ERROR);
       // res.send({ 'Error inserting new user into users database: ': err.message });
       return;
