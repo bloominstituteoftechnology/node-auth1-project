@@ -34,18 +34,8 @@ const sendUserError = (err, res) => {
 
 // TODO: implement routes
 
-// GLOBAL MIDDLEWARE
-server.use((req, res, next) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    sendUserError('Please enter BOTH a USERNAME and a PASSWORD.', res);
-    return;
-  }
-  next();
-});
-
-// // LOCAL MIDDLEWARE
-// const validateNameAndPassword = ((req, res, next) => {
+// // GLOBAL MIDDLEWARE
+// server.use((req, res, next) => {
 //   const { username, password } = req.body;
 //   if (!username || !password) {
 //     sendUserError('Please enter BOTH a USERNAME and a PASSWORD.', res);
@@ -54,27 +44,33 @@ server.use((req, res, next) => {
 //   next();
 // });
 
-// ROUTES
-server.post('/users', (req, res) => {
-// LOCAL MIDDLEWARE IMPLEMENTATION
-// server.post('/users', validateNameAndPassword, (req, res) => {
+// LOCAL MIDDLEWARE
+const validateNameAndPassword = ((req, res, next) => {
   const { username, password } = req.body;
-  const passwordHash = bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
+  if (!username || !password) {
+    sendUserError('Please enter BOTH a USERNAME and a PASSWORD.', res);
+    return;
+  }
+  next();
+});
+
+// ROUTES
+// server.post('/users', (req, res) => {
+// LOCAL MIDDLEWARE IMPLEMENTATION
+server.post('/users', validateNameAndPassword, (req, res) => {
+  const { username, password } = req.body;
+  const passwordHash = bcrypt.hashSync(password, BCRYPT_COST, (err, hash) => {
     if (err) {
-      sendUserError(err, res);
-    }
-    return hash;
-  });
-  const newUser = new User({ username, passwordHash });
-  // console.log(newUser);
-  newUser.save((err, user) => {
-    if (err) {
-      // sendUserError({ 'Error inserting a new user into users database': err.message, 'ERROR STACK': err.stack }, res);
-      sendUserError(err, res);
+      sendUserError('Something weird with that password', res);
       return;
     }
-    // res.status(200);
-    // res.session({ success: true });
+  });
+  const newUser = new User({ username, passwordHash });
+  newUser.save((error, user) => {
+    if (error) {
+      sendUserError(error, res);
+      return;
+    }
     res.json(user);
   });
 });
