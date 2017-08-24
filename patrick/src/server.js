@@ -41,8 +41,6 @@ server.use((req, res, next) => {
     sendUserError('Please enter BOTH a USERNAME and a PASSWORD.', res);
     return;
   }
-  // req.body.username = username;
-  // req.body.password = password;
   next();
 });
 
@@ -53,8 +51,6 @@ server.use((req, res, next) => {
 //     sendUserError('Please enter BOTH a USERNAME and a PASSWORD.', res);
 //     return;
 //   }
-//   // req.body.username = username;
-//   // req.body.password = password;
 //   next();
 // });
 
@@ -62,39 +58,22 @@ server.use((req, res, next) => {
 server.post('/users', (req, res) => {
 // LOCAL MIDDLEWARE IMPLEMENTATION
 // server.post('/users', validateNameAndPassword, (req, res) => {
-  // The `POST /users` route expects two parameters: `username` and `password`.
   const { username, password } = req.body;
-  const newUser = { username };
-  // const newUser = { req.body.username, req.body.password }
-  // const newUser = { username: req.body.username, password: req.body.password };
-  // When the client makes a `POST` request to `/users`, hash the given password
-  bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
-    // console.log('Hash:', hash);
+  const passwordHash = bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
     if (err) {
-      // throw err;
       sendUserError(err, res);
     }
-    newUser.passwordHash = hash; // { username, passwordHash }
-    newUser.save();
-    console.log('user.passwordHash', newUser.passwordHash);
-    console.log(hash);
-    // return newUser;
   });
-  // and create a new user in MongoDB. Send the user object as a JSON response.
-  // console.log('newUser', newUser);
-  const user = new User(newUser);
-  // console.log('user', user);
-  // console.log('user.username', user.username);
-  // console.log('user.password', user.password);
-  // console.log('user.passwordHash', user.passwordHash);
-  user.save((err, theNewUser) => {
+  const newUser = new User({ username, passwordHash });
+  // console.log(newUser);
+  newUser.save((err, user) => {
     if (err) {
-      sendUserError({ 'Error inserting a new user into users database': err.message, 'ERROR STACK': err.stack }, res);
-      // res.status(STATUS_USER_ERROR);
-      // res.send({ 'Error inserting new user into users database: ': err.message });
+      // sendUserError({ 'Error inserting a new user into users database': err.message, 'ERROR STACK': err.stack }, res);
+      sendUserError(err, res);
       return;
     }
-    res.json(theNewUser);
+    res.status(200);
+    res.json(user);
   });
 });
 
