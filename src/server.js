@@ -3,6 +3,8 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt'); 
 
+const User = require('./user.js');
+
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
@@ -29,6 +31,24 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+server.post('/users', (req, res) => {
+  const { username, password } = req.params;
+  const newUser = new User({username, password });
+  User.findOne({ username }, (err, newUser) => {
+    if(!newUser) {
+      sendUserError({ error: 'No newuser' }, res);
+      return;
+    }
+    bcrypt.hash('password', 11, (err, hash) => {
+      if(err) {
+        res.status(STATUS_USER_ERROR);
+        res.json({ err: err.message });
+      } else {
+        res.json(hash);
+      }
+    });
+  });
+});
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
