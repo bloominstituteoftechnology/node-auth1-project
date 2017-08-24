@@ -51,7 +51,7 @@ server.post('/users', (req, res) => {
   const user = new User(newUser);
   user.save((err) => {
     if (err) {
-      sendUserError('Error inserting new user into users database: ', res);
+      sendUserError({ 'Error inserting new user into users database: ': err.message }, res);
       // res.status(STATUS_USER_ERROR);
       // res.send({ 'Error inserting new user into users database: ': err.message });
       return;
