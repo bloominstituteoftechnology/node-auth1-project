@@ -41,18 +41,23 @@ server.post('/users', (req, res) => {
   const newUser = { username, password };
   // When the client makes a `POST` request to `/users`, hash the given password
   bcrypt.hash(newUser.password, BCRYPT_COST, (err, hash) => {
+    console.log('Hash:', hash);
     if (err) {
-      throw err;
+      // throw err;
+      sendUserError(err, res);
     }
-    return newUser.passwordHash = hash;
+    newUser.passwordHash = hash;
   });
   // and create a new user in MongoDB. Send the user object as a JSON response.
-  // console.log(newUser);
+  console.log('newUser', newUser);
   const user = new User(newUser);
-  console.log(user);
+  console.log('user', user);
+  console.log('user.username', user.username);
+  console.log('user.password', user.password);
+  console.log('user.passwordHash', user.passwordHash);
   user.save((err) => {
     if (err) {
-      sendUserError({ 'Error inserting new user into users database': err.message }, res);
+      sendUserError({ 'Error inserting a new user into users database': err.message }, res);
       // res.status(STATUS_USER_ERROR);
       // res.send({ 'Error inserting new user into users database: ': err.message });
       return;
