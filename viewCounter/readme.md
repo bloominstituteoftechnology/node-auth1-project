@@ -102,13 +102,13 @@ $  curl -v http://localhost:3000/view-counter
 Copy the ONLY `connect.sid` assignment,
 i.e. `connect.sid=SUPERLONGSTRING_UP_UNTIL_THE_SEMI-COLON`
 ...and then paste that into a `curl` command as the `-b` argument.
-This time you can leave off the `-v` option, but you also need the -H option to tell gurl what kind of data is being sent:
-
-i.e
-
+This time you can leave off the `-v` option, but you'll need to add a `-H` option to tell `curl` what kind of data is being sent:
 ```
 curl -H "Content-Type: application/json" -b "NAME=VALUE" http://localhost:3000/view-counter
 ```
+
+i.e. for the `-b` argument, replace the `"NAME=VALUE"` with `"connect.sid=s%3AY_yUqVkQUnUMWxkpDMiMqXZh-oTHqmby.H%2F8Jy3vQ52mNrj2BtytRRdlyQZxl5dWWdAu07QV8jNs"`
+
 
 Now, when you enter this command into your console, the view counter will increase by one with each successive visit through `curl`!
 
