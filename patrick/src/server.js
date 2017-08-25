@@ -59,7 +59,8 @@ server.post('/users', validateNameAndPassword, (req, res) => {
   const newUser = new User({ username, passwordHash });
   newUser.save((error, user) => {
     if (error) {
-      sendUserError(error, res);
+      // https://youtu.be/frIA7tuBqqY
+      sendUserError({ 'Jigga What? Jigga Who???': error.message, 'ERROR STACK': error.stack }, res);
       return;
     }
     res.json(user);
