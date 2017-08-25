@@ -29,19 +29,16 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
-// The GET /me route should only be accessible by logged in users. We've already implemented the route handler for you; your job is to add local middleware to ensure that only logged in users have access.
-// Make sure to do proper validation and error checking. If there's any error, or if no user is logged in, respond with an appropriate status and error message using the sendUserError() helper function.
-const userMiddleware = (req, res, next) => {
-  if (!req.session.userID) {
-    sendUserError('Must be logged in!', res)
-    return;
+const userAuthMiddleware = (req, res, next) => {
+  if (req.session.user === undefined) {
+    sendUserError('Must be logged in!', res);
+  } else {
+    req.user = req.session.user[0].username;
   }
-  req.user = req.session.userID;
-  next();
 };
 
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', userMiddleware, (req, res) => {
+server.get('/me', userAuthMiddleware, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
@@ -50,7 +47,9 @@ server.post('/users', (req, res) => {
   const { username, password } = req.body;
   if (!username) {
     sendUserError('Please enter a username!', res);
-  } else if (!password) {
+    return;
+  }
+  if (!password) {
     sendUserError('Please enter a password!', res);
     return;
   }
@@ -80,26 +79,29 @@ server.post('/log-in', (req, res) => {
     sendUserError('Please enter a password!', res);
     return;
   }
-  User.findOne(username, (err, user) => {
-    if (err) {
+  User.find({ username })
+    .exec()
+    .then((user) => {
+      if (user.length < 1) {
+        sendUserError('Could not find user!', res);
+      } else {
+        bcrypt.compare(password, user[0].passwordHash, (error, isValid) => {
+          if (error) {
+            sendUserError(error, res);
+            return;
+          }
+          if (!isValid) {
+            sendUserError('Invalid password', res);
+          } else {
+            req.session.user = user;
+            res.json({ success: true });
+          }
+        });
+      }
+    })
+    .catch((err) => {
       sendUserError(err, res);
-    } else {
-      bcrypt.compare(password, user.passwordHash, (error, isValid) => {
-        if (error) {
-          sendUserError(error, res);
-          return;
-        }
-        if (isValid) {
-          req.session.userID = user._id;
-          res.json({ success: true });
-        } else {
-          sendUserError('Invalid password', res);
-        }
-      });
-    }
-  });
+    });
 });
-
-
 
 module.exports = { server };
