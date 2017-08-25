@@ -7,9 +7,12 @@ Reference material:
 - see also `man curl`
 
 ### to set up the view counter and test the curl commands:
-1. `cd` into the viewCounter directory
+1. `cd` into the curl directory
 2. `npm i` to install the packages listed in the package.json file
-3. `nodemon viewCounter.js` to launch the server
+3. `mkdir data` for the MongoDB data
+4. `mongod --dbpath data` to launch the daemon and use the data directory
+5. `nodemon viewCounter.js` to launch the server so the `/users` & `/view-counter` routes are available on
+6. http://localhost:3000
 
 ## 1. **POST**ing JSON objects to the '/users' route:
 Just like the Postman application, `curl` can send data through JSON objects:
@@ -30,8 +33,54 @@ $  curl -X POST -H "Content-Type: application/json" -d '{"username":"Bingo The C
 2. `-H` specifies the data type
 3. `-d` is for the actual data
 
+## 2. **POST**ing a username and password to '/log-in':
+```console
+$  curl -X POST -H "Content-Type: application/json" -d '{"username":"Bingo The Clown-o","password":"soincrediblyhardtohackthis"}' http://localhost:3000/log-in
+    {"success":true}
+```
 
-## 2. **GET**ting with persistent cookies from '/view-counter':
+## 3. **GET**ting the current logged in users name from '/me' with persistent cookies:
+After logging in, note the long strong following "connect.sid=" in the `set-cookie` field:
+
+```console
+$  curl -H "Content-Type: application/json" -d '{"username":"Bingo The Clown-o","password":"soincrediblyhardtohackthis"}' -v http://localhost:3000/log-in
+    *   Trying ::1...
+    * TCP_NODELAY set
+    * Connected to localhost (::1) port 3000 (#0)
+    > POST /log-in HTTP/1.1
+    > Host: localhost:3000
+    > User-Agent: curl/7.54.0
+    > Accept: */*
+    > Content-Type: application/json
+    > Content-Length: 72
+    >
+    * upload completely sent off: 72 out of 72 bytes
+    < HTTP/1.1 200 OK
+    < X-Powered-By: Express
+    < Content-Type: application/json; charset=utf-8
+    < Content-Length: 16
+    < ETag: W/"10-oV4hJxRVSENxc/wX8+mA4/Pe4tA"
+    < set-cookie: connect.sid=s%3AuKtDgCPm_3zd3FrjpEyJvLINKgMWFeFr.g0oEnSxhRKLvUBM%2BOwgcfPSCDKOGmPEh31FEswrmX%2F4; Path=/; HttpOnly
+    < Date: Fri, 25 Aug 2017 15:40:20 GMT
+    < Connection: keep-alive
+    <
+    * Connection #0 to host localhost left intact
+    {"success":true}8 mixelpix Fri Aug 25 11:40:20$
+```
+
+You want to copy the connect.sid assignment and paste it into the "NAME=VALUE" argument of the next `curl` command:
+```
+curl -H "Content-Type: application/json" -b "NAME=VALUE" http://localhost:3000/me
+```
+
+...like so:
+
+```console
+$  curl -H "Content-Type: application/json" -b "connect.sid=s%3AuKtDgCPm_3zd3FrjpEyJvLINKgMWFeFr.g0oEnSxhRKLvUBM%2BOwgcfPSCDKOGmPEh31FEswrmX%2F4" http://localhost:3000/me
+    {"_id":"59a0438098b5f10ac9968271","username":"Bingo The Clown-o","passwordHash":"$2a$11$YumjbaL6DL5bld4exfITX.bovAotTOAjKGfAgXOzkII7jn587/JOW","__v":0}
+```
+
+## 4. A more detailed explanation of how to use `curl` for **GET**ting with persistent cookies from '/view-counter':
 
 As an example, in Karthik’s demo viddy, he made the '/view-counter' route:
 ```js
