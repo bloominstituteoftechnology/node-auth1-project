@@ -65,7 +65,7 @@ server.post('/users', validateUserPassword, (req, res) => {
 
 server.post('/log-in', validateUserPassword, (req, res) => {
   const username = req.query.username;
-  const { password } = req.params;
+  const { password } = req.body;
   User.findOne({ username }, (err, User) => {
     if(!user) {
       sendUserError({ error: 'No user' }, res);
