@@ -24,7 +24,6 @@ $  curl -X POST -H "Content-Type: application/json" -d '{"username":"Bingo The C
 2. `-H` specifies the data type
 3. `-d` is for the actual data
 
-
 ## 2. **POST**ing a username and password to '/log-in':
 ```console
 $  curl -X POST -H "Content-Type: application/json" -d '{"username":"Bingo The Clown-o","password":"soincrediblyhardtohackthis"}' http://localhost:3000/log-in
@@ -32,6 +31,8 @@ $  curl -X POST -H "Content-Type: application/json" -d '{"username":"Bingo The C
 ```
 
 ## 3. **GET**ting the current logged in users name from '/me' with persistent cookies:
+After logging in, note the long strong following "connect.sid=" in the `set-cookie` field:
+
 ```console
 $  curl -H "Content-Type: application/json" -d '{"username":"Bingo The Clown-o","password":"soincrediblyhardtohackthis"}' -v http://localhost:3000/log-in
     *   Trying ::1...
@@ -56,6 +57,16 @@ $  curl -H "Content-Type: application/json" -d '{"username":"Bingo The Clown-o",
     <
     * Connection #0 to host localhost left intact
     {"success":true}8 mixelpix Fri Aug 25 11:40:20$
+```
+
+You want to copy the connect.sid assignment and paste it into the "NAME=VALUE" argument of the next `curl` command:
+```
+curl -H "Content-Type: application/json" -b "NAME=VALUE" http://localhost:3000/me
+```
+
+...like so:
+
+```console
 $  curl -H "Content-Type: application/json" -b "connect.sid=s%3AuKtDgCPm_3zd3FrjpEyJvLINKgMWFeFr.g0oEnSxhRKLvUBM%2BOwgcfPSCDKOGmPEh31FEswrmX%2F4" http://localhost:3000/me
     {"_id":"59a0438098b5f10ac9968271","username":"Bingo The Clown-o","passwordHash":"$2a$11$YumjbaL6DL5bld4exfITX.bovAotTOAjKGfAgXOzkII7jn587/JOW","__v":0}
 ```
