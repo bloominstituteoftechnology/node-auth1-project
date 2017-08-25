@@ -55,6 +55,20 @@ server.post('/users', validateNameAndPass, (req, res) => {
 });
 
 
+server.post('/log-in', validateNameAndPass, (req, res) => {
+  const passWordEntry = req.password;
+  User.findOne({
+    username: req.username,
+    passwordHash: passWordEntry,
+
+  }, (err, user) => {
+    if (err) {
+      sendUserError();
+    } else {
+      res.json(user);
+    }
+  });
+});
   // user.password = passwordHash;
 
   // 39. validated
