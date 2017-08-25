@@ -117,7 +117,7 @@ server.get('/me', middleVerification, (req, res) => {
   res.json(req.user);
 });
 
-server.get('/restricted/jo', (req, res) => {
+server.get('/restricted/*', (req, res) => {
   res.json({ hidden: 'hidden'});
 });
 
