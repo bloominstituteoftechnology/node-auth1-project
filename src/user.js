@@ -10,7 +10,7 @@ mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
 
 const UserSchema = new mongoose.Schema({
   // TODO: fill in this schema
-  userName: {
+  username: {
     type: String,
     required: true,
     unique: true,

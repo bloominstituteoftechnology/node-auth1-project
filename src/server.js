@@ -28,23 +28,44 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 
 server.post('/users', (req, res) => {
-  const { userName, password } = req.body;
+  const { username, password } = req.body;
 
-  if (!userName) {
-    sendUserError('Must provide a userName', res);
-    return;
-  } else if (!password) {
-    sendUserError('Must provide a password', res);
-    return;
-  }
+  if (!username) return sendUserError('Must provide a username in post/users', res);
+  if (!password) return sendUserError('Must provide a password in post/users', res);
+
   bcrypt.hash(password, BCRYPT_COST, (bcryptErr, passwordHash) => {
     if (bcryptErr) return sendUserError(bcryptErr, res);
-    if (!passwordHash) return sendUserError('The password is not valid', res);
+    if (!passwordHash) return sendUserError('The password failed to hash', res);
 
-    const user = new User({ userName, passwordHash });
+    const user = new User({ username, passwordHash });
     user.save((err) => {
       if (err) return sendUserError(err, res);
-      res.json({ user });
+      res.status(200);
+      res.json(user);
+    });
+  });
+});
+
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username) return sendUserError('Must provide a username', res);
+  if (!password) return sendUserError('Must provide a password', res);
+
+  User.findOne({ username }, (err, user) => {
+    if (err) return sendUserError(err, res);
+    if (!user) return sendUserError('Failed to find a user', res);
+
+    const { passwordHash } = user;
+    bcrypt.compare(password, passwordHash, (bcryptErr, isValid) => {
+      if (bcryptErr) return sendUserError(bcryptErr);
+      if (isValid) {
+        if (!req.session.loggedIn) { req.session.loggedIn = []; }
+        req.session.loggedIn.push('user._id');
+        res.json({ success: true });
+      } else {
+        return sendUserError('Incorrect password', res);
+      }
     });
   });
 });
