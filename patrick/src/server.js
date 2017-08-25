@@ -34,7 +34,7 @@ const sendUserError = (err, res) => {
 
 // TODO: implement routes
 
-// GLOBAL MIDDLEWARE
+// GLOBAL MIDDLEWARE for EXTRA CREDIT
 
 // LOCAL MIDDLEWARE
 const validateNameAndPassword = ((req, res, next) => {
@@ -67,8 +67,46 @@ server.post('/users', validateNameAndPassword, (req, res) => {
   });
 });
 
+server.post('/log-in', validateNameAndPassword, (req, res) => {
+  const { username, password } = req.body;
+  User.findOne({ username })
+    .exec()
+    .then((user) => {
+      if (user.length < 1) {
+        sendUserError('Who are you??? Please go to /users and create an account', res);
+      } else {
+        bcrypt.compare(password, user.passwordHash, (error, isValid) => {
+          if (error) {
+            sendUserError(error, res);
+            return;
+          }
+          if (!isValid) {
+            sendUserError('That password just aint right!', res);
+          } else {
+            req.session.user = user;
+            res.json({ success: true });
+          }
+        });
+      }
+    })
+    .catch((err) => {
+      sendUserError(err, res);
+    });
+});
+
+// LOCAL MIDDLEWARE
+const userAuthMiddleware = (req, res, next) => {
+  if (req.session.user === undefined) {
+    sendUserError('Must be logged in!', res);
+  } else {
+    req.user = req.session.user;
+    next();
+  }
+};
+
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+//                vvvvvvvvvvvvvvvvvv
+server.get('/me', userAuthMiddleware, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
