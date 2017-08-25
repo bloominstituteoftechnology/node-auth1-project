@@ -87,4 +87,27 @@ server.get('/me', loggedIn, (req, res) => {
   res.json(req.user);
 });
 
+// EXTRA CREDIT
+/* write a piece of global middleware that ensures a user is logged in when accessing
+ * any route prefixed by /restricted/. */
+
+const restrictedRoutes = ((req, res, next) => {
+  const { url } = req;
+  if (/restricted/.test(url)) {
+    console.log('found a restricted url');
+    const userID = req.session.user;
+    if (!userID) {
+      console.log(req.session.user);
+      return sendUserError('You must be logged in to access a restricted url', res);
+    }
+  }
+  next();
+});
+
+server.use(restrictedRoutes);
+
+server.get('/restricted', (req, res) => {
+  res.json({ restricted: true });
+});
+
 module.exports = { server };
