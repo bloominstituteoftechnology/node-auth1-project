@@ -5,6 +5,11 @@
 - https://stackoverflow.com/q/30760213/5225057
 - see also `man curl`
 
+### to set up the view counter and test the curl commands:
+1. `cd` into the viewCounter directory
+2. `npm i` to install the packages listed in the package.json file
+3. `nodemon viewCounter.js` to launch the server
+
 ## 1. **POST**ing JSON objects to the '/users' route:
 Just like the Postman application, `curl` can send data through JSON objects:
 ```js
@@ -50,6 +55,8 @@ server.get('/view-counter', (req, res) => {
 });
 
 module.exports = { server };
+
+server.listen(3000);
 ```
 
 To
