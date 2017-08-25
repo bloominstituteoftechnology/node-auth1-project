@@ -97,7 +97,7 @@ server.post('/log-in', validateNameAndPassword, (req, res) => {
 // LOCAL MIDDLEWARE
 const userAuthMiddleware = (req, res, next) => {
   if (req.session.user === undefined) {
-    sendUserError('Must be logged in!', res);
+    sendUserError('yoYOyo-yo!!! You gots to LOG IN, bruh!!!', res);
   } else {
     req.user = req.session.user;
     next();
