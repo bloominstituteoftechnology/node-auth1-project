@@ -2,7 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 
-const User = require('./user.js'); // <~~~ I put this here
+const User = require('./user'); // <~~~ I put this here
 const bcrypt = require('bcrypt');  // <~~~ I put this here
 
 const STATUS_USER_ERROR = 422;
@@ -15,6 +15,8 @@ server.use(bodyParser.json());
 // express-session deprecated undefined saveUninitialized option; provide saveUninitialized option src/server.js:15:12
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+  // https://github.com/expressjs/session/issues/56
+  // https://github.com/expressjs/session#options
   resave: true,
   saveUninitialized: false,
 }));
@@ -33,59 +35,32 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 
 // GLOBAL MIDDLEWARE
-server.use((req, res, next) => {
+
+// LOCAL MIDDLEWARE
+const validateNameAndPassword = ((req, res, next) => {
   const { username, password } = req.body;
   if (!username || !password) {
     sendUserError('Please enter BOTH a USERNAME and a PASSWORD.', res);
     return;
   }
-  // req.body.username = username;
-  // req.body.password = password;
   next();
 });
 
-// // LOCAL MIDDLEWARE
-// const validateNameAndPassword = ((req, res, next) => {
-//   const { username, password } = req.body;
-//   if (!username || !password) {
-//     sendUserError('Please enter BOTH a USERNAME and a PASSWORD.', res);
-//     return;
-//   }
-//   // req.body.username = username;
-//   // req.body.password = password;
-//   next();
-// });
-
 // ROUTES
-server.post('/users', (req, res) => {
 // LOCAL MIDDLEWARE IMPLEMENTATION
-// server.post('/users', validateNameAndPassword, (req, res) => {
-  // The `POST /users` route expects two parameters: `username` and `password`.
+server.post('/users', validateNameAndPassword, (req, res) => {
   const { username, password } = req.body;
-  const newUser = { username, password };
-  // const newUser = { req.body.username, req.body.password }
-  // const newUser = { username: req.body.username, password: req.body.password };
-  // When the client makes a `POST` request to `/users`, hash the given password
-  bcrypt.hash(newUser.password, BCRYPT_COST, (err, hash) => {
-    // console.log('Hash:', hash);
+  const passwordHash = bcrypt.hashSync(password, BCRYPT_COST, (err, hash) => {
     if (err) {
-      // throw err;
-      sendUserError(err, res);
+      sendUserError({ 'There is omething weird with that password': err.message, 'ERROR STACK': err.stack }, res);
+      return;
     }
-    newUser.passwordHash = hash;
   });
-  // and create a new user in MongoDB. Send the user object as a JSON response.
-  // console.log('newUser', newUser);
-  const user = new User(newUser);
-  // console.log('user', user);
-  // console.log('user.username', user.username);
-  // console.log('user.password', user.password);
-  // console.log('user.passwordHash', user.passwordHash);
-  user.save((err) => {
-    if (err) {
-      sendUserError({ 'Error inserting a new user into users database': err.message, 'ERROR STACK': err.stack }, res);
-      // res.status(STATUS_USER_ERROR);
-      // res.send({ 'Error inserting new user into users database: ': err.message });
+  const newUser = new User({ username, passwordHash });
+  newUser.save((error, user) => {
+    if (error) {
+      // https://youtu.be/frIA7tuBqqY
+      sendUserError({ 'Jigga What? Jigga Who???': error.message, 'ERROR STACK': error.stack }, res);
       return;
     }
     res.json(user);
@@ -98,13 +73,13 @@ server.get('/me', (req, res) => {
   res.json(req.user);
 });
 
-// server.get('/view-counter', (req, res) => {
-//   const session = req.session;
-//   if (!session.viewCount) {
-//     session.viewCount = 0;
-//   }
-//   session.viewCount++;
-//   res.json({ viewCount: session.viewCount })
-// });
+server.get('/view-counter', (req, res) => {
+  const sehShun = req.session;
+  if (!sehShun.viewCount) {
+    sehShun.viewCount = 0;
+  }
+  sehShun.viewCount++;
+  res.json({ viewCount: sehShun.viewCount });
+});
 
 module.exports = { server };
