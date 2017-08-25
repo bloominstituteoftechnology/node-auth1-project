@@ -25,7 +25,13 @@ $  curl -X POST -H "Content-Type: application/json" -d '{"username":"Bingo The C
 3. `-d` is for the actual data
 
 
-## 2. **GET**ting with persistent cookies from '/view-counter':
+## 2. **POST**ing a username and password to '/log-in':
+```console
+$  curl -X POST -H "Content-Type: application/json" -d '{"username":"Bingo The Clown-o","password":"soincrediblyhardtohackthis"}' http://localhost:3000/log-in
+    {"success":true}
+```
+
+## 3. **GET**ting with persistent cookies from '/view-counter':
 
 As an example, in Karthik’s demo viddy, he made the '/view-counter' route:
 ```js
