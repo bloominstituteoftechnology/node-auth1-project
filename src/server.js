@@ -56,12 +56,11 @@ server.post('/log-in', (req, res) => {
     if (err) return sendUserError(err, res);
     if (!user) return sendUserError('Failed to find a user', res);
 
-    const { passwordHash } = user;
+    const { _id, passwordHash } = user;
     bcrypt.compare(password, passwordHash, (bcryptErr, isValid) => {
       if (bcryptErr) return sendUserError(bcryptErr);
       if (isValid) {
-        if (!req.session.loggedIn) { req.session.loggedIn = []; }
-        req.session.loggedIn.push('user._id');
+        req.session.user = _id;
         res.json({ success: true });
       } else {
         return sendUserError('Incorrect password', res);
@@ -70,8 +69,20 @@ server.post('/log-in', (req, res) => {
   });
 });
 
+const loggedIn = (req, res, next) => {
+  const userID = req.session.user;
+  if (!userID) {
+    return sendUserError('You must be logged in', res);
+  }
+  User.findById(userID, (err, user) => {
+    if (err) return sendUserError(err, res);
+    req.user = user;
+    next();
+  });
+};
+
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+server.get('/me', loggedIn, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
