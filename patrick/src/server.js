@@ -35,6 +35,22 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 
 // GLOBAL MIDDLEWARE for EXTRA CREDIT
+// If you'd like to go a step further, write a piece of **global** middleware that
+// ensures a user is logged in when accessing *any* route prefixed by
+// `/restricted/`. For instance, `/restricted/something`, `/restricted/other`, and
+// `/restricted/a` should all be protected by the middleware; only logged in users
+// should be able to access these routes.
+server.use((request, response, next) => {
+  // if req.params === restricted/*
+    // if user login status if false
+    // error
+    // else
+  next();
+});
+
+server.get('/restricted/', (request, response) => {
+  response.json('Welcome to the InterZone.');
+});
 
 // LOCAL MIDDLEWARE
 const validateNameAndPassword = ((req, res, next) => {
@@ -52,7 +68,7 @@ server.post('/users', validateNameAndPassword, (req, res) => {
   const { username, password } = req.body;
   const passwordHash = bcrypt.hashSync(password, BCRYPT_COST, (err, hash) => {
     if (err) {
-      sendUserError({ 'There is omething weird with that password': err.message, 'ERROR STACK': err.stack }, res);
+      sendUserError({ 'There is something weird with that password': err.message, 'ERROR STACK': err.stack }, res);
       return;
     }
   });
