@@ -33,7 +33,8 @@ const userAuthMiddleware = (req, res, next) => {
   if (req.session.user === undefined) {
     sendUserError('Must be logged in!', res);
   } else {
-    req.user = req.session.user[0].username;
+    req.user = req.session.user[0];
+    next();
   }
 };
 
