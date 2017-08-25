@@ -39,6 +39,8 @@ const validateNameAndPass = (req, res, next) => {
 };
 
 // TODO: implement routes
+
+// User signup
 server.post('/users', validateNameAndPass, (req, res) => {
   bcrypt.hash(req.password, BCRYPT_COST, (err, hash) => {
     if (err) {
@@ -54,29 +56,23 @@ server.post('/users', validateNameAndPass, (req, res) => {
   });
 });
 
-
+// User login
 server.post('/log-in', validateNameAndPass, (req, res) => {
-  const passWordEntry = req.password;
-  User.findOne({
-    username: req.username,
-    passwordHash: passWordEntry,
-
-  }, (err, user) => {
+  // here we hash the password that the client inputs
+  const passWordEntry = bcrypt.hash(req.password, BCRYPT_COST, (err, hash) => {
     if (err) {
       sendUserError();
     } else {
-      res.json(user);
+      // here we search for a user with the same username that the client inputs
+      const tempUser = User.findOne({ username: req.username });
+      if (tempUser.passWordHash === passWordEntry) {
+        res.json({ success: true });
+      } else {
+        sendUserError();
+      }
     }
   });
 });
-  // user.password = passwordHash;
-
-  // 39. validated
-  // 40. create user w/ username & password
-  // 41. hash password / hasing pass / saving user - which hasn't changed and sending back
-  // 42. say user.password = passwordHash
-  // 43. save user and send json response
-
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
