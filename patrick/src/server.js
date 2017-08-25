@@ -2,7 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 
-const User = require('./user'); // <~~~ I put this here
+const User = require('./user');    // <~~~ I put this here
 const bcrypt = require('bcrypt');  // <~~~ I put this here
 
 const STATUS_USER_ERROR = 422;
@@ -111,6 +111,7 @@ server.get('/me', userAuthMiddleware, (req, res) => {
   res.json(req.user);
 });
 
+// DEMONSTRATING INDEPENDENT CLIENT SESSIONS
 server.get('/view-counter', (req, res) => {
   const sehShun = req.session;
   if (!sehShun.viewCount) {
