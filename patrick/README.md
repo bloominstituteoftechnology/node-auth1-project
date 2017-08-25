@@ -49,7 +49,7 @@ properties: `username`, a String, and `passwordHash`, also a String. Both
 properties are required, and the username should be unique (use the option
 `unique: true`).  This prevents two users from having the same username.
 
-### `src/server.js` - OKAY √
+### `src/server.js` - DONE √
 Now start editing `src/server.js`. Note that we've provided you a helper
 function `sendUserError()` that can send down either an object error or a string
 error. You'll use this liberally in your routes.
@@ -57,7 +57,7 @@ error. You'll use this liberally in your routes.
 We've also gone ahead and initialized the express-session middleware so you can
 use the client-specific, persistent `req.session` object in your route handlers.
 
-### `POST /users` - OKAY √
+### `POST /users` - DONE √
 The `POST /users` route expects two parameters: `username` and `password`. When
 the client makes a `POST` request to `/users`, hash the given password and
 create a new user in MongoDB. Send the user object as a JSON response.
@@ -66,7 +66,7 @@ Make sure to do proper validation and error checking. If there's any error,
 respond with an appropriate status and error message using the `sendUserError()`
 helper function.
 
-### `POST /log-in` - OKAY √
+### `POST /log-in` - DONE √
 The `POST /log-in` route expects two parameters: `username` and `password`. When
 the client makes a `POST` request to `/log-in`, check the given credentials and
 log in the appropriate user. Send the object `{ success: true }` as a JSON
@@ -81,7 +81,7 @@ Make sure to do proper validation and error checking. If there's any error, or
 if the credentials are invalid, respond with an appropriate status and error
 message using the `sendUserError()` helper function.
 
-### `GET /me` - OKAY √
+### `GET /me` - DONE √
 The `GET /me` route **should only be accessible by logged in users**. We've
 already implemented the route handler for you; your job is to add local
 middleware to ensure that only logged in users have access.

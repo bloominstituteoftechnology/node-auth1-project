@@ -1,28 +1,37 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
-
-const User = require('./user');    // <~~~ I put this here
-const bcrypt = require('bcrypt');  // <~~~ I put this here
+const bcrypt = require('bcrypt');
+const User = require('./user');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
-
 const server = express();
-// to enable parsing of json bodies for post requests
+
 server.use(bodyParser.json());
-// express-session deprecated undefined resave option; provide resave option src/server.js:15:12
-// express-session deprecated undefined saveUninitialized option; provide saveUninitialized option src/server.js:15:12
+
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+  // if you don't get these deprecation msgs, you can comment out lines 20 and 21
+  // express-session deprecated undefined resave option; provide resave option src/server.js:13:12
+  // express-session deprecated undefined saveUninitialized option; provide saveUninitialized option src/server.js:13:12
   // https://github.com/expressjs/session/issues/56
   // https://github.com/expressjs/session#options
   resave: true,
   saveUninitialized: false,
 }));
 
-/* Sends the given err, a string or an object, to the client. Sets the status
- * code appropriately. */
+// VIEW COUNTER
+server.get('/view-counter', (req, res) => {
+  const persistentSession = req.session;
+  if (!persistentSession.viewCount) {
+    persistentSession.viewCount = 0;
+  }
+  persistentSession.viewCount++;
+  res.json({ viewCount: persistentSession.viewCount });
+});
+
+// HELPER FUNCTION
 const sendUserError = (err, res) => {
   res.status(STATUS_USER_ERROR);
   if (err && err.message) {
@@ -31,11 +40,6 @@ const sendUserError = (err, res) => {
     res.json({ error: err });
   }
 };
-
-// TODO: implement routes
-
-// GLOBAL MIDDLEWARE for EXTRA CREDIT
-
 // LOCAL MIDDLEWARE
 const validateNameAndPassword = ((req, res, next) => {
   const { username, password } = req.body;
@@ -45,9 +49,7 @@ const validateNameAndPassword = ((req, res, next) => {
   }
   next();
 });
-
-// ROUTES
-// LOCAL MIDDLEWARE IMPLEMENTATION
+// POST A NEW USER
 server.post('/users', validateNameAndPassword, (req, res) => {
   const { username, password } = req.body;
   const passwordHash = bcrypt.hashSync(password, BCRYPT_COST, (err, hash) => {
@@ -66,7 +68,7 @@ server.post('/users', validateNameAndPassword, (req, res) => {
     res.json(user);
   });
 });
-
+// LOG IN AFTER MAKING A NEW USER
 server.post('/log-in', validateNameAndPassword, (req, res) => {
   const { username, password } = req.body;
   User.findOne({ username })
@@ -93,7 +95,6 @@ server.post('/log-in', validateNameAndPassword, (req, res) => {
       sendUserError(err, res);
     });
 });
-
 // LOCAL MIDDLEWARE
 const userAuthMiddleware = (req, res, next) => {
   if (req.session.user === undefined) {
@@ -103,22 +104,9 @@ const userAuthMiddleware = (req, res, next) => {
     next();
   }
 };
-
-// TODO: add local middleware to this route to ensure the user is logged in
-//                vvvvvvvvvvvvvvvvvv
+// VERIFY LOGGED IN USER
 server.get('/me', userAuthMiddleware, (req, res) => {
-  // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
 
-// DEMONSTRATING INDEPENDENT CLIENT SESSIONS
-server.get('/view-counter', (req, res) => {
-  const sehShun = req.session;
-  if (!sehShun.viewCount) {
-    sehShun.viewCount = 0;
-  }
-  sehShun.viewCount++;
-  res.json({ viewCount: sehShun.viewCount });
-});
-
-module.exports = { server };
+server.listen(3000);
