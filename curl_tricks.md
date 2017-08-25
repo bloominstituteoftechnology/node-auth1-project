@@ -31,7 +31,36 @@ $  curl -X POST -H "Content-Type: application/json" -d '{"username":"Bingo The C
     {"success":true}
 ```
 
-## 3. **GET**ting with persistent cookies from '/view-counter':
+## 3. **GET**ting the current logged in users name from '/me' with persistent cookies:
+```console
+$  curl -H "Content-Type: application/json" -d '{"username":"Bingo The Clown-o","password":"soincrediblyhardtohackthis"}' -v http://localhost:3000/log-in
+    *   Trying ::1...
+    * TCP_NODELAY set
+    * Connected to localhost (::1) port 3000 (#0)
+    > POST /log-in HTTP/1.1
+    > Host: localhost:3000
+    > User-Agent: curl/7.54.0
+    > Accept: */*
+    > Content-Type: application/json
+    > Content-Length: 72
+    >
+    * upload completely sent off: 72 out of 72 bytes
+    < HTTP/1.1 200 OK
+    < X-Powered-By: Express
+    < Content-Type: application/json; charset=utf-8
+    < Content-Length: 16
+    < ETag: W/"10-oV4hJxRVSENxc/wX8+mA4/Pe4tA"
+    < set-cookie: connect.sid=s%3AuKtDgCPm_3zd3FrjpEyJvLINKgMWFeFr.g0oEnSxhRKLvUBM%2BOwgcfPSCDKOGmPEh31FEswrmX%2F4; Path=/; HttpOnly
+    < Date: Fri, 25 Aug 2017 15:40:20 GMT
+    < Connection: keep-alive
+    <
+    * Connection #0 to host localhost left intact
+    {"success":true}8 mixelpix Fri Aug 25 11:40:20$
+$  curl -H "Content-Type: application/json" -b "connect.sid=s%3AuKtDgCPm_3zd3FrjpEyJvLINKgMWFeFr.g0oEnSxhRKLvUBM%2BOwgcfPSCDKOGmPEh31FEswrmX%2F4" http://localhost:3000/me
+    {"_id":"59a0438098b5f10ac9968271","username":"Bingo The Clown-o","passwordHash":"$2a$11$YumjbaL6DL5bld4exfITX.bovAotTOAjKGfAgXOzkII7jn587/JOW","__v":0}
+```
+
+## 4. A more detailed explanation of how to use `curl` for **GET**ting with persistent cookies from '/view-counter':
 
 As an example, in Karthik’s demo viddy, he made the '/view-counter' route:
 ```js
