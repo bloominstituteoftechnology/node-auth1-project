@@ -62,8 +62,7 @@ const validateNameAndPassword = ((req, res, next) => {
   next();
 });
 
-// ROUTES
-// LOCAL MIDDLEWARE IMPLEMENTATION
+// CREATE A NEW USER
 server.post('/users', validateNameAndPassword, (req, res) => {
   const { username, password } = req.body;
   const passwordHash = bcrypt.hashSync(password, BCRYPT_COST, (err, hash) => {
@@ -83,6 +82,7 @@ server.post('/users', validateNameAndPassword, (req, res) => {
   });
 });
 
+// LOGIN IN A "REGISTERED" USER
 server.post('/log-in', validateNameAndPassword, (req, res) => {
   const { username, password } = req.body;
   User.findOne({ username })
