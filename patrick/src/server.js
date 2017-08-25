@@ -34,23 +34,38 @@ const sendUserError = (err, res) => {
 
 // TODO: implement routes
 
+// // GLOBAL MIDDLEWARE
+// server.use((req, res, next) => {
+//   const { username, password } = req.body;
+//   if (!username || !password) {
+//     sendUserError('Please enter BOTH a USERNAME and a PASSWORD.', res);
+//     return;
+//   }
+//   // req.body.username = username;
+//   // req.body.password = password;
+//   next();
+// });
+
 // GLOBAL MIDDLEWARE for EXTRA CREDIT
 // If you'd like to go a step further, write a piece of **global** middleware that
 // ensures a user is logged in when accessing *any* route prefixed by
 // `/restricted/`. For instance, `/restricted/something`, `/restricted/other`, and
 // `/restricted/a` should all be protected by the middleware; only logged in users
 // should be able to access these routes.
-server.use((request, response, next) => {
-  // if req.params === restricted/*
-    // if user login status if false
-    // error
-    // else
-  next();
-});
+// server.use((request, response, next) => {
+//   // response.json('Welcome to the InterZone.');
+//   const url = request.url; // ???
+//   if (request.session.user === undefined) {
+//     sendUserError('yoYOyo-yo!!! Who do you think you are????!!!???', response);
+//   } else {
+//     request.user = request.session.user;
+//     next();
+//   }
+// });
 
-server.get('/restricted/', (request, response) => {
-  response.json('Welcome to the InterZone.');
-});
+// server.get('/restricted/', (req, res) => {
+//   res.json(req.user);
+// });
 
 // LOCAL MIDDLEWARE
 const validateNameAndPassword = ((req, res, next) => {
