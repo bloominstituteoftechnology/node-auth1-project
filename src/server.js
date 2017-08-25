@@ -110,4 +110,8 @@ server.get('/restricted', (req, res) => {
   res.json({ restricted: true });
 });
 
+server.get('/restricted/me', (req, res) => {
+    res.json({ restrictedMe: true });
+});
+
 module.exports = { server };
