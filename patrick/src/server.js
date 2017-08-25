@@ -34,15 +34,7 @@ const sendUserError = (err, res) => {
 
 // TODO: implement routes
 
-// // GLOBAL MIDDLEWARE
-// server.use((req, res, next) => {
-//   const { username, password } = req.body;
-//   if (!username || !password) {
-//     sendUserError('Please enter BOTH a USERNAME and a PASSWORD.', res);
-//     return;
-//   }
-//   next();
-// });
+// GLOBAL MIDDLEWARE
 
 // LOCAL MIDDLEWARE
 const validateNameAndPassword = ((req, res, next) => {
@@ -55,13 +47,12 @@ const validateNameAndPassword = ((req, res, next) => {
 });
 
 // ROUTES
-// server.post('/users', (req, res) => {
 // LOCAL MIDDLEWARE IMPLEMENTATION
 server.post('/users', validateNameAndPassword, (req, res) => {
   const { username, password } = req.body;
   const passwordHash = bcrypt.hashSync(password, BCRYPT_COST, (err, hash) => {
     if (err) {
-      sendUserError('Something weird with that password', res);
+      sendUserError({ 'There is omething weird with that password': err.message, 'ERROR STACK': err.stack }, res);
       return;
     }
   });
@@ -81,13 +72,13 @@ server.get('/me', (req, res) => {
   res.json(req.user);
 });
 
-// server.get('/view-counter', (req, res) => {
-//   const session = req.session;
-//   if (!session.viewCount) {
-//     session.viewCount = 0;
-//   }
-//   session.viewCount++;
-//   res.json({ viewCount: session.viewCount })
-// });
+server.get('/view-counter', (req, res) => {
+  const sehShun = req.session;
+  if (!sehShun.viewCount) {
+    sehShun.viewCount = 0;
+  }
+  sehShun.viewCount++;
+  res.json({ viewCount: sehShun.viewCount });
+});
 
 module.exports = { server };
