@@ -2,17 +2,20 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 
-const User = require('./user');    // <~~~ I put this here
-const bcrypt = require('bcrypt');  // <~~~ I put this here
+const User = require('./user');    // <~~~ added
+const bcrypt = require('bcrypt');  // <~~~ added
+const path = require('path');      // <~~~ added
 
 const STATUS_USER_ERROR = 422;
+const STATUS_SERVER_ERROR = 500;   // <~~~ added
 const BCRYPT_COST = 11;
 
 const server = express();
-// to enable parsing of json bodies for post requests
+
 server.use(bodyParser.json());
-// express-session deprecated undefined resave option; provide resave option src/server.js:15:12
-// express-session deprecated undefined saveUninitialized option; provide saveUninitialized option src/server.js:15:12
+
+// express-session deprecated undefined resave option; provide resave option src/server.js:19:12
+// express-session deprecated undefined saveUninitialized option; provide saveUninitialized option src/server.js:19:12
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
   // https://github.com/expressjs/session/issues/56
@@ -31,41 +34,14 @@ const sendUserError = (err, res) => {
     res.json({ error: err });
   }
 };
-
-// TODO: implement routes
-
-// // GLOBAL MIDDLEWARE
-// server.use((req, res, next) => {
-//   const { username, password } = req.body;
-//   if (!username || !password) {
-//     sendUserError('Please enter BOTH a USERNAME and a PASSWORD.', res);
-//     return;
-//   }
-//   // req.body.username = username;
-//   // req.body.password = password;
-//   next();
-// });
-
-// GLOBAL MIDDLEWARE for EXTRA CREDIT
-// If you'd like to go a step further, write a piece of **global** middleware that
-// ensures a user is logged in when accessing *any* route prefixed by
-// `/restricted/`. For instance, `/restricted/something`, `/restricted/other`, and
-// `/restricted/a` should all be protected by the middleware; only logged in users
-// should be able to access these routes.
-// server.use((request, response, next) => {
-//   // response.json('Welcome to the InterZone.');
-//   const url = request.url; // ???
-//   if (request.session.user === undefined) {
-//     sendUserError('yoYOyo-yo!!! Who do you think you are????!!!???', response);
-//   } else {
-//     request.user = request.session.user;
-//     next();
-//   }
-// });
-
-// server.get('/restricted/', (req, res) => {
-//   res.json(req.user);
-// });
+const sendServerError = (err, res) => {
+  res.status(STATUS_SERVER_ERROR);
+  if (err && err.message) {
+    res.json({ message: err.message, stack: err.stack });
+  } else {
+    res.json({ error: err });
+  }
+};
 
 // LOCAL MIDDLEWARE
 const validateNameAndPassword = ((req, res, next) => {
@@ -76,7 +52,6 @@ const validateNameAndPassword = ((req, res, next) => {
   }
   next();
 });
-
 // CREATE A NEW USER
 server.post('/users', validateNameAndPassword, (req, res) => {
   const { username, password } = req.body;
@@ -108,7 +83,7 @@ server.post('/log-in', validateNameAndPassword, (req, res) => {
       } else {
         bcrypt.compare(password, user.passwordHash, (error, isValid) => {
           if (error) {
-            sendUserError(error, res);
+            sendServerError({ 'Yeah.... no': error }, res);
             return;
           }
           if (!isValid) {
@@ -121,7 +96,7 @@ server.post('/log-in', validateNameAndPassword, (req, res) => {
       }
     })
     .catch((err) => {
-      sendUserError(err, res);
+      sendUserError({ 'CAUGHT RED HANDED!!!': err.message, 'ERROR STACK': err.stack }, res);
     });
 });
 
@@ -134,12 +109,26 @@ const userAuthMiddleware = (req, res, next) => {
     next();
   }
 };
-
 // TODO: add local middleware to this route to ensure the user is logged in
 //                vvvvvvvvvvvvvvvvvv
 server.get('/me', userAuthMiddleware, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
+});
+
+// GLOBAL MIDDLEWARE for EXTRA CREDIT
+server.use((req, res, next) => {
+  if (req.path.match(/restricted\/[\S]/)) {
+    const sessionUserName = req.session.user.username;
+    console.log(sessionUserName);
+    if (!req.session.user) {
+      sendUserError('Who do you think you are????!!!???', res);
+      return;
+    }
+    res.json(`Well, hello ${sessionUserName}. Welcome to the InterZone.`);
+    // return;
+  }
+  next();
 });
 
 // DEMONSTRATING INDEPENDENT CLIENT SESSIONS
