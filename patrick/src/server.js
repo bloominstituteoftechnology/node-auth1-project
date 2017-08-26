@@ -24,8 +24,7 @@ server.use(session({
   saveUninitialized: false,
 }));
 
-/* Sends the given err, a string or an object, to the client. Sets the status
- * code appropriately. */
+// HELPER FUNCTIONS
 const sendUserError = (err, res) => {
   res.status(STATUS_USER_ERROR);
   if (err && err.message) {
@@ -43,7 +42,8 @@ const sendServerError = (err, res) => {
   }
 };
 
-// LOCAL MIDDLEWARE
+
+// LOCAL MIDDLEWARE TO CREATE A NEW USER
 const validateNameAndPassword = ((req, res, next) => {
   const { username, password } = req.body;
   if (!username || !password) {
@@ -52,55 +52,53 @@ const validateNameAndPassword = ((req, res, next) => {
   }
   next();
 });
-// CREATE A NEW USER
 server.post('/users', validateNameAndPassword, (req, res) => {
   const { username, password } = req.body;
   const passwordHash = bcrypt.hashSync(password, BCRYPT_COST, (err, hash) => {
-    if (err) {
-      sendUserError({ 'There is something weird with that password': err.message, 'ERROR STACK': err.stack }, res);
+    if (err) { // <~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ WHAT COULD CAUSE AN ERROR HERE?
+      sendServerError({ 'That password broke us :_(': err.message, 'ERROR STACK': err.stack }, res);
       return;
     }
   });
-  const newUser = new User({ username, passwordHash });
-  newUser.save((error, user) => {
-    if (error) {
-      // https://youtu.be/frIA7tuBqqY
-      sendUserError({ 'Jigga What? Jigga Who???': error.message, 'ERROR STACK': error.stack }, res);
+  new User({ username, passwordHash })
+  .save((error, user) => {
+    if (error) { // https://youtu.be/frIA7tuBqqY
+      sendUserError({ [`Jigga What? Jigga Who??? The name "${username}" is already taken.`]: error.message, 'ERROR STACK': error.stack }, res);
       return;
     }
     res.json(user);
   });
 });
-
 // LOGIN IN A "REGISTERED" USER
 server.post('/log-in', validateNameAndPassword, (req, res) => {
   const { username, password } = req.body;
   User.findOne({ username })
-    .exec()
-    .then((user) => {
-      if (user.length < 1) {
-        sendUserError('Who are you??? Please go to /users and create an account', res);
-      } else {
-        bcrypt.compare(password, user.passwordHash, (error, isValid) => {
-          if (error) {
-            sendServerError({ 'Yeah.... no': error }, res);
-            return;
-          }
-          if (!isValid) {
-            sendUserError('That password just aint right!', res);
-          } else {
-            req.session.user = user;
-            res.json({ success: true });
-          }
-        });
-      }
-    })
-    .catch((err) => {
-      sendUserError({ 'CAUGHT RED HANDED!!!': err.message, 'ERROR STACK': err.stack }, res);
-    });
+  .exec()
+  .then((user) => {
+    if (user === null) {
+      sendUserError(`Who are you??? I don't know no ${username}! Please go to /users and create an account`, res);
+    } else {
+      bcrypt.compare(password, user.passwordHash, (error, isValid) => {
+        if (error) { // <~~~~~~~~~~~~~~~~~~~~~~~~ WHAT COULD CAUSE AN ERROR HERE?
+          sendServerError({ 'Yeah.... no': error }, res);
+          return;
+        }
+        if (!isValid) {
+          sendUserError({ 'That password just aint right!': error }, res);
+        } else {
+          req.session.user = user;
+          res.json({ success: true });
+        }
+      });
+    }
+  })
+  .catch((err) => {
+    sendUserError({ 'CAUGHT RED HANDED!!!': err.message, 'ERROR STACK': err.stack }, res);
+  });
 });
 
-// LOCAL MIDDLEWARE
+
+// LOCAL MIDDLEWARE TO DISPLAY THE SESSION USER
 const userAuthMiddleware = (req, res, next) => {
   if (req.session.user === undefined) {
     sendUserError('yoYOyo-yo!!! You gots to LOG IN, bruh!!!', res);
@@ -109,31 +107,29 @@ const userAuthMiddleware = (req, res, next) => {
     next();
   }
 };
-// TODO: add local middleware to this route to ensure the user is logged in
-//                vvvvvvvvvvvvvvvvvv
 server.get('/me', userAuthMiddleware, (req, res) => {
-  // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
 
+
 // GLOBAL MIDDLEWARE for EXTRA CREDIT
 server.use((req, res, next) => {
-  if (req.path.match(/restricted\/[\S]/)) {
+  if (req.path.match(/restricted\/[\S]/)) { // <~~~~~~~~~~ props to Ely!!!!!!!!
     const sessionUserName = req.session.user.username;
-    console.log(sessionUserName);
     if (!req.session.user) {
       sendUserError('Who do you think you are????!!!???', res);
       return;
     }
-    res.json(`Well, hello ${sessionUserName}. Welcome to the InterZone.`);
-    // return;
+    res.json(`Well, hello there ${sessionUserName}. Welcome to the InterZone.`);
   }
   next();
 });
 
+
 // DEMONSTRATING INDEPENDENT CLIENT SESSIONS
 server.get('/view-counter', (req, res) => {
   const sehShun = req.session;
+  // console.log(sehShun);
   if (!sehShun.viewCount) {
     sehShun.viewCount = 0;
   }
