@@ -59,18 +59,18 @@ server.post('/users', validateNameAndPass, (req, res) => {
 // User login
 server.post('/log-in', validateNameAndPass, (req, res) => {
   // here we hash the password that the client inputs
-  const passWordEntry = bcrypt.hash(req.password, BCRYPT_COST, (err, hash) => {
+  bcrypt.hash(req.password, BCRYPT_COST, (err, hash) => {
+    req.username = req.session.username;
     if (err) {
       sendUserError();
     } else {
       // here we search for a user with the same username that the client inputs
-      const tempUser = User.findOne({ username: req.username });
-      if (tempUser.passWordHash === passWordEntry) {
+      User.findOne({ username: req.username }, (err, foundUser) => {
+      if (foundUser.passwordHash === hash) {
         res.json({ success: true });
       } else {
         sendUserError();
-      }
-    }
+      });
   });
 });
 
