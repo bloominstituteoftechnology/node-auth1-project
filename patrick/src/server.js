@@ -1,13 +1,13 @@
 const bodyParser = require('body-parser');
-const express = require('express'); // https://www.npmjs.com/package/express
-const session = require('express-session');
+const express = require('express');          // https://www.npmjs.com/package/express
+const session = require('express-session');  // https://www.npmjs.com/package/express-session
 
-const User = require('./user');     // <~~~ added
-const bcrypt = require('bcrypt');   // <~~~ added
-const path = require('path');       // <~~~ added
+const User = require('./user');   // <~~~ added
+const bcrypt = require('bcrypt'); // <~~~ added https://www.npmjs.com/package/bcrypt
+const path = require('path');     // <~~~ added
 
 const STATUS_USER_ERROR = 422;
-const STATUS_SERVER_ERROR = 500;    // <~~~ added
+const STATUS_SERVER_ERROR = 500;  // <~~~ added
 const BCRYPT_COST = 11;
 
 const server = express();
@@ -44,7 +44,7 @@ const sendServerError = (err, res) => {
 
 
 // LOCAL MIDDLEWARE TO CONFIRM USER NAME AND PASSWORD
-const nameAndPassword = ((req, res, next) => {
+const confirmNameAndPassword = ((req, res, next) => {
   const { username, password } = req.body;
   if (!username || !password) {
     sendUserError('Please enter BOTH a USERNAME and a PASSWORD.', res);
@@ -52,9 +52,9 @@ const nameAndPassword = ((req, res, next) => {
   }
   next();
 });
-server.post('/users', nameAndPassword, (req, res) => {
+// REGISTER A USER: POST THEIR USERNAME AND PASSWORD
+server.post('/users', confirmNameAndPassword, (req, res) => {
   const { username, password } = req.body;
-  // https://www.npmjs.com/package/bcrypt
   bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
     //  VVV ------------------------------------- WHAT COULD CAUSE AN ERROR HERE?
     if (err) sendServerError({ 'That password broke us :_(': err.message, 'ERROR STACK': err.stack }, res);
@@ -68,8 +68,8 @@ server.post('/users', nameAndPassword, (req, res) => {
     });
   });
 });
-// LOGIN IN A "REGISTERED" USER
-server.post('/log-in', nameAndPassword, (req, res) => {
+// LOGIN IN "REGISTERED" USER
+server.post('/log-in', confirmNameAndPassword, (req, res) => {
   const { username, password } = req.body;
   User.findOne({ username })
   .exec()
@@ -82,7 +82,6 @@ server.post('/log-in', nameAndPassword, (req, res) => {
         res.json('You are already logged in, silly!');
       }
     } else {
-      // https://www.npmjs.com/package/bcrypt
       bcrypt.compare(password, loggingInUser.passwordHash, (err, isValid) => {
         if (err) { // <~~~~~~~~~~~~~~~~~~~~~~~~~~ WHAT COULD CAUSE AN ERROR HERE?
           sendServerError({ 'Yeah.... no': err }, res);
@@ -103,8 +102,8 @@ server.post('/log-in', nameAndPassword, (req, res) => {
 });
 
 
-// LOCAL MIDDLEWARE TO DISPLAY THE SESSION USER
-const isUserLoggedIn = (req, res, next) => {
+// LOCAL MIDDLEWARE TO CONFIRM REGISTERED USER IS LOGGED IN
+const isRegisteredUserLoggedIn = (req, res, next) => {
   if (!req.session.user) {
     sendUserError('yoYOyo-yo!!! You gots to LOG IN, bruh!!!', res);
   } else {
@@ -112,13 +111,13 @@ const isUserLoggedIn = (req, res, next) => {
     next();
   }
 };
-server.get('/me', isUserLoggedIn, (req, res) => {
+server.get('/me', isRegisteredUserLoggedIn, (req, res) => {
   res.json(req.user);
 });
 
 
 // GLOBAL MIDDLEWARE for EXTRA CREDIT http://localhost:3000/restricted/...
-// JS REGEX
+// USING JS REGEX
 server.use((req, res, next) => {
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
@@ -132,7 +131,8 @@ server.use((req, res, next) => {
   }
   next();
 });
-// WILDCARD *
+// GLOBAL MIDDLEWARE for EXTRA CREDIT http://localhost:3000/top-secret/...
+// USING WILDCARD *
 server.use('/top-secret/*', (req, res, next) => {
   if (!req.session.user) {
     sendUserError('You need to tell us who you are for TOP-SECRET STUFF!!!', res);
