@@ -43,8 +43,8 @@ const sendServerError = (err, res) => {
 };
 
 
-// LOCAL MIDDLEWARE TO CREATE A NEW USER
-const validateNameAndPassword = ((req, res, next) => {
+// LOCAL MIDDLEWARE TO CONFIRM USER NAME AND PASSWORD
+const nameAndPassword = ((req, res, next) => {
   const { username, password } = req.body;
   if (!username || !password) {
     sendUserError('Please enter BOTH a USERNAME and a PASSWORD.', res);
@@ -52,39 +52,38 @@ const validateNameAndPassword = ((req, res, next) => {
   }
   next();
 });
-server.post('/users', validateNameAndPassword, (req, res) => {
+server.post('/users', nameAndPassword, (req, res) => {
   const { username, password } = req.body;
-  const passwordHash = bcrypt.hashSync(password, BCRYPT_COST, (err, hash) => {
-    if (err) { // <~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ WHAT COULD CAUSE AN ERROR HERE?
-      sendServerError({ 'That password broke us :_(': err.message, 'ERROR STACK': err.stack }, res);
-      return;
-    }
-  });
-  new User({ username, passwordHash })
-  .save((error, user) => {
-    if (error) { // https://youtu.be/frIA7tuBqqY
-      sendUserError({ [`Jigga What? Jigga Who??? The name "${username}" is already taken.`]: error.message, 'ERROR STACK': error.stack }, res);
-      return;
-    }
-    res.json(user);
+  bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
+    //  VVV ------------------------------------- WHAT COULD CAUSE AN ERROR HERE?
+    if (err) sendServerError({ 'That password broke us :_(': err.message, 'ERROR STACK': err.stack }, res);
+    new User({ username, passwordHash })
+    .save((error, user) => {
+      if (error) {
+        sendUserError({ [`The name '${username}' is already taken.`]: error.message, 'ERROR STACK': error.stack }, res);
+        return;
+      }
+      res.json(user);
+    });
   });
 });
 // LOGIN IN A "REGISTERED" USER
-server.post('/log-in', validateNameAndPassword, (req, res) => {
+server.post('/log-in', nameAndPassword, (req, res) => {
   const { username, password } = req.body;
   User.findOne({ username })
   .exec()
   .then((user) => {
-    if (user === null) {
+    if (!user) {
       sendUserError(`Who are you??? I don't know no ${username}! Please go to /users and create an account`, res);
+    // TODO: MSG IF ALREADY LOGGED IN?
     } else {
-      bcrypt.compare(password, user.passwordHash, (error, isValid) => {
-        if (error) { // <~~~~~~~~~~~~~~~~~~~~~~~~ WHAT COULD CAUSE AN ERROR HERE?
-          sendServerError({ 'Yeah.... no': error }, res);
+      bcrypt.compare(password, user.passwordHash, (err, isValid) => {
+        if (err) { // <~~~~~~~~~~~~~~~~~~~~~~~~ WHAT COULD CAUSE AN ERROR HERE?
+          sendServerError({ 'Yeah.... no': err }, res);
           return;
         }
         if (!isValid) {
-          sendUserError({ 'That password just aint right!': error }, res);
+          sendUserError('That password just aint right!', res);
         } else {
           req.session.user = user;
           res.json({ success: true });
@@ -92,39 +91,58 @@ server.post('/log-in', validateNameAndPassword, (req, res) => {
       });
     }
   })
-  .catch((err) => {
-    sendUserError({ 'CAUGHT RED HANDED!!!': err.message, 'ERROR STACK': err.stack }, res);
+  .catch((error) => {
+    sendUserError({ 'CAUGHT RED HANDED!!!': error.message, 'ERROR STACK': error.stack }, res);
   });
 });
 
 
 // LOCAL MIDDLEWARE TO DISPLAY THE SESSION USER
-const userAuthMiddleware = (req, res, next) => {
-  if (req.session.user === undefined) {
+const isUserLoggedIn = (req, res, next) => {
+  if (!req.session.user) {
     sendUserError('yoYOyo-yo!!! You gots to LOG IN, bruh!!!', res);
   } else {
     req.user = req.session.user;
     next();
   }
 };
-server.get('/me', userAuthMiddleware, (req, res) => {
+server.get('/me', isUserLoggedIn, (req, res) => {
   res.json(req.user);
 });
 
 
-// GLOBAL MIDDLEWARE for EXTRA CREDIT
+// GLOBAL MIDDLEWARE for EXTRA CREDIT http://localhost:3000/restricted/...
+// JS REGEX
 server.use((req, res, next) => {
   if (req.path.match(/restricted\/[\S]/)) { // <~~~~~~~~~~ props to Ely!!!!!!!!
-    const sessionUserName = req.session.user.username;
     if (!req.session.user) {
       sendUserError('Who do you think you are????!!!???', res);
       return;
     }
-    res.json(`Well, hello there ${sessionUserName}. Welcome to the InterZone.`);
+    res.json(`Well, hello there ${req.session.user.username}. Welcome to the InterZone.`);
   }
   next();
 });
+// WILDCARD *
+server.use('/top-secret/*', (req, res, next) => {
+  if (!req.session.user) {
+    sendUserError('You need to tell us who you are for TOP-SECRET STUFF!!!', res);
+    return;
+  }
+  // res.json(`Hi ${req.session.user.username}. Val Kilmer was great in, "Top-Secret!" (1984).`);
+  next();
+});
+server.get('/top-secret/*', (req, res) => {
+  res.json(`Hi ${req.session.user.username}. Val Kilmer was great in, 'TOP-SECRET' (1984).`);
+});
 
+
+// LOG-OUT - SHOULD THIS BE AN HTTP DELETE METHOD?
+server.get('/log-out', (req, res) => {
+  delete req.session.userId;
+  res.json({ success: 'you have been logged out' });
+  return;
+});
 
 // DEMONSTRATING INDEPENDENT CLIENT SESSIONS
 server.get('/view-counter', (req, res) => {
