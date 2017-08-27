@@ -56,7 +56,7 @@ const confirmNameAndPassword = ((req, res, next) => {
 server.post('/users', confirmNameAndPassword, (req, res) => {
   const { username, password } = req.body;
   bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
-    //  VVV ------------------------------------- WHAT COULD CAUSE AN ERROR HERE?
+    //  VVV ------------------------------------- WHAT COULD CAUSE AN ERROR HERE? (Just programming mistakes?)
     if (err) sendServerError({ 'That password broke us :_(': err.message, 'ERROR STACK': err.stack }, res);
     new User({ username, passwordHash })
     .save((error, user) => {
@@ -83,7 +83,7 @@ server.post('/log-in', confirmNameAndPassword, (req, res) => {
       }
     } else {
       bcrypt.compare(password, loggingInUser.passwordHash, (err, isValid) => {
-        if (err) { // <~~~~~~~~~~~~~~~~~~~~~~~~~~ WHAT COULD CAUSE AN ERROR HERE?
+        if (err) { // <~~~~~~~~~~~~~~~~~~~~~~~~~~ WHAT COULD CAUSE AN ERROR HERE? (Just programming mistakes?)
           sendServerError({ 'Yeah.... no': err }, res);
           return;
         }
@@ -147,17 +147,18 @@ server.get('/top-secret/*', (req, res) => {
 
 // LOG-OUT - SHOULD THIS BE AN HTTP DELETE OR POST METHOD?
 // https://www.npmjs.com/package/express-session
-server.post('/logout', (req, res) => {
-  console.log('req.session', req.session, '\n');
-  if (req.session.user) {
-    req.session.destroy((err) => {
-      if (err) {
-        sendServerError(err, res);
-      }
-      res.json('GedOUTTAhea!');
-    });
+server.delete('/logout', (req, res) => {
+  if (req.session.user === undefined) {
+    res.json('You gotta log in before you can log-out');
+    return;
   }
-  res.json('You gotta log in before you can log-out');
+  req.session.destroy((err) => { // <~~~~~~~~~~~~ WHAT COULD CAUSE AN ERROR HERE? (Just programming mistakes?)
+    if (!err) {
+      res.json('GedOUTTAhea!');
+      return;
+    }
+    sendServerError(err, res);
+  });
 });
 
 // DEMONSTRATING INDEPENDENT CLIENT SESSIONS
