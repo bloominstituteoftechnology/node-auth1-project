@@ -1,13 +1,13 @@
 const bodyParser = require('body-parser');
-const express = require('express');
+const express = require('express'); // https://www.npmjs.com/package/express
 const session = require('express-session');
 
-const User = require('./user');    // <~~~ added
-const bcrypt = require('bcrypt');  // <~~~ added
-const path = require('path');      // <~~~ added
+const User = require('./user');     // <~~~ added
+const bcrypt = require('bcrypt');   // <~~~ added
+const path = require('path');       // <~~~ added
 
 const STATUS_USER_ERROR = 422;
-const STATUS_SERVER_ERROR = 500;   // <~~~ added
+const STATUS_SERVER_ERROR = 500;    // <~~~ added
 const BCRYPT_COST = 11;
 
 const server = express();
@@ -54,6 +54,7 @@ const nameAndPassword = ((req, res, next) => {
 });
 server.post('/users', nameAndPassword, (req, res) => {
   const { username, password } = req.body;
+  // https://www.npmjs.com/package/bcrypt
   bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
     //  VVV ------------------------------------- WHAT COULD CAUSE AN ERROR HERE?
     if (err) sendServerError({ 'That password broke us :_(': err.message, 'ERROR STACK': err.stack }, res);
@@ -77,6 +78,7 @@ server.post('/log-in', nameAndPassword, (req, res) => {
       sendUserError(`Who are you??? I don't know no ${username}! Please go to /users and create an account`, res);
     // TODO: MSG IF ALREADY LOGGED IN?
     } else {
+      // https://www.npmjs.com/package/bcrypt
       bcrypt.compare(password, user.passwordHash, (err, isValid) => {
         if (err) { // <~~~~~~~~~~~~~~~~~~~~~~~~ WHAT COULD CAUSE AN ERROR HERE?
           sendServerError({ 'Yeah.... no': err }, res);
@@ -114,6 +116,9 @@ server.get('/me', isUserLoggedIn, (req, res) => {
 // GLOBAL MIDDLEWARE for EXTRA CREDIT http://localhost:3000/restricted/...
 // JS REGEX
 server.use((req, res, next) => {
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
   if (req.path.match(/restricted\/[\S]/)) { // <~~~~~~~~~~ props to Ely!!!!!!!!
     if (!req.session.user) {
       sendUserError('Who do you think you are????!!!???', res);
@@ -129,7 +134,6 @@ server.use('/top-secret/*', (req, res, next) => {
     sendUserError('You need to tell us who you are for TOP-SECRET STUFF!!!', res);
     return;
   }
-  // res.json(`Hi ${req.session.user.username}. Val Kilmer was great in, "Top-Secret!" (1984).`);
   next();
 });
 server.get('/top-secret/*', (req, res) => {
@@ -147,7 +151,6 @@ server.get('/log-out', (req, res) => {
 // DEMONSTRATING INDEPENDENT CLIENT SESSIONS
 server.get('/view-counter', (req, res) => {
   const sehShun = req.session;
-  // console.log(sehShun);
   if (!sehShun.viewCount) {
     sehShun.viewCount = 0;
   }
