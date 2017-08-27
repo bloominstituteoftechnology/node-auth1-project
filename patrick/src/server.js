@@ -149,7 +149,7 @@ server.get('/top-secret/*', (req, res) => {
 // https://www.npmjs.com/package/express-session
 server.delete('/logout', (req, res) => {
   if (req.session.user === undefined) {
-    res.json('You gotta log in before you can log-out');
+    res.json('You gotta log in before you can log out');
     return;
   }
   req.session.destroy((err) => { // <~~~~~~~~~~~~ WHAT COULD CAUSE AN ERROR HERE? (Just programming mistakes?)
