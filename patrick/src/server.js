@@ -73,21 +73,25 @@ server.post('/log-in', nameAndPassword, (req, res) => {
   const { username, password } = req.body;
   User.findOne({ username })
   .exec()
-  .then((user) => {
-    if (!user) {
-      sendUserError(`Who are you??? I don't know no ${username}! Please go to /users and create an account`, res);
-    // TODO: MSG IF ALREADY LOGGED IN?
+  .then((loggingInUser) => {
+    if (!loggingInUser) {
+      sendUserError(`Who are you? I don't know no '${username}'! Please go to /users and create an account`, res);
+    // MSG IF ALREADY LOGGED IN:
+    } else if (req.session.user) {
+      if (req.session.user.username === username) {
+        res.json('You are already logged in, silly!');
+      }
     } else {
       // https://www.npmjs.com/package/bcrypt
-      bcrypt.compare(password, user.passwordHash, (err, isValid) => {
-        if (err) { // <~~~~~~~~~~~~~~~~~~~~~~~~ WHAT COULD CAUSE AN ERROR HERE?
+      bcrypt.compare(password, loggingInUser.passwordHash, (err, isValid) => {
+        if (err) { // <~~~~~~~~~~~~~~~~~~~~~~~~~~ WHAT COULD CAUSE AN ERROR HERE?
           sendServerError({ 'Yeah.... no': err }, res);
           return;
         }
         if (!isValid) {
           sendUserError('That password just aint right!', res);
         } else {
-          req.session.user = user;
+          req.session.user = loggingInUser;
           res.json({ success: true });
         }
       });
