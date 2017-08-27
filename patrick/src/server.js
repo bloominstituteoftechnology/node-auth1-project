@@ -148,12 +148,16 @@ server.get('/top-secret/*', (req, res) => {
 // LOG-OUT - SHOULD THIS BE AN HTTP DELETE OR POST METHOD?
 // https://www.npmjs.com/package/express-session
 server.post('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      sendServerError(err, res);
-    }
-    res.json('GedOUTTAhea!');
-  });
+  console.log('req.session', req.session, '\n');
+  if (req.session.user) {
+    req.session.destroy((err) => {
+      if (err) {
+        sendServerError(err, res);
+      }
+      res.json('GedOUTTAhea!');
+    });
+  }
+  res.json('You gotta log in before you can log-out');
 });
 
 // DEMONSTRATING INDEPENDENT CLIENT SESSIONS
