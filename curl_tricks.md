@@ -5,6 +5,10 @@
 - https://stackoverflow.com/q/30760213/5225057
 - see also `man curl`
 
+### NOTE: in your home directory create a `~/.curlrc` file and add `-w "\n"` to it.
+- This will add a "newline" to the end of the `curl` console output.
+- Makes it a lot easier to read and then enter new commands in the console prompt.
+
 ## 1. **POST**ing JSON objects to the '/users' route:
 Just like the Postman application, `curl` can send data through JSON objects:
 ```js
