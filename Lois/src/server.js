@@ -33,10 +33,18 @@ const userAuthMiddleware = (req, res, next) => {
   if (req.session.user === undefined) {
     sendUserError('Must be logged in!', res);
   } else {
-    req.user = req.session.user[0];
+    req.user = req.session.user;
     next();
   }
 };
+
+server.use('/restricted', (req, res, next) => {
+  if (req.session.user === undefined) {
+    sendUserError('Must be logged in!', res);
+  } else {
+    next();
+  }
+});
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', userAuthMiddleware, (req, res) => {
@@ -80,13 +88,13 @@ server.post('/log-in', (req, res) => {
     sendUserError('Please enter a password!', res);
     return;
   }
-  User.find({ username })
+  User.findOne({ username })
     .exec()
     .then((user) => {
       if (user.length < 1) {
         sendUserError('Could not find user!', res);
       } else {
-        bcrypt.compare(password, user[0].passwordHash, (error, isValid) => {
+        bcrypt.compare(password, user.passwordHash, (error, isValid) => {
           if (error) {
             sendUserError(error, res);
             return;
