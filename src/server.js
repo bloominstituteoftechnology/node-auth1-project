@@ -99,7 +99,7 @@ const localMiddleware = (req, res, next) => {
       sendUserError(err, res);
       return;
     }
-    req.user = user;
+    req.user = user[0];
     next();
   });
 }
