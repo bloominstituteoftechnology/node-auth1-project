@@ -3,20 +3,16 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 
-const User = require('./user.js');
+const User = require('./user.js')
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
-console.log('server');
+
 const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
-  // https://github.com/expressjs/session/issues/56
-  // https://github.com/expressjs/session#options
-  resave: true,
-  saveUninitialized: false,
+  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
 }));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
@@ -29,60 +25,83 @@ const sendUserError = (err, res) => {
     res.json({ error: err });
   }
 };
-const validateUserPassword = server.use((req, res, next) => {
-  const username = req.query.username;
-  const { password } = req.body;
-  console.log(req.body);
-  if (!username || !password) {
-    res.status(STATUS_USER_ERROR);
-    res.json({ error: 'Provide both username and password' });
+
+// const validateUserPassword = server.use((req, res, next) => {
+//   const username = req.body.username;
+//   const { password } = req.body;
+//   console.log(req.body);
+//   if (!username || !password) {
+//     res.status(STATUS_USER_ERROR);
+//     res.json({ error: 'Provide both username and password' });
+//     return;
+//   }
+//   next();
+// });
+
+// TODO: implement routes
+server.post('/users', (req, res) => {
+  const { username, password } = req.body;
+  // checking for a password
+  if(!password || !username) {
+    sendUserError('valid username/password required', res);
     return;
   }
-  next();
-});
-// TODO: implement routes
-server.post('/users', validateUserPassword, (req, res) => {
-  const username = req.query.username;
-  const { password } = req.body;
-  bcrypt.hash('password', 11, (err, hash) => {
+  bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
     if (err) {
-    res.status(STATUS_USER_ERROR);
-    res.json({ err: err.message });
-    } else {
-      res.json({ 'passwordHash': hash, username });
+      sendUserError(err, res);
+      return;
     }
-  });
-        // should be returning new user -Tai
-  const newUser = new User({ username, password });
-  newUser.save((err, user) => {
-    if (err) {
-      res.status(STATUS_USER_ERROR);
-      res.json(err);
-    }
-    res.json(user);
+    const newuser = new User({ username, passwordHash });
+    newuser.save((err, user) => {
+      if (err) {
+        sendUserError(err, res);
+        return;
+      }
+      res.json(user);
+    });
   });
 });
 
-server.post('/log-in', validateUserPassword, (req, res) => {
-  const username = req.query.username;
-  const { password } = req.body;
-  User.findOne({ username }, (err, User) => {
-    if(!user) {
-      sendUserError({ error: 'No user' }, res);
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  const session = req.session;
+  if (!username || !password) {
+    sendUserError('valid username/password required', res);
+  }
+  User.findOne({ username }, (err, user) => {
+    if (err) {
+      sendUserError('no username with that name found', res);
       return;
     }
-    bcrypt.compare('password', hash, (err, isSame) => {
-      if (err) {
-        res.status(STATUS_USER_ERROR);
-        res.json({ err: err.message });
-        return;
-      }
-    });
-    res.json({ success: true });
+    if(!user) {
+      sendUserError('username required', res);
+      return;
+    }
+    if(bcrypt.compare(password, user.passwordHash)) {
+      session.login = user.username;
+      res.json({ success: true });
+      return;
+    }
+    sendUserError('password invalid', res);
   });
 });
+
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+const localMiddleware = (req, res, next) => {
+  const session = req.session;
+  if (!session.login) {
+    sendUserError('Login required', res);
+    return;
+  }
+  User.find({ username: session.login }, (err, user) => {
+    if (err) {
+      sendUserError(err, res);
+      return;
+    }
+    req.user = user;
+  });
+}
+server.get('/me', localMiddleware, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
