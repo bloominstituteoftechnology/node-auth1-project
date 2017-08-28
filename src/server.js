@@ -81,8 +81,9 @@ server.post('/log-in', (req, res) => {
       session.login = user.username;
       res.json({ success: true });
       return;
-    }
+    } else {
     sendUserError('password invalid', res);
+  }
   });
 });
 
@@ -99,6 +100,7 @@ const localMiddleware = (req, res, next) => {
       return;
     }
     req.user = user;
+    next();
   });
 }
 server.get('/me', localMiddleware, (req, res) => {
