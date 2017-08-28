@@ -77,7 +77,7 @@ server.post('/log-in', (req, res) => {
       sendUserError('username required', res);
       return;
     }
-    if(bcrypt.compare(password, user.passwordHash)) {
+    if(bcrypt.compareSync(password, user.passwordHash)) {
       session.login = user.username;
       res.json({ success: true });
       return;
