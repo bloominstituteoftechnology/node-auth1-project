@@ -19,6 +19,10 @@
     "express": "^4.15.4",
     "express-session": "^1.15.5",
     "mocha": "^3.5.0",
+    "mongo": "^0.1.0",
     "mongoose": "^4.11.7"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
   }
 }
