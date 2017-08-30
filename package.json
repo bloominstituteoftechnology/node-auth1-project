@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "LambdaSchool Auth",
   "scripts": {
-    "test": "eslint tests/*.js && eslint src/*.js && mocha -R nyan tests",
+    "test": "mocha -R nyan tests",
+    "test2": "eslint tests/*.js && eslint src/*.js && mocha -R nyan tests",
     "watch": "npm test -- --watch"
   },
   "license": "ISC",
