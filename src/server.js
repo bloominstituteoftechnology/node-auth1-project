@@ -24,7 +24,7 @@ const sendUserError = (err, res) => {
     res.json({ error: err });
   }
 };
-
+// brb set it up so you guys can see everything that's going on
 const validateNameAndPass = (req, res, next) => {
   const username = req.body.username;
   const password = req.body.password;
@@ -57,20 +57,16 @@ server.post('/users', validateNameAndPass, (req, res) => {
 });
 
 // User login
-server.post('/log-in', validateNameAndPass, (req, res) => {
-  // here we hash the password that the client inputs
+server.post('/login', validateNameAndPass, (req, res) => {
   bcrypt.hash(req.password, BCRYPT_COST, (err, hash) => {
-    req.username = req.session.username;
-    if (err) {
-      sendUserError();
-    } else {
-      // here we search for a user with the same username that the client inputs
+    req.username = req.session.username; 
+    if (err) sendUserError();
+    else {
       User.findOne({ username: req.username }, (err, foundUser) => {
-      if (foundUser.passwordHash === hash) {
-        res.json({ success: true });
-      } else {
-        sendUserError();
+        if (foundUser.passwordHash === hash) res.json({ success: true });
+        else sendUserError();
       });
+    }
   });
 });
 
