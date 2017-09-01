@@ -93,6 +93,35 @@ server.post('/login', (req, res) => {
   });
 });
 
+server.post('/logout', (req, res) => {
+  if (!req.session.username) {
+      sendUserError('Must be logged in', res);
+      return;
+  }
+
+  req.session.username = null;
+  res.json({ success: true });
+});
+
+const ensureLoggedIn = (req, res, next) => {
+  const { username } = req.session;
+  if (!username) {
+    sendUserError('Must be logged in', res);
+    return;
+  }
+
+  User.findOne({ username }, (err, user) => {
+    if (err) {
+      sendUserError(err, res);
+    } else if (!user) {
+      sendUserError('Must be logged in', res);
+    } else {
+      req.user = user;
+      next();
+    }
+  });
+};
+
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
