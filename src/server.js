@@ -57,16 +57,39 @@ server.post('/users', validateNameAndPass, (req, res) => {
 });
 
 // User login
-server.post('/login', validateNameAndPass, (req, res) => {
-  bcrypt.hash(req.password, BCRYPT_COST, (err, hash) => {
-    req.username = req.session.username; 
-    if (err) sendUserError();
-    else {
-      User.findOne({ username: req.username }, (err, foundUser) => {
-        if (foundUser.passwordHash === hash) res.json({ success: true });
-        else sendUserError();
-      });
+server.post('/login', (req, res) => {
+  const { username, passwordHash } = req.body;
+  if (!username) {
+    sendUserError('Must provide username', res);
+    return;
+  }
+  if (!passwordHash) {
+    sendUserError('Must provide password', res);
+    return;
+  }
+
+  User.findOne({ username }, (err, user) => {
+    if (err) {
+      sendUserError(err, res);
+      return;
     }
+    if (!user) {
+      sendUserError('Bad credentials', res);
+      return;
+    }
+
+    bcrypt.compare(passwordHash, user.passwordHash, (compareErr, valid) => {
+      if (compareErr) {
+        sendUserError(compareErr, res);
+        return;
+      }
+      if (!valid) {
+        sendUserError('Bad credentials', res);
+        return;
+      }
+      req.session.username = user.username;
+      res.json({ success: true });
+    });
   });
 });
 
