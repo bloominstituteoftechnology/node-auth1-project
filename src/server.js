@@ -94,10 +94,14 @@ server.get('/DEBUG/:type', (req, res) => {
 
 server.post('/sign-up', validateInfo, (req, res) => {
   const { username, password } = res.locals;
-
   // Once I've used the middleware to validate my login info, I no longer need it.
   delete res.locals; // Security m8.
 
+  // Check if already logged in. Can't sign up if already logged in.
+  if (req.session.username) {
+    sendUserError(`You can't sign up because you're currently logged in under '${req.session.username}'.`, res);
+    return;
+  }
   // Use bcrypt to hash the password,
   bcrypt.hash(password, BCRYPT_COST, (berr, hash) => {
     if (berr) sendServerError(berr, res);
@@ -111,6 +115,8 @@ server.post('/sign-up', validateInfo, (req, res) => {
           sendServerError(uerr, res);
         }
       } else {
+        // If sign up successful, also log in.
+        if (!req.session.username) req.session.username = username;
         res.json(user);
       }
     });
