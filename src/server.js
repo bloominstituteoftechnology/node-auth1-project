@@ -73,5 +73,25 @@ server.get('/me', isLoggedIn, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
-restricted.use(isLoggedIn);
+server.use('/restricted', isLoggedIn, restricted);
+restricted.get('/users', (req, res) => {
+  User.find()
+    .exec()
+    .then((users) => {
+      return users ? res.json(users) : sendUserError('There are no users on the server... weird right?', res);
+    })
+    .catch(err => sendUserError('Server error retrieving users', res));
+});
+restricted.delete('/users', (req, res) => {
+  User.remove({ _id: { $not: req.user.id } }, (err, result) => {
+    return err ? sendUserError('Server error trying to delet the users.', res) : res.json(result);
+  });
+});
+restricted.get('/users/:id', (req, res) => {
+  User.findById(req.params.id)
+    .exec()
+    .then(user => user ? res.json(user) : sendUserError('This user does not exist in the system', res))
+    .catch(err => sendUserError('Server error retrieving this user account.', res));
+});
+
 module.exports = { server };
