@@ -12,9 +12,9 @@ const STATUS_SERVER_ERROR = 500;
 const METHOD_GET = 'GET';
 const METHOD_POST = 'POST';
 
-const USERS_PATH = '/users';
-const LOG_IN_PATH = '/log-in';
-const ME_PATH = '/me';
+const USERS_PATH = '/auth/register';
+const LOG_IN_PATH = '/auth/login';
+const ME_PATH = '/user/me';
 
 // allows us to make and test HTTP requests
 chai.use(chaiHTTP);
@@ -97,12 +97,10 @@ const req = (method, path, status, body = null, agent = null) => {
 /* Adds a user with the given credentials by making a request. */
 const addUser = (credentials) => {
   const { username, password } = credentials;
-  return req(METHOD_POST, '/users', STATUS_OK, credentials).then((newUser) => {
+  return req(METHOD_POST, USERS_PATH, STATUS_OK, credentials).then((newUser) => {
     expect(newUser).to.have.property('username').that.equals(username);
     expect(newUser).to.not.have.property('password');
-
-    // don't know what the hash is, but we do know it should be 60 characters
-    expect(newUser).to.have.property('passwordHash').that.has.length(60);
+    expect(newUser).to.not.have.property('passwordHash');
     return newUser;
   });
 };
@@ -115,7 +113,7 @@ describe('Request', () => {
   const wrongUsername = { username: 'jill', password: credentials.password };
   const wrongPassword = { username: credentials.username, password: 'jlqer' };
 
-  beforeEach(() => User.remove({}));
+  // beforeEach(() => User.remove({}));
 
   describe(`${METHOD_POST} ${USERS_PATH}`, () => {
     it('adds a user', () => addUser(credentials));
@@ -136,7 +134,7 @@ describe('Request', () => {
   });
 
   describe(`${METHOD_POST} ${LOG_IN_PATH}`, () => {
-    beforeEach(() => addUser(credentials));
+    // beforeEach(() => addUser(credentials));
 
     it('logs a user in', () => {
       return req(METHOD_POST, LOG_IN_PATH, STATUS_OK, credentials)
@@ -162,7 +160,7 @@ describe('Request', () => {
 
   describe(`${METHOD_GET} ${ME_PATH}`, () => {
     let user;
-    beforeEach(() => addUser(credentials).then(newUser => user = newUser));
+    // beforeEach(() => addUser(credentials).then(newUser => user = newUser));
 
     it('responds with details about the logged in user', () => {
       const agent = chai.request.agent(server.server);
