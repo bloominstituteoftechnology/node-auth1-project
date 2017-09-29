@@ -1,11 +1,9 @@
 const bcrypt = require('bcrypt');
 
-const SALT_STRENGTH = 10;
+const BCRYPT_COST = 11;
 
 const hashPassword = async (password) => {
-  console.log('Salt', SALT_STRENGTH);
-  console.log('Password', password);
-  const hash = await bcrypt.hash(password, SALT_STRENGTH);
+  const hash = await bcrypt.hash(password, BCRYPT_COST);
   return hash;
 };
 

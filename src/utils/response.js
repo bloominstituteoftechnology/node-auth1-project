@@ -4,4 +4,5 @@ module.exports = {
     delete safe.passwordHash;
     res.json(safe);
   }
-}
+};
+

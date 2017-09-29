@@ -24,7 +24,6 @@ module.exports = {
         const passwordMatch = await comparePassword(password, foundUser.passwordHash);
         if (passwordMatch) {
           req.session.user = foundUser._id;
-          console.log(req.session.user)
           return sendSafeUser(foundUser, res);
         }
         return sendUserError('Incorrect password', res);
