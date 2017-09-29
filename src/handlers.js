@@ -26,8 +26,7 @@ const handleErrors = (err, req, res, next) => {
     message: err.message,
     stack: err.stack
   };
-  res.status(err.status || 500);
-  res.json(errorDetails);
+  res.status(err.status || 500).json(errorDetails);
 };
 
 // Sends error message to client

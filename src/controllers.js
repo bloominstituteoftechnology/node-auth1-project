@@ -15,10 +15,11 @@ exports.login = async (req, res) => {
   const user = await User.findOne({ username });
   if (!user) return sendError(422, 'Please enter a valid username and password', res);
   const compared = await comparePass(passwordHash, user.passwordHash);
-  req.session.user = user.id;
-  return compared
-    ? res.json({ Success: true })
-    : sendError(422, 'Please enter a valid username and password', res);
+  if (compared) {
+    req.session.user = user.id;
+    res.json({ Success: true });
+  }
+  sendError(422, 'Please enter a valid username and password', res);
 };
 
 exports.getMe = (req, res) => {
