@@ -1,15 +1,20 @@
+/* eslint func-names: 0 */
 const mongoose = require('mongoose');
+const { hashPass } = require('./handlers');
 
-// Clear out mongoose's model cache to allow --watch to work for tests:
-// https://github.com/Automattic/mongoose/issues/1251
 mongoose.models = {};
 mongoose.modelSchemas = {};
 
-mongoose.Promise = Promise;
-mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
-
 const UserSchema = new mongoose.Schema({
-  // TODO: fill in this schema
+  username: { type: String, required: true, unique: true },
+  passwordHash: { type: String, required: true }
+});
+
+UserSchema.pre('save', async function (next) {
+  const user = this;
+  if (!user.isModified('passwordHash')) return next();
+  user.passwordHash = await hashPass(user.passwordHash);
+  next();
 });
 
 module.exports = mongoose.model('User', UserSchema);
