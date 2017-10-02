@@ -76,6 +76,7 @@ server.post('/log-in', (req, res) => {
   });
 });
 
+//middleware session
 const middleware = (req, res, next) => {
   const { username } = req.session;
   if (!username) {
@@ -83,13 +84,13 @@ const middleware = (req, res, next) => {
   }
   User.findOne({ username }, (userError, user) => {
     if (userError) {
-      sendUserError(userError, res);
-    } else if (!user) {
-      sendUserError('No user found', res);
-    } else {
-      req.user = user;
-      next();
+      return sendUserError(userError, res);
     }
+    if (!user) {
+      return sendUserError('No user found', res);
+    }
+    req.user = user;
+    next();
   });
 };
 
