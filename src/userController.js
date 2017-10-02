@@ -15,7 +15,7 @@ module.exports = {
       if (errU || !user) return errorHandler(errU = 'user not found', res);
       bcrypt.compare(password, user.passwordHash, (errP, valid) => {
         if (errP || !valid) return errorHandler(errP = 'password not valid', res);
-        req.session.user = user;
+        req.session.user = user.id;
         res.json({ success: true });
       });
     });

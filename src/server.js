@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
+const User = require('./user');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -38,8 +39,11 @@ const passwordHasher = (req, res, next) => {
 
 const isUserLoggedIn = (req, res, next) => {
   if (!req.session || !req.session.user) return sendUserError('Must be logged in', res);
-  req.user = req.session.user;
-  next();
+  User.findById(req.session.user, (err, user) => {
+    if (err) return sendUserError(err);
+    req.user = user;
+    next();
+  });
 };
 
 server.all('/restricted/*', isUserLoggedIn);
