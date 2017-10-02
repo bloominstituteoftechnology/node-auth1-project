@@ -3,13 +3,20 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const User = require('./user');
+const cors = require('cors');
 
+const corsOptions = {
+  "origin": "http://localhost:3000",
+  "credentials": true
+};
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
 const server = express();
 const userController = require('./userController');
 // to enable parsing of json bodies for post requests
+
+server.use(cors(corsOptions));
 server.use(bodyParser.json());
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
@@ -46,12 +53,15 @@ const isUserLoggedIn = (req, res, next) => {
   });
 };
 
+
 server.all('/restricted/*', isUserLoggedIn);
 
 server.route('/users')
   .post(passwordHasher, userController.createNewUser);
-server.route('/log-in')
+server.route('/login')
   .post(passwordHasher, userController.logIn);
+server.route('/logout')
+  .post(userController.logoutUser);
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', isUserLoggedIn, (req, res) => {

@@ -19,5 +19,9 @@ module.exports = {
         res.json({ success: true });
       });
     });
+  },
+  logoutUser: (req, res) => {
+    req.session.user = null;
+    res.json({ success: true });
   }
 };

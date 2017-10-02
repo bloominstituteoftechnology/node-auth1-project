@@ -20,5 +20,8 @@
     "express-session": "^1.15.5",
     "mocha": "^3.5.0",
     "mongoose": "^4.11.7"
+  },
+  "devDependencies": {
+    "cors": "^2.8.4"
   }
 }
