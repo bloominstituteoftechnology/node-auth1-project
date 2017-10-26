@@ -13,6 +13,18 @@ server.use(bodyParser.json());
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
 }));
+server.all('/restricted', (req, res, next) => {
+  User.findOne({ username: session.username })
+  .exec((err, user) => {
+    if (err || !user || user.passwordHash !== session.password) return sendUserError("UNAUTHORIZED", res);
+    req.user = {
+      _id: user._id,
+      username: user.username,
+      passwordHash: user.passwordHash
+    };
+    next();
+  });
+});
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -69,7 +81,7 @@ server.post('/log-in', validateLogin, (req, res) => {
 const checkLogin = (req, res, next) => {
   User.findOne({ username: session.username })
   .exec((err, user) => {
-    if (err || user.passwordHash !== session.password) return sendUserError(err, res);
+    if (err || !user || user.passwordHash !== session.password) return sendUserError(err, res);
     req.user = {
       _id: user._id,
       username: user.username,
@@ -82,6 +94,10 @@ const checkLogin = (req, res, next) => {
 server.get('/me', checkLogin, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
+});
+
+server.post('/restricted', (req, res) => {
+  res.json([req.user, { success: 'ACCESS GRANTED'}]);
 });
 
 module.exports = { server };
