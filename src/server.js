@@ -27,6 +27,19 @@ const sendUserError = (err, res) => {
   }
 };
 
+server.use('/restricted', async (req, res, next) => {
+  if (!req.session.user) {
+    return sendUserError('You are not logged in', res);
+  }
+
+  req.user = await User.findOne({ username: req.session.user });
+  next();
+});
+
+server.get('/restricted/me', (req, res) => {
+  res.json(req.user);
+});
+
 server.post('/users', async (req, res) => {
   const { username, password } = req.body;
   try {
