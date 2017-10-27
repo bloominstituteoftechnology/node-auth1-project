@@ -27,15 +27,20 @@ const sendUserError = (err, res) => {
   }
 };
 
-server.use('/restricted', async (req, res, next) => {
+// Local middleware for '/me' route
+const checkAuth = async (req, res, next) => {
   if (!req.session.user) {
     return sendUserError('You are not logged in', res);
   }
 
   req.user = await User.findOne({ username: req.session.user });
   next();
-});
+};
 
+// Global middleware for restricted routes, re-uses checkAuth function
+server.use('/restricted', checkAuth);
+
+// Test route for '/restricted/' routes
 server.get('/restricted/me', (req, res) => {
   res.json(req.user);
 });
@@ -69,15 +74,6 @@ server.post('/log-in', async (req, res) => {
   }
 });
 
-// TODO: add local middleware to this route to ensure the user is logged in
-const checkAuth = async (req, res, next) => {
-  if (!req.session.user) {
-    return sendUserError('You are not logged in', res);
-  }
-
-  req.user = await User.findOne({ username: req.session.user });
-  next();
-};
 server.get('/me', checkAuth, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
