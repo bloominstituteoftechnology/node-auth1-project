@@ -81,7 +81,7 @@ server.post('/log-in', validateLogin, (req, res) => {
 const checkLogin = (req, res, next) => {
   User.findOne({ username: session.username })
   .exec((err, user) => {
-    if (err || !user || user.passwordHash !== session.password) return sendUserError(err, res);
+    if (err || !user || user.passwordHash !== session.password) return sendUserError('UNATHORIZED ACCESS', res);
     req.user = {
       _id: user._id,
       username: user.username,
