@@ -19,6 +19,7 @@
     "express": "^4.15.4",
     "express-session": "^1.15.5",
     "mocha": "^3.5.0",
-    "mongoose": "^4.11.7"
+    "mongoose": "^4.11.7",
+    "nodemon": "^1.12.1"
   }
 }
