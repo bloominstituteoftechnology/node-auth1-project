@@ -1,6 +1,6 @@
 const chai = require('chai');
 const chaiHTTP = require('chai-http');
-
+require('mocha');
 const server = require('../src/server.js');
 const User = require('../src/user.js');
 
