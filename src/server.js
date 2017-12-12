@@ -66,7 +66,6 @@ server.post('/log-in', (req, res) => {
 // TODO: add local middleware to this route to ensure the user is logged in
 const meMiddleWare = (req, res, next) => {
   const { username } = req.session;
-  console.log(username);
   if (username === undefined) sendUserError('not logged in', res);
 
   User
@@ -77,6 +76,12 @@ const meMiddleWare = (req, res, next) => {
     })
     .catch(err => sendUserError(err, res));
 };
+
+server.use('/restricted', meMiddleWare);
+server.get('/restricted', (req, res) => {
+  res.json({ success: 'restricted is open' });
+});
+
 server.get('/me', meMiddleWare, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
