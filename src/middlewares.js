@@ -23,40 +23,13 @@ const hashedPassword = (req, res, next) => {
   }
   bcrypt
     .hash(password, BCRYPT_COST)
-    .then((pw) => {
+    .then(pw => {
       req.password = pw;
       next();
     })
-    .catch((err) => {
+    .catch(err => {
       throw new Error(err);
     });
-};
-
-const handleLogin = (req, res, next) => {
-  const { username, password } = req.body;
-  if (!username) {
-    sendUserError('username undefined', res);
-    return;
-  }
-  User.findOne({ username }, (err, user) => {
-    if (err || user === null) {
-      sendUserError('No user found at that id', res);
-      return;
-    }
-    const hashedPw = user.passwordHash;
-    bcrypt
-      .compare(password, hashedPw)
-      .then((response) => {
-        if (!response) throw new Error();
-        req.loggedInUser = user;
-        req.session.username = user.username;
-        req.session.userPermissions = user.userPermissions;
-        next();
-      })
-      .catch((error) => {
-        return sendUserError('some message here', res);
-      });
-  });
 };
 
 const loggedIn = (req, res, next) => {
@@ -84,10 +57,6 @@ const restrictedPermissions = (req, res, next) => {
       sendUserError('user not autorized', res);
       return;
     }
-    if (req.userPermissions !== 'admin') {
-      sendUserError('user not autorized', res);
-      return;
-    }
   }
   next();
 };
@@ -95,7 +64,6 @@ const restrictedPermissions = (req, res, next) => {
 module.exports = {
   sendUserError,
   hashedPassword,
-  handleLogin,
   loggedIn,
-  restrictedPermissions,
+  restrictedPermissions
 };

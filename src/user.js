@@ -15,11 +15,6 @@ const UserSchema = new Schema({
     unique: true,
     required: true,
   },
-  userPermissions: {
-    type: String,
-    default: 'user',
-    enum: ['mod', 'user', 'admin'],
-  },
   passwordHash: {
     type: String,
   },
