@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "LambdaSchool Auth",
   "scripts": {
+    "start": "nodemon src/app.js",
     "test": "eslint tests/*.js && eslint src/*.js && mocha -R nyan tests",
     "watch": "npm test -- --watch"
   },
@@ -20,5 +21,20 @@
     "express-session": "^1.15.5",
     "mocha": "^3.5.0",
     "mongoose": "^4.11.7"
-  }
+  },
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IllSmithDa/Auth.git"
+  },
+  "keywords": [],
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/IllSmithDa/Auth/issues"
+  },
+  "homepage": "https://github.com/IllSmithDa/Auth#readme"
 }
