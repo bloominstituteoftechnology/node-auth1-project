@@ -18,9 +18,11 @@ server.use(
     saveUninitialized: false,
   })
 );
+server.use(middleWare.restrictedPermissions);
 
 /* ************ Routes ***************** */
-server.post('/log-in', middleWare.authenticate, (req, res) => {
+
+server.post('/log-in', middleWare.handleLogin, (req, res) => {
   res.json({ success: true });
 });
 
@@ -31,7 +33,7 @@ server.post('/users', middleWare.hashedPassword, (req, res) => {
   newUser.save((err, savedUser) => {
     if (err) {
       res.status(422);
-      res.json({ 'Need both Username/PW fields': err.message });
+      res.json({ 'Need both username/PW fields': err.message });
       return;
     }
     res.json(savedUser);
@@ -40,20 +42,27 @@ server.post('/users', middleWare.hashedPassword, (req, res) => {
 
 server.post('/logout', (req, res) => {
   if (!req.session.username) {
-    middleWare.sendUserError('User is not logged', res);
+    middleWare.sendUserError('User is not logged in', res);
     return;
   }
   req.session.username = null;
-  res.json(req.sessions.username);
+  res.json(req.session);
 });
 
-// server.get('/restricted/users', (req, res) => {
-// });
+server.get('/restricted/users', (req, res) => {
+  User.find({}, (err, users) => {
+    if (err) {
+      middleWare.sendUserError('500', res);
+      return;
+    }
+    res.json(users);
+  });
+});
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', middleWare.loggedIn, (req, res) => {
   // Do NOT modify this route handler in any way.
-  res.json(req.user);
+  res.json(req.session);
 });
 
 module.exports = { server };

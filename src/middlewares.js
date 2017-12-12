@@ -1,16 +1,11 @@
-const bodyParser = require('body-parser');
-const express = require('express');
-const session = require('express-session');
 const User = require('./user');
 const bcrypt = require('bcrypt');
 
-const middleWare = require('./middlewares');
-
+/* Sends the given err, a string or an object, to the client. Sets the status
+ * code appropriately. */
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
-/* Sends the given err, a string or an object, to the client. Sets the status
- * code appropriately. */
 const sendUserError = (err, res) => {
   res.status(STATUS_USER_ERROR);
   if (err && err.message) {
@@ -19,7 +14,6 @@ const sendUserError = (err, res) => {
     res.json({ error: err });
   }
 };
-
 /* ************ MiddleWares ***************** */
 const hashedPassword = (req, res, next) => {
   const { password } = req.body;
@@ -38,7 +32,7 @@ const hashedPassword = (req, res, next) => {
     });
 };
 
-const authenticate = (req, res, next) => {
+const handleLogin = (req, res, next) => {
   const { username, password } = req.body;
   if (!username) {
     sendUserError('username undefined', res);
@@ -55,7 +49,8 @@ const authenticate = (req, res, next) => {
       .then((response) => {
         if (!response) throw new Error();
         req.loggedInUser = user;
-        req.session.username = username;
+        req.session.username = user.username;
+        req.session.userPermissions = user.userPermissions;
         next();
       })
       .catch((error) => {
@@ -74,7 +69,7 @@ const loggedIn = (req, res, next) => {
     if (err) {
       sendUserError(err, res);
     } else if (!user) {
-      sendUserError('User does not exist', res);
+      sendUserError('User does exist', res);
     } else {
       req.user = user;
       next();
@@ -82,16 +77,25 @@ const loggedIn = (req, res, next) => {
   });
 };
 
-// const restrictedPermissions = (req, res, next) => {
-//   const path = req.path;
-//   if(/restricted/.test(path)) {
-    
-//   }
-// };
+const restrictedPermissions = (req, res, next) => {
+  const path = req.path;
+  if (/restricted/.test(path)) {
+    if (!req.session.username) {
+      sendUserError('user not autorized', res);
+      return;
+    }
+    if (req.userPermissions !== 'admin') {
+      sendUserError('user not autorized', res);
+      return;
+    }
+  }
+  next();
+};
 
 module.exports = {
   sendUserError,
   hashedPassword,
-  authenticate,
-  loggedIn
+  handleLogin,
+  loggedIn,
+  restrictedPermissions,
 };
