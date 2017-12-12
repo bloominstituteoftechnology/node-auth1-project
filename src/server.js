@@ -67,10 +67,13 @@ server.post('/log-in', (req, res) => {
       bcrypt.compare(password, user.passwordHash)
         .then((check) => {
           res.status(200).json({ success: true });
+        })
+        .catch((err) => {
+          res.status(422).json({ errorMessage: err.message });
         });
     })
-    .catch((err) => {
-      res.status(422).json({ errerMessage: err.message });
+    .catch((erro) => {
+      res.status(422).json({ errorMessage: erro.message });
     });
 });
 
