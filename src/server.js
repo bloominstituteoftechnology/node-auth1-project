@@ -1,9 +1,12 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const bcrypt = require('bcrypt');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
+
+const User = require('./user.js')
 
 const server = express();
 // to enable parsing of json bodies for post requests
@@ -23,12 +26,71 @@ const sendUserError = (err, res) => {
   }
 };
 
+const authenticate = (req, res, next) => {
+  const { username, password } = req.body;
+  User.findOne({ username }, (err, user) => {
+    if (err) {
+      res.status(STATUS_USER_ERROR);
+      res.json({ error: 'Provide the both correct username and password' });
+      return;
+    }
+    const hashedPassword = user.password;
+    bcrypt
+      .compare(password, hashedPassword)
+      .then((res) => {
+        if (!res) throw new Error();
+        req.loggedUser = user;
+        next();
+      })
+      .catch((err) => {
+        return sendUserError(err, res);
+      });
+  });
+};
+
+const passwordHasher = (req, res, next) => {
+  const { password } = req.body;
+  bcrypt
+    .hash(password, 12)
+    .then(pass => {
+      req.password = pass;
+      next();
+    })
+    .catch(err => {
+      throw new Error(err);
+    });
+};
+
 // TODO: implement routes
+server.post('/user/new', passwordHasher, (req, res) => {
+  const { username } = req.body;
+  const password = req.password;
+  const newUser = new User({ username, password });
+  newUser.save((err, createdUser) => {
+    if (err) {
+      res.json(sendUserError(err, res));
+      return;
+    }
+    res.json(createdUser);
+  });
+});
+
+server.post('/user/login', authenticate, (req, res) => {
+  const session = req.session;
+  let user = '';
+  user = req.loggedUser;
+  session.user = user;
+  // req.user = req.loggedUser;
+  console.log(user);
+  res.json({ user: session.user });
+  // res.json({ auth: session.auth });
+});
+
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
-  res.json(req.user);
+  res.json({ user: req.session.user });
 });
 
 module.exports = { server };

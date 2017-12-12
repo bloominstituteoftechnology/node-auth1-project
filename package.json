@@ -1,10 +1,11 @@
 {
-  "name": "ls-auth",
+  "name": "Travis",
   "version": "0.0.1",
   "description": "LambdaSchool Auth",
   "scripts": {
     "test": "eslint tests/*.js && eslint src/*.js && mocha -R nyan tests",
-    "watch": "npm test -- --watch"
+    "watch": "npm test -- --watch",
+    "start": "nodemon src/app.js"
   },
   "license": "ISC",
   "dependencies": {
@@ -20,5 +21,8 @@
     "express-session": "^1.15.5",
     "mocha": "^3.5.0",
     "mongoose": "^4.11.7"
-  }
+  },
+  "main": "index.js",
+  "repository": "https://github.com/CosmonautJones/Auth.git",
+  "author": "CosmonautJones <travisj_jones@hotmail.com>"
 }
