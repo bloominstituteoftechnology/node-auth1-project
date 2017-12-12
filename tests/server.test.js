@@ -168,6 +168,7 @@ describe('Request', () => {
       const agent = chai.request.agent(server.server);
       return req(METHOD_POST, LOG_IN_PATH, STATUS_OK, credentials, agent)
         .then((result) => {
+          console.log('RESULT IS: ', result);
           expect(result).to.deep.equal({ success: true });
           return req(METHOD_GET, ME_PATH, STATUS_OK, null, agent);
         })
