@@ -100,3 +100,10 @@ server.get('/me', middleWare.loggedIn, (req, res) => {
 });
 
 module.exports = { server };
+
+// to test on postman, follow these paths:
+// post /users
+// post /login
+// get /restricted/users
+// get /me
+// post /logout
