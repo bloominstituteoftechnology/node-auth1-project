@@ -82,10 +82,7 @@ const restrictedPermissions = (req, res, next) => {
   if (/restricted/.test(path)) {
     if (!req.session.username) {
       sendUserError('user not autorized', res);
-      return;
-    }
-    if (req.userPermissions !== 'admin') {
-      sendUserError('user not autorized', res);
+      console.log('je');
       return;
     }
   }

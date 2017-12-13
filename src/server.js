@@ -4,11 +4,20 @@ const session = require('express-session');
 const User = require('./user');
 const bcrypt = require('bcrypt');
 const middleWare = require('./middleware');
+const cors = require('cors');
+
+const server = express();
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
-const server = express();
+
+const corsOption = {
+  origin: 'http://localhost:3000',
+  credentials: true,
+}
+server.use(cors(corsOption));
+
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(
@@ -22,14 +31,14 @@ server.use(middleWare.restrictedPermissions);
 
 /* ************ Routes ***************** */
 
-server.post('/log-in', middleWare.handleLogin, (req, res) => {
+server.post('/login', middleWare.handleLogin, (req, res) => {
   res.json({ success: true });
 });
 
 server.post('/users', middleWare.hashedPassword, (req, res) => {
-  const { username } = req.body;
+  const { username, userPermissions } = req.body;
   const passwordHash = req.password;
-  const newUser = new User({ username, passwordHash });
+  const newUser = new User({ username, passwordHash, userPermissions });
   newUser.save((err, savedUser) => {
     if (err) {
       res.status(422);
@@ -46,10 +55,10 @@ server.post('/logout', (req, res) => {
     return;
   }
   req.session.username = null;
-  res.json(req.session);
+  res.json({ success: true });
 });
 
-server.get('/users', (req, res) => {
+server.get('/restricted/users', (req, res) => {
   User.find({}, (err, users) => {
     if (err) {
       middleWare.sendUserError('500', res);
