@@ -1,95 +1,103 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const User = require('./user');
 const bcrypt = require('bcrypt');
-
-const User = require('./user.js');
+const middleWare = require('./middlewares');
+const cors = require('cors');
 
 const STATUS_USER_ERROR = 422;
-const STATUS_SERVER_ERROR = 500;
 const BCRYPT_COST = 11;
 
 const server = express();
+
+const corsOptions = {
+  origin: 'http://localhost:3000/',
+  credentials: true
+};
+server.use(cors(corsOptions));
+
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(
   session({
-    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+    resave: true,
+    saveUninitialized: true
   })
 );
+server.use(cors());
+server.use(middleWare.restrictedPermissions);
 
-/* Sends the given err, a string or an object, to the client. Sets the status
- * code appropriately. */
-const sendUserError = (msg, res) => {
-  if (typeof msg === 'object') {
-    res.status(STATUS_SERVER_ERROR);
-    res.json(msg);
+/* ************ Routes ***************** */
+
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  if (!username) {
+    middleWare.sendUserError('username undefined', res);
     return;
   }
-  res.status(STATUS_SERVER_ERROR);
-  res.json({ error: msg });
-  return;
-};
-// TODO: implement routes
-
-const hashedPassword = (req, res, next) => {
-  const { password } = req.body;
-  bcrypt
-    .hash(password, 11)
-    .then((pw) => {
-      req.password = pw;
-      next();
-    })
-    .catch((err) => {
-      throw new Error(err);
-    });
-};
-
-const authenticate = (req, res, next) => {
-  const { username, password } = req.body;
   User.findOne({ username }, (err, user) => {
-    if (err) {
-      res.status(422);
-      res.json({ 'Need both Username/PW fields': err.message });
+    if (err || user === null) {
+      middleWare.sendUserError('No user found at that id', res);
       return;
     }
-    const hashedPw = user.password;
+    const hashedPw = user.passwordHash;
     bcrypt
       .compare(password, hashedPw)
       .then((response) => {
         if (!response) throw new Error();
-        req.loggedInUser = user;
-        next();
+        req.session.username = username;
+        req.user = user;
+      })
+      .then(() => {
+        res.json({ success: true });
       })
       .catch((error) => {
-        return sendUserError('some message here', res);
+        return middleWare.sendUserError('some message here', res);
       });
   });
-};
+});
 
-// ************* routes ***********
-server.post('/users', hashedPassword, (req, res) => {
+server.post('/users', middleWare.hashedPassword, (req, res) => {
   const { username } = req.body;
-  const password = req.password;
-  const newUser = new User({ username, password });
+  const passwordHash = req.password;
+  const newUser = new User({ username, passwordHash });
   newUser.save((err, savedUser) => {
     if (err) {
       res.status(422);
-      res.json({ 'Need both Username/PW fields': err.message });
+      res.json({ 'Need both username/PW fields': err.message });
       return;
     }
-    res.json({ savedUser });
+
+    res.json(savedUser);
   });
 });
 
-server.post('/user/login', authenticate, (req, res) => {
-  res.json({ success: `${req.loggedInUser.username} logged in` });
+server.post('/logout', (req, res) => {
+  if (!req.session.username) {
+    middleWare.sendUserError('User is not logged in', res);
+    return;
+  }
+  req.session.username = null;
+  res.json({ success: true });
+  res.json(req.session);
+});
+
+server.get('/restricted/users', (req, res) => {
+  User.find({}, (err, users) => {
+    if (err) {
+      middleWare.sendUserError('500', res);
+      return;
+    }
+    res.json(users);
+  });
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
-// server.get('/me', checkLoggedIn, (req, res) => {
-//   // Do NOT modify this route handler in any way.
-//   res.json(req.user);
-// });
+server.get('/me', middleWare.loggedIn, (req, res) => {
+  // Do NOT modify this route handler in any way
+  res.send({ user: req.user, session: req.session });
+});
 
 module.exports = { server };
