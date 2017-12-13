@@ -140,7 +140,9 @@ describe('Request', () => {
 
     it('logs a user in', () => {
       return req(METHOD_POST, LOG_IN_PATH, STATUS_OK, credentials)
-        .then(result => expect(result).to.deep.equal({ success: true }));
+        .then((result) => {
+          expect(result).to.deep.equal({ success: true });
+        });
     });
 
     it('reports a missing username', () => {
