@@ -9,11 +9,7 @@ const cors = require('cors');
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
-const corsOptions = {
-  origin: 'http://localhost:3001',
-  optionSuccessStatus: 200,
-  methods: ['GET', 'POST']
-};
+const corsOptions = {};
 
 const server = express();
 // to enable parsing of json bodies for post requests
@@ -22,10 +18,10 @@ server.use(
   session({
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
     resave: true,
-    saveUninitialized: false
-  })
+    saveUninitialized: true,
+  }),
 );
-server.use(cors(corsOptions));
+server.use(cors());
 server.use(middleWare.restrictedPermissions);
 
 /* ************ Routes ***************** */
@@ -33,18 +29,18 @@ server.use(middleWare.restrictedPermissions);
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
   if (!username) {
-    sendUserError('username undefined', res);
+    middleWare.sendUserError('username undefined', res);
     return;
   }
   User.findOne({ username }, (err, user) => {
     if (err || user === null) {
-      sendUserError('No user found at that id', res);
+      middleWare.sendUserError('No user found at that id', res);
       return;
     }
     const hashedPw = user.passwordHash;
     bcrypt
       .compare(password, hashedPw)
-      .then(response => {
+      .then((response) => {
         if (!response) throw new Error();
         req.session.username = username;
         req.user = user;
@@ -52,8 +48,8 @@ server.post('/log-in', (req, res) => {
       .then(() => {
         res.json({ success: true });
       })
-      .catch(error => {
-        return sendUserError('some message here', res);
+      .catch((error) => {
+        return middleWare.sendUserError('some message here', res);
       });
   });
 });
@@ -64,7 +60,6 @@ server.post('/users', middleWare.hashedPassword, (req, res) => {
   const newUser = new User({ username, passwordHash });
   newUser.save((err, savedUser) => {
     if (err) {
-      console.log(err);
       res.status(422);
       res.json({ 'Need both username/PW fields': err.message });
       return;
@@ -96,7 +91,7 @@ server.get('/restricted/users', (req, res) => {
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', middleWare.loggedIn, (req, res) => {
   // Do NOT modify this route handler in any way
-  res.json(req.user);
+  res.send({ user: req.user, session: req.session });
 });
 
 module.exports = { server };

@@ -23,17 +23,18 @@ const hashedPassword = (req, res, next) => {
   }
   bcrypt
     .hash(password, BCRYPT_COST)
-    .then(pw => {
+    .then((pw) => {
       req.password = pw;
       next();
     })
-    .catch(err => {
+    .catch((err) => {
       throw new Error(err);
     });
 };
 
 const loggedIn = (req, res, next) => {
   const { username } = req.session;
+  console.log(req.session);
   if (!username) {
     sendUserError('User is not logged in', res);
     return;
@@ -65,5 +66,5 @@ module.exports = {
   sendUserError,
   hashedPassword,
   loggedIn,
-  restrictedPermissions
+  restrictedPermissions,
 };
