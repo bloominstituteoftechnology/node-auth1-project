@@ -39,7 +39,7 @@ const hashPassword = async (req, res, next) => {
 const authenticate = async (req, res, next) => {
   try {
     const { username, password } = req.body;
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username }).exec();
     if (!user) {
       throw new Error('Failed to authenticate');
     }
@@ -57,10 +57,10 @@ const withUser = async (req, res, next) => {
   try {
     const { user: username } = req.session;
     if (username) {
-      const user = await User.findOne({ username });
+      const user = await User.findOne({ username }).lean().exec();
       if (!user) throw new Error('Failed to get user');
       req.user = user;
-      console.log('user: ', user);
+      // console.log('user: ', user);
       next();
       return;
     }
@@ -87,8 +87,7 @@ server.post('/log-in', authenticate, async (req, res) => {
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', withUser, (req, res) => {
   // Do NOT modify this route handler in any way.
-  console.log(req.user);
-  res.json(req.user);
+  return res.json(req.user); // doesn't return user
 });
 
 
@@ -97,7 +96,7 @@ server.post('/logout', (req, res) => {
     sendUserError('User is not logged in ', res);
     return;
   }
-  res.session.user = null;
+  req.session.user = null;
   res.json(req.session);
 });
 
