@@ -74,7 +74,7 @@ Make sure to do proper validation and error checking. If there's any error, or
 if no user is logged in, respond with an appropriate status and error message
 using the `sendUserError()` helper function.
 
-## Extra Credit
+## Stretch Problem
 If you'd like to go a step further, write a piece of **global** middleware that
 ensures a user is logged in when accessing *any* route prefixed by
 `/restricted/`. For instance, `/restricted/something`, `/restricted/other`, and
