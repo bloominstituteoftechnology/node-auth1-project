@@ -1,0 +1,49 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add bcrypt
+
+PATH: 
+  C:\ProgramData\Oracle\Java\javapath;C:\Program Files\Broadcom\Broadcom 802.11 Network Adapter\Driver;C:\Program Files (x86)\AMD APP\bin\x86_64;C:\Program Files (x86)\AMD APP\bin\x86;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\ATI Technologies\ATI.ACE\Core-Static;C:\Program Files\WIDCOMM\Bluetooth Software\;C:\Program Files\WIDCOMM\Bluetooth Software\syswow64;C:\Program Files (x86)\Skype\Phone\;C:\Program Files (x86)\Toon Boom Animation\Digital Pro Educ\nt\bin;C:\Program Files (x86)\Heroku\bin;C:\Program Files (x86)\git\cmd;C:\Program Files (x86)\Windows Live\Shared;C:\Program Files (x86)\Yarn\bin;C:\Program Files\nodejs\;C:\RailsInstaller\Git\cmd;C:\RailsInstaller\Git\mingw64\bin;C:\RailsInstaller\Git\usr\bin;C:\Program Files\MongoDB\Server\3.6\bin;C:\Program Files\Microsoft VS Code\bin;C:\Users\metten0\AppData\Roaming\npm
+
+Yarn version: 
+  1.3.2
+
+Node version: 
+  9.4.0
+
+Platform: 
+  win32 x64
+
+npm manifest: 
+  {
+    "name": "ls-auth",
+    "version": "0.0.1",
+    "description": "LambdaSchool Auth",
+    "scripts": {
+      "test": "eslint tests/*.js && eslint src/*.js && mocha -R nyan tests",
+      "watch": "npm test -- --watch"
+    },
+    "license": "ISC",
+    "dependencies": {
+      "babel-preset-es2015": "^6.24.0",
+      "bcryptjs": "^2.4.3",
+      "body-parser": "^1.17.2",
+      "chai": "^4.1.1",
+      "chai-http": "^3.0.0",
+      "eslint": "^3.17.1",
+      "eslint-config-airbnb": "^14.1.0",
+      "eslint-plugin-import": "^2.2.0",
+      "express": "^4.15.4",
+      "express-session": "^1.15.5",
+      "mocha": "^3.5.0",
+      "mongoose": "^4.11.7"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
+
+Trace: 
+  Error: EPERM: operation not permitted, unlink 'c:\Users\metten0\Desktop\Lambda\Auth\node_modules\cors\lib'
