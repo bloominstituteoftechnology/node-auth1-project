@@ -33,7 +33,6 @@ function hashPassword(req, res, next) {
     return sendUserError(new Error('Password not provided'), res);
   }
   bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
-    console.log(hash);
     req.hashedPassword = hash;
     next();
   });
@@ -73,7 +72,6 @@ server.post('/log-in', hashPassword, (req, res) => {
       res.status(200).json({ success: true });
     }
   }).catch((err) => {
-    console.log(err);
     sendUserError(err);
   });
 });
@@ -83,4 +81,9 @@ server.get('/me', loggedIn, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
+
+server.all('/restricted/*', loggedIn, (req, res, next) => {
+  next();
+});
+
 module.exports = { server };
