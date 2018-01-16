@@ -3,9 +3,12 @@ const express = require('express');
 const session = require('express-session');
 const User = require('./user');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
+
+const corsOptions = {};
 
 const server = express();
 // to enable parsing of json bodies for post requests
@@ -14,9 +17,11 @@ server.use(
   session({
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
     resave: true,
-    saveUninitialized: false,
-  }),
+    saveUninitialized: false
+  })
 );
+
+server.use(cors());
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -39,6 +44,7 @@ const hashPassword = (req, res, next) => {
   bcrypt
     .hash(password, BCRYPT_COST)
     .then((pw) => {
+      if (!pw) throw new Error();
       req.password = pw;
       next();
     })
@@ -63,7 +69,8 @@ const authenticate = (req, res, next) => {
       .compare(password, hashedPw)
       .then((response) => {
         if (!response) throw new Error();
-        req.loggedInUser = user;
+        req.session.username = username;
+        req.user = user;
         next();
       })
       .catch((error) => {
@@ -74,6 +81,8 @@ const authenticate = (req, res, next) => {
 
 const loggedIn = (req, res, next) => {
   const { username } = req.session;
+  console.log(req.session);
+
   if (!username) {
     sendUserError('User is not logged in', res);
     return;

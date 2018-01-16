@@ -4,8 +4,8 @@ const mongoose = require('mongoose');
 // https://github.com/Automattic/mongoose/issues/1251
 mongoose.models = {};
 mongoose.modelSchemas = {};
-mongoose.Promise = Promise;
-mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://localhost/bcrypt-users', { useMongoClient: true });
 
 const UserSchema = new mongoose.Schema({
   username: {
