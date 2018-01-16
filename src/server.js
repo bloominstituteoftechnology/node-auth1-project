@@ -1,4 +1,9 @@
-const bodyParser = require('body-parser');
+//Now start editing `src/server.js`. Note that we've provided you a helper
+//function `sendUserError()` that can send down either an object error or a string
+// error. You'll use this liberally in your routes.
+
+// We've also gone ahead and initialized the express-session middleware so you can
+// use the client-specific, persistent `req.session` object in your route handlers.const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 
@@ -24,9 +29,36 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+server.post ('/user', userName(req, res))
+server.post ('/user', userName)
+server.get ('/user', userName)
+server.post ('/server', passwordCreate)
+server.get ('/server', password)
+
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
+  const userName = require('../models/username');
+  module.exports = userName = (req, res) => {
+     const {title, userName} = req.body;
+     const userName = new userName()
+     userName.save({title, userName}) 
+       .then(
+           (results) => {
+             //do something here are the results
+             res.status(200).json(results)
+             console.log('user has created userName');
+           }
+         )
+       .catch((err) => {
+           //do something theres be an error
+           res.status(500).json(err)
+           console.log('problem creating new userName');
+       })
+       .next. 
+ 
+ } 
+
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
