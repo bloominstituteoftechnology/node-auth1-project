@@ -31,7 +31,7 @@ const expectStatus = (expected, method, path, res) => {
   if (expected === STATUS_SERVER_ERROR || expected === STATUS_NOT_FOUND) {
     throw new Error(
       'The expected status should be something other than ' +
-      `${STATUS_SERVER_ERROR} and ${STATUS_NOT_FOUND}`
+      `${STATUS_SERVER_ERROR} and ${STATUS_NOT_FOUND}`,
     );
   }
 
@@ -39,13 +39,13 @@ const expectStatus = (expected, method, path, res) => {
     case STATUS_SERVER_ERROR:
       throw new Error(
         `Your server threw an error during ${method} ${path} (status code ` +
-        '500); scroll up to see the expection and backtrace'
+        '500); scroll up to see the expection and backtrace',
       );
 
     case STATUS_NOT_FOUND:
       throw new Error(
         `You haven't implemented a handler for ${method} ${path} (status ` +
-        'code 404)'
+        'code 404)',
       );
 
     default:
@@ -140,7 +140,9 @@ describe('Request', () => {
 
     it('logs a user in', () => {
       return req(METHOD_POST, LOG_IN_PATH, STATUS_OK, credentials)
-        .then(result => expect(result).to.deep.equal({ success: true }));
+        .then((result) => {
+          expect(result).to.deep.equal({ success: true });
+        });
     });
 
     it('reports a missing username', () => {
