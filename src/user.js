@@ -10,6 +10,19 @@ mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
 
 const UserSchema = new mongoose.Schema({
   // TODO: fill in this schema
+  username: {
+    type: String,
+    unique: true,
+    required: true
+  },
+  password: {
+    type: String,
+    required: true,
+  }
 });
+
+UserSchema.methods.toJSON = function () {
+
+};
 
 module.exports = mongoose.model('User', UserSchema);
