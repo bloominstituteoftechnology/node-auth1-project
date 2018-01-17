@@ -11,8 +11,12 @@ class SignUp extends Component {
 render() {
     return (
         <form>
-            <inputtype="text"
-            onChange={}
+            <input
+            type ="text"
+            onChange={this.handleInputChange}
+            value={this.state.email}
+            placeholder="email"
+            name="email"
             />
             </form>
     );
