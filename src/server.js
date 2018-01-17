@@ -36,8 +36,11 @@ const hashPw = (req, res, next) => {
     sendUserError('Please Provide a Password', res);
   } else {
     bcrypt.hash(password, BCRYPT_COST, (err, hashedPw) => {
-      if (err) sendUserError(err, res);
-      req.body.hashedPw = hashedPw;
+      if (err) {
+        sendUserError(err, res);
+      } else {
+        req.body.hashedPw = hashedPw;
+      }
       next();
     });
   }
@@ -51,15 +54,14 @@ const compareHashPw = (req, res, next) => {
       sendUserError('did not find any users with the specifications', res);
     } else {
       const hashedPw = foundUser.passwordHash;
-      bcrypt.compare(password, hashedPw)
-        .then(() => {
-          if (!res) sendUserError(err, res);
+      bcrypt.compare(password, hashedPw, (error, result) => {
+        if (error || !result) {
+          sendUserError('User could not be authenticated', res);
+        } else {
           req.body.authenticatedUser = foundUser.username;
           next();
-        })
-        .catch(() => {
-          sendUserError(err, res);
-        });
+        }
+      });
     }
   });
 };
@@ -102,7 +104,7 @@ server.post('/users', hashPw, (req, res) => {
 server.post('/log-in', compareHashPw, (req, res) => {
   const { authenticatedUser } = req.body;
   req.session.username = authenticatedUser;
-  res.json(authenticatedUser);
+  res.json({ success: true });
 });
 
 
