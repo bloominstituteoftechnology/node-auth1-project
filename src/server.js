@@ -34,7 +34,20 @@ const sendUserError = (err, res) => {
   }
 };
 
+const restrictedPermissions = (req, res, next) => {
+  const path = req.path;
+  if (/restricted/.test(path)) {
+    if (!req.session.username) {
+      sendUserError('user not autorized', res);
+      return;
+    }
+  }
+  next();
+};
+
 /* ************ MiddleWare ***************** */
+server.use(restrictedPermissions);
+
 const hashPassword = (req, res, next) => {
   const { password } = req.body;
   if (!password) {
@@ -105,6 +118,16 @@ server.post('/log-in', authenticate, (req, res) => {
   res.json({ success: true });
 });
 
+server.post('/log-out', (req, res) => {
+  if (!req.session.username) {
+    sendUserError('User not logged in', res);
+  }
+
+  const message = `${req.session.username} has been looged out`;
+  req.session.username = null;
+  res.json(message);
+});
+
 server.post('/users', hashPassword, (req, res) => {
   const { username } = req.body;
   const passwordHash = req.password;
@@ -116,6 +139,16 @@ server.post('/users', hashPassword, (req, res) => {
       return;
     }
     res.json(savedUser);
+  });
+});
+
+server.get('/restricted/users', (req, res) => {
+  User.find({}, (err, users) => {
+    if (err) {
+      sendUserError('500', res);
+      return;
+    }
+    res.json(users);
   });
 });
 
