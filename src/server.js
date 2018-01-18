@@ -59,19 +59,18 @@ const loginMiddle = (req, res, next) => {
     });
 };
 
-server.use('/restricted/*', (req, res, next) => {
-  if (!req.session.username) return sendUserError(new Error('No user logged in'), res);
-  const username = req.session.username;
-  User.findOne({ username })
-    .then((user) => {
-      if (!user) return sendUserError(new Error('No user found'), res);
-      req.user = user;
-      next();
-    })
-    .catch((error) => {
-      sendUserError(error, res);
-    });
-});
+// restricted global middleware
+// const restricted = (req, res, next) => {
+//   const path = req.path;
+//   const { username } = req.session;
+//   if (/restricted/.test(path)) {
+//     if (!username) {
+//       return sendUserError(new Error('Not authorized'), res);
+//     }
+//   }
+//   next();
+// };
+server.use('/restricted/*', loginMiddle);
 
 server.post('/users', hashPasswordMiddle, (req, res) => {
   const { username } = req.body;
@@ -108,6 +107,17 @@ server.post('/log-in', (req, res) => {
 server.get('/me', loginMiddle, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
+});
+
+server.get('/restricted/users', (req, res) => {
+  User.findOne({})
+    .then((users) => {
+      if (!users || users.length === 0) return sendUserError(new Error('No user found'), res);
+      res.status(200).json(users);
+    })
+    .catch((error) => {
+      sendUserError(error, res);
+    })
 });
 
 module.exports = { server };
