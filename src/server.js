@@ -3,13 +3,24 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const User = require('./user.js');
+const { hashPw, compareHashPw, verifyLogin, } = require('./middlewares.js');
+
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
 const server = express();
-// to enable parsing of json bodies for post requests
+// ###### CORS IMPLEMENTATION BEGINS ###########
+
+const corsOptions = {
+  "origin": "http://localhost:3000",
+  "credentials": true
+};
+server.use(cors(corsOptions));
+// ###### CORS IMPLEMENTATION END ###########
+
 server.use(bodyParser.json());
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
@@ -28,59 +39,6 @@ const sendUserError = (err, res) => {
   }
 };
 
-// ####################### Middleware ############################
-// Encrypt Passwords
-const hashPw = (req, res, next) => {
-  const { password } = req.body;
-  if (!password || password.length === 0) {
-    sendUserError('Please Provide a Password', res);
-  } else {
-    bcrypt.hash(password, BCRYPT_COST, (err, hashedPw) => {
-      if (err) {
-        sendUserError(err, res);
-      } else {
-        req.body.hashedPw = hashedPw;
-      }
-      next();
-    });
-  }
-};
-
-// Authenticate users.
-const compareHashPw = (req, res, next) => {
-  const { username, password } = req.body;
-  User.findOne({ username }, (err, foundUser) => {
-    if (err || !foundUser) {
-      sendUserError('did not find any users with the specifications', res);
-    } else {
-      const hashedPw = foundUser.passwordHash;
-      bcrypt.compare(password, hashedPw, (error, result) => {
-        if (error || !result) {
-          sendUserError('User could not be authenticated', res);
-        } else {
-          req.body.authenticatedUser = foundUser.username;
-          next();
-        }
-      });
-    }
-  });
-};
-
-const verifyLogin = (req, res, next) => {
-  const { username } = req.session;
-  if (!username) {
-    sendUserError('User Not Authenticated', res);
-    next();
-  } else {
-    User.findOne({ username }, (err, foundUser) => {
-      if (err || !foundUser) sendUserError(err, res);
-      req.user = foundUser;
-      next();
-    });
-  }
-};
-
-// ####################### Routes ############################
 // Personal Implementation of a root acess for debugging.
 server.get('/', (req, res) => {
   res.json({ message: 'Api Running' });
@@ -101,10 +59,20 @@ server.post('/users', hashPw, (req, res) => {
 });
 
 // Login Users and Authenticate.
-server.post('/log-in', compareHashPw, (req, res) => {
+server.post('/login', compareHashPw, (req, res) => {
   const { authenticatedUser } = req.body;
   req.session.username = authenticatedUser;
   res.json({ success: true });
+});
+
+server.post('/logout', (req, res) => {
+  const { username } = req.session;
+  if (!username) {
+    sendUserError('The is not logged in, and cant be logged out');
+  } else {
+    req.session.username = '';
+    res.json({ success: `${username} has been sucessfuly logged out` });
+  }
 });
 
 
