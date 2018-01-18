@@ -8,7 +8,10 @@ const cors = require('cors');
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
-const corsOptions = {};
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credientials: true
+};
 
 const server = express();
 // to enable parsing of json bodies for post requests
@@ -21,7 +24,7 @@ server.use(
   })
 );
 
-server.use(cors());
+server.use(cors(corsOptions));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -94,8 +97,6 @@ const authenticate = (req, res, next) => {
 
 const loggedIn = (req, res, next) => {
   const { username } = req.session;
-  console.log(req.session);
-
   if (!username) {
     sendUserError('User is not logged in', res);
     return;
@@ -114,11 +115,11 @@ const loggedIn = (req, res, next) => {
 
 /* ************ Routes ***************** */
 
-server.post('/log-in', authenticate, (req, res) => {
+server.post('/login', authenticate, (req, res) => {
   res.json({ success: true });
 });
 
-server.post('/log-out', (req, res) => {
+server.post('/logout', (req, res) => {
   if (!req.session.username) {
     sendUserError('User not logged in', res);
   }
