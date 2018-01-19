@@ -6,10 +6,10 @@ const bcrypt = require('bcrypt');
 const middleWare = require('./middlewares');
 const cors = require('cors');
 
+
+
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
-
-const corsOptions = {};
 
 const server = express();
 // to enable parsing of json bodies for post requests
@@ -24,9 +24,15 @@ server.use(
 server.use(cors());
 server.use(middleWare.restrictedPermissions);
 
+const corsOptions = {
+  'origin': 'http://localhost:3000',
+  'credentials': true
+};
+server.use(cors(corsOptions));
+
 /* ************ Routes ***************** */
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   const { username, password } = req.body;
   if (!username) {
     middleWare.sendUserError('username undefined', res);
@@ -37,6 +43,12 @@ server.post('/log-in', (req, res) => {
       middleWare.sendUserError('No user found at that id', res);
       return;
     }
+
+    server.post('/logout', (req, res) => {
+      req.session.user = null;
+      res.status(200).json({ success: true });
+    });
+
     const hashedPw = user.passwordHash;
     bcrypt
       .compare(password, hashedPw)
