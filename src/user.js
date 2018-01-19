@@ -8,8 +8,16 @@ mongoose.modelSchemas = {};
 mongoose.Promise = Promise;
 mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new Schema({
   // TODO: fill in this schema
-});
-
+username: {
+     type: String, 
+     required: true,
+     unique: true, 
+},
+     
+password: {
+  type: String, 
+  required: true,
+   
 module.exports = mongoose.model('User', UserSchema);
