@@ -1,17 +1,23 @@
 const bodyParser = require('body-parser');
 const express = require('express');
+const cors = require('cors');
+const bcrypt = require('bcrypt');
 const session = require('express-session');
 const User = require('./user');
-const bcrypt = require('bcrypt');
+
 const middleWare = require('./middlewares');
-const cors = require('cors');
+
+
+const corsOptions = {
+  'origin': 'http://localhost:3000',
+  'credentials': true
+};
+const server = express();
+server.use(cors(corsOptions));
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
-const corsOptions = {};
-
-const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(
