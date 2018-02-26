@@ -17,6 +17,9 @@ server.use(bodyParser.json());
 server.use(
   session({
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+    username: '',
+    resave: true,
+    saveUninitialized: true,
   }),
 );
 
@@ -39,23 +42,22 @@ server.post('/log-in', (req, res) => {
     return;
   }
   User.find({username}).then(foundUser => {
-    if (foundUser === undefined) {
+    if (foundUser.length == 0) {
       sendUserError('User Not Found in Databade', res);
       return;
     }
-    bcrypt.compare(password, foundUser.passwordHash, (err, isValid) => {
+    bcrypt.compare(password, foundUser[0].passwordHash, (err, isValid) => {
       if (err) {
         sendUserError(err, res);
         return;
       }
       if (isValid) {
-        session.username = foundUser._id;
+        session.username = foundUser[0]._id;
         console.log(session.username);
         res.json({ success: true })
       } else {
         sendUserError('Password not Valid', res);
       }
-
     })
   })
 })
