@@ -32,6 +32,33 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    sendUserError('Must provide username and password', res);
+    return;
+  }
+  User.find({username}).then(foundUser => {
+    if (foundUser === undefined) {
+      sendUserError('User Not Found in Databade', res);
+      return;
+    }
+    bcrypt.compare(password, foundUser.passwordHash, (err, isValid) => {
+      if (err) {
+        sendUserError(err, res);
+        return;
+      }
+      if (isValid) {
+        session.username = foundUser._id;
+        console.log(session.username);
+        res.json({ success: true })
+      } else {
+        sendUserError('Password not Valid', res);
+      }
+
+    })
+  })
+})
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
 
