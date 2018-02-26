@@ -9,6 +9,8 @@ const User = require('./user');
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
+// const salt = 'DH2AEXrEat732718a0LDWOCE4uJutpyEAPzHXxoLUDoj5oKjq8'
+
 const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
@@ -31,9 +33,14 @@ const sendUserError = (err, res) => {
 
 // TODO: implement routes
 server.post('/users', (req, res) => {
-  const { username, passwordHash } = req.body;
+  const { username, password } = req.body;
 
-  bcrypt.hash(passwordHash, BCRYPT_COST, (err, hash) => {
+  if (!username || !password) {
+    sendUserError('Must provide username and password', res);
+    return;
+  }
+
+  bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
     if (err) {
       sendUserError(err, res);
       return;
