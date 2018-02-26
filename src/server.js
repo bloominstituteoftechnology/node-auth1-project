@@ -1,6 +1,8 @@
 const bodyParser = require('body-parser');
 const express = require('express');
+const User = require('./user');
 const session = require('express-session');
+const bcrypt = require('bcrypt');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -8,9 +10,11 @@ const BCRYPT_COST = 11;
 const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
-server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
-}));
+server.use(
+  session({
+    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+  })
+);
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -29,6 +33,32 @@ const sendUserError = (err, res) => {
 server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
+});
+
+server.post('/users', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    res
+      .status(STATUS_USER_ERROR)
+      .json({ errorMessage: 'Must provide both a username and a password.' });
+  } else {
+    bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
+      const newUser = { username, password: hash };
+      const user = new User(newUser);
+      if (err) {
+        sendUserError(err, res);
+      } else {
+        user
+          .save()
+          .then(savedUser => {
+            res.status(200).json(savedUser);
+          })
+          .catch(err => {
+            sendUserError(err, res);
+          });
+      }
+    });
+  }
 });
 
 module.exports = { server };
