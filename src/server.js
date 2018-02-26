@@ -2,6 +2,8 @@
 const bodyParser = require("body-parser");
 const express = require("express");
 const session = require("express-session");
+const bcrypt = require("bcrypt");
+const User = require("./user");
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -29,6 +31,21 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+server.post("/users", (req, res) => {
+  const { username, password } = req.body;
+  if (!password) {
+    sendUserError({ message: "Please provide a password", stack: "IDK" }, res);
+  }
+  bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
+    User.create({ username, passwordHash: hash })
+      .then(result => {
+        res.status(200).json(result);
+      })
+      .catch((err, res) => {
+        sendUserError(err, res);
+      });
+  });
+});
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get("/me", (req, res) => {
