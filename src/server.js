@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
@@ -30,15 +32,23 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 server.post('/users', (req, res) => {
   const { username, passwordHash } = req.body;
-  const newUser = new User({ username, passwordHash });
-  newUser.save((err, savedUser) => {
+
+  bcrypt.hash(passwordHash, BCRYPT_COST, (err, hash) => {
     if (err) {
-      // res.status(422);
-      // res.json({ 'username/PW required': err.message });
       sendUserError(err, res);
-    } else {
-      res.json(savedUser);
+      return;
     }
+
+    const newUser = new User({ username, passwordHash: hash });
+    newUser.save((err, savedUser) => {
+      if (err) {
+        // res.status(422);
+        // res.json({ 'username/PW required': err.message });
+        sendUserError(err, res);
+      } else {
+        res.json(savedUser);
+      }
+    });
   });
 });
 // TODO: add local middleware to this route to ensure the user is logged in
