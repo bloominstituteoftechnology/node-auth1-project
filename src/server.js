@@ -33,8 +33,11 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 server.post("/users", (req, res) => {
   const { username, password } = req.body;
-  if (!password) {
-    sendUserError({ message: "Please provide a password", stack: "IDK" }, res);
+  if (!password || !username) {
+    sendUserError(
+      { message: "Please provide a username and a password", stack: "IDK" },
+      res
+    );
   }
   bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
     User.create({ username, passwordHash: hash })
@@ -45,6 +48,36 @@ server.post("/users", (req, res) => {
         sendUserError(err, res);
       });
   });
+});
+
+server.post("/log-in", (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    sendUserError(
+      { message: "Please provide a username and a password", stack: "IDK" },
+      res
+    );
+  }
+  User.findOne({ username })
+    .then(user => {
+      bcrypt
+        .compare(password, user.passwordHash)
+        .then(flag => {
+          if (flag) {
+            //log in
+            res.status(200).json({ success: true });
+          } else {
+            // send error not found
+            sendUserError({ message: "Username or password not correct" }, res);
+          }
+        })
+        .catch(err => {
+          console.log({ err });
+        });
+    })
+    .catch(err => {
+      console.log({ message: "Cannot find username" });
+    });
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
