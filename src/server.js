@@ -9,8 +9,6 @@ const User = require('./user');
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
-// const salt = 'DH2AEXrEat732718a0LDWOCE4uJutpyEAPzHXxoLUDoj5oKjq8'
-
 const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
@@ -53,7 +51,6 @@ server.post('/log-in', (req, res) => {
       }
       if (isValid) {
         session.username = foundUser[0]._id;
-        console.log(session.username);
         res.json({ success: true })
       } else {
         sendUserError('Password not Valid', res);
@@ -78,8 +75,6 @@ server.post('/users', (req, res) => {
     const newUser = new User({ username, passwordHash: hash });
     newUser.save((err, savedUser) => {
       if (err) {
-        // res.status(422);
-        // res.json({ 'username/PW required': err.message });
         sendUserError(err, res);
       } else {
         res.json(savedUser);
@@ -88,9 +83,49 @@ server.post('/users', (req, res) => {
   });
 });
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+const checkIfLoggedIn = (req, res, next) => {
+  if (!session.username) {
+    sendUserError('Not logged in.', res);
+    return;
+  }
+
+  User.findById(session.username).then(foundUser => {
+    if (foundUser === null) {
+      sendUserError('Logged in user not found in db.', res);
+      return;
+    }
+
+    req.user = foundUser;
+    next();
+  });
+};
+
+server.get('/me', checkIfLoggedIn, (req, res) => {
   // Do NOT modify this route handler in any way.
-  res.json(req.user);
+  res.send(req.user);
+});
+
+server.use((req, res, next) => {
+  if (req.originalUrl.includes('/restricted')) {
+    checkIfLoggedIn(req, res, next);
+
+    if (!req.username) return;
+  }
+
+  next();
+});
+
+server.get('/restricted/something', (req, res) => {
+  res.json({
+    message: `something restricted accessed by ${req.user.username}`,
+  });
+});
+
+server.get('/restricted/other', (req, res) => {
+  res.json({ message: `other restricted accessed by ${req.user.username}` });
+});
+server.get('/restricted/a', (req, res) => {
+  res.json({ message: `a restricted accessed by ${req.user.username}` });
 });
 
 module.exports = { server };
