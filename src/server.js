@@ -43,7 +43,6 @@ server.post("/users", (req, res) => {
       },
       res
     );
-    return;
   }
   bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
     User.create({ username, passwordHash: hash })
@@ -96,9 +95,26 @@ server.post("/log-in", (req, res) => {
 const checkAuth = (req, res, next) => {
   req.user = session.user;
   if (req.user) {
-    next();
+    User.find({ username: req.user })
+      .then(result => {
+        console.log("User from db: ", result);
+        if (result) {
+          next();
+        } else {
+          sendUserError(
+            { message: "You must be logged in to do that action" },
+            res
+          );
+        }
+      })
+      .catch(err => {
+        sendUserError(
+          { message: "You must be logged in to do that action" },
+          res
+        );
+      });
   } else {
-    sendUserError({ message: "You must be logged in to do that action" });
+    sendUserError({ message: "You must be logged in to do that action" }, res);
   }
 };
 
