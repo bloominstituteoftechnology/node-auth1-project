@@ -27,7 +27,6 @@ const sendUserError = (err, res) => {
   }
 };
 
-
 const handleLogin = (req, res, next) => {
   const { username, password } = req.body;
   if (!username) {
@@ -35,21 +34,30 @@ const handleLogin = (req, res, next) => {
     return;
   }
   User.find({ username })
-    .then((user) => {
+    .then(user => {
       req.hashedPassword = user[0].password;
-      console.log(user[0].password);
       next();
     })
-    .catch((err) => {
+    .catch(err => {
       sendUserError(err, res);
     });
+};
+
+const checkLoggedIn = (req, res, next) => {
+  if (req.session.loggedIn) {
+    req.user = req.session.username;
+    next();
+  } else {
+    sendUserError('You must log in first', res);
+  }
 };
 
 // TODO: implement routes
 
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+server.get('/me', checkLoggedIn, (req, res) => {
   // Do NOT modify this route handler in any way.
+  console.log(req.user);
   res.json(req.user);
 });
 
@@ -68,10 +76,10 @@ server.post('/users', (req, res) => {
       } else {
         user
           .save()
-          .then((savedUser) => {
+          .then(savedUser => {
             res.status(200).json(savedUser);
           })
-          .catch((error) => {
+          .catch(error => {
             sendUserError(error, res);
           });
       }
@@ -82,13 +90,14 @@ server.post('/users', (req, res) => {
 server.post('/log-in', handleLogin, (req, res) => {
   const { username, password } = req.body;
   const hash = req.hashedPassword;
-  console.log(hash);
 
   bcrypt.compare(password, hash, (err, isValid) => {
     if (err) {
       sendUserError(err, res);
     }
     if (isValid) {
+      req.session.loggedIn = true;
+      req.session.username = username;
       res.json({ success: true });
     } else {
       sendUserError('Invalid username and password', res);
