@@ -27,6 +27,23 @@ const sendUserError = (err, res) => {
   }
 };
 
+
+const handleLogin = (req, res, next) => {
+  const { username, password } = req.body;
+  if (!username) {
+    sendUserError('No username', res);
+    return;
+  }
+  User.find({ username })
+    .then((user) => {
+      req.hashedPassword = user.password;
+      console.log(user.password);
+    })
+    .catch((err) => {
+      sendUserError(err, res);
+    });
+};
+
 // TODO: implement routes
 
 // TODO: add local middleware to this route to ensure the user is logged in
@@ -50,15 +67,31 @@ server.post('/users', (req, res) => {
       } else {
         user
           .save()
-          .then(savedUser => {
+          .then((savedUser) => {
             res.status(200).json(savedUser);
           })
-          .catch(err => {
-            sendUserError(err, res);
+          .catch((error) => {
+            sendUserError(error, res);
           });
       }
     });
   }
+});
+
+server.post('/log-in', handleLogin, (req, res) => {
+  const { username, password } = req.body;
+  const hash = req.hashedPassword;
+
+  bcrypt.compare(password, hash, (err, isValid) => {
+    if (err) {
+      sendUserError(err, res);
+    }
+    if (isValid) {
+      res.json({ success: true });
+    } else {
+      sendUserError('Invalid username and password', res);
+    }
+  });
 });
 
 module.exports = { server };
