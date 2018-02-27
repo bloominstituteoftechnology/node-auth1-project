@@ -36,8 +36,9 @@ const handleLogin = (req, res, next) => {
   }
   User.find({ username })
     .then((user) => {
-      req.hashedPassword = user.password;
-      console.log(user.password);
+      req.hashedPassword = user[0].password;
+      console.log(user[0].password);
+      next();
     })
     .catch((err) => {
       sendUserError(err, res);
@@ -81,6 +82,7 @@ server.post('/users', (req, res) => {
 server.post('/log-in', handleLogin, (req, res) => {
   const { username, password } = req.body;
   const hash = req.hashedPassword;
+  console.log(hash);
 
   bcrypt.compare(password, hash, (err, isValid) => {
     if (err) {
