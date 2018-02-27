@@ -29,64 +29,71 @@ const sendUserError = (err, res) => {
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
-    sendUserError('Please provide a username and password.', res)
+    sendUserError('Please provide a username and password.', res);
     return;
   }
   bcrypt.hash(password, 11, (err, hash) => {
-  	if (err) {
-  		throw err;
-  	}
-  	const newUser = new User({username: username, password: hash});
+    if (err) {
+      throw err;
+    }
+    const newUser = new User({ username, passwordHash: hash });
     newUser.save()
       .then((savedUser) => {
         res.status(200).json(savedUser);
       })
       .catch((error) => {
-        res.status(500).json({ error: 'Could not connect to the server' });
+        res.status(500).json({ error: `Could not connect to the server: ${err}` });
       });
-  })
+  });
 });
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
-	if (!username || !password) {
-    sendUserError('Please provide a username and password.', res)
+  if (!username || !password) {
+    sendUserError('Please provide a username and password.', res);
     return;
   }
   User.findOne({ username })
-  	.then((user) => {
-  		if (user) {
-        const hash = user.password;
-  		  bcrypt.compare(password, hash, (err, isValid) => {
-  		  	if (err) throw err;
-  		  	if (isValid) {
-  		  		req.session.login = true;
-  		  		res.status(200).json({ success: true });
-  		  	} else {
-  		  		sendUserError('Invalid password!', res);
-  		  	}
-  		  })
-  		} else {
-  			sendUserError('Invalid username!', res);
-  		}
-  	})
-  	.catch(err => {
-  		res.status(500).json({ error: 'Could not connect to the server'});
-  	});
-})
+    .then((user) => {
+      if (user) {
+        const hash = user.passwordHash;
+        bcrypt.compare(password, hash, (err, isValid) => {
+          if (err) throw err;
+          if (isValid) {
+            req.session.userId = user.id;
+            res.status(200).json({ success: true });
+          } else {
+            sendUserError('Invalid username or password.', res);
+          }
+        });
+      } else {
+        sendUserError('Invalid username or password.', res);
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({ error: `Could not connect to the server: ${err}` });
+    });
+});
 
 const loggedIn = (req, res, next) => {
-	if (!req.session.login) {
-		sendUserError('You are not logged in.', res);
-		return;
-	}
-	next();
-}
+  const { userId } = req.session;
+  if (!userId) {
+    sendUserError('You are not logged in.', res);
+    return;
+  }
+  User.findById(userId)
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => {
+      res.status(500).json({ error: `Could not connect to the server: ${err}` });
+    });
+};
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', loggedIn, (req, res) => {
   // Do NOT modify this route handler in any way.
-  console.log('req.user', req.user);
   res.json(req.user);
 });
 
