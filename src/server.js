@@ -23,9 +23,10 @@ server.use(
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 const sendUserError = (err, res) => {
-  res.status(STATUS_USER_ERROR);
+  // res.status(STATUS_USER_ERROR);
   if (err && err.message) {
     res.json({ message: err.message, stack: err.stack });
+    return;
   } else {
     res.json({ error: err });
   }
@@ -36,17 +37,27 @@ server.post("/users", (req, res) => {
   const { username, password } = req.body;
   if (!password || !username) {
     sendUserError(
-      { message: "Please provide a username and a password", stack: "IDK" },
+      {
+        message: "Please provide a username and a password",
+        stack: "IDK"
+      },
       res
     );
+    return;
   }
   bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
     User.create({ username, passwordHash: hash })
       .then(result => {
         res.status(200).json(result);
       })
-      .catch((err, res) => {
-        sendUserError(err, res);
+      .catch(err => {
+        return sendUserError(
+          {
+            message: "Please provide a username and a password",
+            stack: "IDK"
+          },
+          res
+        );
       });
   });
 });
@@ -54,10 +65,10 @@ server.post("/users", (req, res) => {
 server.post("/log-in", (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
-    sendUserError(
-      { message: "Please provide a username and a password", stack: "IDK" },
-      res
-    );
+    sendUserError({
+      message: "Please provide a username and a password",
+      stack: "IDK"
+    });
   }
   User.findOne({ username })
     .then(user => {
@@ -66,8 +77,7 @@ server.post("/log-in", (req, res) => {
         .then(flag => {
           if (flag) {
             //log in
-            req.session.user = username;
-            console.log("User: ", req.session.user);
+            session.user = username;
             res.status(200).json({ success: true });
           } else {
             // send error not found
@@ -84,7 +94,8 @@ server.post("/log-in", (req, res) => {
 });
 
 const checkAuth = (req, res, next) => {
-  if (req.session.user) {
+  req.user = session.user;
+  if (req.user) {
     next();
   } else {
     sendUserError({ message: "You must be logged in to do that action" });
