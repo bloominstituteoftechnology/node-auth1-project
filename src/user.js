@@ -10,6 +10,8 @@ mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
 
 const UserSchema = new mongoose.Schema({
   // TODO: fill in this schema
+  username: { type: String, unique: true, required: true },
+  passwordHash: { type: String, required: true }
 });
 
 module.exports = mongoose.model('User', UserSchema);
