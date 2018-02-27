@@ -39,25 +39,25 @@ server.post('/log-in', (req, res) => {
     sendUserError('Must provide username and password', res);
     return;
   }
-  User.find({username}).then(foundUser => {
+  User.find({ username }).then(foundUser => {
     if (foundUser.length == 0) {
       sendUserError('User Not Found in Databade', res);
       return;
     }
-    bcrypt.compare(password, foundUser[0].passwordHash, (err, isValid) => {
+    foundUser[0].checkPassword(password, (isValid, err) => {
       if (err) {
         sendUserError(err, res);
         return;
       }
       if (isValid) {
         session.username = foundUser[0]._id;
-        res.json({ success: true })
+        res.json({ success: true });
       } else {
         sendUserError('Password not Valid', res);
       }
-    })
-  })
-})
+    });
+  });
+});
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
 
@@ -66,20 +66,13 @@ server.post('/users', (req, res) => {
     return;
   }
 
-  bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
+  const newUser = new User({ username, passwordHash: password });
+  newUser.save((err, savedUser) => {
     if (err) {
       sendUserError(err, res);
-      return;
+    } else {
+      res.json(savedUser);
     }
-
-    const newUser = new User({ username, passwordHash: hash });
-    newUser.save((err, savedUser) => {
-      if (err) {
-        sendUserError(err, res);
-      } else {
-        res.json(savedUser);
-      }
-    });
   });
 });
 // TODO: add local middleware to this route to ensure the user is logged in
