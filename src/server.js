@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const bodyParser = require('body-parser');
 const express = require('express');
 const User = require('./user');
@@ -16,7 +18,6 @@ server.use(
   })
 );
 
-
 /* Sends the given err, a string or an object, to the client. Sets the status
 * code appropriately. */
 const sendUserError = (err, res) => {
@@ -34,27 +35,37 @@ const handleLogin = (req, res, next) => {
     sendUserError('No username', res);
     return;
   }
+  if (!password) {
+    sendUserError('No password', res);
+    return;
+  }
   User.find({ username })
-  .then(user => {
-    req.hashedPassword = user[0].password;
-    next();
-  })
-  .catch(err => {
-    sendUserError(err, res);
-  });
+    .then(user => {
+      req.hashedPassword = user[0].passwordHash;
+      next();
+    })
+    .catch(err => {
+      sendUserError(err, res);
+    });
 };
 
 const checkLoggedIn = (req, res, next) => {
   if (req.session.loggedIn) {
-    req.user = req.session.username;
-    next();
+    User.findOne({ username: req.session.username })
+      .then(user => {
+        req.user = user;
+        next();
+      })
+      .catch(err => {
+        sendUserError(err, res);
+      });
   } else {
     sendUserError('You must log in first', res);
   }
 };
 
 const restrictedPermissions = (req, res, next) => {
-  // const path = req.path; 
+  // const path = req.path;
   // if (/restricted/test(path)) {
   if (!req.session.username) {
     sendUserError('You must login first.', res);
@@ -65,8 +76,8 @@ const restrictedPermissions = (req, res, next) => {
 };
 
 server.use('/restricted', restrictedPermissions);
-  
-  // TODO: implement routes
+
+// TODO: implement routes
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', checkLoggedIn, (req, res) => {
@@ -83,7 +94,7 @@ server.post('/users', (req, res) => {
       .json({ errorMessage: 'Must provide both a username and a password.' });
   } else {
     bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
-      const newUser = { username, password: hash };
+      const newUser = { username, passwordHash: hash };
       const user = new User(newUser);
       if (err) {
         sendUserError(err, res);
@@ -120,7 +131,9 @@ server.post('/log-in', handleLogin, (req, res) => {
 });
 
 server.get('/restricted/something', (req, res) => {
-  res.json({ message: "you are viewing restricted info because you're logged in." });
+  res.json({
+    message: "you are viewing restricted info because you're logged in."
+  });
 });
 
 module.exports = { server };
