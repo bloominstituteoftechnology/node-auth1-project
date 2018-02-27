@@ -1,6 +1,6 @@
 const bodyParser = require('body-parser');
 const express = require('express');
-const session = require('express-session');
+const expSession = require('express-session');
 const bcrypt = require('bcrypt');
 const User = require('./user');
 
@@ -10,7 +10,7 @@ const BCRYPT_COST = 11;
 const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
-server.use(session({
+server.use(expSession({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
 }));
 
@@ -39,8 +39,13 @@ const sendUserError = (err, res) => {
 const logInCheck = (req, res, next) => {
   const session = req.session;
   if (session.user) {
-    req.user = session.user;
-    next();
+    User.findOne({ username: session.user })
+      .then((user) => {
+        req.user = user;
+        next();
+      }).catch((err) => {
+        sendUserError(err, res);
+      });
   } else {
     sendUserError('Need to log in to access NSA data.', res);
   }
@@ -57,7 +62,7 @@ server.post('/users', (req, res) => {
 
   bcrypt.hash(password, BCRYPT_COST)
     .then((data) => {
-      const user = new User({ username, passwordHash: data })
+      const user = new User({ username, passwordHash: data });
       user.save()
         .then((newUser) => {
           res.status(200).send(newUser);
@@ -91,13 +96,16 @@ server.post('/log-in', (req, res) => {
       bcrypt.compare(password, data.passwordHash)
        .then((match, err) => {
          if (match) {
-           session.loggedIn = true;
            session.user = username;
-           res.status(200).send({ success: session.loggedIn });
+           res.status(200).send({ success: true });
          } else {
            sendUserError({ success: false }, res);
          }
+       }).catch((error) => {
+         sendUserError({ error: 'Password is incorrect.' });
        });
+    }).catch((err) => {
+      sendUserError({ error: 'Unable to find a user by that name.' }, res);
     });
 });
 
