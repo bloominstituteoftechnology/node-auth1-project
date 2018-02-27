@@ -5,9 +5,7 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const User = require('./user');
-
-const STATUS_USER_ERROR = 422;
-const BCRYPT_COST = 11;
+const middleware = require('./middleware.js')
 
 const server = express();
 // to enable parsing of json bodies for post requests
@@ -21,39 +19,27 @@ server.use(
   }),
 );
 
-/* Sends the given err, a string or an object, to the client. Sets the status
- * code appropriately. */
-const sendUserError = (err, res) => {
-  res.status(STATUS_USER_ERROR);
-  if (err && err.message) {
-    res.json({ message: err.message, stack: err.stack });
-  } else {
-    res.json({ error: err });
-  }
-};
-
-// TODO: implement routes
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
-    sendUserError('Must provide username and password', res);
+    middleware.sendUserError('Must provide username and password', res);
     return;
   }
   User.find({ username }).then(foundUser => {
     if (foundUser.length == 0) {
-      sendUserError('User Not Found in Databade', res);
+      middleware.sendUserError('User Not Found in Database', res);
       return;
     }
     foundUser[0].checkPassword(password, (isValid, err) => {
       if (err) {
-        sendUserError(err, res);
+        middleware.sendUserError(err, res);
         return;
       }
       if (isValid) {
         session.username = foundUser[0]._id;
         res.json({ success: true });
       } else {
-        sendUserError('Password not Valid', res);
+        middleware.sendUserError('Password not Valid', res);
       }
     });
   });
@@ -62,14 +48,14 @@ server.post('/users', (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    sendUserError('Must provide username and password', res);
+    middleware.sendUserError('Must provide username and password', res);
     return;
   }
 
   const newUser = new User({ username, passwordHash: password });
   newUser.save((err, savedUser) => {
     if (err) {
-      sendUserError(err, res);
+      middleware.sendUserError(err, res);
     } else {
       res.json(savedUser);
     }
@@ -78,13 +64,13 @@ server.post('/users', (req, res) => {
 // TODO: add local middleware to this route to ensure the user is logged in
 const checkIfLoggedIn = (req, res, next) => {
   if (!session.username) {
-    sendUserError('Not logged in.', res);
+    middleware.sendUserError('Not logged in.', res);
     return;
   }
 
   User.findById(session.username).then(foundUser => {
     if (foundUser === null) {
-      sendUserError('Logged in user not found in db.', res);
+      middleware.sendUserError('Logged in user not found in db.', res);
       return;
     }
 
