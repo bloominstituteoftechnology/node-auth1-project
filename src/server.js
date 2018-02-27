@@ -15,7 +15,8 @@ server.use(
   session({
     secret: "e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re",
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: { username: null }
   })
 );
 
@@ -65,6 +66,8 @@ server.post("/log-in", (req, res) => {
         .then(flag => {
           if (flag) {
             //log in
+            req.session.user = username;
+            console.log("User: ", req.session.user);
             res.status(200).json({ success: true });
           } else {
             // send error not found
@@ -72,16 +75,24 @@ server.post("/log-in", (req, res) => {
           }
         })
         .catch(err => {
-          console.log({ err });
+          sendUserError({ err }, res);
         });
     })
     .catch(err => {
-      console.log({ message: "Cannot find username" });
+      sendUserError({ message: "Cannot find username" }, res);
     });
 });
 
+const checkAuth = (req, res, next) => {
+  if (req.session.user) {
+    next();
+  } else {
+    sendUserError({ message: "You must be logged in to do that action" });
+  }
+};
+
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get("/me", (req, res) => {
+server.get("/me", checkAuth, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
