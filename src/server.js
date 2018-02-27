@@ -16,8 +16,9 @@ server.use(
   })
 );
 
+
 /* Sends the given err, a string or an object, to the client. Sets the status
- * code appropriately. */
+* code appropriately. */
 const sendUserError = (err, res) => {
   res.status(STATUS_USER_ERROR);
   if (err && err.message) {
@@ -34,13 +35,13 @@ const handleLogin = (req, res, next) => {
     return;
   }
   User.find({ username })
-    .then(user => {
-      req.hashedPassword = user[0].password;
-      next();
-    })
-    .catch(err => {
-      sendUserError(err, res);
-    });
+  .then(user => {
+    req.hashedPassword = user[0].password;
+    next();
+  })
+  .catch(err => {
+    sendUserError(err, res);
+  });
 };
 
 const checkLoggedIn = (req, res, next) => {
@@ -52,7 +53,20 @@ const checkLoggedIn = (req, res, next) => {
   }
 };
 
-// TODO: implement routes
+const restrictedPermissions = (req, res, next) => {
+  // const path = req.path; 
+  // if (/restricted/test(path)) {
+  if (!req.session.username) {
+    sendUserError('You must login first.', res);
+    return;
+  }
+  // }
+  next();
+};
+
+server.use('/restricted', restrictedPermissions);
+  
+  // TODO: implement routes
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', checkLoggedIn, (req, res) => {
@@ -103,6 +117,10 @@ server.post('/log-in', handleLogin, (req, res) => {
       sendUserError('Invalid username and password', res);
     }
   });
+});
+
+server.get('/restricted/something', (req, res) => {
+  res.json({ message: "you are viewing restricted info because you're logged in." });
 });
 
 module.exports = { server };
