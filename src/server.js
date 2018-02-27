@@ -77,21 +77,19 @@ server.post('/log-in', (req, res) => {
       if (!user) return sendUserError('User with that name does not exists', res);
       // does the given pswd hashed === the stored hashed pswd? ERROR CHECKING
 
-      // if (bcrypt.compare(password, user.password)) return sendUserError('Password is not valid', res);
-      if (bcrypt.compareSync(password, user.password)) {
+      // if (bcrypt.compareSync(password, user.passwordHash) === false) return sendUserError('Invalid password submission.', res);
+
+      // .compareSync(password, dbHashedPassword) => true/false
+      if (bcrypt.compareSync(password, user.passwordHash)) {
         req.session.username = username;
+        req.session.user = user;
         res.status(200).json({ success: true });
       } else {
         return sendUserError('Password is not valid', res)
       }
-      // bcrypt.compare(password, user.password, function(err, same){
-      //   if (err) return sendUserError('Password is not valid', res)
-      //   return same;
-      // });
-
 
       // NO ERRORS
-      // ADD SOME UNIQUE INFO TO THE SESSION
+      // ADD SOME UNIQUE INFO TO THE SESSION OBJ
       // req.session.username = username;
       // EVERYTHING IS ALL GOOD
       // res.status(200).json({ success: true });
@@ -102,7 +100,16 @@ server.post('/log-in', (req, res) => {
 })
 
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+
+const loggedInUser = (req, res, next) => {
+  if (!req.session.username || !req.session.user) {
+    return sendUserError('User is not logged in.', res)
+  }
+  res.status(200).json(req.session.user);
+  next();
+}
+
+server.get('/me', loggedInUser, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
