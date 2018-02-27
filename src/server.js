@@ -20,6 +20,17 @@ server.use(
   })
 );
 
+// Stretch - restricted Global middleware
+server.use('/restricted', (req, res, next) => {
+  const ses = req.session;  
+  if (!ses.username) {
+      sendUserError('You are not authorized!', res);
+      return;
+    }
+  next();
+});
+
+
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 const sendUserError = (err, res) => {
