@@ -5,6 +5,9 @@ const mongoose = require('mongoose');
 mongoose.models = {};
 mongoose.modelSchemas = {};
 
+
+// add bcrypt
+
 mongoose.Promise = Promise;
 mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
 
@@ -13,5 +16,6 @@ const UserSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },
   passwordHash: { type: String, required: true }
 });
+
 
 module.exports = mongoose.model('User', UserSchema);
