@@ -28,13 +28,10 @@ server.use(
 const checkAuth = (req, res, next) => {
   User.find({ username: req.session.user })
     .then(activeUser => {
-      console.log(activeUser);
       if (activeUser.length) {
-        console.log("should work");
-        // req.user = req.session.user;
+        req.user = req.session.user;
         next();
       } else {
-        console.log("err");
         sendUserError({ message: "You must be logged in" }, res);
       }
     })
@@ -123,7 +120,6 @@ server.post("/logout", checkAuth, (req, res) => {
 });
 
 server.get("/restricted/users", (req, res) => {
-  console.log("aythenicated and going to send back users");
   User.find({})
     .select("username")
     .then(users => {
