@@ -4,6 +4,7 @@ const express = require("express");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
 const User = require("./user");
+const cors = require("cors");
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -11,25 +12,41 @@ const BCRYPT_COST = 11;
 const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true
+};
+server.use(cors(corsOptions));
 server.use(
   session({
     secret: "e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re",
     resave: true,
-    saveUninitialized: true,
-    cookie: { username: null }
+    saveUninitialized: true
   })
 );
 
-// Stretch - restricted Global middleware
-server.use('/restricted', (req, res, next) => {
-  const ses = req.session;  
-  if (!ses.username) {
-      sendUserError('You are not authorized!', res);
-      return;
-    }
-  next();
-});
+const checkAuth = (req, res, next) => {
+  if (req.session) {
+    User.find({ username: req.session.user })
+      .then(activeUser => {
+        if (activeUser) {
+          req.user = req.session.user;
+          next();
+        } else {
+          req.sesssion.isLoggedIn = false;
+          sendUserError({ message: "User not found" });
+        }
+      })
+      .catch(err => {
+        sendUserError({ message: "User not found" });
+      });
+  } else {
+    sendUserError({ message: "You must be logged in " });
+  }
+};
 
+// Stretch - restricted Global middleware
+server.use("/restricted", checkAuth, (req, res, next) => {});
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -47,87 +64,57 @@ const sendUserError = (err, res) => {
 server.post("/users", (req, res) => {
   const { username, password } = req.body;
   if (!password || !username) {
-    sendUserError(
-      {
-        message: "Please provide a username and a password",
-        stack: "IDK"
-      },
-      res
-    );
+    sendUserError();
   }
-  bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
-    User.create({ username, passwordHash: hash })
-      .then(result => {
-        res.status(200).json(result);
-      })
-      .catch(err => {
-        return sendUserError(
-          {
-            message: "Please provide a username and a password",
-            stack: "IDK"
-          },
-          res
-        );
-      });
+  const user = new User({ username, password });
+  user
+    .save()
+    .then(result => {
+      res.status(200).json(result);
+    })
+    .catch(err => {
+      console.log(err);
+      return sendUserError();
+    });
+});
+
+server.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  const session = req.session;
+  if (!username || !password) {
+    sendUserError();
+  }
+  User.findOne({ username }, (err, user) => {
+    if (err) {
+      sendUserError(err);
+    }
+    user.checkPassword(password, (err, isMatch) => {
+      if (err) {
+        sendUserError(err, res);
+      }
+      if (isMatch) {
+        req.session.user = user.username;
+        console.log(req.session.user);
+        req.session.loggedIn = true;
+        res.status(200).json({ isLoggedIn: true });
+      } else {
+        res.status(401).json({ isLoggedIn: false });
+      }
+    });
+  }).catch(err => {
+    sendUserError();
   });
 });
 
-server.post("/log-in", (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    sendUserError({
-      message: "Please provide a username and a password",
-      stack: "IDK"
-    });
-  }
-  User.findOne({ username })
-    .then(user => {
-      bcrypt
-        .compare(password, user.passwordHash)
-        .then(flag => {
-          if (flag) {
-            //log in
-            session.user = username;
-            res.status(200).json({ success: true });
-          } else {
-            // send error not found
-            sendUserError({ message: "Username or password not correct" }, res);
-          }
-        })
-        .catch(err => {
-          sendUserError({ err }, res);
-        });
-    })
-    .catch(err => {
-      sendUserError({ message: "Cannot find username" }, res);
-    });
+server.post("/logout", checkAuth, (req, res) => {
+  req.session.destroy((err, success) => {
+    if (err) {
+      sendUserError(err);
+    } else {
+      res.send({ message: "Session Destroyed" });
+    }
+  });
 });
-
-const checkAuth = (req, res, next) => {
-  req.user = session.user;
-  if (req.user) {
-    User.find({ username: req.user })
-      .then(result => {
-        console.log("User from db: ", result);
-        if (result) {
-          next();
-        } else {
-          sendUserError(
-            { message: "You must be logged in to do that action" },
-            res
-          );
-        }
-      })
-      .catch(err => {
-        sendUserError(
-          { message: "You must be logged in to do that action" },
-          res
-        );
-      });
-  } else {
-    sendUserError({ message: "You must be logged in to do that action" }, res);
-  }
-};
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get("/me", checkAuth, (req, res) => {

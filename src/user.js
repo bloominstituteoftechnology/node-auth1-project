@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const BCRYPT_COST = 11;
 
 // Clear out mongoose's model cache to allow --watch to work for tests:
 // https://github.com/Automattic/mongoose/issues/1251
@@ -16,11 +18,25 @@ const UserSchema = new mongoose.Schema({
     unique: true,
     index: true
   },
-  passwordHash: {
+  password: {
     type: String,
-    required: true,
     index: true
   }
 });
+
+UserSchema.pre("save", function(next) {
+  console.log(this.password);
+  bcrypt.hash(this.password, BCRYPT_COST).then(hashedPass => {
+    this.password = hashedPass;
+    next();
+  });
+});
+
+UserSchema.methods.checkPassword = function(plainTextPass, cb) {
+  bcrypt.compare(plainTextPass, this.password, (err, isMatch) => {
+    if (err) return err;
+    cb(null, isMatch);
+  });
+};
 
 module.exports = mongoose.model("User", UserSchema);
