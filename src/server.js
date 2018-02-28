@@ -43,6 +43,10 @@ const checkAuth = (req, res, next) => {
     });
 };
 
+server.all("/restricted/*", checkAuth, (req, res, next) => {
+  next();
+});
+
 // Stretch - restricted Global middleware
 // server.use("/restricted", checkAuth, (req, res, next) => {});
 
@@ -118,12 +122,11 @@ server.post("/logout", checkAuth, (req, res) => {
   });
 });
 
-server.get("/restricted/users", checkAuth, (req, res) => {
+server.get("/restricted/users", (req, res) => {
   console.log("aythenicated and going to send back users");
   User.find({})
     .select("username")
     .then(users => {
-      console.log(users);
       res.status(200).json(users);
     })
     .catch(err => {
