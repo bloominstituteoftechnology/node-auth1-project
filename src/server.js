@@ -28,10 +28,13 @@ server.use(
 const checkAuth = (req, res, next) => {
   User.find({ username: req.session.user })
     .then(activeUser => {
+      console.log(activeUser);
       if (activeUser.length) {
-        req.user = req.session.user;
+        console.log("should work");
+        // req.user = req.session.user;
         next();
       } else {
+        console.log("err");
         sendUserError({ message: "You must be logged in" }, res);
       }
     })
@@ -41,7 +44,7 @@ const checkAuth = (req, res, next) => {
 };
 
 // Stretch - restricted Global middleware
-server.use("/restricted", checkAuth, (req, res, next) => {});
+// server.use("/restricted", checkAuth, (req, res, next) => {});
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -115,6 +118,18 @@ server.post("/logout", checkAuth, (req, res) => {
   });
 });
 
+server.get("/restricted/users", checkAuth, (req, res) => {
+  console.log("aythenicated and going to send back users");
+  User.find({})
+    .select("username")
+    .then(users => {
+      console.log(users);
+      res.status(200).json(users);
+    })
+    .catch(err => {
+      sendUserError({ message: err }, res);
+    });
+});
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get("/me", checkAuth, (req, res) => {
   // Do NOT modify this route handler in any way.
