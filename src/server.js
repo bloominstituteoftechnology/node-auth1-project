@@ -26,23 +26,18 @@ server.use(
 );
 
 const checkAuth = (req, res, next) => {
-  if (req.session) {
-    User.find({ username: req.session.user })
-      .then(activeUser => {
-        if (activeUser) {
-          req.user = req.session.user;
-          next();
-        } else {
-          req.sesssion.isLoggedIn = false;
-          sendUserError({ message: "User not found" });
-        }
-      })
-      .catch(err => {
-        sendUserError({ message: "User not found" });
-      });
-  } else {
-    sendUserError({ message: "You must be logged in " });
-  }
+  User.find({ username: req.session.user })
+    .then(activeUser => {
+      if (activeUser.length) {
+        req.user = req.session.user;
+        next();
+      } else {
+        sendUserError({ message: "You must be logged in" }, res);
+      }
+    })
+    .catch(err => {
+      sendUserError({ message: "User not found" }, res);
+    });
 };
 
 // Stretch - restricted Global middleware
