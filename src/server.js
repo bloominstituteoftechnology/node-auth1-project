@@ -2,6 +2,8 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const expSession = require('express-session');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
+
 const User = require('./user');
 
 const STATUS_USER_ERROR = 422;
@@ -14,12 +16,18 @@ server.use(expSession({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
 }));
 
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true
+};
+server.use(cors(corsOptions));
+
 server.use((req, res, next) => {
   const check = req.originalUrl.split('/restricted');
   if (check.length > 1 && req.session.user) {
     next();
   } else if (check.length > 1 && !req.session.user) {
-    res.status(500).send({ error: 'You must be logged in for access to NSA documents.' });
+    res.status(500).send({ error: 'You shall not pass! (Unless you log in.)' });
   } else {
     next();
   }
@@ -47,7 +55,7 @@ const logInCheck = (req, res, next) => {
         sendUserError(err, res);
       });
   } else {
-    sendUserError('Need to log in to access NSA data.', res);
+    sendUserError('You shall not pass! (Unless you log in.)', res);
   }
 };
 
@@ -82,7 +90,7 @@ server.get('/restricted/users', (req, res) => {
     });
 });
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   const { username, password } = req.body;
   const session = req.session;
 
@@ -107,6 +115,11 @@ server.post('/log-in', (req, res) => {
     }).catch((err) => {
       sendUserError({ error: 'Unable to find a user by that name.' }, res);
     });
+});
+
+server.post('/restricted/logout', (req, res) => {
+  req.session.user = undefined;
+  res.status(200).json({ successMessage: 'User logged out.' });
 });
 
 server.get('/me', logInCheck, (req, res) => {
