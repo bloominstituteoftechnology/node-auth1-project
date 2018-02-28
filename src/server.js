@@ -79,16 +79,12 @@ server.post('/users', hashPassword, (req, res) => {
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
-  // VALIDATE username and password
+
   if (!username || !password) return sendUserError('Must provide all login credentials', res);
   User.findOne({ username })
     .then((user) => {
-      // is 'user' in the db? ERROR CHECKING
       if (!user) return sendUserError('User with that name does not exists', res);
-      // does the given pswd hashed = the stored hashed pswd? ERROR CHECKING
-      // if (bcrypt.compareSync(password, user.passwordHash) === false) return sendUserError('Invalid password submission.', res);
-      // .compareSync(password, dbHashedPassword) => true/false
-      // .compareSync okay for this simple assignment but async bcrypt more efficient
+
       if (bcrypt.compareSync(password, user.passwordHash)) {
         req.session.username = username;
         req.session.user = user;
@@ -96,11 +92,6 @@ server.post('/log-in', (req, res) => {
       } else {
         return sendUserError('Password is not valid', res);
       }
-      // NO ERRORS
-      // ADD SOME UNIQUE INFO TO THE SESSION OBJ
-      // req.session.username = username;
-      // EVERYTHING IS ALL GOOD
-      // res.status(200).json({ success: true });
     })
     .catch((error) => {
       sendUserError(error, res);
