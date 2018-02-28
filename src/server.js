@@ -1,13 +1,19 @@
 /* eslint-disable */
-
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const User = require('./user');
-const middleware = require('./middleware.js')
+const middleware = require('./middleware.js');
+const cors = require('cors');
 
 const server = express();
+
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true
+};
+server.use(cors(corsOptions));
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(
@@ -15,11 +21,11 @@ server.use(
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
     username: '',
     resave: true,
-    saveUninitialized: true,
-  }),
+    saveUninitialized: true
+  })
 );
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     middleware.sendUserError('Must provide username and password', res);
@@ -44,6 +50,16 @@ server.post('/log-in', (req, res) => {
     });
   });
 });
+
+server.post('/logout', (req, res) => {
+  if (!req.session.username) {
+    middleware.sendUserError('User is not logged in', res);
+    return;
+  }
+  req.session.username = null;
+  res.json(req.session);
+});
+
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
 
@@ -96,7 +112,7 @@ server.use((req, res, next) => {
 
 server.get('/restricted/something', (req, res) => {
   res.json({
-    message: `something restricted accessed by ${req.user.username}`,
+    message: `something restricted accessed by ${req.user.username}`
   });
 });
 
