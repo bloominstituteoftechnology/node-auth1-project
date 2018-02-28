@@ -1,7 +1,7 @@
-/* eslint-disable */
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const User = require('./user');
@@ -16,14 +16,11 @@ server.use(bodyParser.json());
 // req & res now have a .session object on them
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
-  // saveUninitialized: true,
-  // resave: false
 }));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 // Middleware
-
 const sendUserError = (err, res) => {
   res.status(STATUS_USER_ERROR);
   if (err && err.message) {
@@ -45,16 +42,30 @@ const hashPassword = (req, res, next) => {
     })
     .catch((err) => {
       sendUserError(err, res);
-    })
-}
+    });
+};
+
+const loggedInUser = (req, res, next) => {
+  if (!req.session.username || !req.session.user) {
+    return sendUserError('User is not logged in.', res);
+  }
+  res.status(200).json(req.session.user);
+  next();
+};
+
+server.use('/restricted/*', (req, res, next) => {
+  if (!req.session.username || !req.session.user) {
+    return sendUserError('Must be logged in to view.', res);
+  }
+  next();
+});
+
 
 // TODO: implement routes
 server.post('/users', hashPassword, (req, res) => {
   const { username } = req.body;
   if (!username) return sendUserError(('Please provide a username'), res);
   const { passwordHash } = req;
-  // console.log(passwordHash)
-  // console.log('request object', req)
   const newUser = new User({ username, passwordHash });
   newUser.save()
     .then((user) => {
@@ -68,26 +79,23 @@ server.post('/users', hashPassword, (req, res) => {
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
-  // console.log(username, password);
   // VALIDATE username and password
   if (!username || !password) return sendUserError('Must provide all login credentials', res);
-  User.findOne({username})
+  User.findOne({ username })
     .then((user) => {
       // is 'user' in the db? ERROR CHECKING
       if (!user) return sendUserError('User with that name does not exists', res);
-      // does the given pswd hashed === the stored hashed pswd? ERROR CHECKING
-
+      // does the given pswd hashed = the stored hashed pswd? ERROR CHECKING
       // if (bcrypt.compareSync(password, user.passwordHash) === false) return sendUserError('Invalid password submission.', res);
-
       // .compareSync(password, dbHashedPassword) => true/false
+      // .compareSync okay for this simple assignment but async bcrypt more efficient
       if (bcrypt.compareSync(password, user.passwordHash)) {
         req.session.username = username;
         req.session.user = user;
         res.status(200).json({ success: true });
       } else {
-        return sendUserError('Password is not valid', res)
+        return sendUserError('Password is not valid', res);
       }
-
       // NO ERRORS
       // ADD SOME UNIQUE INFO TO THE SESSION OBJ
       // req.session.username = username;
@@ -96,22 +104,15 @@ server.post('/log-in', (req, res) => {
     })
     .catch((error) => {
       sendUserError(error, res);
-    })
-})
+    });
+});
 
 // TODO: add local middleware to this route to ensure the user is logged in
-
-const loggedInUser = (req, res, next) => {
-  if (!req.session.username || !req.session.user) {
-    return sendUserError('User is not logged in.', res)
-  }
-  res.status(200).json(req.session.user);
-  next();
-}
-
 server.get('/me', loggedInUser, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
+
+// server.listen(3000);
 
 module.exports = { server };
