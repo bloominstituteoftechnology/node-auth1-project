@@ -59,7 +59,10 @@ const sendUserError = (err, res) => {
 server.post("/users", (req, res) => {
   const { username, password } = req.body;
   if (!password || !username) {
-    sendUserError();
+    sendUserError(
+      { message: " make sure to send the username and password" },
+      res
+    );
   }
   const user = new User({ username, password });
   user
@@ -68,8 +71,10 @@ server.post("/users", (req, res) => {
       res.status(200).json(result);
     })
     .catch(err => {
-      console.log(err);
-      return sendUserError();
+      return sendUserError(
+        { message: "something went wrong creating the user" },
+        res
+      );
     });
 });
 
@@ -85,11 +90,10 @@ server.post("/login", (req, res) => {
     }
     user.checkPassword(password, (err, isMatch) => {
       if (err) {
-        sendUserError(err, res);
+        sendUserError(err);
       }
       if (isMatch) {
         req.session.user = user.username;
-        console.log(req.session.user);
         req.session.loggedIn = true;
         res.status(200).json({ isLoggedIn: true });
       } else {

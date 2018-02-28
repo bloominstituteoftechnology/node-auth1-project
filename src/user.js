@@ -25,7 +25,6 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre("save", function(next) {
-  console.log(this.password);
   bcrypt.hash(this.password, BCRYPT_COST).then(hashedPass => {
     this.password = hashedPass;
     next();
