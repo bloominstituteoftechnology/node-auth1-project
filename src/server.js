@@ -117,7 +117,7 @@ server.post('/login', (req, res) => {
     });
 });
 
-server.post('/restricted/logout', (req, res) => {
+server.post('/logout', (req, res) => {
   req.session.user = undefined;
   res.status(200).json({ successMessage: 'User logged out.' });
 });
