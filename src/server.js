@@ -1,7 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
-const bcrypt = requre('bcrypt');
+const bcrypt = require('bcrypt');
 
 const User = require('./user');
 
@@ -29,12 +29,14 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 
 server.post('/users', (req, res) => {
-  const { username, password } = req.body;
-  bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
+  const userInfo = req.body;
+  const newUser = new User(userInfo)
+  bcrypt.hash(newUser.passwordHash, BCRYPT_COST, (err, passwordHash) => {
     if (err) {
       throw new Error(err);
     } else {
-    User.save()
+    newUser.passwordHash = passwordHash;
+    newUser.save()
       .then(user => {
         res.status(201).json(user);
       })
