@@ -1,6 +1,9 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const bcrypt = require('bcrypt');
+
+const User = require('./user');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -29,6 +32,26 @@ const sendUserError = (err, res) => {
 server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
+});
+
+server.post('/users', (req, res) => {
+  const { username, passwordHash } = req.body;
+  const newUser = new User();
+  bcrypt.hash(passwordHash, BCRYPT_COST, (err, hash) => {
+    if (err) {
+      console.log({ error: err });
+    }
+    newUser.username = username;
+    newUser.passwordHash = hash;
+    newUser
+      .save()
+      .then((savedUser) => {
+        res.status(200).json(savedUser);
+      })
+      .catch((saveError) => {
+        sendUserError(saveError, res);
+      });
+  });
 });
 
 module.exports = { server };
