@@ -9,7 +9,17 @@ mongoose.Promise = Promise;
 mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
 
 const UserSchema = new mongoose.Schema({
-  // TODO: fill in this schema
+  username: {
+    type: String,
+    required: true,
+    trim: true,
+    unique: true,
+  },
+  passwordHash: {
+    type: String,
+    required: true,
+    trim: true,
+  }
 });
 
 module.exports = mongoose.model('User', UserSchema);
