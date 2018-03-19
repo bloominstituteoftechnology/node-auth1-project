@@ -1,3 +1,5 @@
+/* eslint no-underscore-dangle: "off" */
+
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
@@ -34,7 +36,7 @@ server.post('/users', (req, res) => {
     const createdUser = { username, passwordHash: hash };
     const newUser = new User(createdUser);
     newUser.save()
-    .then(savedUser => res.status(201).json(savedUser))
+    .then(savedUser => res.status(200).json(savedUser))
     .catch(error => sendUserError(error, res));
   });
 });
@@ -45,14 +47,22 @@ server.post('/log-in', (req, res) => {
     const hash = user[0].passwordHash;
     bcrypt.compare(password, hash, (err, pwCompare) => {
       if (err) res.status(500).json({ err: 'PW does not match' });
-      if (pwCompare === true) res.status(201).json({ success: true });
-      else { res.status(500).json({ err: 'PW does not match' })};
+      if (pwCompare === true) {
+        req.session.id = user[0]._id;
+        res.json({ success: true });
+      } else { res.status(500).json({ err: 'PW does not match' }); }
     });
-  });
+  }).catch(err => res.json(err));
 });
 
+const validatedUser = (req, res, next) => {
+  User.findById(req.session.id)
+    .then(user => res.json(user)).catch(err => sendUserError(err, res));
+  next();
+};
+
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+server.get('/me', validatedUser, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
