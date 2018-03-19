@@ -31,17 +31,20 @@ server.post('/users', (req, res) => {
   if (!username || !password) {
     sendUserError('You must provide a valid username and password to sign up', res);
   }
-  const passwordHash = password;
-  const user = new User({
-    username, passwordHash
+  bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
+    if (err) {
+      res.status(500).json({ error: 'There was an error encrypting your password' });
+      return;
+    }
+    const user = new User({ username, passwordHash });
+    user.save()
+      .then((newUser) => {
+        res.json(newUser);
+      })
+      .catch((ERROR) => {
+        res.status(500).json({ error: 'There was a server error while signing up', ERROR });
+      });
   });
-  user.save()
-    .then((newUser) => {
-      res.json(newUser);
-    })
-    .catch((err) => {
-      sendUserError(err, res);
-    });
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
