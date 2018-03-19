@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const User = require('./user.js');
+const mongoose = require('mongoose');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -11,7 +12,9 @@ const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+  resave: true,
+  saveUninitialized: false
 }));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
@@ -42,6 +45,24 @@ server.post('/users', (req, res) => {
   });
 
 });
+
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  const hashedPw = User.passwordHash;
+  
+
+  User.findOne(username)
+    .then(user => {
+      if (user === username) {
+        bcrypt
+        .compare(password, hashedPw)
+      } else {
+        sendUserError('Could not find username', res);
+      }
+
+    })
+
+})
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
