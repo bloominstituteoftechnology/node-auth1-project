@@ -4,7 +4,9 @@ const express = require('express');
 const session = require('express-session');
 const User = require ('./user.js');
 const bcrypt = require('bcrypt');
+
 const STATUS_USER_ERROR = 422;
+const STATUS_SUCCESS = 200;
 const BCRYPT_COST = 11;
 
 const server = express();
@@ -14,24 +16,62 @@ server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
 }));
 
+const logInTracker = (req, res, next) => {
+	if (res.session.loggedIn) {
+		User.findOne({ username: req.session.username })
+			.then(user => {
+				res.user = user;
+				next();
+			})
+			.catch(err => {
+				sendUserError(err, res);
+			});
+	}	else {
+		sendUserError(err, res);
+	}
+}
+
+server.post('/users', (req, res) => {
+	const { username, password } = req.body;
+	if (!username || !password) {
+		res.status(STATUS_USER_ERROR).json('Username or password does not match the user.');
+	} else {
+		bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
+			const newUser = { username, passwordHash: hash };
+			const user = new User(newUser);
+			if (err) {
+				sendUserError(err, res);
+			} else {
+				user
+					.save()
+					.then(createUser => {
+						res.status(STATUS_SUCCESS).json(createUser);
+					})
+					.catch(err => {
+						sendUserError(err, res);
+					});
+			}
+		});
+	}
+});
+
 server.post('/log-in', (req, res) => {
 	const { username, password } = req.body;
 	const hash = req.passwordHash;
-  User.forEach(record => {
-		if (record.username === username) {
-	    bcrypt.compare(myPlaintextPassword, hash, (err, res) => {
-         res == true
-     });
-		 if (record.password === password) {
-		   res.json({ success: true })
-			 return;
-			 } else {
-			 res.status(403).json({ error: 'Login rejected' });
-			 return;
-			}
+
+	bcrypt.compare(password, hash, (err, res) => {
+		if (err) {
+			sendUserError(err, res);
 		}
-	});
+		else if (res) {
+				res.json({ success: true });
+				return;
+		} else {
+			sendUserError(err, res);
+		}
+	})
 });
+
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 const sendUserError = (err, res) => {
