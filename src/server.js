@@ -51,7 +51,21 @@ server.post('/users', (req, res) => {
 });
 
 server.post('/log-in', (req, res) => {
-
+  const { username, password } = req.body;
+  User
+    .findOne({ username }, '_id passwordHash')
+    .then(user => {
+      bcrypt.compare(password, user.passwordHash, (err, res) => {
+        if(err) {
+          sendUserError(err, res);
+        } else{
+          res.status(201).json({ success: true });
+        }
+      });
+    })
+    .catch(err => {
+      sendUserError(err, res);
+    });
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
