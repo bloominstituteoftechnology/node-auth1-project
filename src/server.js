@@ -26,16 +26,28 @@ const sendUserError = (err, res) => {
   }
 };
 
+const checkUser = (req, res, next) => {
+  if (!req.session.user) {
+    sendUserError('User is not authorized', res);
+  }
+  req.user = req.session.user;
+  console.log(req.user);
+  next();
+};
+
 // TODO: implement routes
 
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+server.get('/me', checkUser, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
 
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
+  if (!password || password === '') {
+    res.status(STATUS_USER_ERROR).json({ error: 'You must enter a password' });
+  }
   const newUser = new User();
   bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
     if (err) {
@@ -56,20 +68,25 @@ server.post('/users', (req, res) => {
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
-  User.findOne({ username }).then( user => {
-  	bcrypt.compare(password, user.passwordHash, function(err, valid){
- 		if(err){
- 			console.log({ error: err });
- 		} else if (valid) {
- 			req.session.username = user.username;
- 			res.json({ success: true });
- 		} else {
- 			res.json({ success: false });
- 		}
-  	});
-  }).catch((saveError) => {
-  	sendUserError(saveError, res);
-  });
+  if (!password) {
+    sendUserError('Missing Passwor!', res);
+  }
+  User.findOne({ username })
+    .then((user) => {
+      bcrypt.compare(password, user.passwordHash, (err, valid) => {
+        if (err) {
+          console.log({ error: err });
+        } else if (valid) {
+          req.session.user = user;
+          res.status(200).json({ success: true });
+        } else {
+          res.status(422).json({ success: false });
+        }
+      });
+    })
+    .catch((saveError) => {
+      sendUserError(saveError, res);
+    });
 });
 
 module.exports = { server };
