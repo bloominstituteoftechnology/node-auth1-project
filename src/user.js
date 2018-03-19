@@ -6,7 +6,11 @@ mongoose.models = {};
 mongoose.modelSchemas = {};
 
 mongoose.Promise = Promise;
-mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
+
+mongoose
+  .connect('mongodb://localhost/users', { useMongoClient: true })
+  .then(() => console.log('API connected...MongoDB connected...'))
+  .catch(() => console.log('Connection to API failed'));
 
 const UserSchema = new mongoose.Schema({
   username: {
