@@ -1,9 +1,12 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const bcrypt = require('bcrypt');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
+
+const User = require('./user.js');
 
 const server = express();
 // to enable parsing of json bodies for post requests
@@ -24,6 +27,23 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+server.post('/users/:username&:password', (req, res) => {
+  const { username, password } = req.params;
+  bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
+    if (err) return sendUserError(err);
+    const newUser = new User({username, passwordHash})
+    newUser
+      .save()
+      .then((savedUser) => res.status(201).send(savedUser))
+      .catch(err => sendUserError(err, res));
+  })
+})
+
+server.get('/users/dev', (req, res) => {
+  User.find({})
+    .then(results => res.status(200).send(results))
+    .catch(err => sendUserError(err, res));
+})
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
