@@ -1,7 +1,9 @@
+/*eslint-disable*/
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
-
+const User = require ('./user.js');
+const bcrypt = require('bcrypt');
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
@@ -12,6 +14,24 @@ server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
 }));
 
+server.post('/log-in', (req, res) => {
+	const { username, password } = req.body;
+	const hash = req.passwordHash;
+  User.forEach(record => {
+		if (record.username === username) {
+	    bcrypt.compare(myPlaintextPassword, hash, (err, res) => {
+         res == true
+     });
+		 if (record.password === password) {
+		   res.json({ success: true })
+			 return;
+			 } else {
+			 res.status(403).json({ error: 'Login rejected' });
+			 return;
+			}
+		}
+	});
+});
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 const sendUserError = (err, res) => {
