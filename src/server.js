@@ -45,7 +45,7 @@ const hashPw = (req, res, next) => {
 server.post('/users', hashPw, (req, res) => {
   const session = req.session;
   const { username, pw } = req.body;
-  const user = new User({ username, passHash: pw });
+  const user = new User({ username, passwordHash: pw });
   user.save((err, savedUser) => {
     if (err || !savedUser) {
       sendUserError('No user was saved', res);
