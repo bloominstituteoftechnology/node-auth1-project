@@ -29,11 +29,14 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 
 server.post('/users', (req, res) => {
-  const userInfo = req.body;
+  const userInfo = {
+    username: req.body.username,
+    passwordHash: req.body.password
+  };
   const newUser = new User(userInfo)
   bcrypt.hash(newUser.passwordHash, BCRYPT_COST, (err, passwordHash) => {
     if (err) {
-      throw new Error(err);
+      sendUserError(err, res);
     } else {
     newUser.passwordHash = passwordHash;
     newUser.save()
@@ -45,6 +48,10 @@ server.post('/users', (req, res) => {
       })
     }
   });
+});
+
+server.post('/log-in', (req, res) => {
+
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
