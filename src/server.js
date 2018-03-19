@@ -12,7 +12,8 @@ const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+  authed: false,
 }));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
@@ -37,6 +38,26 @@ server.post('/users/:username&:password', (req, res) => {
       .then((savedUser) => res.status(201).send(savedUser))
       .catch(err => sendUserError(err, res));
   })
+})
+
+server.post('/users/log-in/:username&:password', (req, res) => {
+  const { username, password } = req.params;
+  User.findOne({ username: username })
+    .then(foundUser => {
+      bcrypt.compare(password, foundUser.passwordHash, (err, passwordsMatch) => {
+        console.log('The PW is:', password);
+        console.log('The hash for user we are matching is:', foundUser);
+        if (passwordsMatch) {
+          const session = req.session;
+          session.activeUser = username;
+          session.authed = true;
+          res.status(500).send({ success: true });
+        } else {
+          res.status(500).send({errorMessage: 'Passwords don\'t match!'});
+        }
+      })
+    })
+    .catch(err => sendUserError(err, res));
 })
 
 server.get('/users/dev', (req, res) => {
