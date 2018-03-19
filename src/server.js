@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const bcrypt = require('bcrypt');
 const User = require('./user.js');
 
 const STATUS_USER_ERROR = 422;
