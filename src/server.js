@@ -43,7 +43,6 @@ const hashPw = (req, res, next) => {
 // TODO: implement routes
 
 server.post('/users', hashPw, (req, res) => {
-  const session = req.session;
   const { username, pw } = req.body;
   const user = new User({ username, passwordHash: pw });
   user.save((err, savedUser) => {
