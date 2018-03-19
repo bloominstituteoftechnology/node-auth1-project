@@ -58,22 +58,24 @@ server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
   if (!(username && password)) {
     sendUserError({ message: 'Username and password required' }, res);
-  }
-  User
-    .findOne({ username }, '_id passwordHash')
-    .then((user) => {
-      bcrypt.compare(password, user.passwordHash, (err, resp) => {
-        if (!resp) {
-          sendUserError({ message: 'Password is INCORRECT' }, res);
-        } else {
-          res.status(200).json({ success: true });
-        }
+  } else {
+    User
+      .findOne({ username }, '_id passwordHash')
+      .then((user) => {
+        bcrypt.compare(password, user.passwordHash, (err, resp) => {
+          if (!resp) {
+            sendUserError({ message: 'Password is INCORRECT' }, res);
+          } else {
+            session({currentUserId: user._id});
+            res.status(200).json({ success: true });
+          }
+        });
+      })
+      .catch((err) => {
+        console.log('failure to find the One');
+        sendUserError(err, res);
       });
-    })
-    .catch((err) => {
-      console.log('failure to find the One');
-      sendUserError(err, res);
-    });
+  }
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
