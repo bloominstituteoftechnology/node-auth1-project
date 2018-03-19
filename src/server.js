@@ -27,8 +27,9 @@ const sendUserError = (err, res) => {
 
 // TODO: implement routes
 server.post('/users', (req, res) => {
-  const { username, password } = req.body;
-  bcrypt.hash(password, 11, (err, passwordHash) => {
+  const { username } = req.body; 
+  const { passwordHash } = req.body;
+  bcrypt.hash(passwordHash, 11, (err, passwordHash) => {
     if (err) throw new Error(err);
     const newUser = new User(
       { username, passwordHash }
@@ -37,7 +38,10 @@ server.post('/users', (req, res) => {
       .then(savedUser => {
         res.status(200).json(savedUser);
       })
+      .catch(sendUserError('Could not save user.', res))
   });
+  
+
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
