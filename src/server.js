@@ -43,11 +43,10 @@ server.post('/users', (req, res) => {
     newUser
       .save()
       .then((user) => {
-        console.log('USER', user);
         res.status(201).json({ message: 'User Created', user });
       })
       .catch((error) => {
-        res.status(400).json({ error });
+        sendUserError(error, res);
       });
   });
 });
