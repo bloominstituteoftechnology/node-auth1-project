@@ -47,6 +47,26 @@ server.post('/users', (req, res) => {
   });
 });
 
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    sendUserError('You must provide a username and password to sign in', res);
+    return;
+  }
+  User.find({ username })
+    .exec((err, found) => {
+      if (found.length === 0) {
+        res.status(404).json({ error: 'No user found for that username' });
+        return;
+      }
+      if (err) {
+        res.status(500).json({ message: 'Internal server error while processing', err });
+        return;
+      }
+      res.status(200).json({ message: 'User located', found });
+    });
+});
+
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
