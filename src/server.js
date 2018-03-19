@@ -3,6 +3,8 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 
+const User = require('./user.js');
+
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
@@ -10,7 +12,9 @@ const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+  resave: true,
+  saveUninitialized: true
 }));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
@@ -26,6 +30,7 @@ const sendUserError = (err, res) => {
 
 const hashPw = (req, res, next) => {
   const { password } = req.body;
+  console.log(password);
   if (!password || password.length === 0) {
     sendUserError('Please provide a password.', res);
   } else {
@@ -33,7 +38,7 @@ const hashPw = (req, res, next) => {
       if (err) {
         sendUserError(err, res);
       } else {
-        req.body.hashedPw;
+        req.body.hashedPw = hashedPw;
       }
       next();
     });
@@ -42,10 +47,17 @@ const hashPw = (req, res, next) => {
 
 // TODO: implement routes
 
+server.get('/', (req, res) => {
+  res.json({ message: 'API running...' });
+});
+
 server.post('/users', hashPw, (req, res) => {
-  const { username, pw } = req.body;
-  const user = new User({ username, passwordHash: pw });
+  const { username, hashedPw } = req.body;
+  // const { hashedPw } = req;
+  // console.log(req.body);
+  const user = new User({ username, passwordHash: hashedPw });
   user.save((err, savedUser) => {
+    console.log(err, savedUser);
     if (err || !savedUser) {
       sendUserError('No user was saved', res);
     } else {
