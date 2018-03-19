@@ -12,6 +12,13 @@ server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
 }));
 
+
+
+//==============================================================================
+//                                MIDDLEWARE
+//==============================================================================
+
+
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 const sendUserError = (err, res) => {
@@ -24,6 +31,12 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+
+
+//==============================================================================
+//                                ROUTES
+//==============================================================================
+
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
