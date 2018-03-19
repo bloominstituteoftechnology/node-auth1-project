@@ -29,23 +29,24 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 
 server.post('/users', (req, res) => {
+  if (!req.body.password) { sendUserError({ error: 'password required' }, res); }
   const userInfo = {
     username: req.body.username,
     passwordHash: req.body.password
   };
-  const newUser = new User(userInfo)
+  const newUser = new User(userInfo);
   bcrypt.hash(newUser.passwordHash, BCRYPT_COST, (err, passwordHash) => {
     if (err) {
       sendUserError(err, res);
     } else {
-    newUser.passwordHash = passwordHash;
-    newUser.save()
-      .then(user => {
-        res.status(201).json(user);
-      })
-      .catch(err => {
-        sendUserError(err, res);
-      })
+      newUser.passwordHash = passwordHash;
+      newUser.save()
+        .then((user) => {
+          res.status(200).json(user);
+        })
+        .catch((catchErr) => {
+          sendUserError(catchErr, res);
+        });
     }
   });
 });
@@ -54,16 +55,17 @@ server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
   User
     .findOne({ username }, '_id passwordHash')
-    .then(user => {
-      bcrypt.compare(password, user.passwordHash, (err, res) => {
-        if(err) {
+    .then((user) => {
+      bcrypt.compare(password, user.passwordHash, (err, resp) => {
+        if (!resp) {
           sendUserError(err, res);
-        } else{
+        } else {
           res.status(201).json({ success: true });
         }
       });
     })
-    .catch(err => {
+    .catch((err) => {
+      console.log('failure to find the One');
       sendUserError(err, res);
     });
 });
