@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const User = require('./user.js');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -24,6 +25,23 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+server.post('/users', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    sendUserError('You must provide a valid username and password to sign up', res);
+  }
+  const passwordHash = password;
+  const user = new User({
+    username, passwordHash
+  });
+  user.save()
+    .then((newUser) => {
+      res.json(newUser);
+    })
+    .catch((err) => {
+      sendUserError(err, res);
+    });
+});
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
