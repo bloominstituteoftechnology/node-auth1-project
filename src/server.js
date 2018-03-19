@@ -14,7 +14,25 @@ server.use(bodyParser.json());
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
   authed: false,
+  resave: true,
+  saveUninitialized: false,
 }));
+
+const authenticateUserMW = (req, res, next) => {
+  const session = req.session;
+  if (session.UA === req.headers['cookie']) {
+    User
+      .findOne({ username: session.username })
+      .then(foundUser => {
+        req.user = foundUser;
+        console.log('The value of req.user is:', req.user);
+        next();
+      })
+      .catch(err => sendUserError(err, res));
+  } else {
+    res.status(500).send({ errorMessage: 'Ya dun goofed' });
+  }
+}
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -45,12 +63,10 @@ server.post('/users/log-in/:username&:password', (req, res) => {
   User.findOne({ username: username })
     .then(foundUser => {
       bcrypt.compare(password, foundUser.passwordHash, (err, passwordsMatch) => {
-        console.log('The PW is:', password);
-        console.log('The hash for user we are matching is:', foundUser);
         if (passwordsMatch) {
           const session = req.session;
-          session.activeUser = username;
-          session.authed = true;
+          session.username = username;
+          session.UA = req.headers['cookie'];
           res.status(500).send({ success: true });
         } else {
           res.status(500).send({errorMessage: 'Passwords don\'t match!'});
@@ -61,13 +77,14 @@ server.post('/users/log-in/:username&:password', (req, res) => {
 })
 
 server.get('/users/dev', (req, res) => {
+  res.send(req.session);
   User.find({})
     .then(results => res.status(200).send(results))
     .catch(err => sendUserError(err, res));
 })
 
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+server.get('/me', authenticateUserMW, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
