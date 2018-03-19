@@ -40,7 +40,6 @@ server.post('/users', (req, res) => {
       })
       .catch(sendUserError('Could not save user.', res))
   });
-  
 
 });
 
