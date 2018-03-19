@@ -37,15 +37,39 @@ server.post('/users', (req, res) => {
     const user = new User(newUser);
     user.save()
       .then((response) => {
-        console.log('response', response);
+        // console.log('response', response);
         res.status(200).json({ username: response.username, passwordHash: response.passwordHash });
       })
       .catch(error => sendUserError(error, res));
   });
 });
+
+server.post('/log-in', (req, res) => {
+  const UA = req.headers['cookie'];
+  req.session.UA = UA;
+  const { username, password } = req.body;
+  if (!username || !password) {
+    res.status(422).json({ error: 'Username and Password required' });
+  }
+  User.findOne({ username })
+  .then((response) => {
+    bcrypt.compare(password, response.passwordHash)
+    .then((pass) => {
+      if (pass) {
+        req.session.username = username;
+        req.session.isAuth = true;
+        res.status(200).json({ success: true });
+      }
+    })
+    .catch(err => sendUserError(err, res));
+  })
+  .catch(err => err);
+});
+
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
+  console.log(req.session);
   res.json(req.user);
 });
 
