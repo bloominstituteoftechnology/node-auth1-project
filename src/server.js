@@ -9,7 +9,9 @@ const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+  resave: true,
+  saveUninitialized: false
 }));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
@@ -24,6 +26,19 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+server.post('/users', (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username) {
+    res.status(STATUS_USER_ERROR).json({ error: 'You must provide a username' });
+  }
+  if (!password) {
+    res.status(STATUS_USER_ERROR).json({ error: 'You must provide a password' });
+  }
+
+  // hash password
+  // save user in MongoDB (create)
+});
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
