@@ -40,7 +40,15 @@ server.post('/users', (req, res) => {
 });
 
 server.post('/log-in', (req, res) => {
-
+  const { username, password } = req.body;
+  User.find({ username }).then((user) => {
+    const hash = user[0].passwordHash;
+    bcrypt.compare(password, hash, (err, pwCompare) => {
+      if (err) res.status(500).json({ err: 'PW does not match' });
+      if (pwCompare === true) res.status(201).json({ success: true });
+      else { res.status(500).json({ err: 'PW does not match' })};
+    });
+  });
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
