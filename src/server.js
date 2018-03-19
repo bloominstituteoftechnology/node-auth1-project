@@ -19,6 +19,17 @@ server.use(
   })
 );
 
+const routeCheck = (req,res,next) => {
+  if (req.path.includes('restricted')) {
+  if (!req.session.username) return res.status(400).json({err: "Failed to log in."})
+  next();
+  }
+  else next();
+};
+
+server.use(routeCheck);
+
+
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 const sendUserError = (err, res) => {
@@ -32,7 +43,7 @@ const sendUserError = (err, res) => {
 
 server.post('/users', (req, res) => {
   if (!req.body.username || !req.body.password) {
-    res.status(400).json({ error: 'Need username and password' });
+    res.status(422).json({ error: 'Need username and password' });
   }
 
   const hashedPassword = bcrypt.hash(req.body.password, BCRYPT_COST, (err, hashed) => {
@@ -43,7 +54,7 @@ server.post('/users', (req, res) => {
     newUser
       .save()
       .then(user => {
-        res.status(201).json({ message: 'User Created', user });
+        res.status(200).json({ message: 'User Created', user });
       })
       .catch(error => {
         sendUserError(error, res);
@@ -53,19 +64,19 @@ server.post('/users', (req, res) => {
 
 server.post('/log-in', (req, res) => {
   if (!req.body.username || !req.body.password) {
-    res.status(400).json({ error: 'Need username and password' });
+    res.status(422).json({ error: 'Need username and password' });
   }
 
   const { username, password } = req.body;
 
   User.findOne({ username })
     .then(userFound => {
+      console.log('Firing Here1?')
       bcrypt
         .compare(password, userFound.passwordHash, (err, hash) => {
           if (err) sendUserError(err, res);
           if (hash) {
             req.session.username = username;
-            console.log("USERNAME in COMPARE", req.session.username)
             res.status(200).json({ success: true });
           }
         })
@@ -80,14 +91,19 @@ server.post('/log-in', (req, res) => {
 
 const loggedIn = (req,res,next) => {
   if (!req.session.username) return res.status(400).json({err: "Failed to log in."})
-  req.user = req.session.username;
-  console.log("REQ.USER", req.user)
+  req.username = req.session.username;
   next();
 }
+
+
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', loggedIn, (req, res) => {
   // Do NOT modify this route handler in any way.
-  res.json(req.user);
+  res.json(req.username);
+});
+
+server.get('/restricted/', (req,res) => {
+  res.status(200).json('Restricted Working');
 });
 
 module.exports = { server };
