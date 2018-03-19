@@ -32,7 +32,7 @@ const sendUserError = (err, res) => {
 
 server.post('/users', (req, res) => {
   if (!req.body.username || !req.body.password) {
-    res.status(400).json({error: "Need username and password"});
+    res.status(400).json({ error: 'Need username and password' });
   }
 
   const hashedPassword = bcrypt.hash(req.body.password, BCRYPT_COST, (err, hashed) => {
@@ -42,10 +42,10 @@ server.post('/users', (req, res) => {
 
     newUser
       .save()
-      .then((user) => {
+      .then(user => {
         res.status(201).json({ message: 'User Created', user });
       })
-      .catch((error) => {
+      .catch(error => {
         sendUserError(error, res);
       });
   });
@@ -53,39 +53,39 @@ server.post('/users', (req, res) => {
 
 server.post('/log-in', (req, res) => {
   if (!req.body.username || !req.body.password) {
-    res.status(400).json({error: "Need username and password"});
+    res.status(400).json({ error: 'Need username and password' });
   }
-  
-  const {username, password} = req.body;
-  
+
+  const { username, password } = req.body;
+
   User.findOne({ username })
     .then(userFound => {
-      bcrypt.compare(password, userFound.passwordHash, (err, hash) => {
-        if(err) sendUserError(error, res);
-        if(hash) {
-          session.username = username;
-          console.log("Session username stored", session.username);
-          res.status(200).json({ success: true });
-        }
-      })
-      .catch(err => {sendUserError(err, res);})
+      bcrypt
+        .compare(password, userFound.passwordHash, (err, hash) => {
+          if (err) sendUserError(err, res);
+          if (hash) {
+            req.session.username = username;
+            console.log("USERNAME in COMPARE", req.session.username)
+            res.status(200).json({ success: true });
+          }
+        })
+        .catch(err => {
+          sendUserError(err, res);
+        });
     })
-    .catch(err => { sendUserError(error, hash); });
-
+    .catch(err => {
+      sendUserError(err);
+    });
 });
 
-
-
-/*
-(err, hashedPw) => {
-    if (err) throw new Error(err);
-    dataBase.push({ username, hashedPw });
-    res.json({ dataBase });
-  });
-*/
-
+const loggedIn = (req,res,next) => {
+  if (!req.session.username) return res.status(400).json({err: "Failed to log in."})
+  req.user = req.session.username;
+  console.log("REQ.USER", req.user)
+  next();
+}
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+server.get('/me', loggedIn, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
