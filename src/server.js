@@ -7,13 +7,14 @@ const User = require('./user.js');
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
-
 const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
-server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
-}));
+server.use(
+  session({
+    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+  })
+);
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -27,13 +28,21 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
-server.post('users', (req, res) => {
-  const { username, passwordHash } = req.body;
-  Bcrypt.hash(passwordHash, 11, (err, hashPass) => {
-    if (err) throw Error(err);
+server.post('/users', (req, res) => {
+  const { username, password } = req.body;
+  Bcrypt.hash(password, 11, (error, passwordHash) => {
+    if (error) {
+      console.log(error);
+      throw new Error(error);
+    }
+    User.create({ username, passwordHash })
+      .then((addedUser) => {
+        res.status(201).send(addedUser);
+      })
+      .catch((err) => {
+        sendUserError(err, res);
+      });
   });
-  const newUser = new User({ username, hashPass });
-  User.create({ username, passwordHash })
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in

@@ -2,9 +2,11 @@
   "name": "ls-auth",
   "version": "0.0.1",
   "description": "LambdaSchool Auth",
+  "main": "./src/app.js",
   "scripts": {
-    "test": "eslint tests/*.js && eslint src/*.js && mocha -R nyan tests",
-    "watch": "npm test -- --watch"
+    "test": "mocha -R nyan tests",
+    "watch": "npm test -- --watch",
+    "start": "nodemon app.js"
   },
   "license": "ISC",
   "dependencies": {
