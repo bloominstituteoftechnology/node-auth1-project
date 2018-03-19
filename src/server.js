@@ -29,38 +29,44 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 
 server.post('/users', (req, res) => {
-  if (!req.body.password) { sendUserError({ error: 'password required' }, res); }
-  const userInfo = {
-    username: req.body.username,
-    passwordHash: req.body.password
-  };
-  const newUser = new User(userInfo);
-  bcrypt.hash(newUser.passwordHash, BCRYPT_COST, (err, passwordHash) => {
-    if (err) {
-      sendUserError(err, res);
-    } else {
-      newUser.passwordHash = passwordHash;
-      newUser.save()
-        .then((user) => {
-          res.status(200).json(user);
-        })
-        .catch((catchErr) => {
-          sendUserError(catchErr, res);
-        });
-    }
-  });
+  if (!(req.body.password && req.body.username)) {
+    sendUserError({ message: 'Username and password required' }, res);
+  } else {
+    const userInfo = {
+      username: req.body.username,
+      passwordHash: req.body.password
+    };
+    const newUser = new User(userInfo);
+    bcrypt.hash(newUser.passwordHash, BCRYPT_COST, (err, passwordHash) => {
+      if (err) {
+        sendUserError(err, res);
+      } else {
+        newUser.passwordHash = passwordHash;
+        newUser.save()
+          .then((user) => {
+            res.status(200).json(user);
+          })
+          .catch((catchErr) => {
+            sendUserError(catchErr, res);
+          });
+      }
+    });
+  }
 });
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
+  if (!(username && password)) {
+    sendUserError({ message: 'Username and password required' }, res);
+  }
   User
     .findOne({ username }, '_id passwordHash')
     .then((user) => {
       bcrypt.compare(password, user.passwordHash, (err, resp) => {
         if (!resp) {
-          sendUserError(err, res);
+          sendUserError({ message: 'Password is INCORRECT' }, res);
         } else {
-          res.status(201).json({ success: true });
+          res.status(200).json({ success: true });
         }
       });
     })
