@@ -35,9 +35,9 @@ server.get('/me', (req, res) => {
 });
 
 server.post('/users', (req, res) => {
-  const { username, passwordHash } = req.body;
+  const { username, password } = req.body;
   const newUser = new User();
-  bcrypt.hash(passwordHash, BCRYPT_COST, (err, hash) => {
+  bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
     if (err) {
       console.log({ error: err });
     }
@@ -51,6 +51,24 @@ server.post('/users', (req, res) => {
       .catch((saveError) => {
         sendUserError(saveError, res);
       });
+  });
+});
+
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  User.findOne({ username }).then( user => {
+  	bcrypt.compare(password, user.passwordHash, function(err, valid){
+ 		if(err){
+ 			console.log({ error: err });
+ 		} else if (valid) {
+ 			req.session.username = user.username;
+ 			res.json({ success: true });
+ 		} else {
+ 			res.json({ success: false });
+ 		}
+  	});
+  }).catch((saveError) => {
+  	sendUserError(saveError, res);
   });
 });
 
