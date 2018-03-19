@@ -32,7 +32,7 @@ const sendUserError = (err, res) => {
 
 server.post('/users', (req, res) => {
   if (!req.body.username || !req.body.password) {
-    return sendUserError();
+    res.status(400).json({error: "Need username and password"});
   }
 
   const hashedPassword = bcrypt.hash(req.body.password, BCRYPT_COST, (err, hashed) => {
@@ -50,6 +50,31 @@ server.post('/users', (req, res) => {
       });
   });
 });
+
+server.post('/log-in', (req, res) => {
+  if (!req.body.username || !req.body.password) {
+    res.status(400).json({error: "Need username and password"});
+  }
+  
+  const {username, password} = req.body;
+  
+  User.findOne({ username })
+    .then(userFound => {
+      bcrypt.compare(password, userFound.passwordHash, (err, hash) => {
+        if(err) sendUserError(error, res);
+        if(hash) {
+          session.username = username;
+          console.log("Session username stored", session.username);
+          res.status(200).json({ success: true });
+        }
+      })
+      .catch(err => {sendUserError(err, res);})
+    })
+    .catch(err => { sendUserError(error, hash); });
+
+});
+
+
 
 /*
 (err, hashedPw) => {
