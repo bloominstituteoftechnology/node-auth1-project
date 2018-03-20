@@ -45,21 +45,19 @@ server.post('/users', (req, res) => {
   if (!req.body.username || !req.body.password) {
     res.status(422).json({ error: 'Need username and password' });
   }
+  const {username, password} = req.body;
+  const newUser = new User({ username, passwordHash: password });
 
-  const hashedPassword = bcrypt.hash(req.body.password, BCRYPT_COST, (err, hashed) => {
-    if (err) throw new Error(err);
-
-    const newUser = new User({ username: req.body.username, passwordHash: hashed });
-
-    newUser
-      .save()
-      .then(user => {
-        res.status(200).json({ message: 'User Created', user });
-      })
-      .catch(error => {
-        sendUserError(error, res);
-      });
-  });
+  newUser
+    .save()
+    .then(user => {
+      console.log("saving new user: ", user);
+      res.send(user);
+      res.status(200).json({ message: 'User Created', user });
+    })
+    .catch(error => {
+      sendUserError(error, res);
+    });
 });
 
 server.post('/log-in', (req, res) => {
@@ -67,31 +65,30 @@ server.post('/log-in', (req, res) => {
     res.status(422).json({ error: 'Need username and password' });
   }
 
-  const { username, password } = req.body;
-
+  let { username, password } = req.body;
+  username = username.toLowerCase();
   User.findOne({ username })
     .then(userFound => {
-      console.log('Firing Here1?')
-      bcrypt
-        .compare(password, userFound.passwordHash, (err, hash) => {
-          if (err) sendUserError(err, res);
-          if (hash) {
+      console.log("Found User:", userFound);
+      bcrypt.compare(password, userFound.passwordHash)
+        .then(result => {
+          if (result) {
             req.session.username = username;
             res.status(200).json({ success: true });
           }
         })
         .catch(err => {
-          sendUserError(err, res);
-        });
+          sendUserError(err,res);
+      });
     })
     .catch(err => {
-      sendUserError(err);
+      sendUserError(err,res);
     });
 });
 
 const loggedIn = (req,res,next) => {
   if (!req.session.username) return res.status(400).json({err: "Failed to log in."})
-  req.username = req.session.username;
+  req.user = req.session.username;
   next();
 }
 
@@ -99,7 +96,7 @@ const loggedIn = (req,res,next) => {
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', loggedIn, (req, res) => {
   // Do NOT modify this route handler in any way.
-  res.json(req.username);
+  res.json(req.user);
 });
 
 server.get('/restricted/', (req,res) => {
