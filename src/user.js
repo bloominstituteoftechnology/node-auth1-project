@@ -1,3 +1,5 @@
+/* eslint no-console: 0 */
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
@@ -12,10 +14,10 @@ const BCRYPT_COST = 11;
 
 mongoose
   .connect('mongodb://localhost/users', { useMongoClient: true })
-  .then(res => {
+  .then((res) => {
     console.log('Successfully connected to MongoDB');
   })
-  .catch(err => {
+  .catch((err) => {
     console.log('Database connection failed. Error: ', err);
   });
 
@@ -33,14 +35,14 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-UserSchema.methods.checkPassword = function(potentialPass, cb) {
+UserSchema.methods.checkPassword = function (potentialPass, cb) {
   bcrypt.compare(potentialPass, this.passwordHash, (err, passwordsMatch) => {
     if (err) return cb(err);
     cb(null, passwordsMatch);
   });
 };
 
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function (next) {
   bcrypt.hash(this.passwordHash, BCRYPT_COST, (err, hashed) => {
     if (err) return next(err);
     this.passwordHash = hashed;

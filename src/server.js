@@ -1,3 +1,5 @@
+/* eslint no-console: 0 */
+
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
@@ -19,29 +21,12 @@ server.use(
 
 // Stretch problem global middleware
 const restrictedAccess = (req, res, next) => {
-  const session = req.session;
-  if (session.UA === req.headers['cookie']) next();
+  if (req.session.UA === req.headers.cookie) next();
   else res.status(404).send({ msg: 'You must log in to view this page.' });
 };
 
 // Stretch problem solution line which pairs with restrictedAccess on line 22
 server.use('/restricted', restrictedAccess);
-
-const authenticateUserMW = (req, res, next) => {
-  const session = req.session;
-  console.log(session.UA);
-  console.log(req.headers['cookie']);
-  if (session.UA === req.headers['cookie']) {
-    User.findOne({ username: session.username })
-      .then(foundUser => {
-        req.user = foundUser;
-        next();
-      })
-      .catch(err => sendUserError(err, res));
-  } else {
-    res.status(500).send({ errorMessage: 'You are not logged in.' });
-  }
-};
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -54,34 +39,53 @@ const sendUserError = (err, res) => {
   }
 };
 
+const authenticateUserMW = (req, res, next) => {
+  console.log(req.session.UA);
+  console.log(req.headers.cookie);
+  if (req.session.UA === req.headers.cookie) {
+    User.findOne({ username: req.session.username })
+      .then((foundUser) => {
+        req.user = foundUser;
+        res.status(200);
+        next();
+      })
+      .catch(err => sendUserError(err, res));
+  } else {
+    sendUserError({ Error: 'User must be logged in.' }, res);
+  }
+};
+
+
 // TODO: implement routes
-server.post('/users/:username&:password', (req, res) => {
-  const { username, password } = req.params;
+server.post('/users', (req, res) => {
+  const { username, password } = req.body;
   const newUser = new User({ username, passwordHash: password });
   newUser
     .save()
-    .then(savedUser => res.status(201).send(savedUser))
+    .then(user => res.status(200).send(user))
     .catch(err => sendUserError(err, res));
 });
 
-server.post('/log-in/:username&:password', (req, res) => {
-  const { username, password } = req.params;
-  User.findOne({ username: username })
-    .then(foundUser => {
-      if (foundUser === null)
-        res.status(404).send({ Error: 'Must use valid username/password' });
-      else {
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || username === '' || username === null) sendUserError({ Error: 'Must enter username' }, res);
+  if (!password || password === '' || password === null) sendUserError({ Error: 'Must enter password' }, res);
+  User.findOne({ username })
+    .then((foundUser) => {
+      if (foundUser === null) {
+        sendUserError({ Error: 'Must use valid username/password' }, res);
+      } else {
         foundUser.checkPassword(password, (err, validated) => {
-          if (err) return sendUserError(err);
-          else if (!validated)
-            res.status(404).send({ Error: 'Must use valid username/password' });
-          else if (validated) {
-            const session = req.session;
-            session.username = username;
-            session.UA = req.headers['cookie'];
-            console.log(session.UA);
-            console.log(req.headers['cookie']);
-            res.status(500).send({ success: true });
+          if (err) {
+            return sendUserError(err);
+          } else if (!validated) {
+            sendUserError({ Error: 'Must use valid username/password' }, res);
+          } else if (validated) {
+            req.session.username = username;
+            req.session.UA = req.headers.cookie;
+            console.log(req.session.UA);
+            console.log(req.headers.cookie);
+            res.status(200).send({ success: true });
           }
         });
       }
