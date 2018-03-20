@@ -33,22 +33,21 @@ const sendUserError = (err, res) => {
 
 // TODO: implement routes
 const logInTracker = (req, res, next) => {
-	const { username } = req.session;
-	if (!username) {
-		sendUserError('You are not logged in', res);
-		return;
-	} else {
-		User.findOne({ username }, (err, user) => {
-			if (err) {
-				sendUserError(err, res);
-			} else if (!user) {
-				sendUserError('User does not exist', res);
-			} else {
-				req.user = req.session.user;
+	const { user } = req.session;
+	console.log(user);
+	console.log(req.session);
+		if (user) {
+			User.findById(req.session.user)
+			.then(user => {
+				req.user = user;
 				next();
-			}
-		});
-	}
+			})
+			.catch(err => {
+				sendUserError(err, res);
+			})
+		} else {
+			sendUserError('You are not logged in', res);
+		}
 };
 
 const hashPassword = (req, res, next) => {
