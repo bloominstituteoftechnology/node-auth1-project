@@ -24,6 +24,19 @@ const sendUserError = (err, res) => {
   }
 };
 
+const restricted = (req, res, next) => {
+  const path = req.path;
+  if (/restricted/.test(path)) {
+    if (!req.session.loggedIn) {
+      sendUserError('You are not authorized to access this path', res);
+      return;
+    }
+  }
+  next();
+};
+
+server.use(restricted);
+
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
@@ -63,6 +76,10 @@ server.post('/log-in', (req, res) => {
         } else sendUserError('The password you entered is invalid', res);
       });
     });
+});
+
+server.get('/restricted', (req, res) => {
+  res.status(200).json({ message: 'You have accessed the restricted content' });
 });
 
 const authenticate = (req, res, next) => {
