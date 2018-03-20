@@ -65,13 +65,24 @@ const confirmLoggedIn = (req, res, next) => {
   };
 };
 
+const permissions = (req, res, next) => {
+  const path = req.path;
+  if (/restricted/.test(path)) {
+    if (!req.session.username) {
+      res.status(STATUS_USER_ERROR).json(sendUserError('You do not have permission!', res));
+      return;
+    }
+  }
+  next();
+}
+
 //==============================================================================
 //                                ROUTES
 //==============================================================================
 
-server.post('/users', hashedPwd, (req, res) => {
+server.post('/users', (req, res) => {
   const { username } = req.body;
-  const passwordHash = req.password;
+  const passwordHash = req.body.password;
   const newUser = new User({ username, passwordHash });
   newUser
     .save()
@@ -82,13 +93,6 @@ server.post('/users', hashedPwd, (req, res) => {
       res.status(STATUS_USER_ERROR).json(sendUserError('There was an error!', res));
     });
 });
-
-//========================================================================================================
-// Notes: I had to implement line 91 due to a strange issue where, even if the result of compare
-// turned out to be false, the json response would still be "true." I noticed that even the passwords in
-// when, console.logged, would for some reason be equal! The moment I implemented line 91 everything seemed
-// to work as it should. This is a temporary fix and I'd like to resolve the error.
-//=========================================================================================================
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
@@ -119,7 +123,9 @@ server.post('/log-in', (req, res) => {
   };
 });
 
-
+server.get('/restricted/:path', permissions, (req, res) => {
+  res.status(200).json({ message: 'You have permission!' });
+});
 
 //==============================================================================
 //                                SERVER INFORMATION
