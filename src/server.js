@@ -67,7 +67,7 @@ server.post('/log-in', (req, res) => {
 
 const authenticate = (req, res, next) => {
   if (req.session.loggedIn) {
-    User.find({ _id: req.session.loggedIn })
+    User.findOne({ _id: req.session.loggedIn })
       .then((user) => {
         req.user = user;
         next();
