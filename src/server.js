@@ -5,7 +5,6 @@ const session = require('express-session');
 const bcrypt = require('bcrypt');
 
 const STATUS_USER_ERROR = 422;
-const BCRYPT_COST = 11;
 
 const User = require('./user.js');
 
@@ -49,8 +48,6 @@ const restrictedAccess = (req, res, next) => {
   }
 };
 
-// localhost:3000/restricted/
-
 server.use(restrictedAccess);
 
 /* Sends the given err, a string or an object, to the client. Sets the status
@@ -67,40 +64,47 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 server.post('/users/:username&:password', (req, res) => {
   const { username, password } = req.params;
-  bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
-    if (err) return sendUserError(err);
-    const newUser = new User({ username, passwordHash });
-    newUser
-      .save()
-      .then(savedUser => res.status(201).send(savedUser))
-      .catch(err => sendUserError(err, res));
-  });
+  const newUser = new User({ username, passwordHash: password });
+  newUser
+    .save()
+    .then(savedUser => res.status(201).send(savedUser))
+    .catch(err => sendUserError(err, res));
 });
 
 server.post('/log-in/:username&:password', (req, res) => {
   const { username, password } = req.params;
   User.findOne({ username: username })
     .then(foundUser => {
-      bcrypt.compare(
-        password,
-        foundUser.passwordHash,
-        (err, passwordsMatch) => {
-          if (passwordsMatch) {
+      foundUser
+        .checkPassword(password)
+        .then(isMatching => {
+          if (isMatching) {
             const session = req.session;
             session.username = username;
             session.UA = req.headers['cookie'];
             res.status(500).send({ success: true });
           } else {
-            res.status(500).send({ errorMessage: "Passwords don't match!" });
+            res.status(406).send({ message: "Passwords don't match" });
           }
-        }
-      );
+        })
+        .catch(error => {
+          sendUserError(error, res);
+        });
     })
     .catch(err => sendUserError(err, res));
 });
 
-server.get('/restricted/dev', (req, res) => {
-  res.send(req.session);
+//.then(isMatching => {
+//   const session = req.session;
+//   session.username = username;
+//   session.UA = req.headers['cookie'];
+//   res.status(500).send({ success: true });
+// }).catch(error => {
+//   res.status(406).send({ message: 'Passwords don\'t match'});
+// })
+
+server.get('/dev', (req, res) => {
+  // res.send(req.session);
   User.find({})
     .then(results => res.status(200).send(results))
     .catch(err => sendUserError(err, res));
