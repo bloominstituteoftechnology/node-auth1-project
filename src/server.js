@@ -47,27 +47,29 @@ server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     sendUserError('Username and password required', res);
+    return;
   }
-  User.findOne({ username }).then((foundUser) => {
-    if (!foundUser) {
+  User.findOne({ username }, (err, user) => {
+    if (err || user === null) {
       sendUserError('No user found with this username.', res);
-    } else {
-      bcrypt.compare(password, foundUser.passwordHash)
-        .then((test) => {
-          if (test) {
-            req.session.username = username;
-            req.session.isAuth = true;
-            res.json({ success: true });
-          } else {
-            sendUserError('Incorrect password.', res);
-          }
-        })
-        .catch(err => sendUserError(err, res));
+      return;
     }
-  }).catch(err => sendUserError(err, res));
+    bcrypt.compare(password, user.passwordHash)
+      .then((response) => {
+        if (!response) throw new Error();
+        req.session.username = username;
+        req.session.isAuth = true;
+      })
+      .then(() => {
+        res.json({ success: true });
+      })
+      .catch((error) => {
+        return sendUserError('Invalid login attempt.', res);
+      });
+  });
 });
 
-const validateUser = (req, res, next) => {
+const validUser = (req, res, next) => {
   if (!req.session.isAuth) sendUserError('Not logged in.', res);
   else {
     User.findOne({ username: req.session.username })
@@ -82,7 +84,7 @@ const validateUser = (req, res, next) => {
   }
 };
 
-server.get('/me', validateUser, (req, res) => {
+server.get('/me', validUser, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
