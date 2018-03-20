@@ -85,20 +85,20 @@ server.post('/users', (req, res) => {
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
   if (!password) {
-    sendUserError('Missing Passwor!', res);
+    sendUserError('Missing Password!', res);
   }
   User.findOne({ username })
     .then((user) => {
-      bcrypt.compare(password, user.passwordHash, (err, valid) => {
-        if (err) {
-          console.log({ error: err });
-        } else if (valid) {
-          req.session.user = user;
-          res.status(200).json({ success: true });
-        } else {
-          res.status(422).json({ success: false });
-        }
-      });
+      const valid = user.checkPassword();
+      if(valid.error){
+        console.log({ error: valid.error });
+      }
+      if(!valid) {
+         res.status(422).json({ success: false });
+      } else if (valid) {
+         req.session.user = user;
+         res.status(200).json({ success: true });
+      }
     })
     .catch((saveError) => {
       sendUserError(saveError, res);
