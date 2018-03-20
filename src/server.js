@@ -64,9 +64,11 @@ server.post('/log-in', (req, res) => {
         return;
       }
       bcrypt.compare(password, found[0].passwordHash, (error, verified) => {
-        if (error) res.status(500).json({ error: 'There was in internal error while logging in' });
-        else if (verified) res.status(200).json({ success: true, found });
-        else sendUserError('The password you entered is invalid', res);
+        if (error) {
+          res.status(500).json({ error: 'There was in internal error while logging in' });
+        } else if (verified) {
+          res.status(200).json({ success: true, found });
+        } else sendUserError('The password you entered is invalid', res);
       });
     });
 });
