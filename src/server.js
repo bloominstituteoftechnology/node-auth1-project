@@ -35,7 +35,7 @@ const restrictAccess = (req, res, next) => {
     if(req.session.loggedIn) {
       next();
     } else {
-      res.status(STATUS_USER_ERROR).send({ message: 'Access Denied: You are not logged in'});
+      sendUserError('Access Denied: You are not logged in', res);
     }
   } else {
     next();
@@ -48,26 +48,41 @@ server.get('/restricted', (req, res) => {
   res.send('top secret restricted access');
 });
 
-// TODO: implement routes
+// server.post('/users', (req, res) => {
+//   const { username, password } = req.body;
+//   if(username && password) {
+//     bcrypt.hash(password, BCRYPT_COST)
+//       .then(passwordHash => {
+//         const newUser = new User({username, passwordHash});
+//         newUser.save()
+//           .then(user => {
+//             res.send(user);
+//           })
+//           .catch(err => {
+//             sendUserError(err);
+//           });
+//       })
+//       .catch(err => {
+//         sendUserError(err);
+//       });
+//   } else {
+//     res.status(STATUS_USER_ERROR).send({ message: 'Please send both a username and password'});
+//   }
+// });
+
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
   if(username && password) {
-    bcrypt.hash(password, BCRYPT_COST)
-      .then(passwordHash => {
-        const newUser = new User({username, passwordHash});
-        newUser.save()
-          .then(user => {
-            res.send(user);
-          })
-          .catch(err => {
-            sendUserError(err);
-          });
+    const newUser = new User({username, passwordHash: password });
+    newUser.save()
+      .then(user => {
+        res.send(user);
       })
       .catch(err => {
-        sendUserError(err);
+        sendUserError(err, res);
       });
   } else {
-    res.status(STATUS_USER_ERROR).send({ message: 'Please send both a username and password'});
+    sendUserError('Please send both a username and password', res);
   }
 });
 
@@ -77,26 +92,23 @@ server.post('/log-in', (req, res) => {
     User.findOne({ username: username })
       .then(user => {
         if(user) {
-          bcrypt.compare(password, user.passwordHash)
-            .then(result => {
-              if(result) {
-                req.session.loggedIn = user._id;
-                res.send({ success: true });
-              } else {
-                res.status(STATUS_USER_ERROR).send({ message: 'Username or password does not match'});
-              }
-            })
-            .catch(err => {
-              sendUserError(err);
-            });
+          user.checkPassword(password,  (err, matched) => {
+            if(matched) {
+              req.session.loggedIn = user._id;
+              res.send({ success: true });
+            } else {
+              sendUserError('Username or password does not match', res);
+            }
+          });
         } else {
-          res.status(STATUS_USER_ERROR).send({ message: 'Please send both a username and password'});        }
+          sendUserError('Please send both a username and password', res);
+        }
       })
       .catch(err => {
-        sendUserError(err);
+        sendUserError(err, res);
       });
   } else {
-    res.status(STATUS_USER_ERROR).send({ message: 'Please send both a username and password'});
+    sendUserError('Please send both a username and password', res);
   }
 });
 
@@ -114,7 +126,7 @@ const auth = (req, res, next) => {
       });
     // req.user = req.session.loggedIn;
   } else {
-    res.status(STATUS_USER_ERROR).send({ message: 'You are not logged in'});
+    sendUserError('You are not logged in', res);
   }
 };
 
