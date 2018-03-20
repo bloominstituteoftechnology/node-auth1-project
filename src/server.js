@@ -65,9 +65,9 @@ server.post('/log-in', (req, res) => {
         if (error) {
           res.status(500).json({ error: 'There was in internal error while logging in' });
         } else if (verified) {
-          res.status(200).json({ success: true, found });
           // eslint-disable-next-line no-underscore-dangle
           req.session.loggedIn = found[0]._id;
+          res.status(200).json({ success: true, found });
           // eslint-disable-next-line no-console
           console.log(req.session);
         } else sendUserError('The password you entered is invalid', res);
