@@ -44,7 +44,7 @@ const authenticateUserMW = (req, res, next) => {
   console.log(req.headers.cookie);
   if (req.session.UA === req.headers.cookie) {
     User.findOne({ username: req.session.username })
-      .then((foundUser) => {
+      .then(foundUser => {
         req.user = foundUser;
         res.status(200);
         next();
@@ -54,7 +54,6 @@ const authenticateUserMW = (req, res, next) => {
     sendUserError({ Error: 'User must be logged in.' }, res);
   }
 };
-
 
 // TODO: implement routes
 server.post('/users', (req, res) => {
@@ -68,11 +67,13 @@ server.post('/users', (req, res) => {
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
-  if (!username || username === '' || username === null) sendUserError({ Error: 'Must enter username' }, res);
-  if (!password || password === '' || password === null) sendUserError({ Error: 'Must enter password' }, res);
-  let lowerCaseUsername = username.toLowerCase();
+  if (!username || username === '' || username === null)
+    sendUserError({ Error: 'Must enter username' }, res);
+  if (!password || password === '' || password === null)
+    sendUserError({ Error: 'Must enter password' }, res);
+  const lowerCaseUsername = username.toLowerCase();
   User.findOne({ username: lowerCaseUsername })
-    .then((foundUser) => {
+    .then(foundUser => {
       if (foundUser === null) {
         sendUserError({ Error: 'Must use valid username/password' }, res);
       } else {
@@ -82,7 +83,7 @@ server.post('/log-in', (req, res) => {
           } else if (!validated) {
             sendUserError({ Error: 'Must use valid username/password' }, res);
           } else if (validated) {
-            req.session.username = username;
+            req.session.username = foundUser.username;
             req.session.UA = req.headers.cookie;
             console.log(req.session.UA);
             console.log(req.headers.cookie);
