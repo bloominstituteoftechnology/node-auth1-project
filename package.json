@@ -10,15 +10,33 @@
   "dependencies": {
     "babel-preset-es2015": "^6.24.0",
     "bcrypt": "^1.0.2",
-    "body-parser": "^1.17.2",
+    "body-parser": "^1.18.2",
+    "brcypt": "^1.0.1",
     "chai": "^4.1.1",
     "chai-http": "^3.0.0",
     "eslint": "^3.17.1",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",
-    "express": "^4.15.4",
+    "express": "^4.16.2",
     "express-session": "^1.15.5",
+    "jsonwebtoken": "^8.1.0",
     "mocha": "^3.5.0",
-    "mongoose": "^4.11.7"
-  }
+    "mongoose": "^4.13.9"
+  },
+  "devDependencies": {
+    "cors": "^2.8.4"
+  },
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JacquelynnRohrich/Auth.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/JacquelynnRohrich/Auth/issues"
+  },
+  "homepage": "https://github.com/JacquelynnRohrich/Auth#readme"
 }
