@@ -2,8 +2,8 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
-const User = require('./user.js');
-const mongoose = require('mongoose');
+
+iconst User = require('./user.js');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -30,39 +30,30 @@ const sendUserError = (err, res) => {
 
 // TODO: implement routes
 server.post('/users', (req, res) => {
-  const { username } = req.body; 
-  const { passwordHash } = req.body;
-  bcrypt.hash(passwordHash, 11, (err, passwordHash) => {
-    if (err) throw new Error(err);
-    const newUser = new User(
-      { username, passwordHash }
-    )
-      .save()
-      .then(savedUser => {
-        res.status(200).json(savedUser);
-      })
-      .catch(sendUserError('Could not save user.', res))
+  const { username, password } = req.body;
+  const newUser = new User({ username, passwordHash: password });
+  newUser.save((err, savedUser) => {
+    if (err) {
+      return sendUserError(err, res);
+    }
+    res.json(savedUser);
   });
-
 });
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
-  const hashedPw = User.passwordHash;
-  
-
-  User.findOne(username)
-    .then(user => {
-      if (user === username) {
-        bcrypt
-        .compare(password, hashedPw)
-      } else {
-        sendUserError('Could not find username', res);
-      }
-
+  User.findOne({ username })
+    .then((user) => {
+      user.checkPassword(password, (err, validated) => {
+        // if err return sendUserError(err, res)
+        // if err is null return sendUserError(`user does not exist`, res)
+        // if validated === true...
+      });
     })
-
-})
+    .catch((err) => {
+      return sendUserError('User does not exist in system', res);
+    });
+});
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
