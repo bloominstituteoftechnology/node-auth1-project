@@ -15,13 +15,13 @@ concepts into one authentication system.
 
 ## Running the Project
 
-* Run `yarn install` to download the dependencies.
-* Keep `mongod --dbpath data` running in its own terminal.
-* Run `yarn test` to run the tests. If you'd like, you can run `npm run watch`
+* Run `yarn` in the project directory to download the project's dependencies.
+* Keep `mongod` running in its own terminal. You can use either `mongod --dbpath data` with the project's "data" directory, or `mongod` to use the global "data" resource
+* Run `yarn test` to run the tests. If you'd like, you can run `yarn run watch`
   to automatically re-reun the tests when you make modifications.
 * To test your application in your browser, or by using
   [Postman](https://www.getpostman.com/), make sure you've installed `nodemon`
-  via `npm install -g nodemon` and then run `nodemon src/app.js`. `nodemon` will
+  via `yarn install -g nodemon` and then run `nodemon src/app.js`. `nodemon` will
   keep the server running and automatically restart it if you change anything.
   You can now make requests to `http://localhost:3000` in your browser or
   Postman!
