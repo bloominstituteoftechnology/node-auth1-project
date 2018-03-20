@@ -48,25 +48,19 @@ server.post('/log-in', (req, res) => {
     return;
   }
   username = username.toLowerCase();
-  User.find({ username })
+  User.findOne({ username })
     .exec((err, found) => {
-      if (found.length === 0) {
-        res.status(404).json({ error: 'No user found for that username' });
+      if (err || found === null) {
+        sendUserError('No user found for that ID', res);
         return;
       }
-      if (err) {
-        res.status(500).json({ message: 'Internal server error while processing', err });
-        return;
-      }
-      bcrypt.compare(password, found[0].passwordHash, (error, verified) => {
+      bcrypt.compare(password, found.passwordHash, (error, verified) => {
         if (error) {
           res.status(500).json({ error: 'There was in internal error while logging in' });
         } else if (verified) {
-          req.session.loggedIn = found[0].id;
+          req.session.loggedIn = found.id;
           res.status(200).json({ success: true });
-        } else {
-          sendUserError('The password you entered is invalid', res);
-        }
+        } else sendUserError('The password you entered is invalid', res);
       });
     });
 });
