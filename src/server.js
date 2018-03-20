@@ -27,10 +27,6 @@ const sendUserError = (err, res) => {
   }
 };
 
-server.get('/', (req, res) => {
-  res.status(200).send({ status: req.session.loggedn });
-});
-
 // TODO: implement routes
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
