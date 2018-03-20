@@ -70,7 +70,8 @@ server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
   if (!username || username === '' || username === null) sendUserError({ Error: 'Must enter username' }, res);
   if (!password || password === '' || password === null) sendUserError({ Error: 'Must enter password' }, res);
-  User.findOne({ username })
+  let lowerCaseUsername = username.toLowerCase();
+  User.findOne({ username: lowerCaseUsername })
     .then((foundUser) => {
       if (foundUser === null) {
         sendUserError({ Error: 'Must use valid username/password' }, res);
