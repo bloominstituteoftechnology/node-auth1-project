@@ -35,7 +35,7 @@ const sendUserError = (err, res) => {
 const hashedPwd = (req, res, next) => {
   const { password } = req.body;
   if (!password) {
-    res.status(400).json({ message: 'A password is required!' });
+    res.status(STATUS_USER_ERROR).json({ message: 'A password is required!' });
   }
   bcrypt
     .hash(password, BCRYPT_COST)
@@ -44,9 +44,24 @@ const hashedPwd = (req, res, next) => {
       next();
     })
     .catch(err => {
-      res.status(500).sendUserError();
+      res.status(STATUS_USER_ERROR).sendUserError('Fatal error!', res);
     });
 };
+
+// const validatePass = (req, res, next) => {
+//   return function validate(password, hashedPw) {
+//     bcrypt
+//       .compare(password, hashedPw)
+//       .then(res => {
+//         req.session.username = username;
+//         req.user = user;
+//       })
+//       .then(() => {
+//         res.json({ success: true });
+//       });
+//   };
+// };
+
 
 
 //==============================================================================
@@ -63,8 +78,44 @@ server.post('/users', hashedPwd, (req, res) => {
       res.status(200).json(obj);
     })
     .catch(err => {
-      res.status(500).sendUserError();
+      res.status(STATUS_USER_ERROR).json(sendUserError('There was an error!', res));
     });
+});
+
+//========================================================================================================
+// Notes: I had to implement line 106 due to a strange issue where, even if the result of compare
+// turned out to be false, the json response would still be "true." I noticed that even the passwords in
+// when, console.logged, would for some reason be equal! The moment I implemented line 106 everything seemed
+// to work as it should. This is a temporary fix and I'd like to resolve the error.
+//=========================================================================================================
+
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    res.status(STATUS_USER_ERROR).json(sendUserError('Must provide a username and a password!', res));
+  } else {
+    User.findOne({ username })
+      .then(user => {
+        if (!user) {
+          res.status(404).json(sendUserError('No such user found!', res));
+        } else {
+          const hashedPass = user.passwordHash;
+          bcrypt
+            .compare(password, hashedPass)
+            .then(res => {
+              if (res === false) throw new Error();
+              req.session.username = username;
+              req.user = user;
+            })
+            .then(() => {
+              res.json({ success: true });
+            })
+            .catch(err => {
+              res.status(500).json(sendUserError('There wasn an error!', res));
+            });
+        }         
+      });
+  };
 });
 
 
