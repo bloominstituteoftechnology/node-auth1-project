@@ -66,20 +66,40 @@ server.post('/log-in', (req, res) => {
           if (!resp) {
             sendUserError({ message: 'Password is INCORRECT' }, res);
           } else {
-            session({currentUserId: user._id});
+            session({
+              secret: user._id, // eslint-disable-line no-underscore-dangle
+              resave: true,
+              saveUninitialized: false
+            });
+            req.session.user = user._id; // eslint-disable-line no-underscore-dangle
             res.status(200).json({ success: true });
           }
         });
       })
       .catch((err) => {
-        console.log('failure to find the One');
         sendUserError(err, res);
       });
   }
 });
 
+const middleWare = (req, res, next) => {
+  if (req.session.user) {
+    User
+      .findById(req.session.user)
+      .then((user) => {
+        req.user = user;
+        next();
+      })
+      .catch((err) => {
+        sendUserError(err, res);
+      });
+  } else {
+    sendUserError({ message: 'No user is currently logged in.' }, res);
+  }
+};
+
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+server.get('/me', middleWare, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
