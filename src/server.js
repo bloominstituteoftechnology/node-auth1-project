@@ -63,7 +63,10 @@ server.post('/log-in', (req, res) => {
         res.status(500).json({ message: 'Internal server error while processing', err });
         return;
       }
-      res.status(200).json({ message: 'User located', found });
+      bcrypt.compare(password, found[0].passwordHash, (error, verified) => {
+        if (verified) res.status(200).json({ message: 'You are now logged in', found });
+        else sendUserError('The password you entered is invalid', res);
+      });
     });
 });
 
