@@ -12,7 +12,9 @@ const server = express();
 server.use(bodyParser.json());
 server.use(
   session({
-    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+    resave: true,
+    saveUninitialized: false
   })
 );
 
@@ -27,26 +29,69 @@ const sendUserError = (err, res) => {
   }
 };
 
+const checkUser = (req, res, next) => {
+  if (!req.session.user) {
+    sendUserError('User is not authorized', res);
+  }
+  req.user = req.session.user;
+  // console.log(req.user);
+  next();
+};
+// "$2a$11$05DYl.2hVuLmMy8tKRIueeQJAepc37WRgY2Jhw.6b5y7s5El/Z6Ce"
 // TODO: implement routes
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
-  Bcrypt.hash(password, 11, (error, passwordHash) => {
-    if (error) {
-      console.log(error);
-      throw new Error(error);
+  if (!password || password === '') {
+    res.status(STATUS_USER_ERROR).json({ error: 'You must enter a password' });
+  }
+  Bcrypt.hash(password, BCRYPT_COST, (err, passHash) => {
+    if (err) {
+      console.log({ error: err });
     }
-    User.create({ username, passwordHash })
-      .then((addedUser) => {
-        res.status(201).send(addedUser);
+    const newUser = new User();
+    newUser.username = username;
+    newUser.passwordHash = passHash;
+    newUser
+      .save()
+      .then((savedUser) => {
+        res.status(200).json(savedUser);
       })
-      .catch((err) => {
-        sendUserError(err, res);
+      .catch((saveError) => {
+        sendUserError(saveError, res);
       });
   });
 });
 
+// server.get('/', (req, res) => {
+//   const sesh = req.session;
+//   res.json({ sesh });
+// });
+
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  if (!password) {
+    sendUserError('Please provide and ID and a password');
+  }
+  User.findOne({ username })
+    .then((user) => {
+      Bcrypt.compare(password, user.passwordHash, (err, passCheck) => {
+        if (err) {
+          console.log({ error: err });
+        } else if (passCheck) {
+          req.session.user = user;
+          res.status(200).json({ success: true });
+        } else {
+          res.status(422).json({ success: false });
+        }
+      });
+    })
+    .catch((dbSaveError) => {
+      sendUserError(dbSaveError, res);
+    });
+});
+
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+server.get('/me', checkUser, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
