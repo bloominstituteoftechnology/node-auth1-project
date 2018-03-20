@@ -18,8 +18,8 @@ server.use(
   })
 );
 
-/* Sends the given err, a string or an object, to the client. Sets the status
- * code appropriately. */
+/* ************ Middleware ***************** */
+
 const sendUserError = (err, res) => {
   res.status(STATUS_USER_ERROR);
   if (err && err.message) {
@@ -48,30 +48,22 @@ const restricted = (req, res, next) => {
   }
   next();
 };
-// "$2a$11$05DYl.2hVuLmMy8tKRIueeQJAepc37WRgY2Jhw.6b5y7s5El/Z6Ce"
-// TODO: implement routes
+
+/* ************ Routes ***************** */
+
 server.post('/users', (req, res) => {
-  const { username, password } = req.body;
-  if (!password || password === '') {
+  const { username, passwordHash } = req.body;
+  if (!passwordHash || passwordHash === '') {
     res.status(STATUS_USER_ERROR).json({ error: 'You must enter a password' });
   }
-  Bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
+  //   User.create({ username, passwordHash })
+  const newUser = new User({ username, passwordHash });
+  newUser.save((err, savedUser) => {
     if (err) {
-      console.log(err);
-      throw new Error(err);
+      res.status(422);
+      res.json({ 'Need both Email/PW fields': err.message });
     }
-    User.create({ username, passwordHash })
-    // const newUser = new User();
-    // newUser.username = username;
-    // newUser.passwordHash = passwordHash;
-    // newUser
-    //   .save()
-      .then((savedUser) => {
-        res.status(200).json(savedUser);
-      })
-      .catch((saveError) => {
-        sendUserError(saveError, res);
-      });
+    res.json(savedUser);
   });
 });
 
@@ -87,10 +79,10 @@ server.post('/log-in', (req, res) => {
   }
   User.findOne({ username })
     .then((user) => {
-      Bcrypt.compare(password, user.passwordHash, (err, passCheck) => {
+      user.checkPassword(password, (err, validated) => {
         if (err) {
-          console.log({ error: err });
-        } else if (passCheck) {
+          console.log(err, res);
+        } else if (validated) {
           req.session.user = user;
           res.status(200).json({ success: true });
         } else {
@@ -99,7 +91,7 @@ server.post('/log-in', (req, res) => {
       });
     })
     .catch((dbSaveError) => {
-      sendUserError(dbSaveError, res);
+      sendUserError('User Does not exist in our system', res);
     });
 });
 
