@@ -27,15 +27,28 @@ const sendUserError = (err, res) => {
 };
 
 const checkUser = (req, res, next) => {
+  console.log('sdfk');
   if (!req.session.user) {
     sendUserError('User is not authorized', res);
   }
   req.user = req.session.user;
-  console.log(req.user);
   next();
 };
 
-// TODO: implement routes
+const restricted = (req, res, next) => {
+  // do something that only apply to restricted route
+  next();
+};
+
+server.use('/restricted', restricted);
+
+server.get('/restricted/test', (req, res) => {
+  res.json('from test restricted route');
+});
+
+server.get('/restricted/another', (req, res) => {
+  res.json('from another restricted route');
+});
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', checkUser, (req, res) => {
@@ -44,6 +57,7 @@ server.get('/me', checkUser, (req, res) => {
 });
 
 server.post('/users', (req, res) => {
+  console.log('sdfklj');
   const { username, password } = req.body;
   if (!password || password === '') {
     res.status(STATUS_USER_ERROR).json({ error: 'You must enter a password' });
