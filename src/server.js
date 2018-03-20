@@ -29,12 +29,12 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
-const userMiddleware = (req, res, next) => {};
+const userMiddleware = (req, res, next) => { };
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.post('/users', (req, res) => {
-  const { userName, userPass } = req.body;
-  const newUser = new User({ userName, passwordHash: userPass });
+  const { username, password } = req.body;
+  const newUser = new User({ username, passwordHash: password });
   newUser.save((err, savedUser) => {
     if (err) {
       return sendUserError(err, res);
@@ -43,9 +43,9 @@ server.post('/users', (req, res) => {
   });
 
   server.post('/log-in', (req, res) => {
-    const { userName, userPass } = req.body;
-    User.findOne({ userName }).then(user => {
-      user.checkPassword(userPass, (err, validation) => {
+    const { username, password } = req.body;
+    User.findOne({ username }).then(user => {
+      user.checkPassword(password, (err, validation) => {
         if (err) {
           sendUserError(err, res);
           if (err === null) {
@@ -61,7 +61,7 @@ server.post('/users', (req, res) => {
     res.json(req.user);
   });
 
-  // if (!userName || !userPass) {
+  // if (!username || !password) {
   //   sendUserError('Error: Invalid username or password', res);
   // } else {
   //   res.json(newUser);
