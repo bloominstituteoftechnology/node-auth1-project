@@ -38,7 +38,7 @@ const hashPw = (req, res, next) => {
       if (err) {
         sendUserError(err, res);
       } else {
-        req.body.hashedPw = hashedPw;
+        req.body.pwHash = hashedPw;
       }
       next();
     });
@@ -52,10 +52,10 @@ server.get('/', (req, res) => {
 });
 
 server.post('/users', hashPw, (req, res) => {
-  const { username, hashedPw } = req.body;
+  const { username, pwHash } = req.body;
   // const { hashedPw } = req;
   // console.log(req.body);
-  const user = new User({ username, passwordHash: hashedPw });
+  const user = new User({ username, passwordHash: pwHash });
   user.save((err, savedUser) => {
     console.log(err, savedUser);
     if (err || !savedUser) {
