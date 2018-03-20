@@ -31,6 +31,7 @@ const sendUserError = (err, res) => {
 
 const checkIfLoggedIn = (req, res, next) => {
   if (!req.session.loggedIn) sendUserError({ message: 'user not logged in' }, res);
+  req.user = req.session.user;
   next();
 };
 
@@ -61,6 +62,7 @@ server.post('/log-in', (req, res) => {
         bcrypt.compare(password, record[0].passwordHash, (err, isValid) => {
           if (isValid) {
             if (!req.session.loggedIn) req.session.loggedIn = true;
+            req.session.user = record[0];
             res.status(200).json({ success: true });
           } else sendUserError({ message: 'Not authenticated' }, res);
         });
