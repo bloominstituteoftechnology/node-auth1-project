@@ -47,17 +47,17 @@ server.get('/me', authUser, (req, res) => {
 });
 
 // TODO: implement routes
-server.post('/users', (req, res) => {
-  const { username, password } = req.body;
-  if (!password || password === '') {
+server.post('/users', authUser, (req, res) => {
+  const { userName, passwordHash } = req.body;
+  if (!passwordHash || passwordHash === '') {
     res.status(STATUS_USER_ERROR).json({ error: 'Invalid password' });
   }
   const newUser = new User();
-  bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
+  bcrypt.hash(passwordHash, BCRYPT_COST, (err, hash) => {
     if (err) {
       res.status({ error: err });
     }
-    newUser.username = username;
+    newUser.userName = userName;
     newUser.passwordHash = hash;
     newUser
       .save()
@@ -71,13 +71,13 @@ server.post('/users', (req, res) => {
 });
 
 server.post('/log-in', (req, res) => {
-  const { username, password } = req.body;
-  if (!password) {
+  const { userName, passwordHash } = req.body;
+  if (!passwordHash) {
     sendUserError('Password REQUIRED', res);
   }
-  User.findOne({ username })
+  User.findOne({ userName })
     .then((user) => {
-      bcrypt.compare(password, user.passwordHash, (err, valid) => {
+      bcrypt.compare(passwordHash, user.passwordHash, (err, valid) => {
         if (err) {
           res.status({ error: err });
         } else if (valid) {
