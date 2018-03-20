@@ -7,11 +7,15 @@ const User = require('./user.js');
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
+
 const server = express();
+
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+  resave: true, 
+  saveUninitialized: false
 }));
 
 
@@ -74,20 +78,22 @@ const permissions = (req, res, next) => {
     }
   }
   next();
-}
+};
+
+server.use(permissions);
 
 //==============================================================================
 //                                ROUTES
 //==============================================================================
 
-server.post('/users', (req, res) => {
+server.post('/users', hashedPwd, (req, res) => {
   const { username } = req.body;
-  const passwordHash = req.body.password;
+  const passwordHash = req.password;
   const newUser = new User({ username, passwordHash });
   newUser
     .save()
-    .then(obj => {
-      res.status(200).json(obj);
+    .then(user => {
+      res.status(200).json(user);
     })
     .catch(err => {
       res.status(STATUS_USER_ERROR).json(sendUserError('There was an error!', res));
@@ -108,7 +114,7 @@ server.post('/log-in', (req, res) => {
           bcrypt
             .compare(password, hashedPass)
             .then(res => {
-              if (res === false) throw new Error();
+              if (res === false) throw new Error(); 
               req.session.username = username;
               req.user = user;
             })
@@ -123,7 +129,7 @@ server.post('/log-in', (req, res) => {
   };
 });
 
-server.get('/restricted/:path', permissions, (req, res) => {
+server.get('/restricted/:path', (req, res) => {
   res.status(200).json({ message: 'You have permission!' });
 });
 
