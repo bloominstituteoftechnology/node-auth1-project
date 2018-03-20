@@ -1,12 +1,12 @@
+/* eslint-disable func-names, prefer-arrow-callback */
+
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
-const bcrypt = require('bcrypt');
 
 const User = require('./user.js');
 
 const STATUS_USER_ERROR = 422;
-const BCRYPT_COST = 11;
 
 const server = express();
 // to enable parsing of json bodies for post requests
@@ -33,47 +33,37 @@ server.post('/users', (req, res) => {
   if (!username || !password) {
     sendUserError('Username and password required', res);
   } else {
-    bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
-      const createdUser = { username, passwordHash };
-      const newUser = new User(createdUser);
-      newUser.save()
-      .then(savedUser => res.json({ username: savedUser.username, passwordHash: savedUser.passwordHash }))
-      .catch(error => sendUserError(error, res));
-    });
+    const createdUser = { username, passwordHash: password };
+    const newUser = new User(createdUser);
+    newUser.save()
+      .then(savedUser => res.json(savedUser))
+      .catch(err => sendUserError(err, res));
   }
 });
 
 server.post('/log-in', (req, res) => {
-  const { username, password } = req.body;
+  let username = req.body.username;
+  const password = req.body.password;
   if (!username || !password) {
     sendUserError('Username and password required', res);
-    return;
-  }
-  User.findOne({ username }, (err, user) => {
-    if (err || user === null) {
-      sendUserError('No user found with this username.', res);
-      return;
-    }
-    bcrypt.compare(password, user.passwordHash)
-      .then((response) => {
-        if (!response) throw new Error();
+  } else {
+    username = username.toLowerCase();
+    User.findOne({ username }).then((user) => {
+      user.checkPassword(password, function (err, validated) {
+        if (!validated) return sendUserError('Password does not match', res);
         req.session.username = username;
         req.session.isAuth = true;
-      })
-      .then(() => {
-        res.json({ success: true });
-      })
-      .catch((error) => {
-        return sendUserError('Invalid login attempt.', res);
+        res.json({ success: validated });
       });
-  });
+    })
+    .catch(err => sendUserError('User does not exist in the system.', res));
+  }
 });
 
 const validUser = (req, res, next) => {
   if (!req.session.isAuth) sendUserError('Not logged in.', res);
   else {
     User.findOne({ username: req.session.username })
-      .select('username passwordHash -_id')
       .then((user) => {
         req.user = user;
         next();
