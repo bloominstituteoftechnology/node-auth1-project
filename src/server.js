@@ -11,7 +11,9 @@ const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+  resave: true,
+  saveUninitialized: false,
 }));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
@@ -34,11 +36,6 @@ server.post('/users', (req, res) => {
       passwordHash: req.body.password
     };
     const newUser = new User(userInfo);
-    bcrypt.hash(newUser.passwordHash, BCRYPT_COST, (err, passwordHash) => {
-      if (err) {
-        sendUserError(err, res);
-      } else {
-        newUser.passwordHash = passwordHash;
         newUser.save()
           .then((user) => {
             res.status(200).json(user);
@@ -46,9 +43,7 @@ server.post('/users', (req, res) => {
           .catch((catchErr) => {
             sendUserError(catchErr, res);
           });
-      }
-    });
-  }
+        };
 });
 
 server.post('/log-in', (req, res) => {
@@ -59,15 +54,10 @@ server.post('/log-in', (req, res) => {
     User
       .findOne({ username }, '_id passwordHash')
       .then((user) => {
-        bcrypt.compare(password, user.passwordHash, (err, resp) => {
+        user.checkPassword(password, (err, resp) => {
           if (!resp) {
             sendUserError({ message: 'Password is INCORRECT' }, res);
           } else {
-            session({
-              secret: user._id, // eslint-disable-line no-underscore-dangle
-              resave: true,
-              saveUninitialized: false
-            });
             req.session.user = user._id; // eslint-disable-line no-underscore-dangle
             res.status(200).json({ success: true });
           }
