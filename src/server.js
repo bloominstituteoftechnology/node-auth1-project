@@ -11,38 +11,46 @@ const BCRYPT_COST = 11;
 
 const server = express();
 // to enable parsing of json bodies for post requests
-server.use(bodyParser.json());
-server.use(session({
-	secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
-	resave: false,
-	saveUninitialized: true
-}));
-
 const logInTracker = (req, res, next) => {
-		if (!req.session.user) {
-			sendUserError(new Error('Username not found.'), res);
-		}
-		else {
-			req.user = req.session.user;
-			next();
-		}
-};
-
-const hashPassword = (req, res, next) => {
-	const { 
-		password
-	} = req.body;
-
-	if (!password) {
-		sendUserError(new Error('Password not found.'), res);
-	} else {
-		bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
-			req.hashedPW = hash;
-			next();
-		});
+	if (!req.session.user) {
+		sendUserError(new Error('Username not found.'), res);
+	}
+	else {
+		req.user = req.session.user;
+		next();
 	}
 };
 
+const hashPassword = (req, res, next) => {
+const { 
+	password
+} = req.body;
+
+if (!password) {
+	sendUserError(new Error('Password not found.'), res);
+} else {
+	bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
+		req.hashedPW = hash;
+		next();
+	});
+}
+};
+
+const restrictPermission = (req, res, next) => {
+if (!req.session.username) {
+	sendUserError('You must log in first', res);
+	return;
+}
+next();
+};
+
+server.use(bodyParser.json());
+server.use('/restricted', restrictPermission);
+server.use(session({
+	secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+	resave: true,
+	saveUninitialized: false
+}));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -112,6 +120,10 @@ server.post('/log-in', hashPassword, (req, res) => {
 			sendUserError(err, res);
 		});
 	}
+});
+
+server.get('/restricted/', (req, res) => {
+	res.json({ message: 'You are logged in.' });
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in

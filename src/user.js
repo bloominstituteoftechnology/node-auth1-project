@@ -8,6 +8,7 @@ mongoose.modelSchemas = {};
 mongoose.Promise = Promise;
 mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
 
+
 const UserSchema = new mongoose.Schema({
   // TODO: fill in this schema
   username: {
