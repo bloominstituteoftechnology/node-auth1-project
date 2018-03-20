@@ -124,13 +124,17 @@ server.post('/log-in', hashPassword, (req, res) => {
 	} else {
 		User.findOne({ username })
 		.then((user) => {
-			bcrypt.compare(password, user.passwordHash, (err, response) => {
-				if (response) {
-					req.session.user = user._id;
-					res.status(STATUS_SUCCESS).json({ success: true });
+			user.checkPassword(password, (err, response) => {
+				if (err) {
+					sendUserError(err, res);
+					return;
+				}
+				else if (!response) {
+					sendUserError('User does not exist', res);
 				}
 				else {
-					sendUserError(err, res);
+					req.session.user = user._id;
++					res.status(STATUS_SUCCESS).json({ success: true });
 				}
 			})
 		})
