@@ -39,7 +39,7 @@ server.post('/users', (req, res) => {
     const user = new User({ username, passwordHash });
     user.save()
       .then((newUser) => {
-        res.json(newUser);
+        res.status(200).json(newUser);
       })
       .catch((ERROR) => {
         res.status(500).json({ error: 'There was a server error while signing up', ERROR });
@@ -64,7 +64,8 @@ server.post('/log-in', (req, res) => {
         return;
       }
       bcrypt.compare(password, found[0].passwordHash, (error, verified) => {
-        if (verified) res.status(200).json({ message: 'You are now logged in', found });
+        if (error) res.status(500).json({ error: 'There was in internal error while logging in' });
+        else if (verified) res.status(200).json({ success: true, found });
         else sendUserError('The password you entered is invalid', res);
       });
     });
