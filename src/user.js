@@ -12,7 +12,9 @@ mongoose.Promise = Promise;
 
 mongoose
   .connect('mongodb://localhost/users', { useMongoClient: true })
+  // eslint-disable-next-line no-console
   .then(() => console.log('API connected...MongoDB connected...'))
+  // eslint-disable-next-line no-console
   .catch(() => console.log('Connection to API failed'));
 
 const UserSchema = new mongoose.Schema({
@@ -27,7 +29,8 @@ const UserSchema = new mongoose.Schema({
     required: true,
   }
 });
- // eslint-disable-next-line prefer-arrow-callback
+// eslint-disable-next-line prefer-arrow-callback
+// eslint-disable-next-line func-names
 UserSchema.pre('save', function (next) {
   bcrypt.hash(this.passwordHash, BCRYPT_COST, (err, hash) => {
     if (err) return next(err);
