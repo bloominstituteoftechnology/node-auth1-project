@@ -34,8 +34,6 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 const logInTracker = (req, res, next) => {
 	const { user } = req.session;
-	console.log(user);
-	console.log(req.session);
 		if (user) {
 			User.findById(req.session.user)
 			.then(user => {
@@ -86,20 +84,13 @@ server.post('/users', (req, res) => {
 	if (!username || !password) {
 		res.status(STATUS_USER_ERROR).json('Username or password does not match the user.');
 	} else {
-		bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
-			const newUser = { username, passwordHash: hash };
-			const user = new User(newUser);
+		// bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
+		const newUser = new User({ username, passwordHash: password });
+		newUser.save((err, createUser) => {
 			if (err) {
-				sendUserError(err, res);
+				return sendUserError(err, res);
 			} else {
-				user
-					.save()
-					.then(createUser => {
-						res.status(STATUS_SUCCESS).json(createUser);
-					})
-					.catch(err => {
-						sendUserError(err, res);
-					});
+				res.status(STATUS_SUCCESS).json(createUser);
 			}
 		});
 	}
