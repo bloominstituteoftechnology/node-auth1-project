@@ -1,5 +1,3 @@
-/* eslint no-underscore-dangle: "off" */
-
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
@@ -32,37 +30,59 @@ const sendUserError = (err, res) => {
 
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
-  bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
-    const createdUser = { username, passwordHash: hash };
-    const newUser = new User(createdUser);
-    newUser.save()
-    .then(savedUser => res.status(200).json(savedUser))
-    .catch(error => sendUserError(error, res));
-  });
+  if (!username || !password) {
+    sendUserError('Username and password required', res);
+  } else {
+    bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
+      const createdUser = { username, passwordHash };
+      const newUser = new User(createdUser);
+      newUser.save()
+      .then(savedUser => res.json({ username: savedUser.username, passwordHash: savedUser.passwordHash }))
+      .catch(error => sendUserError(error, res));
+    });
+  }
 });
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
-  User.find({ username }).then((user) => {
-    const hash = user[0].passwordHash;
-    bcrypt.compare(password, hash, (err, pwCompare) => {
-      if (err) res.status(500).json({ err: 'PW does not match' });
-      if (pwCompare === true) {
-        req.session.id = user[0]._id;
-        res.json({ success: true });
-      } else { res.status(500).json({ err: 'PW does not match' }); }
-    });
-  }).catch(err => res.json(err));
+  if (!username || !password) {
+    sendUserError('Username and password required', res);
+  }
+  User.findOne({ username }).then((foundUser) => {
+    if (!foundUser) {
+      sendUserError('No user found with this username.', res);
+    } else {
+      bcrypt.compare(password, foundUser.passwordHash)
+        .then((test) => {
+          if (test) {
+            req.session.username = username;
+            req.session.isAuth = true;
+            res.json({ success: true });
+          } else {
+            sendUserError('Incorrect password.', res);
+          }
+        })
+        .catch(err => sendUserError(err, res));
+    }
+  }).catch(err => sendUserError(err, res));
 });
 
-const validatedUser = (req, res, next) => {
-  User.findById(req.session.id)
-    .then(user => res.json(user)).catch(err => sendUserError(err, res));
-  next();
+const validateUser = (req, res, next) => {
+  if (!req.session.isAuth) sendUserError('Not logged in.', res);
+  else {
+    User.findOne({ username: req.session.username })
+      .select('username passwordHash -_id')
+      .then((user) => {
+        req.user = user;
+        next();
+      })
+      .catch((err) => {
+        res.status(500).json({ error: err });
+      });
+  }
 };
 
-// TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', validatedUser, (req, res) => {
+server.get('/me', validateUser, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
