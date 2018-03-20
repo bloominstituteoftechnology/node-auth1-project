@@ -54,7 +54,9 @@ server.post('/users', (req, res) => {
 });
 
 server.post('/log-in', (req, res) => {
-  const { username, password } = req.body;
+  let { username } = req.body;
+  const { password } = req.body;
+  username = username.toLowerCase();
   if (!username || !password) {
     sendUserError('You must provide a username and password to sign in', res);
     return;
