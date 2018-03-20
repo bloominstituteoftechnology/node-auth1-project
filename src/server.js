@@ -37,6 +37,16 @@ const checkUser = (req, res, next) => {
   // console.log(req.user);
   next();
 };
+
+const restricted = (req, res, next) => {
+  const path = req.path;
+  if (/restricted/.test(path)) {
+    if (!req.session.username) {
+      sendUserError('User not authorized');
+    }
+  }
+  next();
+};
 // "$2a$11$05DYl.2hVuLmMy8tKRIueeQJAepc37WRgY2Jhw.6b5y7s5El/Z6Ce"
 // TODO: implement routes
 server.post('/users', (req, res) => {
