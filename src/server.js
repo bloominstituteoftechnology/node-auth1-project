@@ -29,24 +29,18 @@ const sendUserError = (err, res) => {
 
 // TODO: implement routes
 server.post('/users', (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
+  const { username, passwordHash } = req.body;
+  if (!username || !passwordHash) {
     sendUserError('You must provide a valid username and password to sign up', res);
   }
-  bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
-    if (err) {
-      res.status(500).json({ error: 'There was an error encrypting your password' });
-      return;
-    }
-    const user = new User({ username, passwordHash });
-    user.save()
-      .then((newUser) => {
-        res.status(200).json(newUser);
-      })
-      .catch((ERROR) => {
-        res.status(500).json({ error: 'There was a server error while signing up', ERROR });
-      });
-  });
+  const user = new User({ username, passwordHash });
+  user.save()
+    .then((newUser) => {
+      res.status(200).json(newUser);
+    })
+    .catch((err) => {
+      res.status(500).json({ error: 'There was a server error while signing up', err });
+    });
 });
 
 server.post('/log-in', (req, res) => {
