@@ -62,7 +62,7 @@ server.post('/log-in', (req, res) => {
           res.status(500).json({ error: 'There was in internal error while logging in' });
         } else if (verified) {
           req.session.loggedIn = found[0].id;
-          res.status(200).json({ success: true, found });
+          res.status(200).json({ success: true });
         } else sendUserError('The password you entered is invalid', res);
       });
     });

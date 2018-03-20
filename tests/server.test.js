@@ -108,8 +108,8 @@ const addUser = (credentials) => {
 };
 
 describe('Request', () => {
-  const credentials = { username: 'bob', password: 'qoeru1934p' };
-  const noUsername = { password: credentials.password };
+  const credentials = { username: 'bob', passwordHash: 'qoeru1934p' };
+  const noUsername = { passwordHash: credentials.password };
   const noPassword = { username: credentials.username };
   const emptyPassword = { username: credentials.username, password: '' };
   const wrongUsername = { username: 'jill', password: credentials.password };
