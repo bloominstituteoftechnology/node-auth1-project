@@ -21,7 +21,7 @@ concepts into one authentication system.
   to automatically re-reun the tests when you make modifications.
 * To test your application in your browser, or by using
   [Postman](https://www.getpostman.com/), make sure you've installed `nodemon`
-  via `yarn install -g nodemon` and then run `nodemon src/app.js`. `nodemon` will
+  via `yarn global add nodemon` and then run `nodemon src/app.js`. `nodemon` will
   keep the server running and automatically restart it if you change anything.
   You can now make requests to `http://localhost:3000` in your browser or
   Postman!
