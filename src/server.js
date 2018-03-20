@@ -35,16 +35,18 @@ const checkIfLoggedIn = (req, res, next) => {
   next();
 };
 
-const restricted = (req, res, next) => {
-  if (req.url.startsWith('/restricted')) {
-    if (req.session.loggedIn) {
-      next();
-    } else {
-      sendUserError('Access Denied: You are not logged in', res);
-    }
-  } else next();
-};
-server.use(restricted);
+// const restricted = (req, res, next) => {
+//   if (req.url.startsWith('/restricted) {
+//     if (req.session.loggedIn) {
+//       next();
+//     } else {
+//       sendUserError('Access Denied: You are not logged in', res);
+//     }
+//   } else next();
+// };
+// server.use(restricted);
+
+server.use('/restricted', checkIfLoggedIn);
 
 server.get('/restricted', (req, res) => {
   res.json('go go go');
