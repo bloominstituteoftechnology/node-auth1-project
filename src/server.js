@@ -34,6 +34,8 @@ const checkIfLoggedIn = (req, res, next) => {
   next();
 };
 
+// server.use(`${/restricted/}`, checkIfLoggedIn);
+
 // TODO: implement routes
 server.post('/users', (req, res) => {
   const pass = req.body.password;
@@ -59,7 +61,6 @@ server.post('/log-in', (req, res) => {
         bcrypt.compare(password, record[0].passwordHash, (err, isValid) => {
           if (isValid) {
             if (!req.session.loggedIn) req.session.loggedIn = true;
-            req.user = record[0];
             res.status(200).json({ success: true });
           } else sendUserError({ message: 'Not authenticated' }, res);
         });
