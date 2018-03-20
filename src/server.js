@@ -52,10 +52,9 @@ server.post('/log-in', (req, res) => {
         } else if (username === null) {
           return sendUserError(`user does not exist`, res);
         } else {
+          req.session.userId = user._id;
           res.json({ success: true });
         }
-        req.session;
-        console.log(req.session);
       });
     })
     .catch((err) => {
