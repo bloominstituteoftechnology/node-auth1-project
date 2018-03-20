@@ -24,6 +24,8 @@ mongoose.connection
 .once("open", () => console.log(`Mongoose is open`))
 .on("error", (err) => console.log(`There was an error: \n ${err}`))
 
+mongoose.Promise = global.Promise;
+
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 const sendUserError = (err, res) => {
@@ -40,25 +42,37 @@ server.post("/users", (req, res) => {
   const newUsername = req.query.username;
   const newPassword = req.query.password;
 
-  console.log(newUsername, newPassword);
+  if (!newUsername || !newPassword){
+    res.status(STATUS_USER_ERROR);
+    res.send(`No username and/or password provided.`);
+    return;
+  }
 
-  const newUser = new UserModel({
-    username: newUsername,
-    password: newPassword,
-  });
-
-  bcrypt.hash(newPassword, 10, (err, hash) => {
-    console.log(hash);
-    if (err) {
+  bcrypt.hash(newPassword, BCRYPT_COST, (err, hash) => {
+    if (err){
       res.status(500);
-      res.send(`There was an error saving the user`);
-    } else if (hash){
-      newUser.password = hash;
+      res.send(`There was an error on the server`);
+    }
+
+    if (!hash){
+      res.status(500);
+      res.send(`There was an error hasHing the password`);
+      return;
+    } else {
+      const newUser = new UserModel({
+        username: newUsername,
+        passwordHash: hash,
+      })
+
       newUser.save()
       .then(response => {
-        console.log(`The user was saved successfully`);
+        res.status(200);
+        res.json(response);
       })
-      .catch(err => console.log(`There was an error saving the user: \n ${err}`));
+      .catch(err => {
+        res.status(500);
+        res.send(`There was an error on the server`)
+      })
     }
   })
 })
