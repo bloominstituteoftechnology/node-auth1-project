@@ -78,7 +78,7 @@ const permissions = (req, res, next) => {
     }
   }
   next();
-};
+}
 
 server.use(permissions);
 
@@ -99,6 +99,17 @@ server.post('/users', hashedPwd, (req, res) => {
       res.status(STATUS_USER_ERROR).json(sendUserError('There was an error!', res));
     });
 });
+
+// server.post('/users', (req, res) => {
+//   const { username, password } = req.body;
+//   console.log(req.body)
+//   const newUser = new User({ username, passwordHash: password });
+//   newUser
+//     .save()
+//     .then(res => {
+//       console.log(res);
+//     }) 
+// });
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
