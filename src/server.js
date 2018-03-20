@@ -13,7 +13,9 @@ const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+	secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+	resave: false,
+	saveUninitialized: true
 }));
 
 const logInTracker = (req, res, next) => {
@@ -41,6 +43,19 @@ const hashPassword = (req, res, next) => {
 	}
 };
 
+
+/* Sends the given err, a string or an object, to the client. Sets the status
+ * code appropriately. */
+const sendUserError = (err, res) => {
+  res.status(STATUS_USER_ERROR);
+  if (err && err.message) {
+    res.json({ message: err.message, stack: err.stack });
+  } else {
+    res.json({ error: err });
+  }
+};
+
+// TODO: implement routes
 server.post('/users', (req, res) => {
 	const { username, password } = req.body;
 	if (!username || !password) {
@@ -63,6 +78,16 @@ server.post('/users', (req, res) => {
 			}
 		});
 	}
+});
+
+server.get('/users', (req, res) => {
+	User.find({})
+		.then(users => {
+			res.status(200).json(users);
+		})
+		.catch(err => {
+			res.status(500).json({ error: 'Error retrieving useres' });
+		});
 });
 
 server.post('/log-in', hashPassword, (req, res) => {
@@ -88,20 +113,6 @@ server.post('/log-in', hashPassword, (req, res) => {
 		});
 	}
 });
-
-
-/* Sends the given err, a string or an object, to the client. Sets the status
- * code appropriately. */
-const sendUserError = (err, res) => {
-  res.status(STATUS_USER_ERROR);
-  if (err && err.message) {
-    res.json({ message: err.message, stack: err.stack });
-  } else {
-    res.json({ error: err });
-  }
-};
-
-// TODO: implement routes
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', logInTracker, (req, res) => {
