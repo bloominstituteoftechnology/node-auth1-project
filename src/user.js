@@ -33,8 +33,18 @@ UserSchema.pre('save', function (next) {
   });
 });
 
-UserSchema.methods.checkPassword = function (potentialPassword) {
-  return bcrypt.compare(potentialPassword, this.passwordHash);
+UserSchema.methods.checkPassword = function (potentialPassword, cb) {
+  bcrypt.compare(potentialPassword, this.passwordHash, (err, isMatch) => {
+    if (err) return cb(err);
+    cb(null, isMatch);
+  });
 };
+
+//
+// Version 2.0 without using a callback function
+//
+// UserSchema.methods.checkPassword = function (potentialPassword) {
+//   return bcrypt.compare(potentialPassword, this.passwordHash);
+// };
 
 module.exports = mongoose.model('User', UserSchema);

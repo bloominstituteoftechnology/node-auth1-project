@@ -83,9 +83,9 @@ server.post('/log-in', (req, res) => {
   }
   User.findOne({ username })
     .then((user) => {
-      user.checkPassword(password).then((valid, err) => {
-        if (err) {
-          sendUserError(err);
+      user.checkPassword(password, (messedUp, valid) => {
+        if (messedUp) {
+          sendUserError(messedUp);
         }
         if (!valid) {
           res.status(422).json({ success: false });
@@ -94,6 +94,21 @@ server.post('/log-in', (req, res) => {
           res.status(200).json({ success: true });
         }
       });
+      //
+      // version 2.0 without callback - it requires that checkPassword
+      // be treated like a promise.
+      //
+      // user.checkPassword(password).then((valid, err) => {
+      //   if (err) {
+      //     sendUserError(err);
+      //   }
+      //   if (!valid) {
+      //     res.status(422).json({ success: false });
+      //   } else if (valid) {
+      //     req.session.user = user;
+      //     res.status(200).json({ success: true });
+      //   }
+      // });
     })
     .catch((saveError) => {
       sendUserError(saveError, res);
