@@ -24,13 +24,12 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
+// for some reason, needed to set the "user" to "this". this allows every password to be hashed within the schema before the .save() function in the server file
 UserSchema.pre('save', function(next) {
+  let user = this;
   bcrypt.hash(this.passwordHash, BCRYPT_COST, function(error, hash) {
-    console.log("Password Hashing in Schema");
     if (error) throw new Error(error);
-    this.passwordHash = hash;
-    console.log("Hash is: ", hash);
-    console.log("Password is: ", this.passwordHash);
+    user.passwordHash = hash;
     next();
   });
 });
