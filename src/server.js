@@ -28,7 +28,6 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
-
 // TODO: add local middleware to this route to ensure the user is logged in
 server.use(
   session({
@@ -50,7 +49,7 @@ server.post('/users', (req, res) => {
       .then((savedUser) => {
         res
           .status(200)
-          .json(savedUser)
+          .json(savedUser);
       })
       .catch((err) => {
         res
@@ -61,31 +60,7 @@ server.post('/users', (req, res) => {
 });
 
 server.post('/log-in', (req, res) => {
-  const userInfo = req.body;
-  User
-    .find({ // gives you an array
-      username: userInfo.username,
-    })
-    .then((savedUser) => {
-      console.log(savedUser); // array with the one item
-      bcrypt.compare(userInfo.passwordHash, savedUser[0].passwordHash, (err, response) => {
-        if (response) {
-          req.session.loggedIn = savedUser[0]._id;
-          // console.log('req.session', req.session);
-          // console.log('user id', savedUser);
-          res.status(200).json({ success: true }, savedUser);
-        } else {
-          res
-            .status(500)
-            .json({ success: false });
-        }
-      });
-    })
-    .catch((err) => {
-      res
-        .status(500)
-        .json({ MESSAGE: 'There was an error logging in' });
-    });
+
 });
 
 const auth = (req, res, next) => {
@@ -110,5 +85,28 @@ server.get('/me', auth, (req, res) => {
 });
 
 module.exports = { server };
-
-// 
+  // const userInfo = req.body;
+  // User
+  //   .find({ // gives you an array
+  //     username: userInfo.username,
+  //   })
+  //   .then((savedUser) => {
+  //     console.log(savedUser); // array with the one item
+  //     bcrypt.checkPassword(savedUser.passwordHash, (err, response) => {
+  //       if (response) {
+  //         req.session.loggedIn = savedUser[0]._id;
+  //         // console.log('req.session', req.session);
+  //         // console.log('user id', savedUser);
+  //         res.status(200).json({ success: true }, savedUser);
+  //       } else {
+  //         res
+  //           .status(500)
+  //           .json({ success: false });
+  //       }
+  //     });
+  //   })
+  //   .catch((err) => {
+  //     res
+  //       .status(500)
+  //       .json({ MESSAGE: 'There was an error logging in' });
+  //   });
