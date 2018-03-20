@@ -89,16 +89,19 @@ server.post('/log-in', (req, res) => {
   }
   User.findOne({ username })
     .then((user) => {
-      const valid = user.checkPassword();
-      if(valid.error){
-        console.log({ error: valid.error });
-      }
-      if(!valid) {
+      user.checkPassword(password).then((valid, err) => {
+        if(err){
+          sendUserError(err);
+        }
+        if(!valid) {
          res.status(422).json({ success: false });
       } else if (valid) {
          req.session.user = user;
          res.status(200).json({ success: true });
       }
+    });
+
+      
     })
     .catch((saveError) => {
       sendUserError(saveError, res);
