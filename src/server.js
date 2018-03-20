@@ -69,19 +69,24 @@ server.post('/log-in', hashPassword, (req, res) => {
 	const { username, password } = req.body;
 	const { hashedPW } = req;
 
-	User.findOne({ username })
-		.then((userFound) => {
-			if (!userFound) {
+	if (!username || !password) {
+		res.status(STATUS_USER_ERROR).json('Username or password does not match the user.');
+	} else {
+		User.findOne({ username })
+		.then((user) => {
+			if (!user) {
 				sendUserError(err, res);
-				return;
+			} else if (!bcrypt.compareSync(password, user.passwordHash)) {
+				sendUserError(err, res);
 			} else {
-				req.session.user = userFound;
+				req.session.user = user;
 				res.status(STATUS_SUCCESS).json({ success: true });
 			}
 		})
 		.catch(err => {
 			sendUserError(err, res);
 		});
+	}
 });
 
 
