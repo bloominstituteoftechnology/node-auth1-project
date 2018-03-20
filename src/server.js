@@ -54,7 +54,7 @@ const restricted = (req, res, next) => {
 server.post('/users', (req, res) => {
   const { username, passwordHash } = req.body;
   if (!passwordHash || passwordHash === '') {
-    res.status(STATUS_USER_ERROR).json({ error: 'You must enter a password' });
+    res.status(STATUS_USER_ERROR).json({ error: 'You must enter a passwordHash' });
   }
   //   User.create({ username, passwordHash })
   const newUser = new User({ username, passwordHash });
@@ -72,26 +72,39 @@ server.post('/users', (req, res) => {
 //   res.json({ sesh });
 // });
 
+// {
+//   "__v": 0,
+//   "username": "agent 4",
+//   "passwordHash": "$2a$11$eqbqxBH.sR4vBPWgg8Uyde.8XuIiSzy/VKQCRJDdvbhffvL.4BJde",
+//   "_id": "5ab1687b14c7b2112451517a"
+// }
+
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
   if (!password) {
-    sendUserError('Please provide and ID and a password');
+    sendUserError('Please provide and ID and a password', res);
   }
   User.findOne({ username })
     .then((user) => {
-      user.checkPassword(password, (err, validated) => {
-        if (err) {
-          console.log(err, res);
-        } else if (validated) {
-          req.session.user = user;
-          res.status(200).json({ success: true });
-        } else {
-          res.status(422).json({ success: false });
-        }
-      });
+      // res.send(user);
+      user
+        .checkPassword(password)
+        .then((result) => {
+          if (result) {
+            req.session.user = user;
+            res.status(200).json({ success: true });
+          } else {
+            res.status(422).json({ success: false });
+          }
+        })
+        .catch((error) => {
+          res.status(500).send({ error: 'Error checking password' });
+        });
     })
-    .catch((dbSaveError) => {
-      sendUserError('User Does not exist in our system', res);
+    .catch((error) => {
+      // console.log(error);
+      res.status(422);
+      res.send({ error: 'No User by that name' });
     });
 });
 
