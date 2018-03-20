@@ -54,7 +54,9 @@ const restricted = (req, res, next) => {
 server.post('/users', (req, res) => {
   const { username, passwordHash } = req.body;
   if (!passwordHash || passwordHash === '') {
-    res.status(STATUS_USER_ERROR).json({ error: 'You must enter a passwordHash' });
+    res
+      .status(STATUS_USER_ERROR)
+      .json({ error: 'You must enter a passwordHash' });
   }
   //   User.create({ username, passwordHash })
   const newUser = new User({ username, passwordHash });
@@ -98,7 +100,7 @@ server.post('/log-in', (req, res) => {
           }
         })
         .catch((error) => {
-          res.status(500).send({ error: 'Error checking password' });
+          res.status(500).send({ error: 'Bcrypt errored checking password' });
         });
     })
     .catch((error) => {
