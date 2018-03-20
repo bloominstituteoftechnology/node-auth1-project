@@ -24,8 +24,33 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+server.post('/users', (req, res) => {
+  const { username, password } = req.body;
+  const newUser = new User({ username, passwordHash: password });
+  newUser.save((err, savedUser) => {
+    if (err) {
+      return sendUserError(err, res);      
+    }
+    res.json(savedUser);
+  });
+});
 
-// TODO: add local middleware to this route to ensure the user is logged in
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  User.findOne({ username }).then((user) => {
+    user.checkPassword(password, (err, validated) => {
+      // if err return sendUserError(err, res)
+      // if err is null return  sendUserError('user does not exist', res)
+      // if validated === true...
+    });
+  })
+  .catch((err) => {
+    return sendUserError('User does not exist in system', res);
+  })
+})
+
+// TODO: add local middleware to this route to ensure the user is logged in PICS CHECKPASSWORD
+
 server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
