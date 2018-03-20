@@ -1,4 +1,3 @@
-// test
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
@@ -33,28 +32,40 @@ const sendUserError = (err, res) => {
 const userMiddleware = (req, res, next) => {};
 
 // TODO: add local middleware to this route to ensure the user is logged in
-
-server.get('/me', (req, res) => {
-  // Do NOT modify this route handler in any way.
-  res.json(req.user);
-});
-
 server.post('/users', (req, res) => {
   const { userName, userPass } = req.body;
-  const newUser = new User();
-
-  bcrypt.hash(userPass, BCRYPT_COST, (err, hash) => {
+  const newUser = new User({ userName, passwordHash: userPass });
+  newUser.save((err, savedUser) => {
     if (err) {
-      sendUserError('Error!', res);
+      return sendUserError(err, res);
     }
+    res.json(savedUser);
   });
-  res.json(newUser);
 
-  if (!userName || !userPass) {
-    sendUserError('Error: Invalid username or password', res);
-  } else {
-    res.json(newUser);
-  }
+  server.post('/log-in', (req, res) => {
+    const { userName, userPass } = req.body;
+    User.findOne({ userName }).then(user => {
+      user.checkPassword(userPass, (err, validation) => {
+        if (err) {
+          sendUserError(err, res);
+          if (err === null) {
+            return sendUserError('User does not exist', res);
+          }
+        }
+      });
+    });
+  });
+
+  server.get('/me', (req, res) => {
+    // Do NOT modify this route handler in any way.
+    res.json(req.user);
+  });
+
+  // if (!userName || !userPass) {
+  //   sendUserError('Error: Invalid username or password', res);
+  // } else {
+  //   res.json(newUser);
+  // }
 });
 
 module.exports = { server };
