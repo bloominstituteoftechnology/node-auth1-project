@@ -13,7 +13,9 @@ const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+  resave: true,
+  saveUninitialized: false,
 }));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
@@ -29,18 +31,11 @@ const sendUserError = (err, res) => {
 
 // TODO: implement routes
 // TODO: add local middleware to this route to ensure the user is logged in
-server.use(
-  session({
-    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
-    resave: true,
-    saveUninitialized: false,
-  }),
-);
 
 server.post('/users', (req, res) => {
   const userInfo = req.body; // body parser?
-  bcrypt.hash(userInfo.passwordHash, 11, (err, hashedPw) => {
-    if (err) throw new Error(err);
+  bcrypt.hash(userInfo.passwordHash, 11, (hashErr, hashedPw) => {
+    if (hashErr) throw new Error(hashErr);
 
     userInfo.passwordHash = hashedPw;
     const user = new User(userInfo);
@@ -60,22 +55,55 @@ server.post('/users', (req, res) => {
 });
 
 server.post('/log-in', (req, res) => {
+  const username = req.body.username.toLowerCase();
+  const potentialPW = req.body.passwordHash;
+  console.log('username', username);
+  console.log('potentialPW', potentialPW);
 
+  if (!potentialPW || !username) {
+    sendUserError('Username and password required', res);
+    return;
+  }
+
+  User
+    .findOne({
+      username: username,
+    })
+    .then((foundUser) => {
+      console.log('foundUser', foundUser); // array with the one item
+      bcrypt.checkPassword(passwordHash, (err, response) => {
+        if (response) {
+          req.session.username = username;
+          // console.log('req.session', req.session);
+          // console.log('user id', foundUser);
+          res.status(200).json({ success: true }, foundUser);
+        } else {
+          res
+            .status(500)
+            .json({ success: false });
+        }
+      });
+    })
+    .catch((err) => {
+      res
+        .status(500)
+        .json({ MESSAGE: 'There was an error logging in' });
+    });
 });
 
 const auth = (req, res, next) => {
   console.log(req.session);
-  if(req.session.loggedIn) {
+  if (req.session.loggedIn) {
     User.findById(req.session.loggedIn)
-      .then(user => {
+      .then((user) => {
         req.user = user;
         next();
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
       });
   } else {
-    res.status(STATUS_USER_ERROR).send({ message: 'You are not logged in'});
+    res.status(STATUS_USER_ERROR).send({ message: 'You are not logged in' });
   }
 };
 
@@ -85,6 +113,7 @@ server.get('/me', auth, (req, res) => {
 });
 
 module.exports = { server };
+
   // const userInfo = req.body;
   // User
   //   .find({ // gives you an array
