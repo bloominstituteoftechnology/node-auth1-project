@@ -1,6 +1,9 @@
+/* eslint-disable */
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const bcrypt = require("bcrypt");
+const mongoose = require('mongoose');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -16,6 +19,11 @@ server.use(session({
   saveUninitialized: true,
 }));
 
+mongoose.connect("mongodb://localhost:27017/Users", {useMongoClient: true});
+mongoose.connection
+.once("open", () => console.log(`Mongoose is open`))
+.on("error", (err) => console.log(`There was an error: \n ${err}`))
+
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 const sendUserError = (err, res) => {
@@ -28,6 +36,33 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+server.post("/users", (req, res) => {
+  const newUsername = req.query.username;
+  const newPassword = req.query.password;
+
+  console.log(newUsername, newPassword);
+
+  const newUser = new UserModel({
+    username: newUsername,
+    password: newPassword,
+  });
+
+  bcrypt.hash(newPassword, 10, (err, hash) => {
+    console.log(hash);
+    if (err) {
+      res.status(500);
+      res.send(`There was an error saving the user`);
+    } else if (hash){
+      newUser.password = hash;
+      newUser.save()
+      .then(response => {
+        console.log(`The user was saved successfully`);
+      })
+      .catch(err => console.log(`There was an error saving the user: \n ${err}`));
+    }
+  })
+})
+
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
