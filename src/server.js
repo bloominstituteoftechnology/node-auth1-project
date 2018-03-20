@@ -39,6 +39,9 @@ const checkUser = (req, res, next) => {
 
 const restricted = (req, res, next) => {
   // do something that only apply to restricted route
+  if (!req.session.user) {
+    sendUserError('User is not authorized', res);
+  }
   next();
 };
 
