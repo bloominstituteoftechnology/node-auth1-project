@@ -28,6 +28,19 @@ const sendUserError = (err, res) => {
   }
 };
 
+const restrictedAccess = (req, res, next) => {
+  const path = req.path;
+  if (/restricted/.test(path)) {
+    if (!req.session.isAuth) {
+      sendUserError('User is not authorized.', res);
+      return;
+    }
+  }
+  next();
+};
+
+server.use(restrictedAccess);
+
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
@@ -77,6 +90,10 @@ const validUser = (req, res, next) => {
 server.get('/me', validUser, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
+});
+
+server.get('/restricted/test', (req, res) => {
+  res.json('Hey there buddy');
 });
 
 module.exports = { server };
