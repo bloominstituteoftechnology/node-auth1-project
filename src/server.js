@@ -84,8 +84,23 @@ server.post('/log-in', (req, res) => {
     });
 });
 
+const authenticate = (req, res, next) => {
+  if (req.session.loggedIn) {
+    User.find({ _id: req.session.loggedIn })
+      .then((user) => {
+        req.user = user;
+        next();
+      })
+      .catch((err) => {
+        res.status(500).json({ error: 'There was an internal error while processing' });
+      });
+  } else {
+    sendUserError('You must be logged in to the system', res);
+  }
+};
+
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+server.get('/me', authenticate, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
