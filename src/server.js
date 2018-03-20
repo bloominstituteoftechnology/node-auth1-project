@@ -1,4 +1,4 @@
-/*eslint-disable*/
+/* eslint-disable */
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
@@ -17,19 +17,29 @@ server.use(session({
 }));
 
 const logInTracker = (req, res, next) => {
-	if (res.session.loggedIn) {
-		User.findOne({ username: req.session.username })
-			.then(user => {
-				res.user = user;
-				next();
-			})
-			.catch(err => {
-				sendUserError(err, res);
-			});
-	}	else {
-		sendUserError(err, res);
+		if (!req.session.user) {
+			sendUserError(new Error('Username not found.'), res);
+		}
+		else {
+			req.user = req.session.user;
+			next();
+		}
+};
+
+const hashPassword = (req, res, next) => {
+	const { 
+		password
+	} = req.body;
+
+	if (!password) {
+		sendUserError(new Error('Password not found.'), res);
+	} else {
+		bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
+			req.hashedPW = hash;
+			next();
+		});
 	}
-}
+};
 
 server.post('/users', (req, res) => {
 	const { username, password } = req.body;
@@ -55,22 +65,25 @@ server.post('/users', (req, res) => {
 	}
 });
 
-server.post('/log-in', (req, res) => {
+server.post('/log-in', hashPassword, (req, res) => {
 	const { username, password } = req.body;
-	const hash = req.passwordHash;
+	const { hashedPW } = req;
 
-	bcrypt.compare(password, hash, (err, res) => {
-		if (err) {
-			sendUserError(err, res);
-		}
-		else if (res) {
-				res.json({ success: true });
+	User.findOne({ username })
+		.then((userFound) => {
+			if (!userFound) {
+				sendUserError(err, res);
 				return;
-		} else {
+			} else {
+				req.session.user = userFound;
+				res.status(STATUS_SUCCESS).json({ success: true });
+			}
+		})
+		.catch(err => {
 			sendUserError(err, res);
-		}
-	})
+		});
 });
+
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -86,7 +99,7 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+server.get('/me', logInTracker, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
