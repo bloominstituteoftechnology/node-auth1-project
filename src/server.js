@@ -57,8 +57,6 @@ server.post('/users', (req, res) => {
 server.post('/log-in', (req, res) => {
   const username = req.body.username.toLowerCase();
   const potentialPW = req.body.passwordHash;
-  console.log('username', username);
-  console.log('potentialPW', potentialPW);
 
   if (!potentialPW || !username) {
     sendUserError('Username and password required', res);
@@ -70,13 +68,10 @@ server.post('/log-in', (req, res) => {
       username: username,
     })
     .then((foundUser) => {
-      console.log('foundUser', foundUser); // array with the one item
-      bcrypt.checkPassword(passwordHash, (err, response) => {
+      foundUser.checkPassword(potentialPW, (err, response) => {
         if (response) {
           req.session.username = username;
-          // console.log('req.session', req.session);
-          // console.log('user id', foundUser);
-          res.status(200).json({ success: true }, foundUser);
+          res.status(200).json({ success: true, user: req.session.username });
         } else {
           res
             .status(500)
@@ -87,7 +82,7 @@ server.post('/log-in', (req, res) => {
     .catch((err) => {
       res
         .status(500)
-        .json({ MESSAGE: 'There was an error logging in' });
+        .json({ MESSAGE: 'There was an error logging in.', error: 'No user found.' });
     });
 });
 
