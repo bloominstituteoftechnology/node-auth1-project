@@ -46,23 +46,20 @@ const checkUserLoggedIn = (req, res, next) => {
 };
 
 server.post('/users', (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
+  const { username, passwordHash } = req.body;
+  if (!username || !passwordHash) {
     sendUserError('You will need to enter a username & password.', res);
-    return;
   }
-  bcrypt.hash(password, BCRYPT_COST).then((data) => {
-    const user = new User({ username, passwordHash: data });
-    user
-      .save()
-      .then((newUser) => {
-        res.status(200).send(newUser);
-      })
-      .catch((err) => {
-        sendUserError('Error when attemping to save user.', res);
-      });
+//  bcrypt.hash(password, BCRYPT_COST).then((data) => {
+  const user = new User({ username, passwordHash });
+  user.save()
+    .then((newUser) => {
+      res.status(200).json(newUser);
+    })
+    .catch((err) => {
+      res.status(500).json({ error: 'There was a server error while signing up', err });
+    });
   });
-});
 
 /* server.post('/log-in', (req, res) => {
   const { username, password } = req.body;

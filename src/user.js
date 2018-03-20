@@ -15,27 +15,20 @@ const UserSchema = new mongoose.Schema({
     type: String,
     unique: true,
     required: true,
-    lowercase: true
+    lowercase: true,
   },
   passwordHash: {
     type: String,
-    required: true
+    required: true,
   }
 });
 
 UserSchema.pre('save', function(next) {
-  bcrypt.hash(this.passwordHash, BCRYPT_COST, function(error, hash) {
+  bcrypt.hash(this.passwordHash, BCRYPT_COST, (error, hash) => {
     if (error) return next(error);
     this.passwordHash = hash;
     next();
   });
 });
-
-UserSchema.methods.checkPassword = function(potentialPassword, cb) {
-  bcrypt.compare(potentialPassword, this.passwordHash, (err, isMatch) => {
-    if (err) return cb(err);
-    cb(null, isMatch);
-  });
-};
 
 module.exports = mongoose.model('User', UserSchema);
