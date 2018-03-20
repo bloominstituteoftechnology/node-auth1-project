@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 
 const User = require ('./user.js');
 
+
 const STATUS_USER_ERROR = 422;
 const STATUS_SUCCESS = 200;
 const BCRYPT_COST = 11;
