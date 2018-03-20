@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('brypt');
+const bcrypt = require('bcrypt');
 
 const BCRYPT_COST = 11;
 // Clear out mongoose's model cache to allow --watch to work for tests:
@@ -32,7 +32,7 @@ UserSchema.pre('save', function(next){
   });
 });
 
-UsersSchema.methods.checkPassword = function(potentialPassword, cb) {
+UserSchema.methods.checkPassword = function(potentialPassword, cb) {
   bcrypt.compare(potentialPassword, this.passwordHash, (err, isMatch) => {
     if (err) return cb(err);
     cb(null, isMatch);

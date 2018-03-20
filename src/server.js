@@ -3,7 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 
-iconst User = require('./user.js');
+const User = require('./user.js');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -42,12 +42,20 @@ server.post('/users', (req, res) => {
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
+  const UA = req.headers['cookie'];
+  req.session.UA = UA;
   User.findOne({ username })
     .then((user) => {
       user.checkPassword(password, (err, validated) => {
-        // if err return sendUserError(err, res)
-        // if err is null return sendUserError(`user does not exist`, res)
-        // if validated === true...
+        if (err) {
+          return sendUserError(err, res);
+        } else if (username === null) {
+          return sendUserError(`user does not exist`, res);
+        } else {
+          res.json({ success: true });
+        }
+        req.session;
+        console.log(req.session);
       });
     })
     .catch((err) => {
