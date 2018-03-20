@@ -53,7 +53,8 @@ server.post('/log-in', (req, res) => {
           return sendUserError(`user does not exist`, res);
         } else {
           req.session.userId = user._id;
-          res.json({ success: true });
+          //res.json({ success: true });
+          return res.redirect('/me');
         }
       });
     })
