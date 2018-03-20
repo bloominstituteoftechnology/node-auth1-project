@@ -59,27 +59,18 @@ server.get('/me', checkUser, (req, res) => {
 });
 
 server.post('/users', (req, res) => {
-  console.log('sdfklj');
   const { username, password } = req.body;
-  if (!password || password === '') {
-    res.status(STATUS_USER_ERROR).json({ error: 'You must enter a password' });
-  }
   const newUser = new User();
-  bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
-    if (err) {
-      console.log({ error: err });
-    }
-    newUser.username = username;
-    newUser.passwordHash = hash;
-    newUser
-      .save()
-      .then((savedUser) => {
-        res.status(200).json(savedUser);
-      })
-      .catch((saveError) => {
-        sendUserError(saveError, res);
-      });
-  });
+  newUser.username = username;
+  newUser.passwordHash = password;
+  newUser
+    .save()
+    .then((savedUser) => {
+      res.status(200).json(savedUser);
+    })
+    .catch((saveError) => {
+      sendUserError(saveError, res);
+    });
 });
 
 server.post('/log-in', (req, res) => {
@@ -90,18 +81,16 @@ server.post('/log-in', (req, res) => {
   User.findOne({ username })
     .then((user) => {
       user.checkPassword(password).then((valid, err) => {
-        if(err){
+        if (err) {
           sendUserError(err);
         }
-        if(!valid) {
-         res.status(422).json({ success: false });
-      } else if (valid) {
-         req.session.user = user;
-         res.status(200).json({ success: true });
-      }
-    });
-
-      
+        if (!valid) {
+          res.status(422).json({ success: false });
+        } else if (valid) {
+          req.session.user = user;
+          res.status(200).json({ success: true });
+        }
+      });
     })
     .catch((saveError) => {
       sendUserError(saveError, res);
