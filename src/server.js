@@ -11,7 +11,9 @@ const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+  resave: true,
+  saveUninitialized: false,
 }));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
@@ -24,6 +26,10 @@ const sendUserError = (err, res) => {
     res.json({ error: err });
   }
 };
+
+server.get('/', (req, res) => {
+  res.status(200).send({ status: req.session.loggedn });
+});
 
 // TODO: implement routes
 server.post('/users', (req, res) => {
@@ -68,6 +74,9 @@ server.post('/log-in', (req, res) => {
           res.status(500).json({ error: 'There was in internal error while logging in' });
         } else if (verified) {
           res.status(200).json({ success: true, found });
+          // eslint-disable-next-line no-underscore-dangle
+          req.session.loggedIn = found[0]._id;
+          console.log(req.session);
         } else sendUserError('The password you entered is invalid', res);
       });
     });
