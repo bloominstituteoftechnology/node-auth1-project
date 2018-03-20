@@ -28,6 +28,16 @@ const sendUserError = (err, res) => {
   }
 };
 
+const restrictedAccess = (req, res, next) => {
+  if (!req.session.userId) {
+    res.json('You shall not pass');
+  } else if (req.session.userId) {
+    res.json('You\'re in!');
+  }
+}
+
+server.use('/restricted', restrictedAccess);
+
 // TODO: implement routes
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
