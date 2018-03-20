@@ -61,7 +61,7 @@ server.post('/users', (req, res) => {
   newUser.save((err, savedUser) => {
     if (err) {
       res.status(422);
-      res.json({ 'Need both Email/PW fields': err.message });
+      res.json({ error: err.message });
     }
     res.json(savedUser);
   });

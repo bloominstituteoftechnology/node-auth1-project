@@ -23,15 +23,15 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
-UserSchema.pre('save', function (next) {
-  bcrypt.hash(this.passwordHash, BCRYPT_COST, function (error, hash) {
+UserSchema.pre('save', function(next) {
+  bcrypt.hash(this.passwordHash, BCRYPT_COST, (error, hash) => {
     if (error) return next(error);
     this.passwordHash = hash;
     next();
   });
 });
 
-UserSchema.methods.checkPassword = function (potentialPassword, cb) {
+UserSchema.methods.checkPassword = function(potentialPassword, cb) {
   bcrypt.compare(potentialPassword, this.passwordHash, (err, isMatch) => {
     if (err) return cb(err);
     cb(null, isMatch);
