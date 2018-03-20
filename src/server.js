@@ -36,14 +36,14 @@ server.post('/users', (req, res) => {
       passwordHash: req.body.password
     };
     const newUser = new User(userInfo);
-        newUser.save()
-          .then((user) => {
-            res.status(200).json(user);
-          })
-          .catch((catchErr) => {
-            sendUserError(catchErr, res);
-          });
-        };
+    newUser.save()
+    .then((user) => {
+      res.status(200).json(user);
+    })
+    .catch((catchErr) => {
+      sendUserError(catchErr, res);
+    });
+  }
 });
 
 server.post('/log-in', (req, res) => {
@@ -110,11 +110,10 @@ const restrictedMw = (req, res, next) => {
   }
 };
 
-server.use(restrictedMw);
+// server.use(restrictedMw);
 
-server.get('/restricted/', (req, res) => {
+server.get('/restricted/', restrictedMw, (req, res) => {
   res.send('You\'re accessing restricted content!');
 });
-
 
 module.exports = { server };
