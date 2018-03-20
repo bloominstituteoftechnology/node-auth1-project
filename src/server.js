@@ -9,7 +9,7 @@ const User = require('./user.js');
 const STATUS_USER_ERROR = 422;
 
 const server = express();
-// to enable parsing of json bodies for post requests
+
 server.use(bodyParser.json());
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
@@ -17,8 +17,6 @@ server.use(session({
   saveUninitialized: false,
 }));
 
-/* Sends the given err, a string or an object, to the client. Sets the status
- * code appropriately. */
 const sendUserError = (err, res) => {
   res.status(STATUS_USER_ERROR);
   if (err && err.message) {
