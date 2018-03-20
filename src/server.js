@@ -55,15 +55,17 @@ server.post('/users', (req, res) => {
   if (!password || password === '') {
     res.status(STATUS_USER_ERROR).json({ error: 'You must enter a password' });
   }
-  Bcrypt.hash(password, BCRYPT_COST, (err, passHash) => {
+  Bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
     if (err) {
-      console.log({ error: err });
+      console.log(err);
+      throw new Error(err);
     }
-    const newUser = new User();
-    newUser.username = username;
-    newUser.passwordHash = passHash;
-    newUser
-      .save()
+    User.create({ username, passwordHash })
+    // const newUser = new User();
+    // newUser.username = username;
+    // newUser.passwordHash = passwordHash;
+    // newUser
+    //   .save()
       .then((savedUser) => {
         res.status(200).json(savedUser);
       })
