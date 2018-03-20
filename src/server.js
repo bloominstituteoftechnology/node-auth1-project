@@ -6,48 +6,14 @@ const bcrypt = require('bcrypt');
 
 const User = require ('./user.js');
 
-
 const STATUS_USER_ERROR = 422;
 const STATUS_SUCCESS = 200;
 const BCRYPT_COST = 11;
 
 const server = express();
 // to enable parsing of json bodies for post requests
-const logInTracker = (req, res, next) => {
-	if (!req.session.user) {
-		sendUserError(new Error('Username not found.'), res);
-	}
-	else {
-		req.user = req.session.user;
-		next();
-	}
-};
-
-const hashPassword = (req, res, next) => {
-const { 
-	password
-} = req.body;
-
-if (!password) {
-	sendUserError(new Error('Password not found.'), res);
-} else {
-	bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
-		req.hashedPW = hash;
-		next();
-	});
-}
-};
-
-const restrictPermission = (req, res, next) => {
-if (!req.session.username) {
-	sendUserError('You must log in first', res);
-	return;
-}
-next();
-};
 
 server.use(bodyParser.json());
-server.use('/restricted', restrictPermission);
 server.use(session({
 	secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
 	resave: true,
@@ -66,6 +32,56 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+const logInTracker = (req, res, next) => {
+	const { username } = req.session;
+	if (!username) {
+		sendUserError('You are not logged in', res);
+		return;
+	} else {
+		User.findOne({ username }, (err, user) => {
+			if (err) {
+				sendUserError(err, res);
+			} else if (!user) {
+				sendUserError('User does not exist', res);
+			} else {
+				req.user = req.session.user;
+				next();
+			}
+		});
+	}
+};
+
+const hashPassword = (req, res, next) => {
+	const { 
+		password
+	} = req.body;
+
+	if (!password) {
+		sendUserError('You need to enter password', res);
+		return;
+	} else {
+		bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
+			if (err) {
+				sendUserError(err, res);
+			} else {
+				req.hashedPW = hash;
+				next();
+			}
+		});
+	}
+};
+
+const restrictPermission = (req, res, next) => {
+	if (!req.session.user) {
+		sendUserError('You must log in first', res);
+		return;
+	}
+	else {
+		req.user = req.session.user;
+	}
+	next();
+};
+
 server.post('/users', (req, res) => {
 	const { username, password } = req.body;
 	if (!username || !password) {
@@ -109,14 +125,15 @@ server.post('/log-in', hashPassword, (req, res) => {
 	} else {
 		User.findOne({ username })
 		.then((user) => {
-			if (!user) {
-				sendUserError(err, res);
-			} else if (!bcrypt.compareSync(password, user.passwordHash)) {
-				sendUserError(err, res);
-			} else {
-				req.session.user = user;
-				res.status(STATUS_SUCCESS).json({ success: true });
-			}
+			bcrypt.compare(password, user.passwordHash, (err, response) => {
+				if (response) {
+					req.session.user = user._id;
+					res.status(STATUS_SUCCESS).json({ success: true });
+				}
+				else {
+					sendUserError(err, res);
+				}
+			})
 		})
 		.catch(err => {
 			sendUserError(err, res);
@@ -127,6 +144,8 @@ server.post('/log-in', hashPassword, (req, res) => {
 server.get('/restricted/', (req, res) => {
 	res.json({ message: 'You are logged in.' });
 });
+
+server.use('/restricted', restrictPermission);
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', logInTracker, (req, res) => {
