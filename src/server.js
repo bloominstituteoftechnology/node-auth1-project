@@ -25,10 +25,11 @@ const sendUserError = (err, res) => {
 };
 
 server.post('/users', (req, res) => {
-  const { username, passwordHash } = req.body;
-  if (!username || !passwordHash) {
+  const { username, password } = req.body;
+  if (!username || !password) {
     sendUserError('You must provide a valid username and password to sign up', res);
   }
+  const passwordHash = password;
   const user = new User({ username, passwordHash });
   user.save()
     .then((newUser) => {
@@ -42,11 +43,11 @@ server.post('/users', (req, res) => {
 server.post('/log-in', (req, res) => {
   let { username } = req.body;
   const { password } = req.body;
-  username = username.toLowerCase();
   if (!username || !password) {
     sendUserError('You must provide a username and password to sign in', res);
     return;
   }
+  username = username.toLowerCase();
   User.find({ username })
     .exec((err, found) => {
       if (found.length === 0) {
@@ -63,7 +64,9 @@ server.post('/log-in', (req, res) => {
         } else if (verified) {
           req.session.loggedIn = found[0].id;
           res.status(200).json({ success: true });
-        } else sendUserError('The password you entered is invalid', res);
+        } else {
+          sendUserError('The password you entered is invalid', res);
+        }
       });
     });
 });
