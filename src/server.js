@@ -35,7 +35,20 @@ const checkIfLoggedIn = (req, res, next) => {
   next();
 };
 
-// server.use(`${/restricted/}`, checkIfLoggedIn);
+const restricted = (req, res, next) => {
+  if (req.url.startsWith('/restricted')) {
+    if (req.session.loggedIn) {
+      next();
+    } else {
+      sendUserError('Access Denied: You are not logged in', res);
+    }
+  } else next();
+};
+server.use(restricted);
+
+server.get('/restricted', (req, res) => {
+  res.json('go go go');
+});
 
 // TODO: implement routes
 server.post('/users', (req, res) => {
