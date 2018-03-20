@@ -43,6 +43,7 @@ const restricted = (req, res, next) => {
   if (/restricted/.test(path)) {
     if (!req.session.username) {
       sendUserError('User not authorized');
+      return;
     }
   }
   next();
