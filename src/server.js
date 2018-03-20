@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const User = require('./user.js');
+
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
@@ -29,43 +30,60 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
-const userMiddleware = (req, res, next) => { };
+// const userMiddleware = (req, res, next) => { };
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.post('/users', (req, res) => {
-  const { username, password } = req.body;
-  const newUser = new User({ username, passwordHash: password });
-  newUser.save((err, savedUser) => {
-    if (err) {
-      return sendUserError(err, res);
-    }
-    res.json(savedUser);
-  });
+  const { username } = req.body;
+  const passwordHash = req.body.password;
+  const newUser = new User({ username, passwordHash });
+  newUser
+    .save()
+    .then(user => res.status(200).send(user))
+    .catch(err => {
+      sendUserError(err, res);
+    })
 
-  server.post('/log-in', (req, res) => {
-    const { username, password } = req.body;
-    User.findOne({ username }).then(user => {
-      user.checkPassword(password, (err, validation) => {
-        if (err) {
-          sendUserError(err, res);
-          if (err === null) {
-            return sendUserError('User does not exist', res);
-          }
+})
+
+
+
+
+
+
+// newUser.save((err, savedUser) => {
+//   res.send(newUser);
+//   if (err) {
+//     return sendUserError(err, res);
+//   }
+//   res.json(savedUser);
+// });
+//});
+
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  User.findOne({ username }).then((user) => {
+    user.checkPassword(password, (err, validation) => {
+      if (err) {
+        sendUserError(err, res);
+        if (err === null) {
+          return sendUserError('User does not exist', res);
         }
-      });
+      }
     });
   });
-
-  server.get('/me', (req, res) => {
-    // Do NOT modify this route handler in any way.
-    res.json(req.user);
-  });
-
-  // if (!username || !password) {
-  //   sendUserError('Error: Invalid username or password', res);
-  // } else {
-  //   res.json(newUser);
-  // }
 });
+
+server.get('/me', (req, res) => {
+  // Do NOT modify this route handler in any way.
+  res.json(req.user);
+});
+
+// if (!username || !password) {
+//   sendUserError('Error: Invalid username or password', res);
+// } else {
+//   res.json(newUser);
+// }
+
 
 module.exports = { server };
