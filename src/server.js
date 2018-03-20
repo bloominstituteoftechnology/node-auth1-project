@@ -3,6 +3,8 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 
+const cors = require('cors');
+
 const User = require('./user.js');
 
 const STATUS_USER_ERROR = 422;
@@ -10,6 +12,7 @@ const BCRYPT_COST = 11;
 
 const server = express();
 // to enable parsing of json bodies for post requests
+server.use(cors());
 server.use(bodyParser.json());
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
