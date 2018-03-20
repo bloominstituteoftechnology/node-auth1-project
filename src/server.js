@@ -32,19 +32,17 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
+  const newUser = { username, passwordHash: password };
+
   if (!username || !password) {
     res.status(422).json({ error: 'Username and Password required' });
   } else {
-    bcrypt.hash(password, BCRYPT_COST, (err, passwordHash) => {
-      const newUser = { username, passwordHash };
-      const user = new User(newUser);
-      user.save()
+    const user = new User(newUser);
+    user.save()
       .then((response) => {
-        // console.log('response', response);
         res.status(200).json({ username: response.username, passwordHash: response.passwordHash });
       })
       .catch(error => sendUserError(error, res));
-    });
   }
 });
 
@@ -56,21 +54,22 @@ server.post('/log-in', (req, res) => {
     res.status(422).json({ error: 'Username and Password required' });
   }
   User.findOne({ username })
-  .then((response) => {
-    if (!response) res.status(422).json({ error: 'Incorrect Username' });
-    bcrypt.compare(password, response.passwordHash)
-    .then((pass) => {
-      if (pass) {
-        req.session.username = username;
-        req.session.isAuth = true;
-        res.status(200).json({ success: true });
-      } else {
-        res.status(422).json({ error: 'Incorrect Password' });
+    .then((user) => {
+      if (!user) {
+        res.status(422).json({ error: 'User does not exist!' });
       }
+      user.checkPassword(password, (err, isValid) => {
+        if (err) return sendUserError(err, res);
+        if (isValid) {
+          req.session.username = username;
+          req.session.isAuth = true;
+          res.status(200).json({ success: true });
+        } else {
+          res.status(422).json({ error: 'Incorrect Password' });
+        }
+      });
     })
-    .catch(err => sendUserError(err, res));
-  })
-  .catch(err => err);
+    .catch(error => sendUserError(error, res));
 });
 
 const userLoggedIn = (req, res, next) => {
