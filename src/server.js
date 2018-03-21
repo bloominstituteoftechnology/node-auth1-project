@@ -16,7 +16,13 @@ server.use(session({
   saveUninitialized: false,
   resave: true
 }));
-server.use(cors());
+
+const corsOptions = {
+  "origin": "http://localhost:5000",
+  "credentials": true
+};
+
+server.use(cors(corsOptions));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -76,7 +82,7 @@ server.post('/users', (req, res) => {
     });
 });
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   const { username, password } = req.body;
   console.log('username: ', username);
   if (!password) {
@@ -115,6 +121,17 @@ server.post('/log-in', (req, res) => {
     .catch((saveError) => {
       sendUserError(saveError, res);
     });
+});
+
+server.post('/logout', (req, res) => {
+  console.log(req.session);
+  req.session.destroy(function (err) {
+    if (err) {
+      res.json({error: 'Unable to log out of session.'});
+    }
+    res.json({message: 'bye'});
+    console.log(req.session);
+  });
 });
 
 module.exports = { server };
