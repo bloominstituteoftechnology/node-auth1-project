@@ -38,7 +38,7 @@ const loggedInMw = (req, res, next) => {
     if (err) {
       sendUserError(err, res);
     } else if (!user) {
-      sendUserError('Errorzzzzz!', res);
+      sendUserError('Error!', res);
     } else {
       req.user = user;
       next();
