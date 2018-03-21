@@ -118,7 +118,9 @@ server.get('/restricted/test', (req, res) => {
 });
 
 server.get('/restricted/users', (req, res) => {
-  res.status(200).json({ success: "You're logged in!" });
+  User.find()
+  .then(users => res.status(200).json(users))
+  .catch(err => res.status(500).json({ err }));
 });
 
   // TODO: add local middleware to this route to ensure the user is logged in
