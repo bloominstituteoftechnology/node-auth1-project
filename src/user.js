@@ -35,16 +35,16 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-// UserSchema.methods.checkPassword = function(potentialPass) {
-//   return bcrypt.compare(potentialPass, this.passwordHash);
-// };
-
-UserSchema.methods.checkPassword = function(potentialPass, cb) {
-  bcrypt.compare(potentialPass, this.passwordHash, (err, passwordsMatch) => {
-    if (err) return cb(err);
-    cb(null, passwordsMatch);
-  });
+UserSchema.methods.checkPassword = function(potentialPass) {
+  return bcrypt.compare(potentialPass, this.passwordHash);
 };
+
+// UserSchema.methods.checkPassword = function(potentialPass, cb) {
+//   bcrypt.compare(potentialPass, this.passwordHash, (err, passwordsMatch) => {
+//     if (err) return cb(err);
+//     cb(null, passwordsMatch);
+//   });
+// };
 
 UserSchema.pre('save', function(next) {
   bcrypt.hash(this.passwordHash, BCRYPT_COST, (err, hashed) => {

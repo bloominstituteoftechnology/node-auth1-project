@@ -65,26 +65,39 @@ server.post('/users', (req, res) => {
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
-  if (!username || username === '' || username === null)
-    sendUserError({ Error: 'Must enter username' }, res);
-  if (!password || password === '' || password === null)
-    sendUserError({ Error: 'Must enter password' }, res);
+  if (!username) return sendUserError({ Error: 'Must enter username' }, res);
+  if (!password) return sendUserError({ Error: 'Must enter password' }, res);
+  console.log(req.body);
   const lowerCaseUsername = username.toLowerCase();
   User.findOne({ username: lowerCaseUsername })
     .then(foundUser => {
       if (foundUser === null) {
         sendUserError({ Error: 'Must use valid username/password' }, res);
       } else {
-        foundUser.checkPassword(password, (err, validated) => {
-          if (err) {
+        foundUser
+          .checkPassword(password)
+          .then(validated => {
+            if (validated) {
+              req.session.username = foundUser.username;
+              res.status(200).send({ success: true });
+            } else {
+              sendUserError({ Error: 'Must use valid username/password' }, res);
+            }
+          })
+          .catch(err => {
             return sendUserError(err);
-          } else if (!validated) {
-            sendUserError({ Error: 'Must use valid username/password' }, res);
-          } else if (validated) {
-            req.session.username = foundUser.username;
-            res.status(200).send({ success: true });
-          }
-        });
+          });
+
+        // foundUser.checkPassword(password, (err, validated) => {
+        //   if (err) {
+        //     return sendUserError(err);
+        //   } else if (!validated) {
+        //     sendUserError({ Error: 'Must use valid username/password' }, res);
+        //   } else if (validated) {
+        //     req.session.username = foundUser.username;
+        //     res.status(200).send({ success: true });
+        //   }
+        // });
       }
     })
     .catch(err => sendUserError(err, res));
