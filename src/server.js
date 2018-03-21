@@ -21,7 +21,7 @@ server.use(
 
 // Stretch problem global middleware
 const restrictedAccess = (req, res, next) => {
-  if (req.session.UA === req.headers.cookie) next();
+  if (req.session.username) next();
   else res.status(404).send({ msg: 'You must log in to view this page.' });
 };
 
@@ -40,9 +40,7 @@ const sendUserError = (err, res) => {
 };
 
 const authenticateUserMW = (req, res, next) => {
-  console.log(req.session.UA);
-  console.log(req.headers.cookie);
-  if (req.session.UA === req.headers.cookie) {
+  if (req.session.username) {
     User.findOne({ username: req.session.username })
       .then(foundUser => {
         req.user = foundUser;
@@ -84,9 +82,6 @@ server.post('/log-in', (req, res) => {
             sendUserError({ Error: 'Must use valid username/password' }, res);
           } else if (validated) {
             req.session.username = foundUser.username;
-            req.session.UA = req.headers.cookie;
-            console.log(req.session.UA);
-            console.log(req.headers.cookie);
             res.status(200).send({ success: true });
           }
         });

@@ -35,6 +35,10 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
+// UserSchema.methods.checkPassword = function(potentialPass) {
+//   return bcrypt.compare(potentialPass, this.passwordHash);
+// };
+
 UserSchema.methods.checkPassword = function(potentialPass, cb) {
   bcrypt.compare(potentialPass, this.passwordHash, (err, passwordsMatch) => {
     if (err) return cb(err);
