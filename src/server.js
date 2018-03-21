@@ -94,9 +94,9 @@ server.post("/login", (req, res) => {
         } else if (username === null) {
           return sendUserError("User does not exist", res);
         } else {
+          res.json({ success: true });
           req.session.username = username;
           req.user = user;
-          res.json({ success: true });
         }
       });
     })
