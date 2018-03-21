@@ -45,13 +45,13 @@ UserSchema.pre('save', function(next) {
     })
 });
 
-UserSchema.methods.checkPassword = function(potentialPassword, cb) {
-  let user = this;
-  bcrypt.compareSync("potentialPassword", user.passwordHash)
-  .then( matched => {
-    res.json({ success: true })
-  })
-  .catch( matched => res.send({ failure: "pwds_dont_match" }))
-};
+// UserSchema.methods.checkPassword = function(potentialPassword, cb) {
+//   let user = this;
+//   bcrypt.compareSync("potentialPassword", user.passwordHash)
+//   .then( matched => {
+//     res.json({ success: true })
+//   })
+//   .catch( matched => res.send({ failure: "pwds_dont_match" }))
+// };
 
 module.exports = mongoose.model('User', UserSchema);

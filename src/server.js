@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const User = require('./user.js');
+const cors = require('cors');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -18,6 +19,11 @@ server.use(session({
   saveUninitialized: false
 }));
 
+const corsOptions = {
+  "origin": "http://localhost:3000",
+  "credentials": true
+};
+server.use(cors(corsOptions));
 
 
 //==============================================================================
@@ -113,23 +119,64 @@ server.post('/users', (req, res) => {
 //     }) 
 // });
 
-server.post('/log-in', (req, res) => {
+// server.post('/log-in', (req, res) => {
+//   const { username, password } = req.body;
+//   if (!username || !password) {
+//     res.status(STATUS_USER_ERROR).json(sendUserError('Must provide a username and a password!', res));
+//   } else {
+//     User.findOne({ username })
+//     .then(user => {
+//       user.checkPassword(password, (err, validated))
+//     })
+//     .catch( user => res.send({ error: "DB can't find user" }));
+//   };       
+// });
+
+server.post('/login', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     res.status(STATUS_USER_ERROR).json(sendUserError('Must provide a username and a password!', res));
   } else {
     User.findOne({ username })
-    .then(user => {
-      user.checkPassword(password, (err, validated))
-    })
-    .catch( user => res.send({ error: "DB can't find user" }));
-  };       
+      .then(user => {
+        if (!user) {
+          res.status(404).json(sendUserError('No such user found!', res));
+        } else {
+          const hashedPass = user.passwordHash;
+          bcrypt
+            .compare(password, hashedPass)
+            .then(res => {
+              if (res === false) throw new Error(); 
+              req.session.username = username;
+              req.user = user;
+            })
+            .then(() => {
+              res.json({ success: true });
+            })
+            .catch(err => {
+              res.status(500).json(sendUserError('There wasn an error!', res));
+            });
+        }         
+      });
+  };
 });
 
-// 1. db doesn't return anything
-// 2. compare is false
-// 3. any random error
-// 4. submission error
+server.post('/logout', (req, res) => {
+  // req.session.username = null;
+  // req.session.loggedIn = null;
+  // console.log(req.session);
+  // res.json({ success: true });
+  if (req.session.username) {
+    req.session.destroy(function (err, success) {
+      if (err) {
+        sendUserError(err);
+      } else {
+        res.json({ success: true });
+      }
+    });
+  };
+});
+
 
 server.get('/restricted/:path', (req, res) => {
   res.status(200).json({ message: 'You have permission!' });
