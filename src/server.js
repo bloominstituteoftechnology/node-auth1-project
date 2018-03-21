@@ -67,6 +67,19 @@ server.post('/users', hashPw, (req, res) => {
   });
 });
 
+server.post('/log-in', (req, res) => {
+  const {username, password } = req.body;
+  User.findOne({username})
+  .then((user) => {
+    user.checkpassword(password, () => {
+      
+    })
+  }).catch(err => {
+    sendUserError('User doesnot exist', res);
+  })
+  
+});
+
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me',sendUserError, (req, res) => {
   // Do NOT modify this route handler in any way.
