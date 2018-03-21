@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
+//importing models
 const UserModel = require("./user");
 
 const server = express();
@@ -19,11 +20,13 @@ server.use(session({
   saveUninitialized: true,
 }));
 
+//initialized mongoose
 mongoose.connect("mongodb://localhost:27017/Users", {useMongoClient: true});
 mongoose.connection
 .once("open", () => console.log(`Mongoose is open`))
 .on("error", (err) => console.log(`There was an error: \n ${err}`))
 
+//setup promises in mongoose
 mongoose.Promise = global.Promise;
 
 /* Sends the given err, a string or an object, to the client. Sets the status
@@ -38,22 +41,21 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
-server.post("/users", (req, res) => {
-  const newUsername = req.query.username;
-  const newPassword = req.query.password;
 
+//handler for the users route that creates a new users and hashes their password
+server.post("/users/:username/:password", (req, res) => {
+  const newUsername = req.params.username;
+  const newPassword = req.params.password;
   if (!newUsername || !newPassword){
     res.status(STATUS_USER_ERROR);
     res.send(`No username and/or password provided.`);
     return;
   }
-
   bcrypt.hash(newPassword, BCRYPT_COST, (err, hash) => {
     if (err){
       res.status(500);
       res.send(`There was an error on the server`);
     }
-
     if (!hash){
       res.status(500);
       res.send(`There was an error hasHing the password`);
@@ -63,7 +65,6 @@ server.post("/users", (req, res) => {
         username: newUsername,
         passwordHash: hash,
       })
-
       newUser.save()
       .then(response => {
         res.status(200);
@@ -74,6 +75,30 @@ server.post("/users", (req, res) => {
         res.send(`There was an error on the server`)
       })
     }
+  })
+});
+
+//handler for the log-in route
+server.post("/login/:username/:password", (req, res) => {
+  const loginUsername = req.params.username;
+  const loginPassword = req.params.password;
+  
+  if (!loginUsername || !loginPassword){
+    res.status(422);
+    res.send(`No username and/or password provided`);
+  }
+
+  bcrypt.hash(loginPassword, BCRYPT_COST, (err, hash) => {
+    console.log(`New hash: ${hash}`);
+    if (!hash){
+      res.status(500);
+      res.send(`There was an error hashing the login password`);
+      return;
+    } 
+
+    UserModel.find({username: loginUsername})
+    .then(response => {console.log(response[0].passwordHash)}
+    );
   })
 })
 
