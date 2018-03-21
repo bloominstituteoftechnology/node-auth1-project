@@ -1,8 +1,9 @@
-/* eslint-disable func-names, prefer-arrow-callback */
+/* eslint-disable func-names, prefer-arrow-callback, quotes, quote-props */
 
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const cors = require('cors');
 
 const User = require('./user.js');
 
@@ -16,6 +17,12 @@ server.use(session({
   resave: true,
   saveUninitialized: false,
 }));
+
+const corsOptions = {
+  "origin": "http://localhost:3000",
+  "credentials": true
+};
+server.use(cors(corsOptions));
 
 const sendUserError = (err, res) => {
   res.status(STATUS_USER_ERROR);
@@ -52,7 +59,7 @@ server.post('/users', (req, res) => {
   }
 });
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   let username = req.body.username;
   const password = req.body.password;
   if (!username || !password) {
@@ -69,6 +76,16 @@ server.post('/log-in', (req, res) => {
     })
     .catch(err => sendUserError('User does not exist in the system.', res));
   }
+});
+
+server.post('/logout', (req, res) => {
+  if (!req.session.username) {
+    sendUserError('User is not logged in', res);
+    return;
+  }
+  req.session.isAuth = false;
+  req.session.username = null;
+  res.json(req.session);
 });
 
 const validUser = (req, res, next) => {
