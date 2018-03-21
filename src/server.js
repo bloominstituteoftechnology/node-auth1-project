@@ -11,7 +11,11 @@ const User = require('./user');
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
-
+const corsOptions = {
+  "origin": "http://localhost:3000",
+  "credentials": true
+};
+server.use(cors(corsOptions));
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(session({
@@ -70,7 +74,7 @@ server.post('/users', authUser, (req, res) => {
   });
 });
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   const { userName, passwordHash } = req.body;
   if (!passwordHash) {
     sendUserError('Password REQUIRED', res);
@@ -91,6 +95,15 @@ server.post('/log-in', (req, res) => {
     .catch((saveError) => {
       sendUserError(saveError, res);
     });
+});
+server.get('/restricted/users', (req, res) => {
+  User.find({}, (err, users) => {
+    if (err) {
+      middleWare.sendUserError('500', res);
+      return;
+    }
+    res.json(users);
+  });
 });
 
 module.exports = { server };
