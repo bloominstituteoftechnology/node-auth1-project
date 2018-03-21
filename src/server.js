@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 
 const User = require ('./user.js');
 
+const STATUS_SERVER_ERROR = 500;
 const STATUS_USER_ERROR = 422;
 const STATUS_SUCCESS = 200;
 const BCRYPT_COST = 11;
@@ -123,10 +124,10 @@ server.post('/users', (req, res) => {
 server.get('/users', (req, res) => {
 	User.find({})
 		.then(users => {
-			res.status(200).json(users);
+			res.status(STATUS_SUCCESS).json(users);
 		})
 		.catch(err => {
-			res.status(500).json({ error: 'Error retrieving useres' });
+			res.status(STATUS_SERVER_ERROR).json({ error: 'Error retrieving users' });
 		});
 });
 
@@ -149,7 +150,7 @@ server.post('/log-in', hashPassword, (req, res) => {
 				}
 				else {
 					req.session.user = user._id;
-+					res.status(STATUS_SUCCESS).json({ success: true });
+					res.status(STATUS_SUCCESS).json({ success: true });
 				}
 			})
 		})
