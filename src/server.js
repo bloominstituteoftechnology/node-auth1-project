@@ -59,6 +59,16 @@ server.post('/users', (req, res) => {
   }
 });
 
+server.get('/restricted/users', (req, res) => {
+  User.find({}, (err, users) => {
+    if (err) {
+      sendUserError('500', res);
+      return;
+    }
+    res.json(users);
+  });
+});
+
 server.post('/login', (req, res) => {
   let username = req.body.username;
   const password = req.body.password;
@@ -105,10 +115,6 @@ const validUser = (req, res, next) => {
 server.get('/me', validUser, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
-});
-
-server.get('/restricted/test', (req, res) => {
-  res.json('Hey there buddy');
 });
 
 module.exports = { server };
