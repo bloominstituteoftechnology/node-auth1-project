@@ -125,8 +125,16 @@ const restrictedMw = (req, res, next) => {
 
 // server.use(restrictedMw);
 
-server.get('/restricted/', restrictedMw, (req, res) => {
-  res.send('You\'re accessing restricted content!');
+server.get('/restricted/users', restrictedMw, (req, res) => {
+  console.log("we got here");
+  User
+    .find()
+    .then(users => {
+      res.status(200).json(users);
+    })
+    .catch(err => {
+      sendUserError(err, res);
+    });
 });
 
 module.exports = { server };
