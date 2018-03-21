@@ -1,7 +1,7 @@
-const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
 
 const User = require('./user');
 
@@ -10,12 +10,13 @@ const STATUS_USER_ERROR = 422;
 
 const server = express();
 // to enable parsing of json bodies for post requests
-server.use(bodyParser.json());
+server.use(express.json());
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
   saveUninitialized: false,
   resave: true
 }));
+server.use(cors());
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -29,7 +30,6 @@ const sendUserError = (err, res) => {
 };
 
 const checkUser = (req, res, next) => {
-  console.log('sdfk');
   if (!req.session.user) {
     sendUserError('User is not authorized', res);
   }
@@ -78,6 +78,7 @@ server.post('/users', (req, res) => {
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
+  console.log('username: ', username);
   if (!password) {
     sendUserError('Missing Password!', res);
   }
@@ -90,6 +91,7 @@ server.post('/log-in', (req, res) => {
         if (!valid) {
           res.status(422).json({ success: false });
         } else if (valid) {
+          console.log(valid);
           req.session.user = user;
           res.status(200).json({ success: true });
         }
