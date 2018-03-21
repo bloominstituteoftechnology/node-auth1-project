@@ -29,6 +29,19 @@ mongoose.connection
 //setup promises in mongoose
 mongoose.Promise = global.Promise;
 
+//creating middleware to check if the user is logged in
+const loginMiddleware = (req, res, next) => {
+  if (!req.session.loggedIn){
+    console.log(`User not logged in`);
+    res.status(401);
+    res.send(`User not logged in`);
+  } else if (req.session.loggedIn) {
+    console.log(`The user is logged in and can access the data`);
+    res.status(200);
+    next();
+  }
+}
+
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 const sendUserError = (err, res) => {
@@ -98,9 +111,9 @@ server.post("/login/:username/:password", (req, res) => {
 
     bcrypt.compare(loginPassword, response[0].passwordHash, (err, result) => {
       if (result){
+        req.session.loggedIn = true;
         res.status(200);
         res.json({success: true});
-        req.session.loggedIn = true;
         console.log(req.session);
       } else {
         res.status(422);
@@ -112,10 +125,12 @@ server.post("/login/:username/:password", (req, res) => {
 
 
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+server.get('/me', loginMiddleware, (req, res) => {
   // Do NOT modify this route handler in any way.
-  // res.json(req.user);
-  console.log(req.session);
+  res.json(req.user);
 });
 
 module.exports = { server };
+
+
+//theatticus82/pass123
