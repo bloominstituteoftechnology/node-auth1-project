@@ -28,44 +28,91 @@ const sendUserError = (err, res) => {
   }
 };
 
+const loggedInMw = (req, res, next) => {
+  const { username } = req.session;
+  if (!username) {
+    sendUserError('User is not logged in', res);
+    return;
+  }
+  User.findOne({ username }, (err, user) => {
+    if (err) {
+      sendUserError(err, res);
+    } else if (!user) {
+      sendUserError('Errorzzzzz!', res);
+    } else {
+      req.user = user;
+      next();
+    }
+  });
+};
+
 // TODO: implement routes
-const userMiddleware = (req, res, next) => {};
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.post('/users', (req, res) => {
-  const { username, password  } = req.body;
-  const newUser = new User({ username, password });
+  const { username, password } = req.body;
+  const newUser = new User({ username, password: password });
   newUser.save((err, savedUser) => {
     if (err) {
       return sendUserError(err, res);
     }
     res.json(savedUser);
   });
+});
 
-  server.post('/log-in', (req, res) => {
-    const { username, password } = req.body;
-    User.findOne({ username }).then(user => {
-      user.checkPassword(password, (err, validation) => {
-        if (err) {
-          sendUserError(err, res);
-          if (err === null) {
-            return sendUserError('User does not exist', res);
-          }
-        }
-      });
+server.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  if (!username) {
+    sendUserError('Username undefined', res);
+    return;
+  }
+  User.findOne({ username })
+    .then(user => {
+      if (user === null) {
+        sendUserError({ Error: 'username or pass incorrect' }, res);
+      } else {
+        user
+          .checkPassword(password)
+          .then(validation => {
+            if (validation) {
+              req.session.username = username;
+              res.status(200).send(user);
+            }
+            sendUserError({ Error: 'username or pass incorrect' }, res);
+          })
+          .catch(error => {
+            return sendUserError(error, res);
+          });
+      }
+    })
+    .catch(error => {
+      return sendUserError(error, res);
+
+      // (err, user) => {
+      // if (err || user === null) {
+      //   sendUserError('No user found at that id', res);
+      //   return;
+      // }
+      // const hashedPw = user.passwordHash;
+      // bcrypt
+      //   .compare(password, hashedPw)
+      //   .then(response => {
+      //     if (!response) throw new Error();
+      //     req.session.username = username;
+      //     req.user = user;
+      //   })
+      //   .then(() => {
+      //     res.json({ success: true });
+      //   })
+      //   .catch(error => {
+      //     return sendUserError('Errortyujhguikjnbhui!', res);
+      //   });
     });
-  });
+});
 
-  server.get('/me', (req, res) => {
-    // Do NOT modify this route handler in any way.
-    res.json(req.user);
-  });
-
-  // if (!username || !password) {
-  //   sendUserError('Error: Invalid username or password', res);
-  // } else {
-  //   res.json(newUser);
-  // }
+server.get('/me', loggedInMw, (req, res) => {
+  // Do NOT modify this route handler in any way.
+  res.json(req.user);
 });
 
 module.exports = { server };
