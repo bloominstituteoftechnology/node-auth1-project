@@ -3,12 +3,19 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
+const cors = require("cors");
 
 const STATUS_USER_ERROR = 422;
 
 const User = require("./user.js");
 
 const server = express();
+
+const corsOptions = {
+  "origin": "http://localhost:3000",
+  "credentials": true
+};
+server.use(cors(corsOptions));
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(
@@ -16,13 +23,13 @@ server.use(
     secret: "e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re",
     authed: false,
     resave: true,
-    saveUninitialized: false
+    saveUninitialized: true,
   })
 );
 
 const authenticateUserMW = async function(req, res, next) {
   const session = req.session;
-  if (session.secret === req.headers["cookie"]) {
+  if (session.username) {
     try {
       const currentUser = await User.findOne({ username: session.username });
       req.user = currentUser;
@@ -38,11 +45,7 @@ const authenticateUserMW = async function(req, res, next) {
 const restrictedAccess = (req, res, next) => {
   const path = req.path.split("/");
   if (path[1] === "restricted") {
-    console.log(
-      `The value of req.session.secret is ${req.session.secret}`,
-      `The value of req.headers['cookie'] is ${req.headers["cookie"]}`
-    );
-    if (req.session.secret === req.headers["cookie"]) {
+    if (req.session.username) {
       next();
     } else {
       res.status(403).send({ message: "You're not logged in" });
@@ -65,8 +68,8 @@ const sendUserError = (err, res) => {
   }
 };
 
-server.post("/users/:username&:password", async function(req, res) {
-  const { username, password } = req.params;
+server.post("/users", async function(req, res) {
+  const { username, password } = req.body;
   const newUser = new User({ username, passwordHash: password });
   try {
     const savedUser = await newUser.save();
@@ -76,15 +79,13 @@ server.post("/users/:username&:password", async function(req, res) {
   }
 });
 
-server.post("/log-in/:username&:password", async function(req, res) {
-  const { username, password } = req.params;
+server.post("/login", async function(req, res) {
+  const { username, password } = req.body;
   try {
     const userToLogin = await User.findOne({ username: username });
     const doesPasswordMatch = await userToLogin.checkPassword(password);
     if (doesPasswordMatch) {
-      const session = req.session;
-      session.username = username;
-      session.secret = req.headers["cookie"];
+      req.session.username = username;
       res.status(500).send({ success: true });
     } else {
       res.status(406).send({ message: "Passwords don't match" });
@@ -93,6 +94,11 @@ server.post("/log-in/:username&:password", async function(req, res) {
     sendUserError(err);
   }
 });
+
+server.post("/logout/", function(req, res) {
+  delete req.session.username;
+  res.status(200).send({ message: "Logged out!" });
+})
 
 server.get("/restricted/dev", async function(req, res) {
   // res.send(req.session);
