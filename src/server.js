@@ -1,5 +1,5 @@
 /* eslint-disable */
-
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
@@ -11,6 +11,11 @@ const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
 const server = express();
+const corsOptions = {
+  "origin": "http://localhost:3000",
+  "credentials": true
+};
+server.use(cors(corsOptions));
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(session({
@@ -44,8 +49,15 @@ const restrictAccess = (req, res, next) => {
 };
 server.use(restrictAccess);
 
-server.get('/restricted', (req, res) => {
-  res.send('top secret restricted access');
+server.get('/restricted/users', (req, res) => {
+  User.find()
+    .then((Users) => {
+      res
+        .send(Users)
+    })
+    .catch((err) => {
+      sendUserError(err, res);
+    })
 });
 
 // server.post('/users', (req, res) => {
@@ -86,7 +98,7 @@ server.post('/users', (req, res) => {
   }
 });
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   const { username, password } = req.body;
   if(username && password) {
     User.findOne({ username: username })
@@ -111,6 +123,18 @@ server.post('/log-in', (req, res) => {
     sendUserError('Please send both a username and password', res);
   }
 });
+
+server.post('/logout', (req, res) => {
+  if (req.session.loggedIn) {
+    req.session.loggedIn = false;
+    res
+      .status(200)
+      .json({MESSAGE: 'You logged out correctly'})
+  } else {
+    sendUserError('Trouble logging out, might not be logged in', res);
+  }
+
+})
 
 const auth = (req, res, next) => {
   const UA = req.headers['cookie'];
