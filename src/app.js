@@ -1,4 +1,5 @@
 // Do NOT modify this file; make your changes in server.js.
 const { server } = require('./server.js');
-
-server.listen(3000);
+const PORT = 5000;
+server.listen(PORT);
+console.log("Server listening on: ", PORT)

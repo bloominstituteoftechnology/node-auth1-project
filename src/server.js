@@ -2,12 +2,15 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
 
 const User = require('./user.js');
 
 const STATUS_USER_ERROR = 422;
 
 const server = express();
+server.use(cors());
+
 
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
@@ -45,6 +48,7 @@ const sendUserError = (err, res) => {
 
 // got rid of the password hashing function from here, since it is now embedded in the user schema
 server.post('/users', (req, res) => {
+  console.log("Post Requsest Received: ", req.body);
   if (!req.body.username || !req.body.password) {
     res.status(422).json({ error: 'Need username and password' });
   }
@@ -104,9 +108,16 @@ server.get('/me', loggedIn, (req, res) => {
   res.json(req.user);
 });
 
+server.get('/', (req, res) => {
+  User.find()
+  .then(users => {
+    res.json(users);
+  });
+
+})
+
 // to test the routeCheck functionality
 server.get('/restricted/', (req,res) => {
   res.status(200).json('Restricted Working, you are logged in');
 });
-
 module.exports = { server };
