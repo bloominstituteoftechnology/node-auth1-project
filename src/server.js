@@ -32,9 +32,9 @@ server.post('/users', (req, res) => {
   const { username, password } = req.body;
   const newUser = new User({ username, passwordHash: password });
   newUser
-    .save()
-    .then(user => res.status(200).send(user))
-    .catch(err => middleware.sendUserError(err, res));
+  .save()
+  .then(user => res.status(200).send(user))
+  .catch(err => middleware.sendUserError(err, res));
 });
 
 server.post('/login', (req, res) => {
