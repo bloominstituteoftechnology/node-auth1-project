@@ -100,9 +100,11 @@ server.post("/login/:username/:password", (req, res) => {
       if (result){
         res.status(200);
         res.json({success: true});
+        req.session.loggedIn = true;
+        console.log(req.session);
       } else {
-        res.status(500);
-        res.send(`There was an error on the server`);
+        res.status(422);
+        res.send(`The password you entered was incorrect, please try again`);
       }
     })
   })
@@ -112,7 +114,8 @@ server.post("/login/:username/:password", (req, res) => {
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
-  res.json(req.user);
+  // res.json(req.user);
+  console.log(req.session);
 });
 
 module.exports = { server };
