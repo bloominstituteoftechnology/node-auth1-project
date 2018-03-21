@@ -20,11 +20,11 @@ server.use(session({
 }));
 
 const corsOptions = {
-  "origin": "http://localhost:3000",
+  "origin": "http://localhost:5000",
   "credentials": true
 };
-server.use(cors(corsOptions));
 
+server.use(cors(corsOptions));
 
 //==============================================================================
 //                                MIDDLEWARE
@@ -100,7 +100,7 @@ server.post('/users', (req, res) => {
   newUser
     .save()
     .then(user => {
-      // console.log("this is after save..in the route: ", user)
+      console.log("this is after save..in the route: ", user)
       res.status(200).json(user);
     })
     .catch(err => {
