@@ -177,6 +177,16 @@ server.post('/logout', (req, res) => {
   };
 });
 
+server.get('/restricted/users', (req, res) => {
+  User.find({})
+    .then(users => {
+      res.status(200).json(users);
+    })
+    .catch(err => {
+      res.status(STATUS_USER_ERROR).json(sendUserError('There wasn an error!', res));
+    });
+});
+
 
 server.get('/restricted/:path', (req, res) => {
   res.status(200).json({ message: 'You have permission!' });
