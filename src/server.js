@@ -18,8 +18,8 @@ server.use(session({
 }));
 
 const corsOptions = {
-  origin: 'http://localhost:3000',
-  credentials: true,
+  "origin": "http://localhost:3000",
+  "credentials": true
 };
 server.use(cors(corsOptions));
 
@@ -51,6 +51,7 @@ const middleWare = (req, res, next) => {
 };
 
 server.post('/users', (req, res) => {
+  console.log(req.body);
   if (!(req.body.password && req.body.username)) {
     sendUserError({ message: 'Username and password required' }, res);
   } else {
