@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const User = require('./user.js');
+
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
@@ -17,6 +18,7 @@ server.use(
   })
 );
 
+
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 const sendUserError = (err, res) => {
@@ -28,6 +30,17 @@ const sendUserError = (err, res) => {
   }
 };
 
+const restrictedMW = (req, res, next) => {
+  const path = req.path;
+  if (/restricted/.test(path)) {
+    if (!req.session.username) {
+      sendUserError('Please login to access this area', res);
+      return;
+    }
+  }
+  next();
+};
+server.use(restrictedMW);
 const loggedInMw = (req, res, next) => {
   const { username } = req.session;
   if (!username) {
@@ -67,25 +80,25 @@ server.post('/login', (req, res) => {
     return;
   }
   User.findOne({ username })
-    .then(user => {
+    .then((user) => {
       if (user === null) {
         sendUserError({ Error: 'username or pass incorrect' }, res);
       } else {
         user
           .checkPassword(password)
-          .then(validation => {
+          .then((validation) => {
             if (validation) {
               req.session.username = username;
               res.status(200).send(user);
             }
             sendUserError({ Error: 'username or pass incorrect' }, res);
           })
-          .catch(error => {
+          .catch((error) => {
             return sendUserError(error, res);
           });
       }
     })
-    .catch(error => {
+    .catch((error) => {
       return sendUserError(error, res);
 
       // (err, user) => {
@@ -113,6 +126,16 @@ server.post('/login', (req, res) => {
 server.get('/me', loggedInMw, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
+});
+
+server.get('/restricted/users', (req, res) => {
+  User.find({}, (err, user) => {
+    if (err) {
+      sendUserError('500', res);
+      return;
+    }
+    res.json(user);
+  });
 });
 
 module.exports = { server };
