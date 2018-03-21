@@ -33,16 +33,20 @@ UserSchema.pre('save', function(next) {
   });
 });
 
-UserSchema.methods.checkPassword = function(potentialPW) {
-  return new Promise((resolve, reject) => {
-    bcrypt.compare(potentialPW, this.passwordHash)
-    .then(isMatching => {
-      resolve(isMatching);
-    })
-    .catch(error => {
-      reject(error);
-    });
-  });
-};
+// UserSchema.methods.checkPassword = function(potentialPW) {
+//   return new Promise((resolve, reject) => {
+//     bcrypt.compare(potentialPW, this.passwordHash)
+//     .then(isMatching => {
+//       resolve(isMatching);
+//     })
+//     .catch(error => {
+//       reject(error);
+//     });
+//   });
+// };
+
+UserSchema.methods.checkPassword = async function(potentialPW) {
+  return await bcrypt.compare(potentialPW, this.passwordHash);
+}
 
 module.exports = mongoose.model('User', UserSchema);

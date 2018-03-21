@@ -1,44 +1,48 @@
 /* eslint-disable */
-const bodyParser = require('body-parser');
-const express = require('express');
-const session = require('express-session');
-const bcrypt = require('bcrypt');
+const bodyParser = require("body-parser");
+const express = require("express");
+const session = require("express-session");
+const bcrypt = require("bcrypt");
 
 const STATUS_USER_ERROR = 422;
 
-const User = require('./user.js');
+const User = require("./user.js");
 
 const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(
   session({
-    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+    secret: "e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re",
     authed: false,
     resave: true,
-    saveUninitialized: false,
+    saveUninitialized: false
   })
 );
 
-const authenticateUserMW = (req, res, next) => {
+const authenticateUserMW = async function(req, res, next) {
   const session = req.session;
-  if (session.UA === req.headers['cookie']) {
-    User.findOne({ username: session.username })
-      .then(foundUser => {
-        req.user = foundUser;
-        console.log('The value of req.user is:', req.user);
-        next();
-      })
-      .catch(err => sendUserError(err, res));
+  if (session.secret === req.headers["cookie"]) {
+    try {
+      const currentUser = await User.findOne({ username: session.username });
+      req.user = currentUser;
+      next();
+    } catch (err) {
+      sendUserError(err, res);
+    }
   } else {
-    res.status(500).send({ errorMessage: 'Ya dun goofed' });
+    res.status(500).send({ errorMessage: "Ya dun goofed" });
   }
 };
 
 const restrictedAccess = (req, res, next) => {
-  const path = req.path.split('/');
-  if (path[1] === 'restricted') {
-    if (req.session.UA === req.headers['cookie']) {
+  const path = req.path.split("/");
+  if (path[1] === "restricted") {
+    console.log(
+      `The value of req.session.secret is ${req.session.secret}`,
+      `The value of req.headers['cookie'] is ${req.headers["cookie"]}`
+    );
+    if (req.session.secret === req.headers["cookie"]) {
       next();
     } else {
       res.status(403).send({ message: "You're not logged in" });
@@ -61,57 +65,47 @@ const sendUserError = (err, res) => {
   }
 };
 
-// TODO: implement routes
-server.post('/users/:username&:password', (req, res) => {
+server.post("/users/:username&:password", async function(req, res) {
   const { username, password } = req.params;
   const newUser = new User({ username, passwordHash: password });
-  newUser
-    .save()
-    .then(savedUser => res.status(201).send(savedUser))
-    .catch(err => sendUserError(err, res));
+  try {
+    const savedUser = await newUser.save();
+    res.status(201).send(savedUser);
+  } catch (err) {
+    sendUserError(err, res);
+  }
 });
 
-server.post('/log-in/:username&:password', (req, res) => {
+server.post("/log-in/:username&:password", async function(req, res) {
   const { username, password } = req.params;
-  User.findOne({ username: username })
-    .then(foundUser => {
-      foundUser
-        .checkPassword(password)
-        .then(isMatching => {
-          if (isMatching) {
-            const session = req.session;
-            session.username = username;
-            session.UA = req.headers['cookie'];
-            res.status(500).send({ success: true });
-          } else {
-            res.status(406).send({ message: "Passwords don't match" });
-          }
-        })
-        .catch(error => {
-          sendUserError(error, res);
-        });
-    })
-    .catch(err => sendUserError(err, res));
+  try {
+    const userToLogin = await User.findOne({ username: username });
+    const doesPasswordMatch = await userToLogin.checkPassword(password);
+    if (doesPasswordMatch) {
+      const session = req.session;
+      session.username = username;
+      session.secret = req.headers["cookie"];
+      res.status(500).send({ success: true });
+    } else {
+      res.status(406).send({ message: "Passwords don't match" });
+    }
+  } catch (err) {
+    sendUserError(err);
+  }
 });
 
-//.then(isMatching => {
-//   const session = req.session;
-//   session.username = username;
-//   session.UA = req.headers['cookie'];
-//   res.status(500).send({ success: true });
-// }).catch(error => {
-//   res.status(406).send({ message: 'Passwords don\'t match'});
-// })
-
-server.get('/dev', (req, res) => {
+server.get("/restricted/dev", async function(req, res) {
   // res.send(req.session);
-  User.find({})
-    .then(results => res.status(200).send(results))
-    .catch(err => sendUserError(err, res));
+  try {
+    const allUsers = await User.find({});
+    res.status(200).send(allUsers);
+  } catch (err) {
+    sendUserError(err);
+  }
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', authenticateUserMW, (req, res) => {
+server.get("/me", authenticateUserMW, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
