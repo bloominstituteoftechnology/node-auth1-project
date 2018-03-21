@@ -2,8 +2,9 @@
 
 const express = require('express');
 const session = require('express-session');
-const middleware = require('./middlewares');
 const cors = require('cors');
+
+const middleware = require('./middlewares');
 const User = require('./user.js');
 
 const STATUS_USER_ERROR = 422;
