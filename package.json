@@ -14,6 +14,8 @@
     "body-parser": "^1.17.2",
     "chai": "^4.1.1",
     "chai-http": "^3.0.0",
+    "cors": "^2.8.4",
+    "create-react-app": "^1.5.2",
     "express": "^4.15.4",
     "express-session": "^1.15.5",
     "mocha": "^3.5.0",
