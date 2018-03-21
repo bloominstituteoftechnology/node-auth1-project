@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
 
 const User = require('./user');
 
@@ -15,6 +16,12 @@ server.use(session({
   resave: true,
   saveUninitialized: false,
 }));
+
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true,
+};
+server.use(cors(corsOptions));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
