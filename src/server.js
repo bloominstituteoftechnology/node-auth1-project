@@ -9,7 +9,13 @@ const User = require('./user.js');
 const STATUS_USER_ERROR = 422;
 
 const server = express();
-server.use(cors());
+
+const corsOptions = {
+  "origin": "http://localhost:3000",
+  "credentials": true
+};
+
+server.use(cors(corsOptions));
 
 
 // to enable parsing of json bodies for post requests
@@ -65,7 +71,7 @@ server.post('/users', (req, res) => {
 });
 
 // changed the session to use the ._id instead of the username to get exact session matches
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   if (!req.body.username || !req.body.password) {
     res.status(422).json({ error: 'Need username and password' });
   }
@@ -89,6 +95,25 @@ server.post('/log-in', (req, res) => {
     });
 });
 
+server.post('/logout', (req, res) => {
+  if (!req.body.username) {
+    res.status(422).json({ error: 'Need username' });
+  }
+  let { username } = req.body;
+  username = username.toLowerCase();
+  User.findOne({ username })
+    .then(userFound => {
+      const foundUserID = JSON.stringify(userFound._id).replace(/"/g,"");
+      if (foundUserID === req.session.ID) { 
+        req.session.ID = null;
+        res.status(200).json({ success: true });
+      }
+    })
+    .catch(err => {
+      sendUserError(err,res);
+    });
+})
+
 // Since we are using the ID instead of the username, we have to search for the username with findByID and the session user's ID
 const loggedIn = (req,res,next) => {
   if (!req.session.ID) return res.status(400).json({err: "You are not logged in"})
@@ -108,7 +133,7 @@ server.get('/me', loggedIn, (req, res) => {
   res.json(req.user);
 });
 
-server.get('/', (req, res) => {
+server.get('/users', (req, res) => {
   User.find()
   .then(users => {
     res.json(users);

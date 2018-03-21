@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import '../styles/Users.css'
+import '../styles/Users.css';
 class UserForm extends Component {
 
   constructor(props) {

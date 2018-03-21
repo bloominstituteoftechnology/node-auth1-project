@@ -13,7 +13,7 @@ class Users extends Component {
 
   loadUsers() {
     console.log("Loading Users");
-    var userURL = 'http://localhost:5000/';
+    var userURL = 'http://localhost:5000/users';
     axios.get(userURL).then((response)=>{
       console.log("Response from server", response.data) 
       this.setState({users: response.data}); 
