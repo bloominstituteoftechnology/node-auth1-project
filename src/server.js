@@ -5,6 +5,11 @@ const bcrypt = require('bcrypt');
 
 const cors = require('cors');
 
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true
+};
+
 const User = require('./user.js');
 
 const STATUS_USER_ERROR = 422;
@@ -12,7 +17,7 @@ const BCRYPT_COST = 11;
 
 const server = express();
 // to enable parsing of json bodies for post requests
-server.use(cors());
+server.use(cors(corsOptions));
 server.use(bodyParser.json());
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
@@ -49,7 +54,7 @@ server.post('/users', (req, res) => {
   }
 });
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   const UA = req.headers.cookie;
   req.session.UA = UA;
   const { username, password } = req.body;
@@ -73,6 +78,12 @@ server.post('/log-in', (req, res) => {
       });
     })
     .catch(error => sendUserError(error, res));
+});
+
+server.post('/logout', (req, res) => {
+  req.session.username = '';
+  req.session.isAuth = false;
+  res.status(200).json({ logged_out: true });
 });
 
 const userLoggedIn = (req, res, next) => {
@@ -103,6 +114,10 @@ const restrictedCheck = (req, res, next) => {
 server.use('/restricted', restrictedCheck);
 
 server.get('/restricted/test', (req, res) => {
+  res.status(200).json({ success: "You're logged in!" });
+});
+
+server.get('/restricted/users', (req, res) => {
   res.status(200).json({ success: "You're logged in!" });
 });
 
