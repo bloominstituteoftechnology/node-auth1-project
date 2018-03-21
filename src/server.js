@@ -88,17 +88,23 @@ server.post("/login/:username/:password", (req, res) => {
     res.send(`No username and/or password provided`);
   }
 
-  bcrypt.hash(loginPassword, BCRYPT_COST, (err, hash) => {
-    console.log(`New hash: ${hash}`);
-    if (!hash){
-      res.status(500);
-      res.send(`There was an error hashing the login password`);
+  UserModel.find({username: loginUsername})
+  .then(response => {
+    if (!response){
+      res.status(404);
+      res.send(`No user with that username was found`);
       return;
-    } 
+    }
 
-    UserModel.find({username: loginUsername})
-    .then(response => {console.log(response[0].passwordHash)}
-    );
+    bcrypt.compare(loginPassword, response[0].passwordHash, (err, result) => {
+      if (result){
+        res.status(200);
+        res.json({success: true});
+      } else {
+        res.status(500);
+        res.send(`There was an error on the server`);
+      }
+    })
   })
 })
 
