@@ -1,24 +1,29 @@
-const bodyParser = require('body-parser');
-const express = require('express');
-const session = require('express-session');
-const bcrypt = require('bcrypt');
-
-const User = require('./user.js');
+const express = require("express");
+const session = require("express-session");
+const User = require("./user");
+const bcrypt = require("bcrypt");
+const cors = require("cors");
 
 const STATUS_USER_ERROR = 422;
-const BCRYPT_COST = 11;
 
 const server = express();
-// to enable parsing of json bodies for post requests
-server.use(bodyParser.json());
-server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
-  resave: true,
-  saveUninitialized: false
-}));
 
-/* Sends the given err, a string or an object, to the client. Sets the status
- * code appropriately. */
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true,
+};
+server.use(cors(corsOptions));
+
+// to enable parsing of json bodies for post requests
+server.use(express.json());
+server.use(
+  session({
+    secret: "e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re",
+    resave: true,
+    saveUninitialized: true,
+  }),
+);
+
 const sendUserError = (err, res) => {
   res.status(STATUS_USER_ERROR);
   if (err && err.message) {
@@ -27,19 +32,44 @@ const sendUserError = (err, res) => {
     res.json({ error: err });
   }
 };
+/* ************ MiddleWares ***************** */
 
-const restrictedAccess = (req, res, next) => {
-  if (!req.session.userId) {
-    res.json('You shall not pass');
-  } else if (req.session.userId) {
-    res.json('You\'re in!');
+const loggedIn = (req, res, next) => {
+  const { username } = req.session;
+  console.log(req.session);
+  if (!username) {
+    sendUserError("User is not logged in", res);
+    return;
   }
-}
+  User.findOne({ username }, (err, user) => {
+    if (err) {
+      sendUserError(err, res);
+    } else if (!user) {
+      sendUserError("User does exist", res);
+    } else {
+      req.user = user;
+      next();
+    }
+  });
+};
 
-server.use('/restricted', restrictedAccess);
+const restrictedPermissions = (req, res, next) => {
+  const path = req.path;
+  if (/restricted/.test(path)) {
+    if (!req.session.username) {
+      sendUserError("You shall not pass", res);
+      return;
+    }
+  }
+  next();
+};
+
+server.use(restrictedPermissions);
+
+/* ************ Routes ***************** */
 
 // TODO: implement routes
-server.post('/users', (req, res) => {
+server.post("/users", (req, res) => {
   const { username, password } = req.body;
   const newUser = new User({ username, passwordHash: password });
   newUser.save((err, savedUser) => {
@@ -50,33 +80,54 @@ server.post('/users', (req, res) => {
   });
 });
 
-server.post('/log-in', (req, res) => {
+server.post("/login", (req, res) => {
   const { username, password } = req.body;
-  const UA = req.headers['cookie'];
-  req.session.UA = UA;
+  if (!username) {
+    sendUserError("username undefined", res);
+    return;
+  }
   User.findOne({ username })
-    .then((user) => {
-      user.checkPassword(password, (err, validated) => {
+    .then(user => {
+      user.checkPassword(password, err => {
         if (err) {
           return sendUserError(err, res);
         } else if (username === null) {
-          return sendUserError(`user does not exist`, res);
+          return sendUserError("User does not exist", res);
         } else {
-          req.session.userId = user._id;
-          //res.json({ success: true });
-          return res.redirect('/me');
+          req.session.username = username;
+          req.user = user;
+          res.json({ success: true });
         }
       });
     })
-    .catch((err) => {
-      return sendUserError('User does not exist in system', res);
+    .catch(error => {
+      return sendUserError("Error logging in", res);
     });
 });
 
+server.post("/logout", (req, res) => {
+  if (!req.session.username) {
+    sendUserError("User is not logged in", res);
+    return;
+  }
+  req.session.username = null;
+  res.json(req.session);
+});
+
+server.get("/restricted/users", (req, res) => {
+  User.find({}, (err, users) => {
+    if (err) {
+      sendUserError("500", res);
+      return;
+    }
+    res.json(users);
+  });
+});
+
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
-  // Do NOT modify this route handler in any way.
-  res.json(req.user);
+server.get("/me", loggedIn, (req, res) => {
+  // Do NOT modify this route handler in any way
+  res.send({ user: req.user, session: req.session });
 });
 
 module.exports = { server };
