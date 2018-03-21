@@ -56,38 +56,28 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 
 //handler for the users route that creates a new users and hashes their password
-server.post("/users/:username/:password", (req, res) => {
-  const newUsername = req.params.username;
-  const newPassword = req.params.password;
+server.post("/users", (req, res) => {
+  const newUsername = req.body.username;
+  const newPassword = req.body.passwordHash;
+  
   if (!newUsername || !newPassword){
     res.status(STATUS_USER_ERROR);
-    res.send(`No username and/or password provided.`);
+    res.send(`No username and/or password provided`);
     return;
   }
-  bcrypt.hash(newPassword, BCRYPT_COST, (err, hash) => {
-    if (err){
-      res.status(500);
-      res.send(`There was an error on the server`);
-    }
-    if (!hash){
-      res.status(500);
-      res.send(`There was an error hasHing the password`);
-      return;
-    } else {
-      const newUser = new UserModel({
-        username: newUsername,
-        passwordHash: hash,
-      })
-      newUser.save()
-      .then(response => {
-        res.status(200);
-        res.json(response);
-      })
-      .catch(err => {
-        res.status(500);
-        res.send(`There was an error on the server`)
-      })
-    }
+
+  const newUser = new UserModel({
+    username: newUsername,
+    passwordHash: newPassword,
+  })
+  .save()
+  .then(response => {
+    res.status(200);
+    res.json(response);
+  })
+  .catch(err => {
+    res.status(500);
+    res.send(`There was an error on the server`);
   })
 });
 
