@@ -71,8 +71,10 @@ server.post('/log-in', (req, res) => {
   const {username, password } = req.body;
   User.findOne({username})
   .then((user) => {
-    user.checkpassword(password, () => {
-      
+    user.checkpassword(password, (err, validated) => {
+      if(err) return sendUserError(err, res);
+      if(!validated) return sendUserError('No user was found', res);
+      if(validated) res.json({message: 'Successfully loged in'});
     })
   }).catch(err => {
     sendUserError('User doesnot exist', res);
