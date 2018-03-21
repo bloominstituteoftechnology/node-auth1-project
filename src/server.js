@@ -27,6 +27,22 @@ const sendUserError = (err, res) => {
   }
 };
 
+const middleWare = (req, res, next) => {
+  if (req.session.user) {
+    User
+      .findById(req.session.user)
+      .then((user) => {
+        req.user = user;
+        next();
+      })
+      .catch((err) => {
+        sendUserError(err, res);
+      });
+  } else {
+    sendUserError({ message: 'No user is currently logged in.' }, res);
+  }
+};
+
 server.post('/users', (req, res) => {
   if (!(req.body.password && req.body.username)) {
     sendUserError({ message: 'Username and password required' }, res);
@@ -46,13 +62,13 @@ server.post('/users', (req, res) => {
   }
 });
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   const { username, password } = req.body;
   if (!(username && password)) {
     sendUserError({ message: 'Username and password required' }, res);
   } else {
     User
-      .findOne({ username }, '_id passwordHash')
+      .findOne({ username: username.toLowerCase() }, '_id passwordHash')
       .then((user) => {
         user.checkPassword(password, (err, resp) => {
           if (!resp) {
@@ -69,21 +85,10 @@ server.post('/log-in', (req, res) => {
   }
 });
 
-const middleWare = (req, res, next) => {
-  if (req.session.user) {
-    User
-      .findById(req.session.user)
-      .then((user) => {
-        req.user = user;
-        next();
-      })
-      .catch((err) => {
-        sendUserError(err, res);
-      });
-  } else {
-    sendUserError({ message: 'No user is currently logged in.' }, res);
-  }
-};
+server.post('/logout', middleWare, (req, res) => {
+  req.session.user = null;
+  res.json(req.session);
+});
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', middleWare, (req, res) => {
