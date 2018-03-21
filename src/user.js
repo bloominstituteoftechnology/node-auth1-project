@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const BCRYPT_COST = 11;
+const BCRYPT_COST = 1;
 
 // Clear out mongoose's model cache to allow --watch to work for tests:
 // https://github.com/Automattic/mongoose/issues/1251
@@ -26,30 +26,32 @@ const UserSchema = new mongoose.Schema({
 });
 
 // UserSchema.pre('save', function(next) {
-//   console.log("In the prehook")
-//   bcrypt.hash(this.passwordHash, BCRYPT_COST, function(error, hash) {
+//   let user = this;
+//   bcrypt.hash(user.passwordHash, BCRYPT_COST, function(error, hash) {
 //     if (error) return next(error);
-//     console.log(hash)
-//     this.passwordHash = hash;
-//     console.log(this.passwordHash)
+//     // console.log(hash)
+//     user.passwordHash = hash;
+//     // console.log(this.passwordHash)
 //     next();
 //   });
 // });
 
-// UserSchema.pre('save', function(next) {
-//   bcrypt
-//     .hash(passwordHash, BCRYPT_COST)
-//     .then(res => {
-//       console.log(res)
-//       next();
-//     })
-// });
+UserSchema.pre('save', function(next) {
+  bcrypt
+    .hash(passwordHash, BCRYPT_COST)
+    .then(res => {
+      res.json(res);
+      next();
+    })
+});
 
-// UserSchema.methods.checkPassword = function(potentialPassword, cb) {
-//   bcrypt.compare(potentialPassword, this.passwordHash, (err, isMatch) => {
-//     if (err) return cb(err);
-//     cb(null, isMatch);
-//   });
-// };
+UserSchema.methods.checkPassword = function(potentialPassword, cb) {
+  let user = this;
+  bcrypt.compareSync("potentialPassword", user.passwordHash)
+  .then( matched => {
+    res.json({ success: true })
+  })
+  .catch( matched => res.send({ failure: "pwds_dont_match" }))
+};
 
 module.exports = mongoose.model('User', UserSchema);

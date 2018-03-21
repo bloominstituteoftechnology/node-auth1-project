@@ -36,21 +36,21 @@ const sendUserError = (err, res) => {
   }
 };
 
-const hashedPwd = (req, res, next) => {
-  const { password } = req.body;
-  if (!password) {
-    res.status(STATUS_USER_ERROR).json(sendUserError('A password is required!', res));
-  }
-  bcrypt
-    .hash(password, BCRYPT_COST)
-    .then(password => {
-      req.password = password;
-      next();
-    })
-    .catch(err => {
-      res.status(STATUS_USER_ERROR).json(sendUserError('Fatal error!', res));
-    });
-};
+// const hashedPwd = (req, res, next) => {
+//   const { password } = req.body;
+//   if (!password) {
+//     res.status(STATUS_USER_ERROR).json(sendUserError('A password is required!', res));
+//   }
+//   bcrypt
+//     .hash(password, BCRYPT_COST)
+//     .then(password => {
+//       req.password = password;
+//       next();
+//     })
+//     .catch(err => {
+//       res.status(STATUS_USER_ERROR).json(sendUserError('Fatal error!', res));
+//     });
+// };
 
 const confirmLoggedIn = (req, res, next) => {
   const { username } = req.session;
@@ -86,13 +86,15 @@ server.use(permissions);
 //                                ROUTES
 //==============================================================================
 
-server.post('/users', hashedPwd, (req, res) => {
+server.post('/users', (req, res) => {
   const { username } = req.body;
-  const passwordHash = req.password;
+  // console.log("this is in the route: ", req.body);
+  const passwordHash = req.body.password;
   const newUser = new User({ username, passwordHash });
   newUser
     .save()
     .then(user => {
+      // console.log("this is after save..in the route: ", user)
       res.status(200).json(user);
     })
     .catch(err => {
@@ -117,28 +119,17 @@ server.post('/log-in', (req, res) => {
     res.status(STATUS_USER_ERROR).json(sendUserError('Must provide a username and a password!', res));
   } else {
     User.findOne({ username })
-      .then(user => {
-        if (!user) {
-          res.status(404).json(sendUserError('No such user found!', res));
-        } else {
-          const hashedPass = user.passwordHash;
-          bcrypt
-            .compare(password, hashedPass)
-            .then(res => {
-              if (res === false) throw new Error(); 
-              req.session.username = username;
-              req.user = user;
-            })
-            .then(() => {
-              res.json({ success: true });
-            })
-            .catch(err => {
-              res.status(500).json(sendUserError('There wasn an error!', res));
-            });
-        }         
-      });
-  };
+    .then(user => {
+      user.checkPassword(password, (err, validated))
+    })
+    .catch( user => res.send({ error: "DB can't find user" }));
+  };       
 });
+
+// 1. db doesn't return anything
+// 2. compare is false
+// 3. any random error
+// 4. submission error
 
 server.get('/restricted/:path', (req, res) => {
   res.status(200).json({ message: 'You have permission!' });
@@ -156,3 +147,5 @@ server.get('/me', confirmLoggedIn, (req, res) => {
 });
 
 module.exports = { server };
+
+
