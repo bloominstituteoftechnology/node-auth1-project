@@ -1,0 +1,10 @@
+.user__holder {
+    background-color: lightblue;  
+    margin: 5% 10%; 
+}
+
+.user__list {
+    list-style: none;
+    text-align: left;
+    padding: 5%;
+}
