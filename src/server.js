@@ -84,17 +84,41 @@ server.post('/users', (req, res) => {
 	if (!username || !password) {
 		res.status(STATUS_USER_ERROR).json('Username or password does not match the user.');
 	} else {
-		// bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
 		const newUser = new User({ username, passwordHash: password });
-		newUser.save((err, createUser) => {
+		newUser.save((err, savedUser) => {
 			if (err) {
 				return sendUserError(err, res);
 			} else {
-				res.status(STATUS_SUCCESS).json(createUser);
+				res.status(STATUS_SUCCESS).json(savedUser);
 			}
 		});
 	}
 });
+
+/* CODE BEFORE FACTORING
+	const { username, password } = req.body;
+	if (!username || !password) {
+		res.status(STATUS_USER_ERROR).json('Username or password does not match the user.');
+	} else {
+		bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
+			const newUser = { username, passwordHash: hash };
+			const user = new User(newUser);
+			if (err) {
+				sendUserError(err, res);
+			} else {
+				user
+					.save()
+					.then(createUser => {
+						res.status(STATUS_SUCCESS).json(createUser);
+					})
+					.catch(err => {
+						sendUserError(err, res);
+					});
+			}
+		});
+	}
+});
+*/
 
 server.get('/users', (req, res) => {
 	User.find({})
