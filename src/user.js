@@ -31,4 +31,11 @@ UserSchema.pre("save", function(next) {
   })
 })
 
+UserSchema.methods.checkLogin = function(newLoginPass, cb){
+  bcrypt.compare(newLoginPass, this.passwordHash, (err, matched) => {
+    if (err) return cb(err);
+    if (matched) cb(matched);
+  })
+}
+
 module.exports = mongoose.model('User', UserSchema);

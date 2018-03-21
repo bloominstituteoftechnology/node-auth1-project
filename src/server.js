@@ -82,9 +82,9 @@ server.post("/users", (req, res) => {
 });
 
 //handler for the log-in route
-server.post("/login/:username/:password", (req, res) => {
-  const loginUsername = req.params.username;
-  const loginPassword = req.params.password;
+server.post("/log-in", (req, res) => {
+  const loginUsername = req.body.username;
+  const loginPassword = req.body.password;
   
   if (!loginUsername || !loginPassword){
     res.status(422);
@@ -93,21 +93,22 @@ server.post("/login/:username/:password", (req, res) => {
 
   UserModel.find({username: loginUsername})
   .then(response => {
+    console.log(response[0]);
     if (!response){
       res.status(404);
       res.send(`No user with that username was found`);
       return;
     }
 
-    bcrypt.compare(loginPassword, response[0].passwordHash, (err, result) => {
-      if (result){
+    response.checkLogin(loginPassword, (match) => {
+      if (!match){
+        res.status(422);
+        res.send(`The password you entered was incorrect, please try again`);
+      } else {
+        console.log(match);
         req.session.loggedIn = true;
         res.status(200);
         res.json({success: true});
-        console.log(req.session);
-      } else {
-        res.status(422);
-        res.send(`The password you entered was incorrect, please try again`);
       }
     })
   })
