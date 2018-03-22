@@ -1,34 +1,146 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const User = require('./user');
+const bcrypt = require('bcrypt');
+const to = require('./to');
+const cors = require('cors');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
-const server = express();
-// to enable parsing of json bodies for post requests
-server.use(bodyParser.json());
-server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
-}));
+const corsOptions = {};
 
-/* Sends the given err, a string or an object, to the client. Sets the status
- * code appropriately. */
+const server = express();
+server.use(bodyParser.json());
+server.use(
+    session({
+        secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+        resave: true,
+        saveUninitialized: true,
+    }),
+);
+server.use(cors());
+
 const sendUserError = (err, res) => {
-  res.status(STATUS_USER_ERROR);
-  if (err && err.message) {
-    res.json({ message: err.message, stack: err.stack });
-  } else {
-    res.json({ error: err });
-  }
+    res.status(STATUS_USER_ERROR);
+    if (err && err.message) {
+        res.json({
+            message: err.message,
+            stack: err.stack
+        });
+    } else {
+        res.json({
+            error: err
+        });
+    }
 };
 
-// TODO: implement routes
 
-// TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
-  // Do NOT modify this route handler in any way.
-  res.json(req.user);
+server.post('/log-in', async (req, res) => {
+    const {
+        username,
+        password
+    } = req.body;
+    const [err, user] = await to(User.findOne({
+        username
+    }))
+
+    if (err) {
+        res.json({
+            error: "Could not retrieve the user"
+        })
+        return;
+    }
+    if (!user) {
+        res.json({
+            error: "User was not found in the database"
+        })
+        return;
+    }
+    const hashPW = user.passwordHash   
+    bcrypt.compare(password, hashPW, function(err, suc) {
+        if (err) {
+            res.json({
+                error: "Something went wrong"
+            })
+            return;
+        }
+        if (suc === true) {
+            req.username = user.username;
+            res.json({
+                success: true
+            });
+        } else {
+            return res.json({
+                error: "Passwords do not match"
+            })
+        }
+    });
+
 });
 
-module.exports = { server };
+
+
+server.post('/users', (req, res) => {
+    const {
+        username,
+        password
+    } = req.body;
+
+    bcrypt.hash(password, BCRYPT_COST, function(err, hash) {
+
+        req.user = {
+            username,
+            passwordHash: hash
+        }
+
+        new User(req.user).save((err, user) => {
+            if (err) {
+                return res.send({
+                    error: "Error saving the user"
+                });
+            }
+            res.json({
+                success: "user was saved",
+                user
+            })
+        })
+    })
+});
+server.get('/me', async (req, res) => {
+   
+    req.session.username = req.query.username
+    const {
+        username
+    } = req.session;
+    console.log(req.session, req.query.username);
+    if (!username) {
+        sendUserError('You are not logged in', res);
+        return;
+    }
+    const [err, user] = await to(User.findOne({
+        username: req.query.username
+    }, ))
+    if (err) {
+        res.json({
+            error: "Could not retrieve the user"
+        })
+        return;
+    }
+    if (!user) {
+        res.json({
+            error: "User was not found in the database"
+        })
+        return;
+    }
+
+    res.send({
+        user: req.user,
+        session: req.session
+    });
+})
+
+module.exports = {
+    server
+};
