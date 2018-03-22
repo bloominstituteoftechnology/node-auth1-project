@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const User = require('./user.js');
+const cors = require('cors');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -29,6 +30,12 @@ const sendUserError = (err, res) => {
     res.json({ error: err });
   }
 };
+
+const corsOptions = {
+  "origin": "http://localhost:3000",
+  "credentials": true
+};
+server.use(cors(corsOptions));
 
 const restrictedMW = (req, res, next) => {
   const path = req.path;
@@ -122,6 +129,18 @@ server.post('/login', (req, res) => {
       //   });
     });
 });
+
+server.post('/logout', (req, res) => {
+  if (!req.session.username) {
+    sendUserError('Not logged in',res)
+    return;
+  }
+  res.json({ message: 'You are now logged out' });
+  req.session.username = null;
+  //res.json(req.session);
+})
+
+
 
 server.get('/me', loggedInMw, (req, res) => {
   // Do NOT modify this route handler in any way.
