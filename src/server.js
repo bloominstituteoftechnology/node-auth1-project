@@ -91,9 +91,9 @@ server.post("/log-in", (req, res) => {
     res.send(`No username and/or password provided`);
   }
 
-  UserModel.find({username: loginUsername})
+  UserModel.findOne({username: loginUsername})
   .then(response => {
-    console.log(response[0]);
+    console.log(response);
     if (!response){
       res.status(404);
       res.send(`No user with that username was found`);
@@ -105,13 +105,16 @@ server.post("/log-in", (req, res) => {
         res.status(422);
         res.send(`The password you entered was incorrect, please try again`);
       } else {
-        console.log(match);
         req.session.loggedIn = true;
         res.status(200);
         res.json({success: true});
       }
     })
   })
+  .catch(err => {
+    res.status(500);
+    res.send(`There was an error on the server`);
+  });
 })
 
 
