@@ -94,6 +94,7 @@ server.post('/logout', (req, res) => {
   if (!req.session.username)
     return middleware.sendUserError('User is not logged in', res);
   req.session.username = null;
+  // req.session.destroy; // better option probably
   res.send(req.session);
 });
 
