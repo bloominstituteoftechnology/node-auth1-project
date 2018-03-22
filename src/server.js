@@ -11,6 +11,12 @@ const BCRYPT_COST = 11;
 
 const server = express();
 
+const corsOptions = {
+  "origin": "http://localhost:3000",
+  "credentials": true
+};
+
+server.use(cors(corsOptions));
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(session({
@@ -19,12 +25,7 @@ server.use(session({
   saveUninitialized: false
 }));
 
-const corsOptions = {
-  "origin": "http://localhost:5000",
-  "credentials": true
-};
 
-server.use(cors(corsOptions));
 
 //==============================================================================
 //                                MIDDLEWARE
