@@ -18,8 +18,8 @@ server.use(session({
 }));
 
 const corsOptions = {
-  "origin": "http://localhost:3000",
-  "credentials": true
+  origin: 'http://localhost:3000',
+  credentials: true
 };
 
 server.use(cors(corsOptions));
@@ -53,8 +53,13 @@ const restricted = (req, res, next) => {
 
 server.use('/restricted', restricted);
 
-server.get('/restricted/test', (req, res) => {
-  res.json('from test restricted route');
+server.get('/restricted/users', (req, res) => {
+  User.find().then((users) => {
+    res.json(users);
+  })
+  .catch((err) => {
+    res.json(err);
+  });
 });
 
 server.get('/restricted/another', (req, res) => {
@@ -84,7 +89,6 @@ server.post('/users', (req, res) => {
 
 server.post('/login', (req, res) => {
   const { username, password } = req.body;
-  console.log('username: ', username);
   if (!password) {
     sendUserError('Missing Password!', res);
   }
@@ -97,7 +101,6 @@ server.post('/login', (req, res) => {
         if (!valid) {
           res.status(422).json({ success: false });
         } else if (valid) {
-          console.log(valid);
           req.session.user = user;
           res.status(200).json({ success: true });
         }
@@ -124,13 +127,11 @@ server.post('/login', (req, res) => {
 });
 
 server.post('/logout', (req, res) => {
-  console.log(req.session);
-  req.session.destroy(function (err) {
+  req.session.destroy((err) => {
     if (err) {
-      res.json({error: 'Unable to log out of session.'});
+      res.json({ error: 'Unable to log out of session.' });
     }
-    res.json({message: 'bye'});
-    console.log(req.session);
+    res.json({ message: 'bye' });
   });
 });
 
