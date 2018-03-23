@@ -33,32 +33,25 @@ const sendUserError = (err, res) => {
 // TODO: add local middleware to this route to ensure the user is logged in
 
 server.post('/users', (req, res) => {
-  const userInfo = req.body; // body parser?
-  bcrypt.hash(userInfo.passwordHash, 11, (hashErr, hashedPw) => {
-    if (hashErr) throw new Error(hashErr);
-
-    userInfo.passwordHash = hashedPw;
-    const user = new User(userInfo);
-    user
-      .save()
-      .then((savedUser) => {
-        res
-          .status(200)
-          .json(savedUser);
-      })
-      .catch((err) => {
-        res
-          .status(500)
-          .json({ MESSAGE: 'There was an error saving the user' });
-      });
-  });
+  const userInfo = req.body;
+  const user = new User(userInfo);
+  user
+    .save()
+    .then((savedUser) => {
+      res
+        .status(200)
+        .json(savedUser);
+    })
+    .catch((err) => {
+      res
+        .status(500)
+        .json({ MESSAGE: 'There was an error saving the user' });
+    });
 });
 
 server.post('/log-in', (req, res) => {
   const username = req.body.username.toLowerCase();
   const potentialPW = req.body.passwordHash;
-  console.log('username', username);
-  console.log('potentialPW', potentialPW);
 
   if (!potentialPW || !username) {
     sendUserError('Username and password required', res);
@@ -67,16 +60,13 @@ server.post('/log-in', (req, res) => {
 
   User
     .findOne({
-      username: username,
+      username
     })
     .then((foundUser) => {
-      console.log('foundUser', foundUser); // array with the one item
-      bcrypt.checkPassword(passwordHash, (err, response) => {
+      foundUser.checkPassword(potentialPW, (err, response) => {
         if (response) {
           req.session.username = username;
-          // console.log('req.session', req.session);
-          // console.log('user id', foundUser);
-          res.status(200).json({ success: true }, foundUser);
+          res.status(200).json({ success: true, user: req.session.username });
         } else {
           res
             .status(500)
@@ -87,7 +77,7 @@ server.post('/log-in', (req, res) => {
     .catch((err) => {
       res
         .status(500)
-        .json({ MESSAGE: 'There was an error logging in' });
+        .json({ MESSAGE: 'There was an error logging in.', error: 'No user found.' });
     });
 });
 
@@ -113,29 +103,3 @@ server.get('/me', auth, (req, res) => {
 });
 
 module.exports = { server };
-
-  // const userInfo = req.body;
-  // User
-  //   .find({ // gives you an array
-  //     username: userInfo.username,
-  //   })
-  //   .then((savedUser) => {
-  //     console.log(savedUser); // array with the one item
-  //     bcrypt.checkPassword(savedUser.passwordHash, (err, response) => {
-  //       if (response) {
-  //         req.session.loggedIn = savedUser[0]._id;
-  //         // console.log('req.session', req.session);
-  //         // console.log('user id', savedUser);
-  //         res.status(200).json({ success: true }, savedUser);
-  //       } else {
-  //         res
-  //           .status(500)
-  //           .json({ success: false });
-  //       }
-  //     });
-  //   })
-  //   .catch((err) => {
-  //     res
-  //       .status(500)
-  //       .json({ MESSAGE: 'There was an error logging in' });
-  //   });
