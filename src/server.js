@@ -29,74 +29,72 @@ const sendUserError = (err, res) => {
   }
 };
 
-// TODO: implement routes
-// TODO: add local middleware to this route to ensure the user is logged in
-
-server.post('/users', (req, res) => {
-  const userInfo = req.body;
-  const user = new User(userInfo);
-  user
-    .save()
-    .then((savedUser) => {
-      res
-        .status(200)
-        .json(savedUser);
-    })
-    .catch((err) => {
-      res
-        .status(500)
-        .json({ MESSAGE: 'There was an error saving the user' });
-    });
-});
-
-server.post('/log-in', (req, res) => {
-  const username = req.body.username.toLowerCase();
-  const potentialPW = req.body.passwordHash;
-
-  if (!potentialPW || !username) {
-    sendUserError('Username and password required', res);
-    return;
-  }
-
-  User
-    .findOne({
-      username
-    })
-    .then((foundUser) => {
-      foundUser.checkPassword(potentialPW, (err, response) => {
-        if (response) {
-          req.session.username = username;
-          res.status(200).json({ success: true, user: req.session.username });
-        } else {
-          res
-            .status(500)
-            .json({ success: false });
-        }
-      });
-    })
-    .catch((err) => {
-      res
-        .status(500)
-        .json({ MESSAGE: 'There was an error logging in.', error: 'No user found.' });
-    });
-});
-
 const auth = (req, res, next) => {
-  console.log(req.session);
-  if (req.session.loggedIn) {
-    User.findById(req.session.loggedIn)
+  if (req.session) {
+    User.findOne({ username: req.session.username })
       .then((user) => {
         req.user = user;
         next();
       })
       .catch((err) => {
-        console.error(err);
+        console.error('error logging in', err);
       });
   } else {
     res.status(STATUS_USER_ERROR).send({ message: 'You are not logged in' });
   }
 };
 
+// TODO: implement routes
+server.post('/users', (req, res) => {
+  const userInfo = req.body;
+  const user = new User(userInfo);
+  user
+  .save()
+  .then((savedUser) => {
+    res
+    .status(200)
+    .json(savedUser);
+  })
+  .catch((err) => {
+    res
+    .status(500)
+    .json({ MESSAGE: 'There was an error saving the user' });
+  });
+});
+
+server.post('/log-in', (req, res) => {
+  const username = req.body.username.toLowerCase();
+  const potentialPW = req.body.passwordHash;
+  
+  if (!potentialPW || !username) {
+    sendUserError('Username and password required', res);
+    return;
+  }
+  
+  User
+  .findOne({
+    username
+  })
+  .then((foundUser) => {
+    foundUser.checkPassword(potentialPW, (err, response) => {
+      if (response) {
+        req.session.username = username;
+        res.status(200).json({ success: true, user: req.session.username });
+      } else {
+        res
+        .status(500)
+        .json({ success: false });
+      }
+    });
+  })
+  .catch((err) => {
+    res
+    .status(500)
+    .json({ MESSAGE: 'There was an error logging in.', error: 'No user found.' });
+  });
+});
+
+// TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', auth, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
