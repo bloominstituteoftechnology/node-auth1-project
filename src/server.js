@@ -1,16 +1,23 @@
-const bodyParser = require('body-parser');
+/* eslint no-console: 0 */
+
 const express = require('express');
 const session = require('express-session');
-const bcrypt = require('bcrypt');
-const User = require('./user.js');
 const cors = require('cors');
 
+const middleware = require('./middlewares');
+const User = require('./user.js');
+
 const STATUS_USER_ERROR = 422;
-const BCRYPT_COST = 11;
 
 const server = express();
-// to enable parsing of json bodies for post requests
-server.use(bodyParser.json());
+
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true,
+};
+
+server.use(cors(corsOptions));
+server.use(express.json());
 server.use(
   session({
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
@@ -19,142 +26,85 @@ server.use(
   })
 );
 
+server.use('/restricted', middleware.restrictedAccess);
 
-/* Sends the given err, a string or an object, to the client. Sets the status
- * code appropriately. */
-const sendUserError = (err, res) => {
-  res.status(STATUS_USER_ERROR);
-  if (err && err.message) {
-    res.json({ message: err.message, stack: err.stack });
-  } else {
-    res.json({ error: err });
-  }
-};
-
-const corsOptions = {
-  "origin": "http://localhost:3000",
-  "credentials": true
-};
-server.use(cors(corsOptions));
-
-const restrictedMW = (req, res, next) => {
-  const path = req.path;
-  if (/restricted/.test(path)) {
-    if (!req.session.username) {
-      sendUserError('Please login to access this area', res);
-      return;
-    }
-  }
-  next();
-};
-server.use(restrictedMW);
-const loggedInMw = (req, res, next) => {
-  const { username } = req.session;
-  if (!username) {
-    sendUserError('User is not logged in', res);
-    return;
-  }
-  User.findOne({ username }, (err, user) => {
-    if (err) {
-      sendUserError(err, res);
-    } else if (!user) {
-      sendUserError('Error!', res);
-    } else {
-      req.user = user;
-      next();
-    }
-  });
-};
-
-// TODO: implement routes
-
-// TODO: add local middleware to this route to ensure the user is logged in
 server.post('/users', (req, res) => {
+  console.log('are you getting into the server');
   const { username, password } = req.body;
-  const newUser = new User({ username, password: password });
-  newUser.save((err, savedUser) => {
-    if (err) {
-      return sendUserError(err, res);
-    }
-    res.json(savedUser);
-  });
+  const newUser = new User({ username, passwordHash: password });
+  newUser
+  .save()
+  .then(user => res.status(200).send(user))
+  .catch(err => middleware.sendUserError(err, res));
 });
 
 server.post('/login', (req, res) => {
   const { username, password } = req.body;
-  if (!username) {
-    sendUserError('Username undefined', res);
-    return;
-  }
-  User.findOne({ username })
-    .then((user) => {
-      if (user === null) {
-        sendUserError({ Error: 'username or pass incorrect' }, res);
+  if (!username)
+    return middleware.sendUserError({ Error: 'Must enter username' }, res);
+  if (!password)
+    return middleware.sendUserError({ Error: 'Must enter password' }, res);
+  const lowerCaseUsername = username.toLowerCase();
+  User.findOne({ username: lowerCaseUsername })
+    .then(foundUser => {
+      if (foundUser === null) {
+        middleware.sendUserError(
+          { Error: 'Must use valid username/password' },
+          res
+        );
       } else {
-        user
+        foundUser
           .checkPassword(password)
-          .then((validation) => {
-            if (validation) {
-              req.session.username = username;
-              res.status(200).send(user);
+          .then(validated => {
+            if (validated) {
+              req.session.username = foundUser.username;
+              res.status(200).send({ success: true });
+            } else {
+              middleware.sendUserError(
+                { Error: 'Must use valid username/password' },
+                res
+              );
             }
-            sendUserError({ Error: 'username or pass incorrect' }, res);
           })
-          .catch((error) => {
-            return sendUserError(error, res);
+          .catch(err => {
+            return middleware.sendUserError(err);
           });
+
+        // foundUser.checkPassword(password, (err, validated) => {
+        //   if (err) {
+        //     return middleware.sendUserError(err);
+        //   } else if (!validated) {
+        //     middleware.sendUserError({ Error: 'Must use valid username/password' }, res);
+        //   } else if (validated) {
+        //     req.session.username = foundUser.username;
+        //     res.status(200).send({ success: true });
+        //   }
+        // });
       }
     })
-    .catch((error) => {
-      return sendUserError(error, res);
-
-      // (err, user) => {
-      // if (err || user === null) {
-      //   sendUserError('No user found at that id', res);
-      //   return;
-      // }
-      // const hashedPw = user.passwordHash;
-      // bcrypt
-      //   .compare(password, hashedPw)
-      //   .then(response => {
-      //     if (!response) throw new Error();
-      //     req.session.username = username;
-      //     req.user = user;
-      //   })
-      //   .then(() => {
-      //     res.json({ success: true });
-      //   })
-      //   .catch(error => {
-      //     return sendUserError('Errortyujhguikjnbhui!', res);
-      //   });
-    });
-});
-
-server.post('/logout', (req, res) => {
-  if (!req.session.username) {
-    sendUserError('Not logged in',res)
-    return;
-  }
-  res.json({ message: 'You are now logged out' });
-  req.session.username = null;
-  //res.json(req.session);
-})
-
-
-
-server.get('/me', loggedInMw, (req, res) => {
-  // Do NOT modify this route handler in any way.
-  res.json(req.user);
+    .catch(err => middleware.sendUserError(err, res));
 });
 
 server.get('/restricted/users', (req, res) => {
-  User.find({}, (err, user) => {
-    if (err) {
-      sendUserError('500', res);
-      return;
-    }
-    res.json(user);
-  });
+  User.find({})
+    .then(results => res.status(200).send(results))
+    .catch(err => middleware.sendUserError(err, res));
+});
+
+server.post('/logout', (req, res) => {
+  if (!req.session.username)
+    return middleware.sendUserError('User is not logged in', res);
+  req.session.username = null;
+  // req.session.destroy; // better option probably
+  res.send(req.session);
+});
+
+server.get('/restricted/hello', (req, res) => {
+  res.send('Hello world');
+});
+
+server.get('/me', middleware.authenticateUserMW, (req, res) => {
+  res.json(req.user);
 });
 
 module.exports = { server };
