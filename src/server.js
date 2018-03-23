@@ -18,6 +18,20 @@ server.use(session({
   saveUninitialized: false,
 }));
 
+const checkRestricted = (req, res, next) => {
+  // get route path
+  const path = req.path;
+  console.log(path);
+  // if routes contain the String 'restricted' then check if the user is logged in
+  if (req.path.startsWith('/restricted')) {
+    console.log('you are trying to access a restricted route');
+  }
+  // add this global middleware to server.use()
+  next();
+};
+
+server.use(checkRestricted);
+
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 const sendUserError = (err, res) => {
