@@ -1,6 +1,4 @@
-const bodyParser = require('body-parser');
 const express = require('express');
-// A session is a place to store data that you want access to across requests.
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 
@@ -10,8 +8,7 @@ const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
 const server = express();
-// to enable parsing of json bodies for post requests
-server.use(bodyParser.json());
+server.use(express.json());
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
   resave: true,
@@ -21,13 +18,12 @@ server.use(session({
 const checkRestricted = (req, res, next) => {
   // get route path
   const path = req.path;
-  console.log(path);
   // if routes contain the String 'restricted' then check if the user is logged in
-  if (req.path.startsWith('/restricted')) {
-    console.log('you are trying to access a restricted route');
+  if (path.startsWith('/restricted')) {
+    auth(req, res, next);
+  } else {
+    next();
   }
-  // add this global middleware to server.use()
-  next();
 };
 
 server.use(checkRestricted);
@@ -43,8 +39,9 @@ const sendUserError = (err, res) => {
   }
 };
 
+// middleware to check to see if user is logged in
 const auth = (req, res, next) => {
-  if (req.session) {
+  if (req.session.username) {
     User.findOne({ username: req.session.username })
       .then((user) => {
         req.user = user;
@@ -57,6 +54,15 @@ const auth = (req, res, next) => {
     res.status(STATUS_USER_ERROR).send({ message: 'You are not logged in' });
   }
 };
+
+server.get('/restricted/users', auth, (req, res) => {
+  User.find()
+    .then((users) => res.status(200).json(users))
+    .catch((err) => {
+      res.status(500)
+      .json({ MESSAGE: 'There was an error getting users' });
+    });
+});
 
 // TODO: implement routes
 server.post('/users', (req, res) => {
