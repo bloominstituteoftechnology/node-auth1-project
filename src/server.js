@@ -1,4 +1,3 @@
-const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 
@@ -7,20 +6,23 @@ const BCRYPT_COST = 11;
 
 const server = express();
 // to enable parsing of json bodies for post requests
-server.use(bodyParser.json());
-server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
-}));
+server.use(express.json());
+server.use(
+  session({
+    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+  })
+);
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
-const sendUserError = (err, res) => {
+const sendUserError = (err, res, next) => {
   res.status(STATUS_USER_ERROR);
   if (err && err.message) {
     res.json({ message: err.message, stack: err.stack });
   } else {
     res.json({ error: err });
   }
+  next();
 };
 
 // TODO: implement routes
@@ -31,4 +33,4 @@ server.get('/me', (req, res) => {
   res.json(req.user);
 });
 
-module.exports = { server };
+module.exports = server;
