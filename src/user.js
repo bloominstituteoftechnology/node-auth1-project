@@ -17,21 +17,21 @@ const UserSchema = new mongoose.Schema({
     unique: true,
     required: true,
     index: true,
-    lowercase: true,
+    lowercase: true
   },
   passwordHash: {
     type: String,
-    required: true,
-  },
+    required: true
+  }
 });
 
 UserSchema.pre('save', function(next) {
-  bcrypt.hash(this.password, 11, (err, hash) => {
+  bcrypt.hash(this.passwordHash, 11, (err, hash) => {
     if (err) {
       return next(err);
     }
 
-    this.password = hash;
+    this.passwordHash = hash;
     return next();
   });
 });

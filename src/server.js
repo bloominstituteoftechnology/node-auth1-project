@@ -26,10 +26,26 @@ const sendUserError = (err, res) => {
   }
 };
 
+server.get('/users', (req, res) => {
+  User.find()
+    .then((response) => {
+      res.status(200).json(response);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
+
 // TODO: implement routes
 server.post('/users', (req, res) => {
-  if (req.body.username && req.body.passwordHash) {
-    const user = new User(req.body);
+  if (!req.body.username || !req.body.password) {
+    res
+      .status(422)
+      .json({ message: 'User Error: Username and Password required.' });
+  } else {
+    const { username, password } = req.body;
+    // const user = new User(req.body);
+    const user = new User({ username, passwordHash: password });
 
     user
       .save()
@@ -39,10 +55,6 @@ server.post('/users', (req, res) => {
       .catch((err) => {
         res.status(500).json(sendUserError(err, res));
       });
-  } else {
-    res
-      .status(422)
-      .json({ message: 'User Error: Username and Password required.' });
   }
 });
 
