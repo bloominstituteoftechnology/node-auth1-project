@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const morgan = require('morgan');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -12,6 +13,7 @@ const User = require('./user');
 const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
+server.use(morgan('dev'));
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
 }));
@@ -61,25 +63,33 @@ server.get('/me', (req, res) => {
   res.json(req.user);
 });
 
-
-server.post('/users', (req, res) => {
+server.post('/login', (req, res) => {
   const { userName, passwordHash } = req.body;
-  if (!userName || !passwordHash) {
+  User.findOne({ userName })
+    .then((user) => {
+      if (user) {
+        user.isPasswordValid(passwordHash);
+      }
+    })
+    .catch(err => res.status(500).json(err));
+});
+server.post('/users', (req, res) => {
+  const { userName, password } = req.body;
+  if (!userName || !password) {
     sendUserError('Please input a user name or password', res);
     return;
   }
-  bcrypt.hash(passwordHash, 11, (err, hash) => {
-    if (err) {
-      sendUserError('Password failed to hash', res);
-      return;
-    }
+  // bcrypt.hash(passwordHash, 11, (err, hash) => {
+  //   if (err) {
+  //     sendUserError('Password failed to hash', res);
+  //     return;
+  //   })
 
-    const user = new User({ userName, passwordHash: hash });
-    user
-    .save()
-    .then(savedUser => res.status(200).json(savedUser))
-    .catch(error => res.status(500).json(error));
-  });
+  const user = new User(req.body);
+  user
+      .save()
+      .then(savedUser => res.status(200).json(savedUser))
+      .catch(err => res.status(500).json(err));
 });
-server.listen(5000, () => console.log('\n=== api on port 5000 ===\n'));
+
 module.exports = { server };
