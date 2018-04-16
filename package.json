@@ -2,9 +2,11 @@
   "name": "ls-auth",
   "version": "0.0.1",
   "description": "LambdaSchool Auth",
+  "main": "src/app.js",
   "scripts": {
     "test": "eslint tests/*.js && eslint src/*.js && mocha -R nyan tests",
-    "watch": "npm test -- --watch"
+    "watch": "npm test -- --watch",
+    "start": "nodemon src/app.js"
   },
   "license": "ISC",
   "dependencies": {
@@ -20,5 +22,7 @@
     "express-session": "^1.15.5",
     "mocha": "^3.5.0",
     "mongoose": "^4.11.7"
-  }
+  },
+  "repository": "https://github.com/kait-schorr/Auth.git",
+  "author": "Kaitlyn Schorr <kaitlynschorr@gmail.com>"
 }
