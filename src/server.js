@@ -35,6 +35,17 @@ server.post('/users', (req, res) => {
     .catch(err => res.status(500).json(err));
 })
 
+server.post('/log-in', (req, res)=> {
+  const { username, password } = req.body;
+  User.findOne({ username })
+    .then(user => {
+      if(user) {
+        user.isPasswordValid(password, res.status(200).json({success: true }))
+      
+      }
+    })
+    .catch(err => res.status(500).json(err));
+})
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
