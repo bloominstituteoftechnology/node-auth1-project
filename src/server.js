@@ -30,17 +30,15 @@ const sendUserError = (err, res) => {
 
 // TODO: implement routes
 server.post('/users', (req, res) => {
-  const { username, passwordHash } = req.body;
-
-  const newUser = new User({ username, passwordHash });
+  const { username, password } = req.body;
+  const newUser = new User({ username, passwordHash: password });
   newUser
-    .save()
-    .then(newUser => {
-      res.status(200).json(newUser);
+    .save((error, user) => {
+      if (error) {
+        return sendUserError(error, res);
+      }
+      res.status(200).json(user);
     })
-    .catch(error => {
-      res.status(500).json(error);
-    });
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
