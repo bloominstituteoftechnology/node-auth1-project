@@ -37,7 +37,7 @@ server.post('/users', (req, res) => {
         res.status(200).json(savedUser);
       })
       .catch((err) => {
-        res.status(500).json(sendUserError(err));
+        res.status(500).json(sendUserError(err, res));
       });
   } else {
     res
@@ -57,7 +57,7 @@ server.post('/log-in', (req, res) => {
       }
     })
     .catch((err) => {
-      res.status(500).json(sendUserError(err));
+      res.status(500).json(sendUserError(err, res));
     });
 });
 // TODO: add local middleware to this route to ensure the user is logged in

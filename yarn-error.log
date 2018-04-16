@@ -3821,7 +3821,7 @@ Lockfile:
 
 Trace: 
   Error: Command failed.
-  Exit code: 1
+  Exit code: 3
   Command: sh
   Arguments: -c eslint tests/*.js && eslint src/*.js && mocha -R nyan tests
   Directory: /Users/zack/LambdaSchool/Auth
