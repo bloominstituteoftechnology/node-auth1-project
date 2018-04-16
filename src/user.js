@@ -11,7 +11,7 @@ mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
 
 const UserSchema = new mongoose.Schema({
   // TODO: fill in this schema
-  
+
     username: {
       type: String,
       unique: true,
@@ -19,7 +19,7 @@ const UserSchema = new mongoose.Schema({
       index: true,
       lowercase: true,
     },
-    password: {
+    passwordHash: {
       type: String,
       required: true,
     }
@@ -28,18 +28,18 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.pre('save', function(next) {
   console.log('pre save hook');
-  bcrypt.hash(this.password, 12, (err, hash) => {
+  bcrypt.hash(this.passwordHash, 12, (err, hash) => {
     if(err) {
       return next(err);
     }
 
-    this.password = hash;
+    this.passwordHash = hash;
     return next();
   })
 })
 
 UserSchema.methods.isPasswordValid = function(passwordGuess) {
-  return bcrypt.compare(passwordGuess, this.password);
+  return bcrypt.compare(passwordGuess, this.passwordHash);
 }
 
 module.exports = mongoose.model('User', UserSchema);
