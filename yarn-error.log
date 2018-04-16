@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/Cellar/yarn/1.5.1_1/libexec/bin/yarn.js test
+  /usr/local/bin/node /usr/local/Cellar/yarn/1.5.1_1/libexec/bin/yarn.js run watch
 
 PATH: 
   /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Applications/Xamarin Workbooks.app/Contents/SharedSupport/path-bin
@@ -3823,9 +3823,9 @@ Lockfile:
 
 Trace: 
   Error: Command failed.
-  Exit code: 3
+  Exit code: 1
   Command: sh
-  Arguments: -c eslint tests/*.js && eslint src/*.js && mocha -R nyan tests
+  Arguments: -c npm test -- --watch
   Directory: /Users/DragonRydrz/Documents/LambdaSchool/Week-11/Auth-Pair
   Output:
   

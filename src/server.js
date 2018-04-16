@@ -36,36 +36,33 @@ server.get('/', (req, res) => {
 
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
-  const user = new User(req.body);
+  const user = new User({ username, passwordHash: password });
 
   user
     .save()
-    // eslint-disable-next-line
-    .then(savedUser => {
-      res.json(savedUser);
-    })
-    // eslint-disable-next-line
-    .catch(err => {
-      if (err && err.message) {
-        res.status(422).json({ message: err.message, stack: err.stack });
-      } else {
-        res.status(STATUS_USER_ERROR).json({ error: err });
-      }
-    });
+    .then(savedUser => res.json(savedUser))
+    .catch(err => sendUserError(err, res));
 });
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
+  if (!username || !password) {
+    res.status(422).json({ errorMessage: 'Username and Password required' });
+  }
   User.findOne({ username })
     // eslint-disable-next-line
     .then(user => {
-      if (user.isPasswordValid(password)) {
+      if (!user) {
+        res.status(422).json({ errorMessage: 'Username does not exist' });
+        return;
+      } else if (user.isPasswordValid(password)) {
         res.json({ success: true });
         return;
       }
-      res.status(401).json(sendUserError);
+      res.status(422).json(err => sendUserError(err, res));
     })
-    .catch(sendUserError);
+
+    .catch(err => sendUserError(err, res));
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in

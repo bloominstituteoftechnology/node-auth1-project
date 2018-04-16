@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  password: {
+  passwordHash: {
     type: String,
     required: true,
     unique: true,
@@ -24,18 +24,19 @@ const UserSchema = new mongoose.Schema({
 });
 // eslint-disable-next-line
 UserSchema.pre('save', function(next) {
-  bcrypt.hash(this.password, 2, (err, hash) => {
+  bcrypt.hash(this.passwordHash, 2, (err, hash) => {
     if (err) {
       return next(err);
     }
 
-    this.password = hash;
+    this.passwordHash = hash;
     return next();
   });
 });
 // eslint-disable-next-line
 UserSchema.methods.isPasswordValid = function(passwordGuess) {
-  return bcrypt.compare(passwordGuess, this.password);
+  console.log(bcrypt.compare(passwordGuess, this.passwordHash));
+  return bcrypt.compare(passwordGuess, this.passwordHash);
 };
 
 module.exports = mongoose.model('User', UserSchema);
