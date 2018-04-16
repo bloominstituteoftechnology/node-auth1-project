@@ -5,6 +5,8 @@ const session = require('express-session');
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
+const User = require('./user.js');
+
 const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
@@ -30,5 +32,18 @@ server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
+
+server.post('/users', (req, res) => {
+  const user = new User(req.body);
+
+  user  
+    .save()
+    .then(user => {
+      res.status(200).json(user);
+    })
+    .catch(err => 
+      res.status(500).json(err));
+});
+
 
 module.exports = { server };
