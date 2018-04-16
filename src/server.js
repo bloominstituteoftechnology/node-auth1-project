@@ -2,15 +2,21 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 
+const User = require('./user.js');
+
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
 const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
-server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
-}));
+server.use(
+  session({
+    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+    saveUninitialized: false,
+    resave: true
+  })
+);
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -24,6 +30,40 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+
+server.post('/users', (req, res) => {
+  const { username, password } = req.body;
+  const user = new User(req.body);
+
+  if (!username || !password) {
+    res
+      .status(STATUS_USER_ERROR)
+      .json({ error: 'Please provide username and password.' });
+  } else {
+    user
+      .save()
+      .then(savedUser => res.status(200).json(savedUser))
+      .catch(err => sendUserError(err, res));
+  }
+});
+
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  User.findOne({ username })
+    .then((user) => {
+      if (user) {
+        user.isPasswordValid(password, (err, isValid) => {
+          if (err) return sendUserError(err, res);
+          if (isValid) {
+            res.status(201).json({ success: true });
+          } else {
+            res.status(STATUS_USER_ERROR).json(err);
+          }
+        });
+      }
+    })
+    .catch(err => res.status(500).json(err));
+});
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
