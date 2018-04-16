@@ -1,9 +1,12 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const mongoose = require('mongoose');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
+
+const User = require('./user');
 
 const server = express();
 // to enable parsing of json bodies for post requests
@@ -24,8 +27,32 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+const options = {
+  useMongoClient: true,
+  autoIndex: false,
+  reconnectTries: Number.MAX_VALUE, 
+  reconnectInterval: 500, 
+  poolSize: 10, 
+  bufferMaxEntries: 0
+}
+
+mongoose
+  .connect('mongodb://localhost/authDB', options)
+  .then(() => {
+    console.log('\n=== connected to MongoDB ===\n');
+  })
+  .catch(err => console.log('database connection failed', err));
 
 // TODO: add local middleware to this route to ensure the user is logged in
+
+const authenticate = function(req, res, next) {
+  req.hello = `hello ${user}`;
+
+  next();
+};
+
+server.use(express.json());
+
 server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
