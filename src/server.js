@@ -40,7 +40,9 @@ server.post('/users', (req, res) => {
     .then((savedUser) => {
       res.status(200).json(savedUser);
     })
-    .catch(sendUserError);
+    .catch((err) => {
+      sendUserError(err, res);
+    });
 });
 
 
