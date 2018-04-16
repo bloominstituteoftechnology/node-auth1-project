@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = requrie('brypt');
+const bcrypt = require('bcrypt');
 
 // Clear out mongoose's model cache to allow --watch to work for tests:
 // https://github.com/Automattic/mongoose/issues/1251
@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
     unique: true,
     required: true,
     index: true,
-    lowercase: true // Luis => luis
+    lowercase: true
   },
 
   password: {
