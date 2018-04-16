@@ -23,11 +23,12 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre('save', function(next) {
-  bcrypt.hash(this.password, 12, (err, hash) => {
+  console.log('saved');
+  bcrypt.hash(this.passwordHash, 12, (err, hash) => {
     if (err) {
       return next(err);
     }
-    this.password = hash;
+    this.passwordHash = hash;
 
     return next();
   });

@@ -30,9 +30,9 @@ const sendUserError = (err, res) => {
 
 // TODO: implement routes
 server.post('/users', (req, res) => {
-  const { username, password } = req.body;
+  const { username, passwordHash } = req.body;
 
-  const newUser = new User({ username, passwordHash: password });
+  const newUser = new User({ username, passwordHash });
   newUser
     .save()
     .then(newUser => {
@@ -48,5 +48,14 @@ server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
+
+server.get('/', (req, res) => {
+  User.find()
+  .then(users => {
+      res.status(200).json(users);
+  })
+  .catch(error => res.status(500).json(error));
+  //res.status(200).json({api:"success"});
+})
 
 module.exports = { server };
