@@ -1,6 +1,8 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const User = require('./user');
+const bcrypt = require('bcrypt');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -8,9 +10,13 @@ const BCRYPT_COST = 11;
 const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
-server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
-}));
+server.use(
+  session({
+    resave: false,
+    saveUninitialized: false,
+    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+  })
+);
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -24,6 +30,43 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+server.get('/', (req, res) => {
+  res.json({ message: 'running' });
+});
+
+server.post('/users', (req, res) => {
+  const { username, password } = req.body;
+  const user = new User(req.body);
+
+  user
+    .save()
+    // eslint-disable-next-line
+    .then(savedUser => {
+      res.json(savedUser);
+    })
+    // eslint-disable-next-line
+    .catch(err => {
+      if (err && err.message) {
+        res.status(422).json({ message: err.message, stack: err.stack });
+      } else {
+        res.status(STATUS_USER_ERROR).json({ error: err });
+      }
+    });
+});
+
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  User.findOne({ username })
+    // eslint-disable-next-line
+    .then(user => {
+      if (user.isPasswordValid(password)) {
+        res.json({ success: true });
+        return;
+      }
+      res.status(401).json(sendUserError);
+    })
+    .catch(sendUserError);
+});
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
