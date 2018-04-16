@@ -60,17 +60,28 @@ server.post('/users', (req, res) => {
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
-  User.findOne({ username })
-    .then((user) => {
-      if (user) {
-        if (user.isPasswordValid(password)) {
-          res.status(200).json({ success: true });
-        }
-      }
-    })
-    .catch((err) => {
-      res.status(500).json(sendUserError(err, res));
-    });
+  if (username && password) {
+    User.findOne({ username })
+      .then((user) => {
+        user.isPasswordValid(password).then((response) => {
+          if (response) {
+            res.status(200).json({ success: true });
+          } else {
+            sendUserError({ message: 'Incorrect Credentials' }, res);
+          }
+        });
+      })
+      .catch((err) => {
+        sendUserError(err, res);
+      });
+  } else {
+    sendUserError(
+      {
+        message: 'Please log-in with both a username and password.'
+      },
+      res
+    );
+  }
 });
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
