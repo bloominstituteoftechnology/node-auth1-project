@@ -67,7 +67,7 @@ server.post('/log-in', (req, res) => {
           if (response) {
             res.status(200).json({ success: true });
           } else {
-            sendUserError({ message: 'Incorrect Credentials' }, res);
+            sendUserError({ message: 'Wrong username/password' }, res);
           }
         });
       })
@@ -77,7 +77,7 @@ server.post('/log-in', (req, res) => {
   } else {
     sendUserError(
       {
-        message: 'Please log-in with both a username and password.'
+        message: 'Username and password are required to log in.'
       },
       res
     );
