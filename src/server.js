@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -27,14 +28,16 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+
+// this variable helped mongoDB connect
 const options = {
   useMongoClient: true,
   autoIndex: false,
-  reconnectTries: Number.MAX_VALUE, 
-  reconnectInterval: 500, 
-  poolSize: 10, 
+  reconnectTries: Number.MAX_VALUE,
+  reconnectInterval: 500,
+  poolSize: 10,
   bufferMaxEntries: 0
-}
+};
 
 mongoose
   .connect('mongodb://localhost/authDB', options)
@@ -45,8 +48,8 @@ mongoose
 
 // TODO: add local middleware to this route to ensure the user is logged in
 
-const authenticate = function(req, res, next) {
-  req.hello = `hello ${user}`;
+const authenticate = function (req, res, next) {
+  req.hello = `hello ${User}`;
 
   next();
 };
@@ -58,4 +61,25 @@ server.get('/me', (req, res) => {
   res.json(req.user);
 });
 
+
+server.post('/users', (req, res) => {
+  const { userName, passwordHash } = req.body;
+  if (!userName || !passwordHash) {
+    sendUserError('Please input a user name or password', res);
+    return;
+  }
+  bcrypt.hash(passwordHash, 11, (err, hash) => {
+    if (err) {
+      sendUserError('Password failed to hash', res);
+      return;
+    }
+
+    const user = new User({ userName, passwordHash: hash });
+    user
+    .save()
+    .then(savedUser => res.status(200).json(savedUser))
+    .catch(error => res.status(500).json(error));
+  });
+});
+server.listen(5000, () => console.log('\n=== api on port 5000 ===\n'));
 module.exports = { server };
