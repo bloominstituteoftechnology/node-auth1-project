@@ -27,9 +27,17 @@ server.use(
 const isLoggedIn = function (req, res, next) {
   console.log(req.session.name);
   if(!req.session.name) {
-   sendUserError('Not logged in', res);
+    sendUserError('Not logged in', res);
   }
-  req.user =req.session.name;
+  req.user = req.session.name;
+  return next();
+}
+
+const restrictedMW = (req, res, next) => {
+  if(!req.session.name) {
+    sendUserError('Not logged in', res);
+  }
+  req.user = req.session.name;
   return next();
 }
 
@@ -92,6 +100,15 @@ server.post('/log-in', (req, res) => {
   }
 });
 
+server.get('/restricted', (req, res) => {
+  res.json({message: 'You are now in the restricted page of the app'});
+})
+
+server.get('/restricted/dev', (req, res) => {
+  res.json({message: 'You are now in the restricted dev page'});
+})
+
+server.use('/restricted', restrictedMW);
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', isLoggedIn, (req, res) => {
