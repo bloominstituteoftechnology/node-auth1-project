@@ -54,13 +54,14 @@ const testPassword = function(req, res, next) {
 };
 
 const checkRestricted = function(req, res, next) {
-    
-    if(req.path === '/restricted') {
-      loginCheck(req ,res, next);
-      next();
-    }
-    next();
-  }
+   const reggy = new RegExp(/\/restricted\/(.*)/gi);
+   
+   if (req.path.match(reggy)) {
+     loginCheck(req ,res, next);
+     next();
+   }
+   next();
+}
 
 server.use(checkRestricted);
 
