@@ -2,6 +2,8 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 
+const User = require('./user');
+
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
@@ -11,6 +13,8 @@ server.use(bodyParser.json());
 server.use(
   session({
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+    resave: true,
+    saveUninitialized: true,
   })
 );
 
@@ -25,7 +29,6 @@ const sendUserError = (err, res) => {
   }
 };
 
-// TODO: implement routes
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
   const user = new User(req.body);
@@ -45,7 +48,7 @@ server.post('/log-in', (req, res) => {
   if (!username || !password) {
     res.status(STATUS_USER_ERROR).json({ Error: 'Enter a username and password' });
   } else {
-    User.findOne({ username })
+    User.find({ username })
       .then(user => {
         if (user) {
           user.isPasswordValid(password).then(response => {
@@ -66,5 +69,7 @@ server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
+
+server.get('/', (req, res) => res.send('API Running...'));
 
 module.exports = { server };

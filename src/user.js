@@ -11,21 +11,21 @@ mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
 
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
-  passwordHash: { type: String, required: true },
+  password: { type: String, required: true },
 });
 
 UserSchema.pre('save', function(next) {
-  bcrypt.hash(this.passwordHash, 12, (err, hash) => {
+  bcrypt.hash(this.password, 12, (err, hash) => {
     if (err) {
       return next(err);
     }
-    this.passwordHash = hash;
+    this.password = hash;
     return next();
   });
 });
 
 UserSchema.methods.isPasswordValid = function(passwordGuess) {
-  return bcrypt.compare(passwordGuess, this.passwordHash);
+  return bcrypt.compare(passwordGuess, this.password);
 };
 
 module.exports = mongoose.model('User', UserSchema);
