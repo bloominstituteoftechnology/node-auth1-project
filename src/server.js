@@ -29,6 +29,24 @@ const sendUserError = (err, res) => {
   }
 };
 
+const testUsername = function (req, res, next) {
+  const { username } = req.body;
+
+  if (!username || username.trim() === '') {
+    return sendUserError('Username must exist and have a value!', res);
+  }
+  next();
+};
+
+const testPassword = function (req, res, next) {
+  const { password } = req.body;
+
+  if (!password || password.trim() === '') {
+    return sendUserError('Password must exist and have a value!', res);
+  }
+  next();
+};
+
 server.get('/users', (req, res) => {
   User.find()
     .then((response) => {
@@ -61,16 +79,19 @@ server.post('/users', (req, res) => {
   }
 });
 
-server.post('/log-in', (req, res) => {
+server.post('/log-in', testUsername, testPassword, (req, res) => {
   const { username, password } = req.body;
-
-  User.findOne({ username })
+  console.log(username);
+  User.find({ username })
     .then((user) => {
+      console.log(user);
       if (user) {
+        console.log(user);
         user
           .isPasswordValid(password)
           .then((isValid) => {
             if (isValid) {
+              console.log(user);
               req.session.name = user.username;
               res.status(200).json({ success: true });
             } else {
@@ -91,6 +112,12 @@ server.post('/log-in', (req, res) => {
 server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
+});
+
+server.use((err, req, res, next) => {
+  if (err) {
+    res.status(500).json(sendUserError(err, res));
+  }
 });
 
 module.exports = { server };
