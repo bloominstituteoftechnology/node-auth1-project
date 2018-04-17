@@ -11,22 +11,11 @@ const server = express();
 server.use(express.json());
 server.use(
   session({
-    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+    secret: 'shhhhhhh its a secret',
     resave: true,
     saveUninitialized: true
   })
 );
-
-/* Sends the given err, a string or an object, to the client. Sets the status
- * code appropriately. */
-const sendUserError = (err, res) => {
-  res.status(422);
-  if (err && err.message) {
-    res.json({ message: err.message, stack: err.stack });
-  } else {
-    res.json({ error: err });
-  }
-};
 
 const isLoggedIn = function (req, res, next) {
   if (!req.session.auth) res.status(422).json('not allowed');
@@ -39,6 +28,15 @@ const isLoggedIn = function (req, res, next) {
       .catch(error => res.status(500).json(error));
   }
 };
+
+const isRestricted = function (req, res, next) {
+  if (/required/.test(req.url)) {
+    if (!req.session.auth) res.status(422).json('not allowed');
+    else next();
+  } else next();
+};
+
+server.use(isRestricted);
 
 server.post('/users', (req, res) => {
   if (!(req.body.username && req.body.password)) {
@@ -78,6 +76,10 @@ server.post('/log-in', (req, res) => {
 
 server.get('/me', isLoggedIn, (req, res) => {
   res.json(req.user);
+});
+
+server.get('/required/greeting', (req, res) => {
+  res.status(200).json(`hello ${req.session.name}`);
 });
 
 server.listen(5000);
