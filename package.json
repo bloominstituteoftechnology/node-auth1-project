@@ -5,7 +5,6 @@
   "scripts": {
     "test": "eslint tests/*.js && eslint src/*.js && mocha -R nyan tests",
     "watch": "npm test -- --watch"
-    //"start": "nodemon server.js"
   },
   "license": "ISC",
   "dependencies": {
@@ -14,28 +13,13 @@
     "body-parser": "^1.17.2",
     "chai": "^4.1.1",
     "chai-http": "^3.0.0",
+    "cors": "^2.8.4",
     "eslint": "^3.17.1",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",
-    "express": "^4.16.3",
+    "express": "^4.15.4",
     "express-session": "^1.15.5",
     "mocha": "^3.5.0",
-    "mongoose": "^4.13.12",
-    "touch": "^3.1.0"
-  },
-  "main": "server.js",
-  "directories": {
-    "test": "tests"
-   
-  },
-  "devDependencies": {},
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/lillialskye/Auth.git"
-  },
-  "author": "Tiffany Robbins",
-  "bugs": {
-    "url": "https://github.com/lillialskye/Auth/issues"
-  },
-  "homepage": "https://github.com/lillialskye/Auth#readme"
+    "mongoose": "^4.11.7"
+  }
 }
