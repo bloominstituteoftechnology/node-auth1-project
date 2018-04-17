@@ -51,41 +51,48 @@ mongoose
 // TODO: add local middleware to this route to ensure the user is logged in
 
 const authenticate = function (req, res, next) {
-  req.hello = `hello ${User}`;
-
-  next();
+  if (req.session.name) {
+    User.findOne({ username: req.session.name }).then((user) => { req.user = user; next(); })
+        .catch(err => sendUserError({ message: 'You done fucked up.' }, res));
+  } else { sendUserError({ message: 'You done fucked up.' }, res); }
 };
 
 server.use(express.json());
 
-server.get('/me', (req, res) => {
+server.get('/', authenticate, (req, res) => {
+  User.find().then(users => res.json(users));
+});
+
+server.get('/me', authenticate, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
 
-server.post('/login', (req, res) => {
-  const { userName, passwordHash } = req.body;
-  User.findOne({ userName })
-    .then((user) => {
-      if (user) {
-        user.isPasswordValid(passwordHash);
-      }
-    })
-    .catch(err => res.status(500).json(err));
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  if (username && password) {
+    User.findOne({ username })
+      .then((users) => {
+        console.log(users);
+        users.isPasswordValid(password).then((Response) => {
+          if (Response) {
+            req.session.name = users.username;
+            res.status(200).json({ success: true });
+          } else { sendUserError({ message: 'You done fucked up.' }, res); }
+        });
+      })
+      .catch(err => sendUserError(err, res));
+  } else { sendUserError({ message: 'You done fucked up.' }, res); }
 });
+
 server.post('/users', (req, res) => {
-  const { userName, password } = req.body;
-  if (!userName || !password) {
+  const { username, password } = req.body;
+  if (!username || !password) {
     sendUserError('Please input a user name or password', res);
     return;
   }
-  // bcrypt.hash(passwordHash, 11, (err, hash) => {
-  //   if (err) {
-  //     sendUserError('Password failed to hash', res);
-  //     return;
-  //   })
 
-  const user = new User(req.body);
+  const user = new User({ username, passwordHash: password });
   user
       .save()
       .then(savedUser => res.status(200).json(savedUser))
