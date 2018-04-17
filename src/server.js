@@ -2,6 +2,7 @@
 const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo')(session);
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -14,15 +15,18 @@ server.use(express.json());
 
 server.use(
   session({
-    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
     name: 'auth',
-    cookie: {maxAge: 1 * 24 * 60 * 60 * 1000 },
+    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+    cookie: {maxAge: 1 * 24 * 60 * 60 * 1000 }, //ms
     secure: false,
     saveUninitialized: false,
     resave: false,
+    store: new MongoStore({
+      url: 'mongodb://localhost/sessions',
+      ttl: 10*60,//seconds
+    }),
   })
 );
-
 
 const isLoggedIn = function (req, res, next) {
   console.log(req.session.name);
@@ -115,5 +119,16 @@ server.get('/me', isLoggedIn, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
+
+server.get('/api/users', (req, res) => {
+  User
+    .find()
+    .then((users) => {
+      res.status(200).json(users)
+    })
+    .catch((error) => {
+      res.status.json(error)
+    })
+})
 
 module.exports = { server };
