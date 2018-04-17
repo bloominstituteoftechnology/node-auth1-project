@@ -111,7 +111,22 @@ server.post('/log-in', testUsername, testPassword, (req, res) => {
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+const loginCheck = (req, res, next) => {
+  if (req.session.name) {
+    User.findOne({ username: req.session.name })
+      .then((user) => {
+        req.user = user;
+        next();
+      })
+      .catch((err) => {
+        res.status(422).json(sendUserError(err, res));
+      });
+  } else {
+    return sendUserError({ errorMessage: 'User is not logged in!' }, res);
+  }
+};
+
+server.get('/me', loginCheck, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
