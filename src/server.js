@@ -30,19 +30,30 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 server.post('/users', (req, res) => {
   let { username, password } = req.body;
+  //console.log(req.body);
   
-  console.log(req.body);
-  
-  if (!username || !password) {
-    res.status(422).json({error: "provide username or password"})
+  if (username && password) {
+    bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
+      if (err) {
+        sendUserError(err, res);
+        return;
+      }
+      
+      password = hash;
+      
+      const user = new User({ username, passwordHash: password});
+      //console.log('user: ', user);
+      user
+      .save()
+      .then(savedUser => res.status(200).json(savedUser))
+      .catch(err => {
+        sendUserError(err, res);
+      });
+    });
+    
+  } else {
+    sendUserError({error: "provide username and password"}, res);
   }
-  
-  const user = new User({ username, passwordHash: password });
-  console.log(user);
-  user
-    .save()
-    .then(savedUser => res.status(200).json(savedUser))
-    .catch(err => res.status(500).json(err));
 });
 
 server.get('/', (req, res) => {
@@ -53,7 +64,54 @@ server.get('/', (req, res) => {
 
 
 // TODO: add local middleware to this route to ensure the user is logged in
-
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  //console.log("req.body:", req.body);
+  
+  if (username && password) {
+    if (!req.session.user) {
+      req.session.user = username;
+    }
+    if (!req.session.password) {
+      req.session.password = password;
+    }
+    
+    User.findOne({ username })
+    .then(response => {
+      console.log('response: ', response);
+      let isValidPassword;
+      
+      bcrypt.compare(req.session.password, response.passwordHash, (err, isValid) => {
+        if (err) {
+          throw err;
+        }
+        if (isValid) {
+          isValidPassword = true;
+          console.log("isValid :", isValidPassword);
+        } else {
+          isValidPassword = false;
+          console.log("isValid :", isValidPassword);
+          res.status(422).json({ error: "wrong password" });
+        }
+      });
+      
+      console.log('isValidPassword :', isValidPassword);
+      
+      if (req.session.user === response.username && isValidPassword) {
+  
+        res.status(200).json({ success: true });
+        
+      } else {
+        sendUserError(err, res);
+      }
+    })
+    .catch(err => {
+      sendUserError(err, res);
+    });
+  } else {
+    sendUserError({error: "provide username and password"}, res);
+  }
+});
 
 
 server.get('/me', (req, res) => {
