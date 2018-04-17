@@ -9,10 +9,19 @@ const BCRYPT_COST = 11;
 
 const server = express();
 // to enable parsing of json bodies for post requests
+
+
+
+const authenticate = function (req, res, next) {
+
+};
 server.use(bodyParser.json());
 server.use(
   session({
-    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
+    secure: false,
+    name: 'auth'
   })
 );
 
@@ -31,6 +40,16 @@ const sendUserError = (err, res) => {
 
 server.get('/', (req, res) => res.send('API Running...'));
 
+server.get('/users', (req, res) => {
+  User.find({})
+    .then(users => {
+      res.status(200).json(users);
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
+});
+
 
 server.post('/users', (req, res) => {
   const user = new User(req.body);
@@ -42,13 +61,16 @@ server.post('/users', (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
+
 server.post('/login', (req, res) => {
   const { username, password } = req.body;
   User.findOne({ username })
     .then((user) => {
       if (user) {
+        req.session.name = user.username;
         user.isPasswordValid(password)
           .then(res.status(200).json({ success: true }))
+
           .catch(err => res.status(500).json(err));
       } else {
         res.status(400).json('The username or password is not valid');
@@ -60,7 +82,15 @@ server.post('/login', (req, res) => {
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
+
   res.json(req.user);
+
+});
+
+server.use((err, req, res, next) => {
+  if (err) {
+    (err => res.json(err));
+  }
 });
 
 module.exports = { server };
