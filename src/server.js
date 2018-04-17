@@ -57,7 +57,7 @@ const checkRestricted = function(req, res, next) {
    const reggy = new RegExp(/\/restricted\/(.*)/gi);
    
    if (req.path.match(reggy)) {
-     loginCheck(req ,res, next);
+     loginCheck(req, res, next);
      next();
    }
    next();
