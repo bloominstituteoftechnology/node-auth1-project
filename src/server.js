@@ -81,26 +81,28 @@ server.post('/users', (req, res) => {
 
 server.post('/log-in', testUsername, testPassword, (req, res) => {
   const { username, password } = req.body;
-  console.log(username);
-  User.find({ username })
+  // console.log(username);
+  User.findOne({ username })
     .then((user) => {
-      console.log(user);
+      // console.log(user);
       if (user) {
-        console.log(user);
+        // console.log(user);
         user
-          .isPasswordValid(password)
+          .isPasswordValid(password, res)
           .then((isValid) => {
+            console.log(`IS this VALID? ${isValid}`);
             if (isValid) {
-              console.log(user);
               req.session.name = user.username;
               res.status(200).json({ success: true });
             } else {
-              res.status(401).json({ userError: 'You shall not pass!' });
+              res.status(422).json({ userError: 'You shall not pass!' });
             }
           })
           .catch((err) => {
             res.status(500).json(sendUserError(err, res));
           });
+      } else {
+        res.status(422).json({ errorMessage: 'Incorrect credentials.' });
       }
     })
     .catch((err) => {
