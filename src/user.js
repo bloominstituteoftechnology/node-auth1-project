@@ -24,16 +24,8 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
-UserSchema.pre('save', function (next) {
-  console.log('pre save hook');
-  bcrypt.hash(this.passwordHash, 10, (err, hash) => {
-    if (err) {
-      return next(err);
-    }
-    this.passwordHash = hash;
-    console.log('in middleware');
-    return next();
-  });
-});
+UserSchema.methods.checkPassword = function (passwordGuess) {
+  return bcrypt.compare(passwordGuess, this.passwordHash);
+};
 
 module.exports = mongoose.model('User', UserSchema);
