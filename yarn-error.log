@@ -34,7 +34,7 @@ npm manifest:
       "eslint-config-airbnb": "^14.1.0",
       "eslint-plugin-import": "^2.2.0",
       "express": "^4.15.4",
-      "express-session": "^1.15.5",
+      "express-session": "^1.15.6",
       "mocha": "^3.5.0",
       "mongoose": "^4.11.7",
       "nodemon": "^1.17.3"
@@ -1375,7 +1375,7 @@ Lockfile:
       snapdragon "^0.8.1"
       to-regex "^3.0.1"
   
-  express-session@^1.15.5:
+  express-session@^1.15.6:
     version "1.15.6"
     resolved "https://registry.yarnpkg.com/express-session/-/express-session-1.15.6.tgz#47b4160c88f42ab70fe8a508e31cbff76757ab0a"
     dependencies:
@@ -3821,7 +3821,7 @@ Lockfile:
 
 Trace: 
   Error: Command failed.
-  Exit code: 4
+  Exit code: 5
   Command: sh
   Arguments: -c eslint tests/*.js && eslint src/*.js && mocha -R nyan tests
   Directory: /Users/zack/LambdaSchool/Auth

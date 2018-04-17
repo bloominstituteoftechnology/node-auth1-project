@@ -60,29 +60,30 @@ server.post('/users', (req, res) => {
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
-  if (username && password) {
-    User.findOne({ username })
-      .then((user) => {
-        user.isPasswordValid(password).then((response) => {
-          if (response) {
-            res.status(200).json({ success: true });
-          } else {
-            sendUserError({ message: 'Wrong username/password' }, res);
-          }
-        });
-      })
-      .catch((err) => {
-        sendUserError(err, res);
-      });
-  } else {
-    sendUserError(
-      {
-        message: 'Username and password are required to log in.'
-      },
-      res
-    );
-  }
+
+  User.findOne({ username })
+    .then((user) => {
+      if (user) {
+        user
+          .isPasswordValid(password)
+          .then((isValid) => {
+            if (isValid) {
+              req.session.name = user.username;
+              res.status(200).json({ success: true });
+            } else {
+              res.status(401).json({ userError: 'You shall not pass!' });
+            }
+          })
+          .catch((err) => {
+            res.status(500).json(sendUserError(err, res));
+          });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json(sendUserError(err, res));
+    });
 });
+
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
   // Do NOT modify this route handler in any way.
