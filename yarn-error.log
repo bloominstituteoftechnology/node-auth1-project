@@ -15,29 +15,28 @@ Platform:
 
 npm manifest: 
   {
-    "name": "ls-auth",
-    "version": "0.0.1",
-    "description": "LambdaSchool Auth",
-    "scripts": {
-      "test": "eslint tests/*.js && eslint src/*.js && mocha -R nyan tests",
-      "watch": "npm test -- --watch",
-      // "start": "nodemon server.js"
-    },
-    "license": "ISC",
-    "dependencies": {
-      "babel-preset-es2015": "^6.24.0",
-      "bcrypt": "^1.0.2",
-      "body-parser": "^1.17.2",
-      "chai": "^4.1.1",
-      "chai-http": "^3.0.0",
-      "express": "^4.15.4",
-      "express-session": "^1.15.5",
-      "mocha": "^3.5.0",
-      "mongoose": "^4.11.7"
-    },
-    "devDependencies": {
-      "nodemon": "^1.17.3"
-    }
+      "name": "ls-auth",
+      "version": "0.0.1",
+      "description": "LambdaSchool Auth",
+      "scripts": {
+          "test": "eslint tests/*.js && eslint src/*.js && mocha -R nyan tests",
+          "watch": "npm test -- --watch"
+      },
+      "license": "ISC",
+      "dependencies": {
+          "babel-preset-es2015": "^6.24.0",
+          "bcrypt": "^1.0.2",
+          "body-parser": "^1.17.2",
+          "chai": "^4.1.1",
+          "chai-http": "^3.0.0",
+          "express": "^4.15.4",
+          "express-session": "^1.15.5",
+          "mocha": "^3.5.0",
+          "mongoose": "^4.11.7"
+      },
+      "devDependencies": {
+          "nodemon": "^1.17.3"
+      }
   }
 
 yarn manifest: 
@@ -3819,10 +3818,17 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/yallist/-/yallist-2.1.2.tgz#1c11f9218f076089a47dd512f93c6699a6a81d52"
 
 Trace: 
-  SyntaxError: /Users/johnathanhuggett/Documents/lambdaSchool/Authorization/Auth/package.json: Unexpected token / in JSON at position 213
-      at JSON.parse (<anonymous>)
-      at /usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:1036:59
-      at Generator.next (<anonymous>)
-      at step (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:98:30)
-      at /usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:109:13
-      at <anonymous>
+  Error: Command failed.
+  Exit code: 1
+  Command: sh
+  Arguments: -c npm test -- --watch
+  Directory: /Users/johnathanhuggett/Documents/lambdaSchool/Authorization/Auth
+  Output:
+  
+      at ProcessTermError.MessageError (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:186:110)
+      at new ProcessTermError (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:226:113)
+      at ChildProcess.<anonymous> (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:30281:17)
+      at emitTwo (events.js:126:13)
+      at ChildProcess.emit (events.js:214:7)
+      at maybeClose (internal/child_process.js:925:16)
+      at Process.ChildProcess._handle.onexit (internal/child_process.js:209:5)
