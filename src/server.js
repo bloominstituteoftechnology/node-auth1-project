@@ -55,6 +55,7 @@ server.post('/log-in', (req, res) => {
       // eslint-disable-next-line
       user.isPasswordValid(password).then(isValid => {
         if (isValid) {
+          req.session.user = user.username;
           res.json({ success: true });
         } else {
           res.status(422).json({ message: 'Invalid password' });
@@ -66,29 +67,15 @@ server.post('/log-in', (req, res) => {
   });
 });
 
-// server.post('/log-in', (req, res) => {
-//   const { username, password } = req.body;
-//   if (!username || !password) {
-//     res.status(422).json({ errorMessage: 'Username and Password required' });
-//   }
-//   User.findOne({ username })
-//     // eslint-disable-next-line
-//     .then(user => {
-//       if (!user) {
-//         res.status(422).json({ errorMessage: 'Username does not exist' });
-//         return;
-//       } else if (user.isPasswordValid(password)) {
-//         res.json({ success: true });
-//         return;
-//       }
-//       res.status(422).json(err => sendUserError(err, res));
-//     })
-
-//     .catch(err => sendUserError(err, res));
-// });
+const isLoggedIn = (req, res, next) => {
+  if (req.session.user) {
+    return next();
+  }
+  res.status(422).json({ message: 'User not logged in.' });
+};
 
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+server.get('/me', isLoggedIn, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
