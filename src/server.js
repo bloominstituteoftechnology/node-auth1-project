@@ -53,8 +53,7 @@ server.post("/users", (req, res) => {
     const userInfo = { username, passwordHash: password };
 
     if (!username || !password) {
-        res.status(422).json({ error: "Must provide username and password" });
-        return;
+        return sendUserError("Must provide username and password", res);
     }
 
     const newUser = new User(userInfo);
