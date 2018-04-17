@@ -90,7 +90,6 @@ server.post('/log-in', testUsername, testPassword, (req, res) => {
         user
           .isPasswordValid(password, res)
           .then((isValid) => {
-            console.log(`IS this VALID? ${isValid}`);
             if (isValid) {
               req.session.name = user.username;
               res.status(200).json({ success: true });
