@@ -35,7 +35,6 @@ UserSchema.pre('save', function(next) {
 });
 // eslint-disable-next-line
 UserSchema.methods.isPasswordValid = function(passwordGuess) {
-  console.log(bcrypt.compare(passwordGuess, this.passwordHash));
   return bcrypt.compare(passwordGuess, this.passwordHash);
 };
 

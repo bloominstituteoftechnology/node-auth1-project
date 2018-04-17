@@ -14,7 +14,7 @@ server.use(
   session({
     resave: false,
     saveUninitialized: false,
-    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
   })
 );
 
@@ -50,12 +50,12 @@ server.post('/log-in', (req, res) => {
     res.status(422).json({ errorMessage: 'Username and Password required' });
   } // eslint-disable-next-line
   User.findOne({ username }).then(user => {
-    console.log(user);
     if (user) {
       // eslint-disable-next-line
       user.isPasswordValid(password).then(isValid => {
         if (isValid) {
-          req.session.user = user.username;
+          req.session.username = user.username;
+          req.session.user = user;
           res.json({ success: true });
         } else {
           res.status(422).json({ message: 'Invalid password' });
@@ -68,7 +68,9 @@ server.post('/log-in', (req, res) => {
 });
 
 const isLoggedIn = (req, res, next) => {
-  if (req.session.user) {
+  console.log('in /me');
+  if (req.session.username) {
+    req.user = req.session.user;
     return next();
   }
   res.status(422).json({ message: 'User not logged in.' });
@@ -77,6 +79,7 @@ const isLoggedIn = (req, res, next) => {
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', isLoggedIn, (req, res) => {
   // Do NOT modify this route handler in any way.
+  console.log(req.user);
   res.json(req.user);
 });
 
