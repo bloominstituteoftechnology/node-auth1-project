@@ -14,7 +14,7 @@ server.use(
   session({
     resave: false,
     saveUninitialized: false,
-    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
   })
 );
 
@@ -48,22 +48,44 @@ server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     res.status(422).json({ errorMessage: 'Username and Password required' });
-  }
-  User.findOne({ username })
-    // eslint-disable-next-line
-    .then(user => {
-      if (!user) {
-        res.status(422).json({ errorMessage: 'Username does not exist' });
-        return;
-      } else if (user.isPasswordValid(password)) {
-        res.json({ success: true });
-        return;
-      }
-      res.status(422).json(err => sendUserError(err, res));
-    })
-
-    .catch(err => sendUserError(err, res));
+  } // eslint-disable-next-line
+  User.findOne({ username }).then(user => {
+    console.log(user);
+    if (user) {
+      // eslint-disable-next-line
+      user.isPasswordValid(password).then(isValid => {
+        if (isValid) {
+          res.json({ success: true });
+        } else {
+          res.status(422).json({ message: 'Invalid password' });
+        }
+      });
+    } else if (user === null) {
+      res.status(404).json({ message: 'User does not exist' });
+    }
+  });
 });
+
+// server.post('/log-in', (req, res) => {
+//   const { username, password } = req.body;
+//   if (!username || !password) {
+//     res.status(422).json({ errorMessage: 'Username and Password required' });
+//   }
+//   User.findOne({ username })
+//     // eslint-disable-next-line
+//     .then(user => {
+//       if (!user) {
+//         res.status(422).json({ errorMessage: 'Username does not exist' });
+//         return;
+//       } else if (user.isPasswordValid(password)) {
+//         res.json({ success: true });
+//         return;
+//       }
+//       res.status(422).json(err => sendUserError(err, res));
+//     })
+
+//     .catch(err => sendUserError(err, res));
+// });
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
