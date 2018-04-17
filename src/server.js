@@ -1,4 +1,4 @@
-//const bodyParser = require("body-parser");
+const bodyParser = require("body-parser");
 const express = require("express");
 const session = require("express-session");
 
@@ -9,12 +9,12 @@ const User = require("./user.js");
 
 const server = express();
 // to enable parsing of json bodies for post requests
-// server.use(bodyParser.json());
+server.use(bodyParser.json());
 server.use(
   session({
     secret: "e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re",
-    resave: false,
-    saveUninitialized: true,
+    // resave: false,
+    // saveUninitialized: true
   })
 );
 
@@ -46,7 +46,13 @@ server.get("/", (req, res) => {
 });
 
 server.post("/users", (req, res) => {
-  const user = new User(req.body);
+  const { username, password } = req.body
+  const userInfo = {username, passwordHash: password }
+  const user = new User(userInfo);
+    if(!username || !password) {
+      return sendUserError('must include username and password', res)
+    }
+
 
   user
     .save()
@@ -54,6 +60,28 @@ server.post("/users", (req, res) => {
       res.status(200).json(user);
     })
     .catch(err => res.status(500).json(err));
+});
+
+server.post("/login", (req, res) => {
+  const { username, password } = req.body
+    User.findOne({ username })
+      .then(user => {
+        if (user) {
+          user
+            .isPasswordValid(password)
+            .then(validUser => {
+              if(validUser) {
+                req.session.name = user.username;
+                res.status(200).json({ success: true }); 
+              }else {
+                res.status(401).json({ msg: 'password is invalid' });
+              }
+            })
+        }else {
+          return sendUserError('please provide a valid username', res)
+        }
+      })
+      .catch(err => res.status(500).json(err));
 });
 
 module.exports = { server };

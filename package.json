@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "LambdaSchool Auth",
   "scripts": {
-    "start": "nodemon src/app.js",
     "test": "eslint tests/*.js && eslint src/*.js && mocha -R nyan tests",
     "watch": "npm test -- --watch"
   },

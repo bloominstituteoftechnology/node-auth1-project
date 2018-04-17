@@ -3,8 +3,8 @@ const bcrypt = require("bcrypt");
 
 // Clear out mongoose's model cache to allow --watch to work for tests:
 // https://github.com/Automattic/mongoose/issues/1251
-mongoose.models = {};
-mongoose.modelSchemas = {};
+// mongoose.models = {};
+// mongoose.modelSchemas = {};
 
 mongoose.Promise = Promise;
 mongoose.connect("mongodb://localhost/users", { useMongoClient: true });
@@ -33,7 +33,7 @@ UserSchema.pre("save", function(next) {
 });
 
 UserSchema.methods.isPasswordValid = function (passwordGuess) {
-  return bcrypt.compare(passwordGuess, this.password);
+  return bcrypt.compare(passwordGuess, this.passwordHash);
 };
 
 module.exports = mongoose.model("User", UserSchema);
