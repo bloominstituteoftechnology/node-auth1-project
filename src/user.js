@@ -24,6 +24,16 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
+// UserSchema.pre('save', function (next) {
+//   bcrypt.hash(this.passwordHash, BCRYPT_COST, (err, hash) => {
+//     if (err) {
+//       return next(err);
+//     }
+//     this.passwordHash = hash;
+//     return next();
+//   });
+// });
+
 UserSchema.methods.checkPassword = function (passwordGuess) {
   return bcrypt.compare(passwordGuess, this.passwordHash);
 };
