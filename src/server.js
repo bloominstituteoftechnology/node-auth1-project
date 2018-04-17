@@ -11,7 +11,9 @@ const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+  cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
+  secure: false
 }));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
@@ -27,11 +29,16 @@ const sendUserError = (err, res) => {
 
 // TODO: implement routes
 server.post('/users', (req, res) => {
-  const user = new User(req.body);
+  const { username, password } = req.body;
+  const userInfo = { username, passwordHash: password };
+  const user = new User(userInfo);
   user
   .save()
   .then(doc => res.status(200).json(doc))
   .catch(err => sendUserError(err, res));
+});
+
+server.post('/log-in', (req, res) => {
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
