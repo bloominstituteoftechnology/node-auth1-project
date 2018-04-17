@@ -1,40 +1,24 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
-const mongoose = require('mongoose');
+const User = require('./user.js');
 
 const STATUS_USER_ERROR = 422;
-const BCRYPT_COST = 11;
-
-const User = require('./user');
-
-mongoose
-  .connect('mongodb://localhost/authdb', { useMongoClient: true })
-  .then(() => {
-    console.log('\n=== connected to MongoDB ===\n');
-  })
-  .catch(err => console.log('database connection failed', err));
 
 const server = express();
-const authenticate = function(req, res, next) {
-  req.hello = `Hello, name`;
 
-  next();
-};
-
-// to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(
   session({
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
     saveUninitialized: false,
-    resave: true
+    resave: true,
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
+    secure: false,
+    name: 'auth'
   })
 );
-server.use(express.json());
 
-/* Sends the given err, a string or an object, to the client. Sets the status
- * code appropriately. */
 const sendUserError = (err, res) => {
   res.status(STATUS_USER_ERROR);
   if (err && err.message) {
@@ -44,35 +28,80 @@ const sendUserError = (err, res) => {
   }
 };
 
-// TODO: implement routes
-server.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  User.findOne({ username })
-    .then(user => {
-      if (user) {
-        user.isPasswordValid(password, cb);
-      }
-    })
-    .catch(err => res.ststus(500).json(err));
-});
-
-server.get('/', authenticate, (req, res) => {
-  User.find().then(users => res.json(users));
-});
-
+// creates a new user
 server.post('/users', (req, res) => {
+  const { username, password } = req.body;
   const user = new User(req.body);
-
-  user
-    .save()
-    .then(savedUser => res.status(200).json(savedUser))
-    .catch(err => res.status(500).json(err));
+  if (!username || !password) {
+    res
+      .status(STATUS_USER_ERROR)
+      .json({ error: 'Please provide username and password.' });
+  } else {
+    user
+      .save()
+      .then(savedUser => res.status(200).json(savedUser))
+      .catch(err => sendUserError(err, res));
+  }
 });
 
-// TODO: add local middleware to this route to ensure the user is logged in
+// user login
+server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  if (username && password) {
+    User.findOne({ username })
+      .then((user) => {
+        user.isPassWordValid(password).then((response) => {
+          if (response) {
+            req.session.name = user.username;
+            res.status(200).json({ success: true });
+          } else {
+            sendUserError(
+              { message: 'Username and password are invalid.' },
+              res
+            );
+          }
+        });
+      })
+      .catch(err =>
+        res.status(500).json({ errorMessage: 'There was an error logging in.' })
+      );
+  } else {
+    sendUserError({ message: 'Please provide username and password.' }, res);
+  }
+});
+
+// displays user log in db for logged in users
 server.get('/me', (req, res) => {
-  // Do NOT modify this route handler in any way.
-  res.json(req.user);
+  if (req.session.name) {
+    User.find()
+      .then((users) => {
+        if (users) {
+          res.status(200).json(users);
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({ errorMessage: 'No users yet.' }, res);
+      });
+  } else {
+    sendUserError({ message: 'Please log in to see information.' }, res);
+  }
 });
 
+// greets current logged in user
+server.get('/greet', (req, res) => {
+  const { name } = req.session;
+  res.send(`hello ${name}`);
+});
+
+// logs out users
+server.get('/logout', (req, res, next) => {
+  if (req.session) {
+    req.session.destroy((err) => {
+      if (err) {
+        return next(err);
+      }
+      return res.redirect('/greet');
+    });
+  }
+});
 module.exports = { server };
