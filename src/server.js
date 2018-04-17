@@ -49,20 +49,26 @@ server.post('/users', (req, res) => {
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
-  User.findOne({ username })
-    .then((user) => {
-      if (user) {
-        user.isPasswordValid(password, (err, isValid) => {
-          if (err) return sendUserError(err, res);
-          if (isValid) {
-            res.status(201).json({ success: true });
+  if (username && password) {
+    User.findOne({ username })
+      .then((user) => {
+        user.isPassWordValid(password).then((response) => {
+          if (response) {
+            res.status(200).json({ success: true });
           } else {
-            res.status(STATUS_USER_ERROR).json(err);
+            sendUserError(
+              { message: 'Username and password are invalid.' },
+              res
+            );
           }
         });
-      }
-    })
-    .catch(err => res.status(500).json(err));
+      })
+      .catch(err =>
+        res.status(500).json({ errorMessage: 'There was an error logging in.' })
+      );
+  } else {
+    sendUserError({ message: 'Please provide username and password.' }, res);
+  }
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in

@@ -7,7 +7,7 @@ mongoose.models = {};
 mongoose.modelSchemas = {};
 
 mongoose.Promise = Promise;
-mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
+mongoose.connect('mongodb://localhost/usersdb', { useMongoClient: true });
 
 const UserSchema = new mongoose.Schema({
   // TODO: fill in this schema
