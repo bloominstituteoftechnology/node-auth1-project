@@ -13,7 +13,11 @@ const server = express();
 server.use(bodyParser.json());
 server.use(
   session({
-    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
+    httpOnly: true,
+    secure: false,
+    name: 'auth'
   })
 );
 
@@ -28,13 +32,26 @@ const sendUserError = (err, res) => {
   }
 };
 
+const authenticate = (req, res, next) => {
+  if (req.session.name) {
+    User.findOne({ username: req.session.name })
+      .then((user) => {
+        req.user = user;
+        next();
+      })
+      .catch((err) => {
+        sendUserError(err);
+      });
+  } else {
+    sendUserError({ message: 'You are not logged in.' }, res);
+  }
+};
+
 // TODO: implement routes
 server.post('/users', (req, res) => {
-  console.log(req.body);
   const { username, password } = req.body;
 
   if (username && password) {
-    console.log('Username: ', username, ' Password: ', password);
     bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
       if (err) {
         sendUserError(err, res);
@@ -43,11 +60,9 @@ server.post('/users', (req, res) => {
       user
         .save()
         .then((savedUser) => {
-          console.log(savedUser);
           res.status(200).json(savedUser);
         })
         .catch((error) => {
-          console.log(error);
           sendUserError(error, res);
         });
     });
@@ -69,6 +84,8 @@ server.post('/log-in', (req, res) => {
       .then((user) => {
         user.checkPassword(password).then((response) => {
           if (response) {
+            console.log('User: ', user);
+            req.session.name = user.username;
             res.status(200).json({ success: true });
           } else {
             sendUserError({ message: 'Incorrect Credentials' }, res);
@@ -89,7 +106,7 @@ server.post('/log-in', (req, res) => {
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+server.get('/me', authenticate, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });

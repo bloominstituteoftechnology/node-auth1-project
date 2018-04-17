@@ -3823,7 +3823,7 @@ Lockfile:
 
 Trace: 
   Error: Command failed.
-  Exit code: 2
+  Exit code: 1
   Command: sh
   Arguments: -c eslint tests/*.js && eslint src/*.js && mocha -R nyan tests
   Directory: /home/kait-schorr/Lambda/Auth
