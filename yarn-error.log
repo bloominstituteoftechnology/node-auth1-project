@@ -1,5 +1,5 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js install
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js start
 
 PATH: 
   C:\Users\hrehman000\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\hrehman000\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\Program Files\nodejs;C:\Program Files (x86)\Yarn\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit;C:\Users\hrehman000\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft VS Code\bin;C:\Users\hrehman000\AppData\Roaming\npm;C:\Users\hrehman000\AppData\Local\GitHubDesktop\bin;C:\Users\hrehman000\AppData\Local\Yarn\bin;C:\Program Files\MongoDB\Server\3.6\bin;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
@@ -3017,62 +3017,14 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/yallist/-/yallist-3.0.2.tgz#8452b4bb7e83c7c188d8041c1a837c773d6d8bb9"
 
 Trace: 
-  Error: D:\LambdaSchool\Auth\node_modules\bcrypt: Command failed.
-  Exit code: 1
-  Command: C:\WINDOWS\system32\cmd.exe
-  Arguments: /d /s /c node-pre-gyp install --fallback-to-build
-  Directory: D:\LambdaSchool\Auth\node_modules\bcrypt
-  Output:
-  node-pre-gyp info it worked if it ends with ok
-  node-pre-gyp info using node-pre-gyp@0.9.0
-  node-pre-gyp info using node@8.11.1 | win32 | x64
-  node-pre-gyp info check checked for "D:\LambdaSchool\Auth\node_modules\bcrypt\lib\binding\bcrypt_lib.node" (not found)
-  node-pre-gyp http GET https://github.com/kelektiv/node.bcrypt.js/releases/download/v2.0.0/bcrypt_lib-v2.0.0-node-v57-win32-x64-unknown.tar.gz
-  node-pre-gyp http 302 https://github.com/kelektiv/node.bcrypt.js/releases/download/v2.0.0/bcrypt_lib-v2.0.0-node-v57-win32-x64-unknown.tar.gz
-  node-pre-gyp ERR! Tried to download(302): https://github.com/kelektiv/node.bcrypt.js/releases/download/v2.0.0/bcrypt_lib-v2.0.0-node-v57-win32-x64-unknown.tar.gz 
-  node-pre-gyp ERR! Pre-built binaries not found for bcrypt@2.0.0 and node@8.11.1 (node-v57 ABI, unknown) (falling back to source compile with node-gyp) 
-  node-pre-gyp http 302 status code downloading tarball https://github.com/kelektiv/node.bcrypt.js/releases/download/v2.0.0/bcrypt_lib-v2.0.0-node-v57-win32-x64-unknown.tar.gz 
-  
-  D:\LambdaSchool\Auth\node_modules\bcrypt>if not defined npm_config_node_gyp (node "C:\Program Files\nodejs\node_modules\npm\bin\node-gyp-bin\\..\..\node_modules\node-gyp\bin\node-gyp.js" clean )  else (node "" clean ) 
-  gyp info it worked if it ends with ok
-  gyp info using node-gyp@3.6.2
-  gyp info using node@8.11.1 | win32 | x64
-  gyp info ok 
-  
-  D:\LambdaSchool\Auth\node_modules\bcrypt>if not defined npm_config_node_gyp (node "C:\Program Files\nodejs\node_modules\npm\bin\node-gyp-bin\\..\..\node_modules\node-gyp\bin\node-gyp.js" configure --fallback-to-build --module=D:\LambdaSchool\Auth\node_modules\bcrypt\lib\binding\bcrypt_lib.node --module_name=bcrypt_lib --module_path=D:\LambdaSchool\Auth\node_modules\bcrypt\lib\binding --napi_version=1 --node_abi_napi=napi )  else (node "" configure --fallback-to-build --module=D:\LambdaSchool\Auth\node_modules\bcrypt\lib\binding\bcrypt_lib.node --module_name=bcrypt_lib --module_path=D:\LambdaSchool\Auth\node_modules\bcrypt\lib\binding --napi_version=1 --node_abi_napi=napi ) 
-  gyp info it worked if it ends with ok
-  gyp info using node-gyp@3.6.2
-  gyp info using node@8.11.1 | win32 | x64
-  gyp ERR! configure error 
-  gyp ERR! stack Error: Can't find Python executable "python", you can set the PYTHON env variable.
-  gyp ERR! stack     at PythonFinder.failNoPython (C:\Program Files\nodejs\node_modules\npm\node_modules\node-gyp\lib\configure.js:483:19)
-  gyp ERR! stack     at PythonFinder.<anonymous> (C:\Program Files\nodejs\node_modules\npm\node_modules\node-gyp\lib\configure.js:508:16)
-  gyp ERR! stack     at C:\Program Files\nodejs\node_modules\npm\node_modules\graceful-fs\polyfills.js:284:29
-  gyp ERR! stack     at FSReqWrap.oncomplete (fs.js:152:21)
-  gyp ERR! System Windows_NT 10.0.16299
-  gyp ERR! command "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\node_modules\\node-gyp\\bin\\node-gyp.js" "configure" "--fallback-to-build" "--module=D:\\LambdaSchool\\Auth\\node_modules\\bcrypt\\lib\\binding\\bcrypt_lib.node" "--module_name=bcrypt_lib" "--module_path=D:\\LambdaSchool\\Auth\\node_modules\\bcrypt\\lib\\binding" "--napi_version=1" "--node_abi_napi=napi"
-  gyp ERR! cwd D:\LambdaSchool\Auth\node_modules\bcrypt
-  gyp ERR! node -v v8.11.1
-  gyp ERR! node-gyp -v v3.6.2
-  gyp ERR! not ok 
-  node-pre-gyp ERR! build error 
-  node-pre-gyp ERR! stack Error: Failed to execute 'node-gyp.cmd configure --fallback-to-build --module=D:\LambdaSchool\Auth\node_modules\bcrypt\lib\binding\bcrypt_lib.node --module_name=bcrypt_lib --module_path=D:\LambdaSchool\Auth\node_modules\bcrypt\lib\binding --napi_version=1 --node_abi_napi=napi' (1)
-  node-pre-gyp ERR! stack     at ChildProcess.<anonymous> (D:\LambdaSchool\Auth\node_modules\node-pre-gyp\lib\util\compile.js:83:29)
-  node-pre-gyp ERR! stack     at emitTwo (events.js:126:13)
-  node-pre-gyp ERR! stack     at ChildProcess.emit (events.js:214:7)
-  node-pre-gyp ERR! stack     at maybeClose (internal/child_process.js:925:16)
-  node-pre-gyp ERR! stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:209:5)
-  node-pre-gyp ERR! System Windows_NT 10.0.16299
-  node-pre-gyp ERR! command "C:\\Program Files\\nodejs\\node.exe" "D:\\LambdaSchool\\Auth\\node_modules\\node-pre-gyp\\bin\\node-pre-gyp" "install" "--fallback-to-build"
-  node-pre-gyp ERR! cwd D:\LambdaSchool\Auth\node_modules\bcrypt
-  node-pre-gyp ERR! node -v v8.11.1
-  node-pre-gyp ERR! node-pre-gyp -v v0.9.0
-  node-pre-gyp ERR! not ok 
-  Failed to execute 'node-gyp.cmd configure --fallback-to-build --module=D:\LambdaSchool\Auth\node_modules\bcrypt\lib\binding\bcrypt_lib.node --module_name=bcrypt_lib --module_path=D:\LambdaSchool\Auth\node_modules\bcrypt\lib\binding --napi_version=1 --node_abi_napi=napi' (1)
-      at ProcessTermError.MessageError (C:\Program Files (x86)\Yarn\lib\cli.js:186:110)
-      at new ProcessTermError (C:\Program Files (x86)\Yarn\lib\cli.js:226:113)
-      at ChildProcess.<anonymous> (C:\Program Files (x86)\Yarn\lib\cli.js:30281:17)
-      at emitTwo (events.js:126:13)
-      at ChildProcess.emit (events.js:214:7)
-      at maybeClose (internal/child_process.js:925:16)
-      at Process.ChildProcess._handle.onexit (internal/child_process.js:209:5)
+  Error: Command "start" not found.
+      at new MessageError (C:\Program Files (x86)\Yarn\lib\cli.js:186:110)
+      at C:\Program Files (x86)\Yarn\lib\cli.js:87307:17
+      at Generator.next (<anonymous>)
+      at step (C:\Program Files (x86)\Yarn\lib\cli.js:98:30)
+      at C:\Program Files (x86)\Yarn\lib\cli.js:116:14
+      at new Promise (<anonymous>)
+      at new F (C:\Program Files (x86)\Yarn\lib\cli.js:23451:28)
+      at C:\Program Files (x86)\Yarn\lib\cli.js:95:12
+      at runCommand (C:\Program Files (x86)\Yarn\lib\cli.js:87312:22)
+      at Object.<anonymous> (C:\Program Files (x86)\Yarn\lib\cli.js:87412:14)
