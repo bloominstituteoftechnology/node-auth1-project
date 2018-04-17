@@ -89,10 +89,7 @@ server.post("/log-in", (req, res) => {
                     }
                 });
             } else {
-                return sendUserError(
-                    "Please provide valid username or password!",
-                    res,
-                );
+                return sendUserError("Please provide valid username.", res);
             }
         })
         .catch(err => res.status(500).json(err));
