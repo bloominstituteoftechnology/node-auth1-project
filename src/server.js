@@ -54,6 +54,7 @@ server.post('/log-in', (req, res) => {
           e.isPasswordValid(password)
           .then((response) => {
             if (response === true) {
+              req.session.user = e;
               res.status(200).json({ success: true });
             } else {
               sendUserError('password invalid', res);
@@ -71,11 +72,21 @@ server.post('/log-in', (req, res) => {
   }
 });
 
+const getSession = function (req, res, next) {
+  if (req.session.user) {
+    req.user = req.session.user;
+  } else {
+    sendUserError('no user logged in', res);
+  }
+  next();
+};
+
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+server.get('/me', getSession, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
+
 
 server.listen(5000, () => console.log('api on port 5000'));
 
