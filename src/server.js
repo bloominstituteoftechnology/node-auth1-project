@@ -29,6 +29,28 @@ const sendUserError = (err, res) => {
   }
 };
 
+const restrictedAccess = (req, res, next) => {
+  const path = req.path;
+  if (path.includes('/restricted')) {
+    if (req.session.name) {
+      User.findOne({ username: req.session.name })
+        .then((user) => {
+          req.user = user;
+          next();
+        })
+        .catch((err) => {
+          res.status(422).json(sendUserError(err, res));
+        });
+    } else {
+      return sendUserError({ errorMessage: 'User is not logged in!' }, res);
+    }
+  } else {
+    next();
+  }
+};
+
+server.use(restrictedAccess);
+
 const testUsername = function (req, res, next) {
   const { username } = req.body;
 
@@ -126,6 +148,16 @@ const loginCheck = (req, res, next) => {
 };
 
 server.get('/me', loginCheck, (req, res) => {
+  // Do NOT modify this route handler in any way.
+  res.json(req.user);
+});
+
+server.get('/restricted', (req, res) => {
+  // Do NOT modify this route handler in any way.
+  res.json(req.user);
+});
+
+server.get('/restricted/comments', (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
