@@ -39,6 +39,36 @@ server.post('/users', (req, res) => {
 });
 
 server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
+  if (username === undefined) {
+    sendUserError('username missing', res);
+  } else if (password === undefined) {
+    sendUserError('password missing', res);
+  } else {
+    User.find({})
+    .then((users) => {
+      let found = false;
+      users.forEach((e) => {
+        if (e.username === username) {
+          found = true;
+          e.isPasswordValid(password)
+          .then((response) => {
+            if (response === true) {
+              res.status(200).json({ success: true });
+            } else {
+              sendUserError('password invalid', res);
+            }
+          });
+        }
+      });
+      if (!found) {
+        sendUserError('user not found', res);
+      }
+    })
+    .catch((err) => {
+      sendUserError(err, res);
+    });
+  }
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
