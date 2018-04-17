@@ -2591,7 +2591,7 @@ Lockfile:
 
 Trace: 
   Error: Command failed.
-  Exit code: 3
+  Exit code: 1
   Command: C:\Windows\system32\cmd.exe
   Arguments: /d /s /c eslint tests/*.js && eslint src/*.js && mocha -R nyan tests
   Directory: C:\Users\Nick\Auth
