@@ -21,17 +21,6 @@ server.use(
   })
 );
 
-/* Sends the given err, a string or an object, to the client. Sets the status
- * code appropriately. */
-const sendUserError = (err, res) => {
-  res.status(STATUS_USER_ERROR);
-  if (err && err.message) {
-    res.json({ message: err.message, stack: err.stack });
-  } else {
-    res.json({ error: err });
-  }
-};
-
 const authenticate = (req, res, next) => {
   if (req.session.name) {
     User.findOne({ username: req.session.name })
@@ -44,6 +33,19 @@ const authenticate = (req, res, next) => {
       });
   } else {
     sendUserError({ message: 'You are not logged in.' }, res);
+  }
+};
+
+server.use('/restricted*', authenticate);
+
+/* Sends the given err, a string or an object, to the client. Sets the status
+ * code appropriately. */
+const sendUserError = (err, res) => {
+  res.status(STATUS_USER_ERROR);
+  if (err && err.message) {
+    res.json({ message: err.message, stack: err.stack });
+  } else {
+    res.json({ error: err });
   }
 };
 
@@ -103,6 +105,10 @@ server.post('/log-in', (req, res) => {
       res
     );
   }
+});
+
+server.get('/restricted/', (req, res) => {
+  res.status(200).json({ message: "YOU'RE IN A RESTRICTED ZONE!" });
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
