@@ -31,8 +31,7 @@ const sendUserError = (err, res) => {
 
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
-  const passwordHash = req.password;
-  const user = new User({ username, passwordHash });
+  const user = new User({ username, passwordHash: password });
 
   user
     .save()
@@ -45,9 +44,8 @@ server.post('/users', (req, res) => {
 });
 
 server.post('/log-in', (req, res) => {
-  const { username } = req.body;
-  const passwordHash = req.password;
-  const user = new User({ username, passwordHash });
+  const { username, password } = req.body;
+  const user = new User({ username, passwordHash: password });
 
   User
     .findOne({ username })
@@ -79,6 +77,6 @@ server.get('/', (req, res) => {
     .catch((err) => {
       sendUserError(err, res);
 });
-
+const user = new User({ username, passwordHash: password });
 
 module.exports = { server };
