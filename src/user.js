@@ -34,7 +34,10 @@ UserSchema.pre('save', function(next) {
 });
 
 UserSchema.methods.isPasswordValid = function(passwordGuess) {
-  return bcrypt.comare(passwordGuess, this.passwordHash);
+  return bcrypt.compare(passwordGuess, this.passwordHash);
 };
-
+// UserSchema.statics.middleware = function(id, passwordGuess) {
+// find document
+// return.bcrypt.compare(passwordGuess, user.password);
+// }
 module.exports = mongoose.model('User', UserSchema);
