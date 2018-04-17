@@ -21,8 +21,25 @@ const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(session({
-  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
+  secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+  name: 'auth-sprint'
 }));
+
+const auth = function (req, res, next){
+  if(req.session.name){
+    User.findOne({username: req.session.name}).then(user => {
+      req.user = user;
+      next();
+    })
+    .catch(err => {
+      sendUserError({err}, res)
+    })
+
+  }
+  else{
+    sendUserError({message: 'No Auth'}, res);
+  }
+}
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -36,6 +53,19 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+
+server.get('/', (req, res) => {
+  User.find()
+  .then(users => {
+    if (users) {
+      req.session.name = users[0].username;
+    }
+    res.json(users);
+  })
+  .catch(err => {
+    res.send('No users found.')
+  })
+})
 
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
@@ -60,18 +90,37 @@ server.post('/users', (req, res) => {
 })
 
 server.post('/log-in', (req, res) => {
+  const { username, password } = req.body;
 
   if(!username) {
-    res.status(404).json({message:'Enter Your Username.'})
+    res.status(422).json({message:'Missing Username.'})
   }
-  if(!password){
-    res.status(400).json({message:'Enter Your Password.'})
+  if(!password) {
+    res.status(422).json({message:'Missing Password.'})
   }
+  else{
+
+  User.findOne({username}).then(user => {
+      user.isPasswordValid(password).then(validPass => {
+        if (validPass){
+          req.session.name = user.username;
+          res.status(200).json({ success: true })
+        }
+        else{
+          sendUserError({message: 'Wrong Pass'}, res)
+        }
+      })
+      
+  })
+  .catch(err => {
+    sendUserError(err, res)
+  })
+}
   
 })
 
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+server.get('/me', auth, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 })
