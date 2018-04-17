@@ -4,7 +4,8 @@
   "description": "LambdaSchool Auth",
   "scripts": {
     "test": "eslint tests/*.js && eslint src/*.js && mocha -R nyan tests",
-    "watch": "npm test -- --watch"
+    "watch": "npm test -- --watch",
+    "start": "nodemon src/app.js"
   },
   "license": "ISC",
   "dependencies": {
