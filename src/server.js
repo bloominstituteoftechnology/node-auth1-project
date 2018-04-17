@@ -55,14 +55,14 @@ server.post('/log-in', (req, res) => {
       user.isPasswordValid(password).then(isValid => {
         if (isValid) {
           req.session.username = user.username;
-          req.session.user = user;
+
           res.json({ success: true });
         } else {
           res.status(422).json({ message: 'Invalid password' });
         }
       });
     } else if (user === null) {
-      res.status(404).json({ message: 'User does not exist' });
+      res.status(422).json({ message: 'User does not exist' });
     }
   });
 });
@@ -70,16 +70,19 @@ server.post('/log-in', (req, res) => {
 const isLoggedIn = (req, res, next) => {
   console.log('in /me');
   if (req.session.username) {
-    req.user = req.session.user;
-    return next();
+    // eslint-disable-next-line
+    User.findOne({ username: req.session.username }).then(user => {
+      req.user = user;
+      return next();
+    });
+  } else {
+    res.status(422).json({ message: 'User not logged in.' });
   }
-  res.status(422).json({ message: 'User not logged in.' });
 };
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', isLoggedIn, (req, res) => {
   // Do NOT modify this route handler in any way.
-  console.log(req.user);
   res.json(req.user);
 });
 
