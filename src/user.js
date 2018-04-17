@@ -9,6 +9,17 @@ mongoose.Promise = Promise;
 mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
 
 const UserSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    unique: true,
+    required: true,
+    index: true,
+    lowercase: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
   // TODO: fill in this schema
 });
 
