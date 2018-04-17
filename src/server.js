@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const User = require('./user');
@@ -13,17 +14,36 @@ server.use(express.json());
 server.use(
   session({
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
-    resave: true,
-    saveUninitialized: true
+    resave: true, //! What should this be?
+    saveUninitialized: true //! What should this be?
   })
 );
+
 const sendUserError = (err, res) => {
+  //! Why do we pass res?
   res.status(STATUS_USER_ERROR);
   if (err && err.message) {
     res.json({ message: err.message, stack: err.stack });
   } else {
     res.json({ error: err });
   }
+};
+
+const checkUsername = (req, res, next) => {
+  const { username } = req.body;
+  if (!username) {
+    return sendUserError('Must enter a username', res);
+  }
+  next(); // ? All good ... continue to next middleware
+};
+
+const checkPassword = (req, res, next) => {
+  const { password } = req.body;
+  if (!password) {
+    sendUserError('Must enter a password', res);
+    return; //! Is return necessary? Looks like yes ...
+  }
+  next(); // ? All good ... continue to next middleware
 };
 
 const authenticateUser = (req, res, next) => {
@@ -36,7 +56,7 @@ const authenticateUser = (req, res, next) => {
         next();
       })
       .catch((err) => {
-        sendUserError(err, res);
+        return sendUserError(err, res);
       });
   } else {
     res.status(500).json({ message: 'you must be logged in to access route' });
@@ -47,50 +67,44 @@ const authenticateUser = (req, res, next) => {
 
 // TODO: implement routes
 
-server.post('/users', (req, res) => {
+server.post('/users', checkUsername, checkPassword, (req, res) => {
   const { username, password } = req.body;
 
-  if (username && password) {
-    bcrypt.hash(password, BCRYPT_COST, (err, hash) => {
-      if (err) {
-        sendUserError(err, res);
-      }
-      const user = new User({ username, passwordHash: hash });
-      user
-        .save()
-        .then((savedUser) => {
-          res.status(200).json(savedUser);
-        })
-        .catch((error) => {
-          sendUserError(error, res);
-        });
+  // if (username && password) {
+  // TODO *** put this in local middleware
+
+  const user = new User({ username, passwordHash: password }); //! refactored to work with UserSchema.pre lifecylce hook
+  user
+    .save()
+    .then((savedUser) => {
+      res.status(201).json(savedUser);
+    })
+    .catch((error) => {
+      sendUserError('Unable to save user to database', res); //! What should be the error here?
+      return;
     });
-  } else {
-    sendUserError(
-      { message: 'username and password field are required.' },
-      res
-    );
-  }
+  // } else {
+  //   sendUserError('username and password field are required.', res);
+  // }
 });
 
-server.post('/log-in', (req, res) => {
+server.post('/log-in', checkUsername, checkPassword, (req, res) => {
   const { username, password } = req.body;
-  if (username && password) {
-    User.findOne({ username })
-      .then((user) => {
-        user.checkPassword(password).then((isValid) => {
-          if (isValid) {
-            req.session.username = username;
-            res.status(200).json({ success: true });
-          } else {
-            sendUserError({ message: 'username/password invalid' }, res);
-          }
-        });
-      })
-      .catch((err) => {
-        sendUserError(err, res);
+
+  User.findOne({ username })
+    .then((user) => {
+      user.isPasswordValid(password).then((isValid) => {
+        if (isValid) {
+          req.session.username = username;
+          res.status(200).json({ success: true });
+        } else {
+          return sendUserError('password is not valid', res);
+        }
       });
-  }
+    })
+    .catch((err) => {
+      return sendUserError('username not in database', res);
+    });
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
@@ -104,7 +118,7 @@ server.get('/users', (req, res) => {
     .then((users) => {
       res.status(200).json(users);
     })
-    .catch(err => sendUserError(err, res));
+    .catch(err => sendUserError(err, res)); //! lack of return okay here? Nowhere else to go
 });
 
 module.exports = { server };

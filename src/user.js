@@ -7,7 +7,12 @@ mongoose.models = {};
 mongoose.modelSchemas = {};
 
 mongoose.Promise = Promise;
-mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
+mongoose
+  .connect('mongodb://localhost/users', { useMongoClient: true })
+  .then(() => {
+    console.log('\n=== connected to MongoDB ===\n');
+  })
+  .catch(err => console.log('database connection failed', err));
 
 const UserSchema = new mongoose.Schema({
   // TODO: fill in this schema
@@ -24,17 +29,18 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
-// UserSchema.pre('save', function (next) {
-//   bcrypt.hash(this.passwordHash, BCRYPT_COST, (err, hash) => {
-//     if (err) {
-//       return next(err);
-//     }
-//     this.passwordHash = hash;
-//     return next();
-//   });
-// });
+UserSchema.pre('save', function (next) {
+  //! How can I pass BCRYPT_COST?
+  bcrypt.hash(this.passwordHash, 11, (err, hash) => {
+    if (err) {
+      return next(err);
+    }
+    this.passwordHash = hash;
+    return next();
+  });
+});
 
-UserSchema.methods.checkPassword = function (passwordGuess) {
+UserSchema.methods.isPasswordValid = function (passwordGuess) {
   return bcrypt.compare(passwordGuess, this.passwordHash);
 };
 
