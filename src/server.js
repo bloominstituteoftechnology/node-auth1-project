@@ -4,7 +4,6 @@ const session = require('express-session');
 const User = require('./user.js');
 
 const STATUS_USER_ERROR = 422;
-const BCRYPT_COST = 11;
 
 const server = express();
 // to enable parsing of json bodies for post requests
@@ -30,28 +29,12 @@ const sendUserError = (err, res) => {
   }
 };
 
-server.post('/log-in', (req, res) => {
-  const { username, password } = req.body;
-  User
-    .findOne({ username })
-    .then((users) => {
-      if (User.isPasswordValid(password)) {
-        res.status(200).json({ success: true });
-        return;
-      }
-    })
-    .catch((err) => {
-      sendUserError(err, res);
-    });
-});
-
-
-
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
+  const passwordHash = req.password;
+  const user = new User({ username, passwordHash });
 
-  const user = new User({ username, password });
-  newUser
+  user
     .save()
     .then(savedUser => {
       res.status(200).json(savedUser);
@@ -60,6 +43,27 @@ server.post('/users', (req, res) => {
       sendUserError(err, res);
     });
 });
+
+server.post('/log-in', (req, res) => {
+  const { username } = req.body;
+  const passwordHash = req.password;
+  const user = new User({ username, passwordHash });
+
+  User
+    .findOne({ username })
+    .then((user) => {
+      
+      user.comparePassword(passwordHash, (err, isMatch) => {
+        if (err) throw err;
+        if (!isMatch) sendUserError('invalid credentials', res);
+        res.status(200).json(isMatch);
+      });
+    })
+    .catch((err) => {
+      sendUserError(err, res);
+    });
+});
+
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
@@ -75,5 +79,6 @@ server.get('/', (req, res) => {
     .catch((err) => {
       sendUserError(err, res);
 });
+
 
 module.exports = { server };
