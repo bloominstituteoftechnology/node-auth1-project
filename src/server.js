@@ -18,6 +18,15 @@ server.use(
     saveUninitialized: true //! What should this be?
   })
 );
+const restrictedAccess = (req, res, next) => {
+  const { username } = req.session;
+  if (username) {
+    next();
+  }
+  return sendUserError('restricted access', res);
+};
+
+server.use('/restricted*', restrictedAccess); //! sketchy stretch code
 
 const sendUserError = (err, res) => {
   //! Why do we pass res?
@@ -31,15 +40,15 @@ const sendUserError = (err, res) => {
 
 const checkUsername = (req, res, next) => {
   const { username } = req.body;
-  if (!username) {
-    return sendUserError('Must enter a username', res);
+  if (!username || !username.trim()) {
+    return sendUserError('Must enter a username', res); //! which  way is preferred?
   }
   next(); // ? All good ... continue to next middleware
 };
 
 const checkPassword = (req, res, next) => {
   const { password } = req.body;
-  if (!password) {
+  if (!password || !password.trim()) {
     sendUserError('Must enter a password', res);
     return; //! Is return necessary? Looks like yes ...
   }
@@ -79,8 +88,8 @@ server.post('/users', checkUsername, checkPassword, (req, res) => {
     .then((savedUser) => {
       res.status(201).json(savedUser);
     })
-    .catch((error) => {
-      sendUserError('Unable to save user to database', res); //! What should be the error here?
+    .catch((err) => {
+      sendUserError(err, res); //! What should be the error here?
       return;
     });
   // } else {
