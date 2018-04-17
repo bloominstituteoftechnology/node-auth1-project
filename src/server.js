@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 
+
 // Our requires
 const mongoose = require('mongoose');
 const User = require('./user');
@@ -14,7 +15,7 @@ const BCRYPT_COST = 11;
 const server = express();
 
 // to enable parsing of json bodies for post requests
-server.use(bodyParser.json());
+server.use(bodyParser.json());//server.use(express.json()) the way modern humans do this
 
 
 server.use(session({
@@ -52,16 +53,28 @@ const testPassword = function(req, res, next) {
   next();
 };
 
+const checkRestricted = function(req, res, next) {
+    
+    if(req.path === '/restricted') {
+      loginCheck(req ,res, next);
+      next();
+    }
+    next();
+  }
+
+server.use(checkRestricted);
+
+
 // TODO: implement routes
 
   server.get('/', (req, res) => {
     res.status(200).json({ api: 'running' });
   });
 
-  server.post('/users', testUsername, testPassword, (req, res) => {
+  server.post('/users', testPassword, (req, res) => {
     const { username, password } = req.body;
     const passwordHash = password;
-    
+   
     const user = new User({ username, passwordHash });
 
     user
