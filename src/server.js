@@ -45,21 +45,31 @@ server.post('/users', (req, res) => {
 
 server.post('/log-in', (req, res) => {
   const { username, password } = req.body;
-  const user = new User({ username, passwordHash: password });
+  // console.log(username, password);
+  	if (!username || !password) {
+  		sendUserError({message: "You fucked up! :-D"}, res);
+  	} else {
 
-  User
-    .findOne({ username })
-    .then((user) => {
-      
-      user.comparePassword(passwordHash, (err, isMatch) => {
-        if (err) throw err;
-        if (!isMatch) sendUserError('invalid credentials', res);
-        res.status(200).json(isMatch);
-      });
-    })
-    .catch((err) => {
-      sendUserError(err, res);
-    });
+	  User
+	    .findOne({ username })
+	    .then((user) => {
+	      
+	     user.comparePassword(password)
+	    .then(KAIT => {
+	    	if(KAIT) {
+	    		res.status(200).json({success: true})
+	    	} else {
+	    		sendUserError({message: "Kait."}, res);
+	    	}
+	    })
+	    .catch(err => {
+	     sendUserError(err, res);
+	    });
+	})
+	    .catch(err => {
+	     sendUserError(err, res);
+	    });
+	};
 });
 
 
@@ -76,7 +86,7 @@ server.get('/', (req, res) => {
   })
     .catch((err) => {
       sendUserError(err, res);
+    });
 });
-const user = new User({ username, passwordHash: password });
 
 module.exports = { server };
