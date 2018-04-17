@@ -28,7 +28,7 @@ const sendUserError = (err, res) => {
 // TODO: implement routes
 server.post('/users', (req, res, wait) => {
   const user = new User(req.body);
-
+  // console.log('IM Here maybe!');
   user
     .save()
     .then(savedUser => res.status(200).json(savedUser))
@@ -41,10 +41,18 @@ server.post('/login', (req, res, wait) => {
   User.findOne({ username })
     .then((user) => {
       if (user) {
-        user.isPasswordValid(password, cb);
+        user.isPasswordValid(password);
       }
     })
     .catch(err => res.status(500).json(err.message));
+});
+
+server.get('/view-count', (req, res, next) => {
+  if (!req.session.viewCount) {
+    req.session.viewCount = 0;
+  }
+  req.session.viewCount++;
+  req.json({ viewCount: req.session.viewCount });
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
