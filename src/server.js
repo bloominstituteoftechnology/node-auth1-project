@@ -68,7 +68,6 @@ server.post('/log-in', (req, res) => {
 });
 
 const isLoggedIn = (req, res, next) => {
-  console.log('in /me');
   if (req.session.username) {
     // eslint-disable-next-line
     User.findOne({ username: req.session.username }).then(user => {
