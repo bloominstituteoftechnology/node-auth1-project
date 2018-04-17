@@ -31,7 +31,7 @@ const expectStatus = (expected, method, path, res) => {
   if (expected === STATUS_SERVER_ERROR || expected === STATUS_NOT_FOUND) {
     throw new Error(
       'The expected status should be something other than ' +
-      `${STATUS_SERVER_ERROR} and ${STATUS_NOT_FOUND}`
+        `${STATUS_SERVER_ERROR} and ${STATUS_NOT_FOUND}`
     );
   }
 
@@ -39,18 +39,19 @@ const expectStatus = (expected, method, path, res) => {
     case STATUS_SERVER_ERROR:
       throw new Error(
         `Your server threw an error during ${method} ${path} (status code ` +
-        '500); scroll up to see the expection and backtrace'
+          '500); scroll up to see the expection and backtrace'
       );
 
     case STATUS_NOT_FOUND:
       throw new Error(
         `You haven't implemented a handler for ${method} ${path} (status ` +
-        'code 404)'
+          'code 404)'
       );
 
     default:
       if (expected !== res.status) {
-        const msg = `Expected status ${expected} but got ${res.status} from ` +
+        const msg =
+          `Expected status ${expected} but got ${res.status} from ` +
           `${method} ${path}`;
         throw new Error(msg);
       }
@@ -98,11 +99,15 @@ const req = (method, path, status, body = null, agent = null) => {
 const addUser = (credentials) => {
   const { username, password } = credentials;
   return req(METHOD_POST, '/users', STATUS_OK, credentials).then((newUser) => {
-    expect(newUser).to.have.property('username').that.equals(username);
+    expect(newUser)
+      .to.have.property('username')
+      .that.equals(username);
     expect(newUser).to.not.have.property('password');
 
     // don't know what the hash is, but we do know it should be 60 characters
-    expect(newUser).to.have.property('passwordHash').that.has.length(60);
+    expect(newUser)
+      .to.have.property('passwordHash')
+      .that.has.length(60);
     return newUser;
   });
 };
@@ -139,8 +144,9 @@ describe('Request', () => {
     beforeEach(() => addUser(credentials));
 
     it('logs a user in', () => {
-      return req(METHOD_POST, LOG_IN_PATH, STATUS_OK, credentials)
-        .then(result => expect(result).to.deep.equal({ success: true }));
+      return req(METHOD_POST, LOG_IN_PATH, STATUS_OK, credentials).then(
+        result => expect(result).to.deep.equal({ success: true })
+      );
     });
 
     it('reports a missing username', () => {
@@ -162,7 +168,7 @@ describe('Request', () => {
 
   describe(`${METHOD_GET} ${ME_PATH}`, () => {
     let user;
-    beforeEach(() => addUser(credentials).then(newUser => user = newUser));
+    beforeEach(() => addUser(credentials).then(newUser => (user = newUser)));
 
     it('responds with details about the logged in user', () => {
       const agent = chai.request.agent(server.server);
