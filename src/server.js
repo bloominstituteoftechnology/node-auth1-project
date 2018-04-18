@@ -37,7 +37,23 @@ server.use('/users', usersRouter);
 server.use('/log-in', loginRouter);
 
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', (req, res) => {
+const protected = function(msg){
+  return function(req, res, next) {
+    if (req.session && req.session.name) {
+      next();
+    } else {
+      res.status(401).json({msg})
+    }
+  }
+};
+
+// function checkPass(password) {
+//   return function(req, res, next) {
+//     if 
+//   }
+// }
+
+server.get('/me', protected('please log in'), (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
