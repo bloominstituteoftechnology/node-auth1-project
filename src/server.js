@@ -119,9 +119,17 @@ server.get('/me', isInSession, (req, res) => {
   res.json(req.user);
 });
 
-server.get('/restriced', (req, res) => {
+server.get('/restricted', (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
+});
+
+server.get('/restricted/users', (req, res) => {
+  User.find({})
+    .then(users => {
+      res.status(200).json(users);
+    })
+    .catch(err => res.status(500).json(err));
 });
 
 module.exports = { server };
