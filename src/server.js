@@ -1,5 +1,6 @@
 // const bodyParser = require('body-parser');
 const express = require('express');
+const cors = require('cors');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(session);
@@ -11,6 +12,12 @@ const User = require('./user.js');
 
 const server = express();
 // to enable parsing of json bodies for post requests
+const corsOptions = {
+  "origin": "http://localhost:3000",
+  "credentials": true
+};
+server.use(cors(corsOptions));
+
 server.use(express.json());
 
 server.use(
@@ -78,8 +85,8 @@ server.post('/users', (req, res) => {
       res.status(200).json(user);
     })
 });
-
-server.post('/log-in', (req, res) => {
+//login
+server.post('/login', function(req, res, next) {
   const { username, password } = req.body;
   console.log("in login, username: ", username);
   if (username && password.trim()) {
@@ -100,7 +107,7 @@ server.post('/log-in', (req, res) => {
       return sendUserError(error, res);
     });
   } else {
-    return sendUserError({error: 'Username and Password required to log-in.'},res);
+    return sendUserError({error: 'Username and Password required to login.'},res);
   }
 });
 
@@ -130,8 +137,8 @@ server.get('/api/users', (req, res) => {
       res.status.json(error)
     })
 })
-
-server.get('/api/log-out', (req, res) => {
+//logout
+server.post('/logout', function(req, res, next) {
   if (req.session) {
     req.session.destroy(function(err) {
       if (err) {
