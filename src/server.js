@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const User = require('./user');
 
 const STATUS_USER_ERROR = 422;
-const BCRYPT_COST = 11;
+const BCRYPT_COST = 11; //! never gets used
 
 const server = express();
 // to enable parsing of json bodies for post requests
@@ -14,22 +14,15 @@ server.use(express.json());
 server.use(
   session({
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
+    secure: false,
+    name: 'auth', //! why do we call this auth?
     resave: true, //! What should this be?
     saveUninitialized: false //! What should this be?
   })
 );
-const restrictedAccess = (req, res, next) => {
-  const { username } = req.session;
-  if (username) {
-    next();
-  }
-  return sendUserError('restricted access', res);
-};
-
-server.use('/restricted*', restrictedAccess); //! sketchy stretch code
 
 const sendUserError = (err, res) => {
-  //! Why do we pass res?
   res.status(STATUS_USER_ERROR);
   if (err && err.message) {
     res.json({ message: err.message, stack: err.stack });
@@ -71,6 +64,9 @@ const authenticateUser = (req, res, next) => {
     res.status(500).json({ message: 'you must be logged in to access route' });
   }
 };
+
+server.use('/restricted*', authenticateUser); //! sketchy stretch code
+
 /* Sends the given err, a string or an object, to the client. Sets the status */
 /* code appropriately. */
 
@@ -130,4 +126,7 @@ server.get('/users', (req, res) => {
     .catch(err => sendUserError(err, res)); //! lack of return okay here? Nowhere else to go
 });
 
+server.get('/restricted/', (req, res) => {
+  res.status(200).json({ msg: 'Danger zone!' });
+});
 module.exports = { server };
