@@ -1,15 +1,33 @@
 const mongoose = require('mongoose');
-
-// Clear out mongoose's model cache to allow --watch to work for tests:
-// https://github.com/Automattic/mongoose/issues/1251
-mongoose.models = {};
-mongoose.modelSchemas = {};
-
-mongoose.Promise = Promise;
-mongoose.connect('mongodb://localhost/users', { useMongoClient: true });
+const bcrypt = require('bcrypt');
 
 const UserSchema = new mongoose.Schema({
-  // TODO: fill in this schema
+  username: {
+    type: String,
+    unique: true,
+    required: true,
+    index: true,
+    lowercase: true
+  },
+  passwordHash: {
+    type: String,
+    required: true
+  }
 });
+
+UserSchema.pre('save', (next) => {
+  bcrypt.hash(this.passwordHash, 12, (err, hash) => {
+    if (err) {
+      return next(err);
+    }
+    this.passwordHash = hash;
+
+    return next();
+  });
+});
+
+UserSchema.methods.isPasswordValid = (passwordGuess) => {
+  return bcrypt.compare(passwordGuess, this.passwordHash);
+};
 
 module.exports = mongoose.model('User', UserSchema);
