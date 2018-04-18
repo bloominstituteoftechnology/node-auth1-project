@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const cors = require('cors');
 
 const User = require('./user.js');
 
@@ -16,6 +17,12 @@ server.use(
     saveUninitialized: true
   })
 );
+
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true
+};
+server.use(cors(corsOptions));
 
 const isLoggedIn = function (req, res, next) {
   if (!req.session.auth) res.status(422).json('not allowed');
@@ -51,7 +58,7 @@ server.post('/users', (req, res) => {
   }
 });
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   if (!(req.body.username && req.body.password)) {
     res.status(422).json({ error: 'provide username and password' });
   } else {
@@ -72,6 +79,11 @@ server.post('/log-in', (req, res) => {
       })
       .catch(error => res.status(500).json(error));
   }
+});
+
+server.post('/logout', (req, res) => {
+  req.session.regenerate(err => res.json(err));
+  res.status(200).json('logged out');
 });
 
 server.get('/me', isLoggedIn, (req, res) => {
