@@ -1,7 +1,7 @@
 const bodyParser = require("body-parser");
 const express = require("express");
 const session = require("express-session");
-const MongoStore = require('connect-mongo')(session);
+const MongoStore = require("connect-mongo")(session);
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -19,10 +19,10 @@ server.use(
     secure: false,
     resave: true,
     saveUninitialized: false,
-    store: new MongoStore ({
-      url: 'mongodb://localhost/sessions',
-      ttl: 10 * 60,
-    }),
+    store: new MongoStore({
+      url: "mongodb://localhost/sessions",
+      ttl: 10 * 60
+    })
   })
 );
 
@@ -89,16 +89,32 @@ server.post("/login", (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
-server.post('/logout', (req, res) => {
+server.post("/logout", (req, res) => {
   req.session.login = false;
-  res.status(200).json({ message: 'User has successfully logged out.'});
+  res.status(200).json({ message: "User has successfully logged out." });
 });
-
 
 server.use((err, req, res, next) => {
   if (err) {
     res.status(500).json(sendUserError(err, res));
   }
 });
+ server.get('/restricted', (req, res) => {
+   res.status(200).json({ message: 'You have accessed the restricted content.' })
+ })
+
+
+const restricted = (req, res, next) => {
+  const path = req.path;
+  if (/restricted/.test(path)) {
+    if (!req.session.login) {
+      sendUserError("You are not authorized to access.", res);
+      return;
+    }
+  }
+  next();
+};
+
+server.use(restricted);
 
 module.exports = { server };
