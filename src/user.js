@@ -30,8 +30,8 @@ UserSchema.pre('save', function (next) {
   });
 });
 
-UserSchema.methods.isPasswordValid = (passwordGuess) => {
-  return bcrypt.compare(this.passwordHash, passwordGuess);
+UserSchema.methods.isPasswordValid = (passwordGuess, passwordHash) => {
+  return bcrypt.compare(passwordGuess, passwordHash);
 };
 
 

@@ -1,17 +1,17 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js test
+  /usr/bin/node /usr/share/yarn/bin/yarn.js test
 
 PATH: 
-  C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Git\cmd;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Program Files (x86)\Yarn\bin\;C:\Program Files\nodejs\;C:\Users\robyn\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft VS Code\bin;C:\Program Files (x86)\Yarn\bin;C:\Users\robyn\AppData\Roaming\npm;
+  /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 
 Yarn version: 
   1.5.1
 
 Node version: 
-  8.11.1
+  6.11.4
 
 Platform: 
-  win32 x64
+  linux x64
 
 npm manifest: 
   {
@@ -30,6 +30,7 @@ npm manifest:
       "body-parser": "^1.17.2",
       "chai": "^4.1.1",
       "chai-http": "^3.0.0",
+      "connect-mongo": "^2.0.1",
       "eslint": "^3.17.1",
       "eslint-config-airbnb": "^14.1.0",
       "eslint-plugin-import": "^2.2.0",
@@ -903,6 +904,12 @@ Lockfile:
       unique-string "^1.0.0"
       write-file-atomic "^2.0.0"
       xdg-basedir "^3.0.0"
+  
+  connect-mongo@^2.0.1:
+    version "2.0.1"
+    resolved "https://registry.yarnpkg.com/connect-mongo/-/connect-mongo-2.0.1.tgz#514d649cff1d5d5546c087193245bb54ff5b703b"
+    dependencies:
+      mongodb "^2.0.36"
   
   console-control-strings@^1.0.0, console-control-strings@~1.1.0:
     version "1.1.0"
@@ -2472,12 +2479,27 @@ Lockfile:
       bson "~1.0.4"
       require_optional "~1.0.0"
   
+  mongodb-core@2.1.19:
+    version "2.1.19"
+    resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-2.1.19.tgz#00fbd5e5a3573763b9171cfd844e60a8f2a3a18b"
+    dependencies:
+      bson "~1.0.4"
+      require_optional "~1.0.0"
+  
   mongodb@2.2.34:
     version "2.2.34"
     resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-2.2.34.tgz#a34f59bbeb61754aec432de72c3fe21526a44c1a"
     dependencies:
       es6-promise "3.2.1"
       mongodb-core "2.1.18"
+      readable-stream "2.2.7"
+  
+  mongodb@^2.0.36:
+    version "2.2.35"
+    resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-2.2.35.tgz#cd1b5af8a9463e3f9a787fa5b3d05565579730f9"
+    dependencies:
+      es6-promise "3.2.1"
+      mongodb-core "2.1.19"
       readable-stream "2.2.7"
   
   mongoose@^4.11.7:
@@ -3823,16 +3845,17 @@ Lockfile:
 
 Trace: 
   Error: Command failed.
-  Exit code: 2
-  Command: C:\Windows\system32\cmd.exe
-  Arguments: /d /s /c eslint tests/*.js && eslint src/*.js && mocha -R nyan tests
-  Directory: C:\Users\robyn\lambdaschool\week11\Auth-Lab
+  Exit code: 1
+  Command: sh
+  Arguments: -c eslint tests/*.js && eslint src/*.js && mocha -R nyan tests
+  Directory: /home/ronnie/lambdaschool/week11/Auth
   Output:
   
-      at ProcessTermError.MessageError (C:\Program Files (x86)\Yarn\lib\cli.js:186:110)
-      at new ProcessTermError (C:\Program Files (x86)\Yarn\lib\cli.js:226:113)
-      at ChildProcess.<anonymous> (C:\Program Files (x86)\Yarn\lib\cli.js:30281:17)
-      at emitTwo (events.js:126:13)
-      at ChildProcess.emit (events.js:214:7)
-      at maybeClose (internal/child_process.js:925:16)
-      at Process.ChildProcess._handle.onexit (internal/child_process.js:209:5)
+      at ProcessTermError.Error (native)
+      at ProcessTermError.MessageError (/usr/share/yarn/lib/cli.js:186:110)
+      at new ProcessTermError (/usr/share/yarn/lib/cli.js:226:113)
+      at ChildProcess.<anonymous> (/usr/share/yarn/lib/cli.js:30281:17)
+      at emitTwo (events.js:106:13)
+      at ChildProcess.emit (events.js:191:7)
+      at maybeClose (internal/child_process.js:920:16)
+      at Process.ChildProcess._handle.onexit (internal/child_process.js:230:5)

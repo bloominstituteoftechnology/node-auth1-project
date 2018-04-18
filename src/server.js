@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo')(session);
 
 const User = require('./user');
 
@@ -24,6 +25,9 @@ server.use(session({
   cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
   secure: false,
   name: 'auth',
+  store: new MongoStore({
+    mongooseConnection: mongoose.connection,
+  }),
 }));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
@@ -56,17 +60,17 @@ server.post('/users', (req, res) => {
     .catch(err => sendUserError(err, res));
 });
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   const { username, password } = req.body;
 
   if (username && password) {
     User
       .findOne({ username })
       .then((user) => {
-        user.isPasswordValid(password)
+        user.isPasswordValid(password, user.passwordHash)
           .then(isValid => {
             if(isValid) {
-              req.session.id = user._id;
+              req.session.user_id = user._id;
               res.status(200).json({success: true});
             } else {
               sendUserError({message: "Username/password match not found."}, res);
@@ -79,21 +83,22 @@ server.post('/log-in', (req, res) => {
   }
 });
 
-const validate = function() {
-  return function(req, res, next) {
-    console.log("req.id: ", req);
-    console.log("session: ", req.session.id);
-    if (req.session.id === req._id) {
+const validate = function(req, res, next) {
+  if (req.session && req.session.user_id) {
+    User.findById(req.session.user_id)
+    .then(res => {
+      console.log(res);
+      req.user = res;
       next();
-    } else {
-      sendUserError({ error: "wrong user" }, res);
-      return;
-    }
-  };
+    }).catch(console.log('sorry'));
+  } else {
+    sendUserError({ error: "wrong user" }, res);
+    return;
+  }
 };
 
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', validate(), (req, res) => {
+server.get('/me', validate, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
