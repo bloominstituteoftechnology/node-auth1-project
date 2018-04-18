@@ -9,7 +9,7 @@ const MongoStore = require('connect-mongo')(session);
 
 const corsOptions = {
   origin: 'http://localhost:3000',
-  credentials: true
+  credentials: true,
 };
 
 const STATUS_USER_ERROR = 422;
@@ -41,8 +41,8 @@ server.use(
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
     store: new MongoStore({
       url: 'mongodb://localhost/sessions',
-      ttl: 10 * 60
-    })
+      ttl: 10 * 60,
+    }),
   })
 );
 
@@ -120,9 +120,9 @@ const isLoggedIn = (req, res, next) => {
 };
 
 server.get('/restricted/users', (req, res) => {
-  user
-    .find()
+  User.find()
     .select('username -_id')
+    // eslint-disable-next-line
     .then(user => {
       res.json(user);
     })
