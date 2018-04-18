@@ -7,6 +7,17 @@ const bcrypt = require('bcrypt');
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
+const restricted = (req, res, next) => {
+  if (req.path.includes('/restricted')) {
+    if (req.session.username) {
+      return next();
+    }
+    res.status(422).json({ message: 'User not logged in.' });
+  } else {
+    return next();
+  }
+};
+
 const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
@@ -17,6 +28,8 @@ server.use(
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
   })
 );
+
+server.use(restricted);
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -44,7 +57,7 @@ server.post('/users', (req, res) => {
     .catch(err => sendUserError(err, res));
 });
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     res.status(422).json({ errorMessage: 'Username and Password required' });
@@ -67,6 +80,18 @@ server.post('/log-in', (req, res) => {
   });
 });
 
+server.post('/logout', (req, res) => {
+  if (req.session) {
+    const { username } = req.session;
+    req.session.destroy();
+    res.json({ message: `${username} has been logged out!` });
+  } else {
+    res
+      .status(404)
+      .json({ message: "Can't log out if you aren't logged in..." });
+  }
+});
+
 const isLoggedIn = (req, res, next) => {
   if (req.session.username) {
     // eslint-disable-next-line
@@ -78,6 +103,10 @@ const isLoggedIn = (req, res, next) => {
     res.status(422).json({ message: 'User not logged in.' });
   }
 };
+
+server.get('/restricted/:info', (req, res) => {
+  res.json({ params: req.params });
+});
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', isLoggedIn, (req, res) => {
