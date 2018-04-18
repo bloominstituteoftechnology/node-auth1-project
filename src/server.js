@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const User = require('./user.js');
 
@@ -18,6 +19,12 @@ server.use(
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
   })
 );
+
+const corsOptions = {
+  "origin": "http://localhost:3000",
+  "credentials": true
+};
+server.use(cors(corsOptions));
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -72,7 +79,7 @@ server.post('/login', (req, res) => {
         user.isPasswordValid(password).then((isValid) => {
 
           console.log(username);
-          console.log(password);
+          // console.log(password);
           req.session.username = username;
           req.session.password = password;
 
@@ -88,8 +95,8 @@ server.post('/logout', (req, res) => {
   let username = req.session.username;
   User.findOne({username}).then((user) => {
     if(user) {
-      user = null;
-      console.log(user);
+      username = null;
+      console.log(username);
       res.json(`${username} was logged out`);
     } else {
       sendUserError('Nothing to log out of', res);
@@ -106,13 +113,14 @@ const checkUser = function (req, res, next) {
   User.findOne ({username})
   .then((user) => {
     req.user = user;
+
     next();
-  })
+  });
 };
 
 server.get('/me', checkUser, (req, res) => {
   // Do NOT modify this route handler in any way.
-  // console.log(req.user);
+
   res.json(req.user);
 });
 
