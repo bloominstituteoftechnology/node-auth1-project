@@ -15,21 +15,22 @@ const corsOptions = {
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
-const restricted = (req, res, next) => {
-  if (req.path.includes('/restricted')) {
-    if (req.session && req.session.username) {
-      return next();
-    }
-    res.status(422).json({ message: 'User not logged in.' });
-  } else {
-    return next();
-  }
-};
+// const restricted = (req, res, next) => {
+//   console.log(req.session, 'restricted session');
+//   if (req.path.includes('/restricted')) {
+//     if (req.session && req.session.username) {
+//       return next();
+//     }
+//     res.status(422).json({ message: 'User not logged in.' });
+//   } else {
+//     return next();
+//   }
+// };
 
 const server = express();
 // to enable parsing of json bodies for post requests
 
-server.use(restricted);
+// server.use(restricted);
 server.use(helmet());
 server.use(cors(corsOptions));
 
@@ -62,7 +63,7 @@ server.get('/', (req, res) => {
   res.json({ message: 'running' });
 });
 
-server.post('/restricted/users', (req, res) => {
+server.post('/users', (req, res) => {
   const { username, password } = req.body;
   const user = new User({ username, passwordHash: password });
 
@@ -83,6 +84,7 @@ server.post('/login', (req, res) => {
       user.isPasswordValid(password).then(isValid => {
         if (isValid) {
           req.session.username = user.username;
+          console.log(req.session);
 
           res.json({ success: true });
         } else {
@@ -127,6 +129,11 @@ server.get('/restricted/users', (req, res) => {
       res.json(user);
     })
     .catch(err => sendUserError(err, res));
+});
+
+server.get('/restricted/:info', (req, res) => {
+  console.log(req.params, 'params');
+  res.status({ info: req.params });
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
