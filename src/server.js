@@ -21,13 +21,13 @@ server.use(session({
 }));
 
 
-/* Sends the fiven err, a string or an objectm to the client. Sets the status*/
+/* Sends the given err, a string or an objectm to the client. Sets the status */
 
 const testUsername = function (req, res, next) {
   const { username } = req.body;
 
   if (!username || username.trim() === '') {
-    return sendUserError("Username must exist and have a value!", res);
+    return sendUserError('Username must exist and have a value!', res);
   }
   next();
 };
@@ -36,22 +36,10 @@ const testPassword = function (req, res, next) {
   const { password } = req.body;
 
   if (!password || password.trim() === '') {
-    return sendUserError("Password must exist and have a value!", res);
+    return sendUserError('Password must exist and have a value!', res);
   }
   next();
 };
-
-const checkRestricted = function (req, res, next) {
-  const reggie = new RegExp(/\/restricted*(.*)/gi);
-
-  if (req.path.match(reggie)) {
-    loginCheck(req, res, next);
-    next();
-  }
-  next();
-};
-
-server.use(checkRestricted);
 
 // TODO: implement routes
 
@@ -67,8 +55,12 @@ server.post('/users', testPassword, (req, res) => {
 
   user
     .save()
-    .then(savedUser => res.status(200).json(savedUser))
-    .catch(err => res.status(500).json(err));
+    .then(savedUser => {
+      res.status(200).json(savedUser);
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
 });
 
 server.post('/log-in', testUsername, testPassword, (req, res) => {
@@ -78,12 +70,12 @@ server.post('/log-in', testUsername, testPassword, (req, res) => {
     .then(user => user.isPasswordValid(password))
     .then(result => {
       if (!result) {
-        return sendUserError("Password is invalid.", res);
+        return sendUserError('Password is invalid.', res);
       }
       req.session.name = username;
       return res.status(200).json({ success: true });
     })
-    .catch(err => sendUserError("Incorrect username.", res));
+    .catch(err => sendUserError('Incorrect username.', res));
 });
 
 // TODO: add local middleware to this rout to ensure the user is logged in
@@ -95,11 +87,11 @@ const loginCheck = function (req, res, next) {
       .then(user => {
         req.user = user;
         next();
-      })
+      });
   } else {
-    return sendUserError("Access denied.", res);
+    return sendUserError('Access denied.', res);
   }
-}
+};
 
 server.get('/me', loginCheck, (req, res) => {
   // Do NOT modify this route handler in any way.
