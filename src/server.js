@@ -15,7 +15,7 @@ server.use(
   session({
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
     resave: true, //! What should this be?
-    saveUninitialized: true //! What should this be?
+    saveUninitialized: false //! What should this be?
   })
 );
 const restrictedAccess = (req, res, next) => {
