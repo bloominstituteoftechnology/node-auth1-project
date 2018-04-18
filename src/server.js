@@ -30,11 +30,18 @@ const sendUserError = (err, res) => {
   }
 };
 
-// TODO: add local middleware to this route to ensure the user is logged in
-const checkUser = function (req, res, next) {
-  req.user = req.session.user;
-  next();
-};
+
+// ||||||||||||||||||||||||||||||||||
+server.get('/users', (req, res) => {
+  User.find()
+  .then((users) => {
+    res.status(200).json(users);
+  })
+  .catch((error) => {
+    res.status(500).json(error);
+  });
+});
+// ||||||||||||||||||||||||||||||||||
 
 // TODO: implement routes
 server.post('/users', (req, res) => {
@@ -54,19 +61,8 @@ server.post('/users', (req, res) => {
       });
   }
 });
-// ||||||||||||||||||||||||||||||||||
-server.get('/users', (req, res) => {
-  User.find()
-    .then((users) => {
-      res.status(200).json(users);
-    })
-    .catch((error) => {
-      res.status(500).json(error);
-    });
-});
-// ||||||||||||||||||||||||||||||||||
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   const { username, password } = req.body;
 
   User.findOne({ username })
@@ -74,21 +70,49 @@ server.post('/log-in', (req, res) => {
       //
       if (user) {
         user.isPasswordValid(password).then((isValid) => {
+
+          console.log(username);
+          console.log(password);
+          req.session.username = username;
+          req.session.password = password;
+
           res.json({ success: true });
         });
       } else {
-        sendUserError({message: 'Wrong password...', res});
-
+        sendUserError({ message: 'invalid username or password' }, res);
       }
-      //
-    })
-    // .catch((error) => {
-    //   sendUserError({ message: 'not doin it right', res });
-    // });
+    });
 });
 
-server.get('/me', (req, res) => {
+server.post('/logout', (req, res) => {
+  let username = req.session.username;
+  User.findOne({username}).then((user) => {
+    if(user) {
+      user = null;
+      console.log(user);
+      res.json(`${username} was logged out`);
+    } else {
+      sendUserError('Nothing to log out of', res);
+    }
+  })
+})
+
+// TODO: add local middleware to this route to ensure the user is logged in
+const checkUser = function (req, res, next) {
+  const username = req.session.username;
+  if(!username) {
+    sendUserError('No one is logged in...', res)
+  }
+  User.findOne ({username})
+  .then((user) => {
+    req.user = user;
+    next();
+  })
+};
+
+server.get('/me', checkUser, (req, res) => {
   // Do NOT modify this route handler in any way.
+  // console.log(req.user);
   res.json(req.user);
 });
 
