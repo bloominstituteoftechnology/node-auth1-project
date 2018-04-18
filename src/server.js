@@ -2,6 +2,12 @@ const express = require("express");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const cors = require("cors");
+
+const corsOptions = {
+	origin: "http://localhost:3000",
+	credentials: true
+};
 
 const User = require("./user.js");
 
@@ -17,6 +23,7 @@ server.use(
 		resave: false
 	})
 );
+server.use(cors(corsOptions));
 
 const authenticate = function(req, res, next) {
 	req.hello = `hello ${User}!`;
@@ -62,7 +69,7 @@ server.post("/users", (req, res) => {
 		});
 });
 
-server.post("/log-in", (req, res) => {
+server.post("/login", (req, res) => {
 	const { username, password } = req.body;
 	// console.log(username, password);
 	if (!username || !password) {
@@ -90,6 +97,16 @@ server.post("/log-in", (req, res) => {
 				sendUserError(err, res);
 			});
 	}
+});
+
+server.post("/logout", (req, res) => {
+	const { username } = req.body;
+	if (!username) {
+		sendUserError({ message: "Goodbye" }, res);
+		return;
+	}
+	username = null;
+	res.json(req.session);
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
@@ -123,7 +140,6 @@ server.get("/", logCheck, (req, res) => {
 
 // server.get("/restricted/users", restrictedM, (req, res) => {
 server.get("/restricted/users", (req, res) => {
-
 	User.find({}, (err, users) => {
 		if (err) {
 			sendUserError("500", res);
