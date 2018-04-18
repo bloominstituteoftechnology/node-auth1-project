@@ -3817,7 +3817,7 @@ Lockfile:
 
 Trace: 
   Error: Command failed.
-  Exit code: 6
+  Exit code: 3
   Command: sh
   Arguments: -c mocha -R nyan tests
   Directory: /Users/sumayyah/LambdaSchoolProjects/Week11/Auth
