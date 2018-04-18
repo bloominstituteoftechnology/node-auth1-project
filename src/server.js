@@ -15,22 +15,20 @@ const corsOptions = {
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
-// const restricted = (req, res, next) => {
-//   console.log(req.session, 'restricted session');
-//   if (req.path.includes('/restricted')) {
-//     if (req.session && req.session.username) {
-//       return next();
-//     }
-//     res.status(422).json({ message: 'User not logged in.' });
-//   } else {
-//     return next();
-//   }
-// };
+const restricted = (req, res, next) => {
+  if (req.path.includes('/restricted')) {
+    if (req.session && req.session.username) {
+      return next();
+    }
+    res.status(522).json({ message: 'User not logged in.' });
+  } else {
+    return next();
+  }
+};
 
 const server = express();
 // to enable parsing of json bodies for post requests
 
-// server.use(restricted);
 server.use(helmet());
 server.use(cors(corsOptions));
 
@@ -40,13 +38,15 @@ server.use(
     resave: false,
     saveUninitialized: false,
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+    secure: false,
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
     store: new MongoStore({
       url: 'mongodb://localhost/sessions',
       ttl: 10 * 60,
     }),
   })
 );
-
+server.use(restricted);
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 const sendUserError = (err, res) => {
@@ -84,7 +84,6 @@ server.post('/login', (req, res) => {
       user.isPasswordValid(password).then(isValid => {
         if (isValid) {
           req.session.username = user.username;
-          console.log(req.session);
 
           res.json({ success: true });
         } else {
@@ -132,7 +131,6 @@ server.get('/restricted/users', (req, res) => {
 });
 
 server.get('/restricted/:info', (req, res) => {
-  console.log(req.params, 'params');
   res.status({ info: req.params });
 });
 
