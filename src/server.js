@@ -89,6 +89,12 @@ server.post("/login", (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
+server.post('/logout', (req, res) => {
+  req.session.login = false;
+  res.status(200).json({ message: 'User has successfully logged out.'});
+});
+
+
 server.use((err, req, res, next) => {
   if (err) {
     res.status(500).json(sendUserError(err, res));
