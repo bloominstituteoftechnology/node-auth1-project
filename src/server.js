@@ -21,7 +21,18 @@ server.use(session({
 }));
 
 
-/* Sends the given err, a string or an objectm to the client. Sets the status */
+/* Sends the given err, a string or an objectm to the client. Sets the status
+code appropiately */
+
+const sendUserError = (err, res) => {
+  res.status(STATUS_USER_ERROR);
+  if (err && err.message) {
+    res.json({ message: err.message, stack: err.stack });
+  } else {
+    res.json({ error: err });
+  }
+};
+
 
 const testUsername = function (req, res, next) {
   const { username } = req.body;
