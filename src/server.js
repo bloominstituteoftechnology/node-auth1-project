@@ -111,9 +111,19 @@ const loggedIn = function (req, res, next) {
   next();
 };
 
+server.get('/restricted/users', (req,res) => {
+  User
+  .find({})
+  .then(users => {
+    res.status(200).json(users);
+  })
+  .catch(err => {
+    res.status(500).json(err);
+  });
+})
+
 server.get(/restricted(\/)/, loggedIn, (req, res) => {
 });
-
 
 server.listen(5000, () => console.log('api on port 5000'));
 
