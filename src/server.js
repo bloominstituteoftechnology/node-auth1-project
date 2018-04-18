@@ -1,96 +1,131 @@
-/*eslint-disable*/
+// const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
-// const bodyParser = require('body-parser');
+// const MongoStore = require('connect-mongo')(session);
 const User = require('./user');
 
 const STATUS_USER_ERROR = 422;
-const BCRYPT_COST = 11;
+const STATUS_OK = 200;
+const USERS_PATH = '/users';
+const LOG_IN_PATH = '/log-in';
+const LOG_OUT_PATH = '/logout';
+const ME_PATH = '/me';
 
 const server = express();
 // to enable parsing of json bodies for post requests
 // server.use(bodyParser.json());
 server.use(express.json());
+
 server.use(
   session({
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
     resave: false,
     saveUninitialized: true,
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 }, // milliseconds
+    secure: false,
+    name: 'auth',
+    /* store: new MongoStore({
+      url: 'mongodb://localhost/sessions',
+      ttl: 10 * 60, // seconds
+    }),
+    */
   })
 );
-
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 const sendUserError = (err, res) => {
   res.status(STATUS_USER_ERROR);
   if (err && err.message) {
-    res.json({ message: err.message, stack: err.stack });
-  } else {
-    res.json({ error: err });
+    return res.json({ message: err.message, stack: err.stack });
   }
+  return res.json({ error: err });
 };
-
-const authenticated = (req, res, next) => {
-  // do some checks here??? then assign user
-  // can use id or username, no strategy yet
-  req.user = req.query.username;
-  const test = false;
-  if (test) {
-    return res.json('opted out');
+const checkUsernameAndPassword = (req, res, next) => {
+  if (req.body.username === undefined && req.body.password === undefined) {
+    sendUserError({ message: 'Please provide a username and password' }, res);
   }
   next();
 };
 
-// TODO: implement routes
-server.post('/users', (req, res) => {
+const checkUsername = (req, res, next) => {
   if (req.body.username === undefined) {
-    const err = {message: 'Please provide a username!'};
-    return sendUserError(err, res);
+    sendUserError({ message: 'Please provide a username' }, res);
   }
-  if (req.body.password === undefined) {
-    const err = { message: 'Please provide a password!' };
-    return sendUserError(err, res);
-  }
-  const { username, password } = req.body;
-  const user = new User({username: username, passwordHash: password});
+  next();
+};
 
-  user
-    .save()
-    .then(savedUser => res.status(200).json(savedUser))
+const checkPassword = (req, res, next) => {
+  if (req.body.password === undefined) {
+    sendUserError({ message: 'Please provide a password' }, res);
+  }
+  next();
+};
+
+const auntheticated = (req, res, next) => {
+  if (req.session && req.session.name) {
+    req.user = req.session.name;
+  } else {
+    sendUserError({ message: 'Please login!' }, res);
+  }
+  next();
+};
+// TODO: implement routes
+server.get(USERS_PATH, (req, res) => {
+  User.find()
+    .then(users => res.status(STATUS_OK).json(users))
     .catch(err => sendUserError(err, res));
 });
 
-server.post('/login-in', (req, res) => {
+server.post(USERS_PATH, checkUsernameAndPassword, checkUsername, checkPassword, (req, res) => {
   const { username, password } = req.body;
-  if (username === undefined) {
-    const err = { message: 'Please provide a username!' };
-    return sendUserError(err, res);
-  }
-  if (password === undefined) {
-    const err = { message: 'Please provide a password!' };
-    return sendUserError(err, res);
-  }
+  const user = new User({ username, passwordHash: password });
 
-  User.findOne({ username })
-    .then((user) => {
+  user
+    .save()
+    .then(savedUser => res.status(STATUS_OK).json(savedUser))
+    .catch(err => sendUserError(err, res));
+});
+
+server.post(
+  LOG_IN_PATH,
+  checkUsernameAndPassword,
+  checkUsername,
+  checkPassword,
+  (req, res) => {
+    const { username, password } = req.body;
+    User.findOne({ username }).then((user) => {
       if (user) {
         user
           .isPasswordValid(password)
-          .then(response => {
-            if (response === true) {
-              return res.status(200).json({ success: true });
+          .then((isValid) => {
+            if (isValid) {
+              req.session.name = user;
+              res.status(STATUS_OK).json({ success: true });
+            } else {
+              sendUserError({ message: 'Password/ Username is incorrect' }, res);
             }
-            return res.status(400).json({ error: 'something failed' });
           })
-          .catch(err => {
-            return res.status(400).json({ err: 'Useranme/Password incorrect' });
-          });
+          .catch(err => sendUserError(err, res));
+      } else {
+        sendUserError({ message: 'Password/ Username is incorrect' }, res); // not found user but don't tell the bad guy that the user doesn't exist
       }
-    })
-    .catch(err => res.status(500).json(err));
+    }).catch(err => sendUserError(err, res));
+  }
+);
+
+server.get(LOG_OUT_PATH, auntheticated, (req, res) => {
+  if (req.session) {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ message: 'could not log you out' });
+      }
+      return res.status(200).json({ message: 'Logged you out!' });
+    });
+  }
 });
+
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get('/me', authenticated, (req, res) => {
+server.get(ME_PATH, auntheticated, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
