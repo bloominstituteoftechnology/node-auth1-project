@@ -1,7 +1,7 @@
 const express = require("express");
 const session = require("express-session");
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const User = require("./user.js");
 
@@ -13,8 +13,8 @@ server.use(express.json());
 server.use(
 	session({
 		secret: "e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re",
-    	saveUninitialized: false,
-    	resave: false,
+		saveUninitialized: false,
+		resave: false
 	})
 );
 
@@ -23,6 +23,19 @@ const authenticate = function(req, res, next) {
 
 	next();
 };
+
+const restrictedM = (req, res, next) => {
+	const path = req.path;
+	if (/restricted/.test(path)) {
+		if (!req.session.username) {
+			sendUserError("NOPE", res);
+			return;
+		}
+	}
+	next();
+};
+
+server.use(restrictedM);
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -57,11 +70,14 @@ server.post("/log-in", (req, res) => {
 	} else {
 		User.findOne({ username })
 			.then(user => {
-				user.comparePassword(password)
+				user
+					.comparePassword(password)
 					.then(KAIT => {
 						if (KAIT) {
 							req.session.name = user.username;
 							res.status(200).json({ success: true });
+						} else if (username === null) {
+							return sendUserError("User does not exist", res);
 						} else {
 							sendUserError({ message: "Kait." }, res);
 						}
@@ -81,8 +97,7 @@ const logCheck = function(req, res, next) {
 	const username = req.session.name;
 
 	if (username) {
-		User.findOne({ username })
-		.then(user => {
+		User.findOne({ username }).then(user => {
 			req.user = user;
 			next();
 		});
@@ -104,6 +119,18 @@ server.get("/", logCheck, (req, res) => {
 		.catch(err => {
 			sendUserError(err, res);
 		});
+});
+
+// server.get("/restricted/users", restrictedM, (req, res) => {
+server.get("/restricted/users", (req, res) => {
+
+	User.find({}, (err, users) => {
+		if (err) {
+			sendUserError("500", res);
+			return;
+		}
+		res.json(users);
+	});
 });
 
 module.exports = { server };
