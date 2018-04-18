@@ -4,6 +4,7 @@
   "description": "LambdaSchool Auth",
   "scripts": {
     "test": "eslint tests/*.js && eslint src/*.js && mocha -R nyan tests",
+    "start": "nodemon src/app.js",
     "watch": "npm test -- --watch"
   },
   "license": "ISC",
@@ -13,6 +14,7 @@
     "body-parser": "^1.17.2",
     "chai": "^4.1.1",
     "chai-http": "^3.0.0",
+    "cors": "^2.8.4",
     "eslint": "^3.17.1",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",
@@ -20,5 +22,8 @@
     "express-session": "^1.15.5",
     "mocha": "^3.5.0",
     "mongoose": "^4.11.7"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.3"
   }
 }
