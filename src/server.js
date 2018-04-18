@@ -104,6 +104,8 @@ server.post('/log-in', (req, res) => {
   }
 });
 
+server.use('/restricted', restrictedMW);
+
 server.get('/restricted', (req, res) => {
   res.json({message: 'You are now in the restricted page of the app'});
 })
@@ -111,8 +113,6 @@ server.get('/restricted', (req, res) => {
 server.get('/restricted/dev', (req, res) => {
   res.json({message: 'You are now in the restricted dev page'});
 })
-
-server.use('/restricted', restrictedMW);
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', isLoggedIn, (req, res) => {
@@ -129,6 +129,18 @@ server.get('/api/users', (req, res) => {
     .catch((error) => {
       res.status.json(error)
     })
+})
+
+server.get('/api/log-out', (req, res) => {
+  if (req.session) {
+    req.session.destroy(function(err) {
+      if (err) {
+        res.status(200).json({ error: 'Failed to log out.'});
+      } else {
+        res.status(200).json({ message: 'Logged out Sucessfully'});
+      }
+    })
+  }
 })
 
 module.exports = { server };
