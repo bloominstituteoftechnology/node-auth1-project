@@ -9,7 +9,7 @@ const MongoStore = require('connect-mongo')(session);
 
 const corsOptions = {
   origin: 'http://localhost:3000',
-  credentials: true,
+  credentials: true
 };
 
 const STATUS_USER_ERROR = 422;
@@ -41,8 +41,8 @@ server.use(
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
     store: new MongoStore({
       url: 'mongodb://localhost/sessions',
-      ttl: 10 * 60,
-    }),
+      ttl: 10 * 60
+    })
   })
 );
 
@@ -62,7 +62,7 @@ server.get('/', (req, res) => {
   res.json({ message: 'running' });
 });
 
-server.post('/users', (req, res) => {
+server.post('/restricted/users', (req, res) => {
   const { username, password } = req.body;
   const user = new User({ username, passwordHash: password });
 
@@ -119,8 +119,14 @@ const isLoggedIn = (req, res, next) => {
   }
 };
 
-server.get('/restricted/:info', (req, res) => {
-  res.json({ params: req.params });
+server.get('/restricted/users', (req, res) => {
+  user
+    .find()
+    .select('username -_id')
+    .then(user => {
+      res.json(user);
+    })
+    .catch(err => sendUserError(err, res));
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
