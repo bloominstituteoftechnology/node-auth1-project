@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
 const User = require('./user.js');
 
@@ -12,12 +13,16 @@ const server = express();
 server.use(bodyParser.json());
 server.use(
   session({
+    name: 'auth',
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
     saveUninitialized: false,
     resave: true,
-    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 }, // milliseconds
     secure: false,
-    name: 'auth'
+    store: new MongoStore({
+      url: 'mongodb://localhost/sessions',
+      ttl: 10 * 60 // seconds
+    })
   })
 );
 
@@ -30,6 +35,17 @@ const sendUserError = (err, res) => {
   } else {
     res.json({ error: err });
   }
+};
+
+// Custom Middleware For Route Access
+const requiresLogin = function (msg) {
+  return function (req, res, next) {
+    if (req.session && req.session.name) {
+      next();
+    } else {
+      res.status(401).json({ msg });
+    }
+  };
 };
 
 // TODO: implement routes
@@ -112,5 +128,13 @@ server.get('/greet', (req, res) => {
   const { name } = req.session;
   res.send(`hello ${name}`);
 });
+
+server.get(
+  '/restricted',
+  requiresLogin('please login before procedding'),
+  (req, res) => {
+    res.send({ greeing: `Welcome back ${req.session.name}` });
+  }
+);
 
 module.exports = { server };
