@@ -3,12 +3,19 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const User = require('./user.js');
+const cors = require('cors');
+const corsOptions = {
+  'origin': 'http://localhost:3000',
+  'credentials': true
+};
+
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
-
 const server = express();
+
 // to enable parsing of json bodies for post requests
+server.use(cors(corsOptions));
 server.use(bodyParser.json());
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
@@ -37,8 +44,17 @@ server.post('/users', (req, res) => {
   .then(doc => res.status(200).json(doc))
   .catch(err => sendUserError(err, res));
 });
+server.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      sendUserError(err, res);
+    } else {
+      res.status(200).send('you are logged out');
+    }
+  });
+});
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   const { username, password } = req.body;
   if (username === undefined) {
     sendUserError('username missing', res);
@@ -80,11 +96,22 @@ const getSession = function (req, res, next) {
   }
   next();
 };
-
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', getSession, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
+});
+
+const loggedIn = function (req, res, next) {
+  if (req.session.user) {
+    res.status(500).send('user authorized');
+  } else {
+    sendUserError('access restricted', res);
+  }
+  next();
+};
+
+server.get(/restricted(\/)/, loggedIn, (req, res) => {
 });
 
 
