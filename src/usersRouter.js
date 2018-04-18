@@ -4,7 +4,7 @@ const express = require("express");
 const router = express.Router();
 let User = require("./user.js");
 
-router.route("/").get((req, res) => res.status(200).json({ hello: "hello" }));
+router.route("/").get((req, res) => res.status(200).json({ users: users}));
 
 router.route("/").post(async function(req, res, next) {
   try {

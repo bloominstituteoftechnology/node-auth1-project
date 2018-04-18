@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const usersRouter = require('./usersRouter.js');
+const loginRouter = require('./loginRouter.js');
 const mongoose = require('mongoose');
 
 const STATUS_USER_ERROR = 422;
@@ -33,6 +34,7 @@ const sendUserError = (err, res) => {
 
 // TODO: implement routes
 server.use('/users', usersRouter);
+server.use('/log-in', loginRouter);
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
