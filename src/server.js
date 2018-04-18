@@ -1,6 +1,11 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const bcrypt = require('bcrypt')
+const mongoose = require('mongoose')
+const user = require('user')
+const cors = require('cors')
+
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -11,6 +16,11 @@ server.use(bodyParser.json());
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
 }));
+
+mongoose
+  .connect('mongodb://localhost/User')
+  .then(() => console.log('\n=== Connecting to DB ===\n')) 
+  .catch(() => console.log('\n=== Error Connecting to DB ===n\') 
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
@@ -24,6 +34,8 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
+
+
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', (req, res) => {
