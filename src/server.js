@@ -17,7 +17,7 @@ const BCRYPT_COST = 11;
 
 const restricted = (req, res, next) => {
   if (req.path.includes('/restricted')) {
-    if (req.session.username) {
+    if (req.session && req.session.username) {
       return next();
     }
     res.status(422).json({ message: 'User not logged in.' });
