@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const cors = require('cors');
 const MongoStore = require('connect-mongo')(session);
 
 const User = require('./user.js');
@@ -26,6 +27,12 @@ server.use(
   })
 );
 
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true
+};
+server.use(cors(corsOptions));
+
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 const sendUserError = (err, res) => {
@@ -48,9 +55,7 @@ const requiresLogin = function (msg) {
   };
 };
 
-// TODO: implement routes
-
-// Create User
+// Register User
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
   const user = new User(req.body);
