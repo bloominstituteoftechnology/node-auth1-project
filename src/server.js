@@ -3,6 +3,14 @@ const express = require('express');
 const session = require('express-session');
 const User = require('./user');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
+const helmet = require('helmet');
+const MongoStore = require('connect-mongo')(session);
+
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true,
+};
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -20,16 +28,23 @@ const restricted = (req, res, next) => {
 
 const server = express();
 // to enable parsing of json bodies for post requests
+
+server.use(restricted);
+server.use(helmet());
+server.use(cors(corsOptions));
+
 server.use(bodyParser.json());
 server.use(
   session({
     resave: false,
     saveUninitialized: false,
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+    store: new MongoStore({
+      url: 'mongodb://localhost/sessions',
+      ttl: 10 * 60,
+    }),
   })
 );
-
-server.use(restricted);
 
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
