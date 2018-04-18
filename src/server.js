@@ -2,8 +2,9 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
-
+const chalk = require('chalk');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -13,7 +14,7 @@ const User = require('./user.js');
 mongoose
   .connect('mongodb://localhost/data', { useMongoClient: true })
   .then(() => {
-    console.log('\n=== Connected to MongoDb ===\n');
+    console.log(chalk.whiteBright('\n=== Connected to MongoDb ===\n'));
   })
   .catch(error => console.log('Error Connecting to the database', error));
 
@@ -24,6 +25,24 @@ server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re'
 })
 );
+
+const corsOptions = {
+  "origin": "http://localhost:3000",
+  "credentials": true
+};
+server.use(cors(corsOptions));
+
+const protected = (req, res, next) => {
+  if (req.path.startsWith('/restricted')){
+    if (req.session && req.session.username)
+      next();
+    else
+      res.status(422).json({meg: 'You must be logged in to view this content.'});
+  } else {
+    next();
+  }
+}
+server.use(protected);
 /* Sends the given err, a string or an object, to the client. Sets the status
  * code appropriately. */
 const sendUserError = (err, res) => {
@@ -79,7 +98,7 @@ server.get('/me', checkStatus, (req, res) => {
   res.json(req.user);
 });
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   const { username, password } = req.body;
   User.findOne({ username })
   .then((user) => {
@@ -95,6 +114,18 @@ server.post('/log-in', (req, res) => {
     .catch(err => sendUserError(err, res));
   })
   .catch(err => sendUserError(err, res));
+});
+
+server.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(function(err) {
+      if (err) {
+        res.status(500).json({ msg: 'could not log you out' });
+      } else {
+        res.status(200).json({ msg: 'good bye, come back soon' });
+      }
+    });
+  }
 });
 
 module.exports = { server };
