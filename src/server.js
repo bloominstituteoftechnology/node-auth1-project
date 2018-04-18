@@ -1,6 +1,7 @@
 const bodyParser = require("body-parser");
 const express = require("express");
 const session = require("express-session");
+const MongoStore = require('connect-mongo');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -13,8 +14,15 @@ server.use(bodyParser.json());
 server.use(
   session({
     secret: "e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re",
-    // resave: false,
-    // saveUninitialized: true
+    name: "auth",
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
+    secure: false,
+    resave: true,
+    saveUninitialized: false,
+    store: new MongoStore ({
+      url: 'mongodb://localhost/sessions',
+      ttl: 10 * 60,
+    }),
   })
 );
 
@@ -46,13 +54,12 @@ server.get("/", (req, res) => {
 });
 
 server.post("/users", (req, res) => {
-  const { username, password } = req.body
-  const userInfo = {username, passwordHash: password }
+  const { username, password } = req.body;
+  const userInfo = { username, passwordHash: password };
   const user = new User(userInfo);
-    if(!username || !password) {
-      return sendUserError('must include username and password', res)
-    }
-
+  if (!username || !password) {
+    return sendUserError("must include username and password", res);
+  }
 
   user
     .save()
@@ -63,25 +70,23 @@ server.post("/users", (req, res) => {
 });
 
 server.post("/login", (req, res) => {
-  const { username, password } = req.body
-    User.findOne({ username })
-      .then(user => {
-        if (user) {
-          user
-            .isPasswordValid(password)
-            .then(validUser => {
-              if(validUser) {
-                req.session.name = user.username;
-                res.status(200).json({ success: true }); 
-              }else {
-                res.status(401).json({ msg: 'password is invalid' });
-              }
-            })
-        }else {
-          return sendUserError('please provide a valid username', res)
-        }
-      })
-      .catch(err => res.status(500).json(err));
+  const { username, password } = req.body;
+  User.findOne({ username })
+    .then(user => {
+      if (user) {
+        user.isPasswordValid(password).then(validUser => {
+          if (validUser) {
+            req.session.name = user.username;
+            res.status(200).json({ success: true });
+          } else {
+            res.status(401).json({ msg: "password is invalid" });
+          }
+        });
+      } else {
+        return sendUserError("please provide a valid username", res);
+      }
+    })
+    .catch(err => res.status(500).json(err));
 });
 
 module.exports = { server };
