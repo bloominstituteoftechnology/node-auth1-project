@@ -28,6 +28,16 @@ const sendUserError = (err, res) => {
   }
 };
 
+const requiresLogin = function (msg) {
+  return function (req, res, next) {
+    if (req.session && req.session.name) {
+      next();
+    } else {
+      res.status(401).json({ msg });
+    }
+  };
+};
+
 // creates a new user
 server.post('/users', (req, res) => {
   const { username, password } = req.body;
@@ -55,10 +65,7 @@ server.post('/log-in', (req, res) => {
             req.session.name = user.username;
             res.status(200).json({ success: true });
           } else {
-            sendUserError(
-              { message: 'Username and password are invalid.' },
-              res
-            );
+            sendUserError({ message: 'Username and password are invalid.' });
           }
         });
       })
@@ -104,4 +111,13 @@ server.get('/logout', (req, res, next) => {
     });
   }
 });
+
+server.get(
+  '/restricted',
+  requiresLogin('please login to view page'),
+  (req, res) => {
+    res.send({ greeing: `Welcome back ${req.session.name}` });
+  }
+);
+
 module.exports = { server };

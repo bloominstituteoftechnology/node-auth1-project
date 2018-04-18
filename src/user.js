@@ -20,7 +20,7 @@ const UserSchema = new mongoose.Schema({
     required: true
   }
 });
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function (next) {
   bcrypt.hash(this.password, 11, (err, hash) => {
     if (err) {
       return next(err);
@@ -29,7 +29,7 @@ UserSchema.pre('save', function(next) {
     return next();
   });
 });
-UserSchema.methods.isPassWordValid = function(passwordGuess) {
+UserSchema.methods.isPassWordValid = function (passwordGuess) {
   return bcrypt.compare(passwordGuess, this.password);
 };
 module.exports = mongoose.model('User', UserSchema);
