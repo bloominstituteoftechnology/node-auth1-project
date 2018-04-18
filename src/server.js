@@ -1,7 +1,7 @@
 const bodyParser = require("body-parser");
 const express = require("express");
 const session = require("express-session");
-const MongoStore = require('connect-mongo');
+const MongoStore = require('connect-mongo')(session);
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -87,6 +87,12 @@ server.post("/login", (req, res) => {
       }
     })
     .catch(err => res.status(500).json(err));
+});
+
+server.use((err, req, res, next) => {
+  if (err) {
+    res.status(500).json(sendUserError(err, res));
+  }
 });
 
 module.exports = { server };
