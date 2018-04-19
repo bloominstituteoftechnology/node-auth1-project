@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 const User = require('./user.js');
+const cors = require('cors');
 
 const STATUS_USER_ERROR = 422;
 
@@ -18,6 +19,12 @@ server.use(
     name: 'auth'
   })
 );
+
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true
+};
+server.use(cors(corsOptions));
 
 const sendUserError = (err, res) => {
   res.status(STATUS_USER_ERROR);
@@ -55,7 +62,7 @@ server.post('/users', (req, res) => {
 });
 
 // user login
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   const { username, password } = req.body;
   if (username && password) {
     User.findOne({ username })
@@ -113,7 +120,7 @@ server.get('/logout', (req, res, next) => {
 });
 
 server.get(
-  '/restricted',
+  '/restricted/users',
   requiresLogin('please login to view page'),
   (req, res) => {
     res.send({ greeing: `Welcome back ${req.session.name}` });
