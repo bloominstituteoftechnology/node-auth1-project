@@ -1,7 +1,7 @@
 // const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
-// const MongoStore = require('connect-mongo')(session);
+const MongoStore = require('connect-mongo')(session);
 const User = require('./user');
 
 const STATUS_USER_ERROR = 422;
@@ -24,11 +24,10 @@ server.use(
     cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 }, // milliseconds
     secure: false,
     name: 'auth',
-    /* store: new MongoStore({
+    store: new MongoStore({
       url: 'mongodb://localhost/sessions',
       ttl: 10 * 60, // seconds
     }),
-    */
   })
 );
 /* Sends the given err, a string or an object, to the client. Sets the status
@@ -61,14 +60,25 @@ const checkPassword = (req, res, next) => {
   next();
 };
 
+// check to see aunthetication before granting permission
 const auntheticated = (req, res, next) => {
   if (req.session && req.session.name) {
     req.user = req.session.name;
   } else {
-    sendUserError({ message: 'Please login!' }, res);
+    return sendUserError({ message: 'Please login!' }, res);
   }
   next();
 };
+
+// check to see, that they have no permission before granting permission
+const auntheticate = (req, res, next) => {
+  if (req.session && req.session.name) {
+    sendUserError({ message: 'You are already logged in!' }, res);
+  } else {
+    next();
+  }
+};
+
 // TODO: implement routes
 server.get(USERS_PATH, (req, res) => {
   User.find()
@@ -88,6 +98,7 @@ server.post(USERS_PATH, checkUsernameAndPassword, checkUsername, checkPassword, 
 
 server.post(
   LOG_IN_PATH,
+  auntheticate,
   checkUsernameAndPassword,
   checkUsername,
   checkPassword,
