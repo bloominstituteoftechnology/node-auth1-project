@@ -37,7 +37,7 @@ const isLoggedIn = function (req, res, next) {
 };
 
 const isRestricted = function (req, res, next) {
-  if (/required/.test(req.url)) {
+  if (/restricted/.test(req.url)) {
     if (!req.session.auth) res.status(422).json('not allowed');
     else next();
   } else next();
@@ -50,7 +50,7 @@ server.post('/users', (req, res) => {
     res.status(422).json({ error: 'provide username and password' });
   } else {
     User.create({
-      username: req.body.username,
+      username: req.body.username.toLowerCase(),
       passwordHash: req.body.password
     })
       .then(saved => res.status(200).json(saved))
@@ -90,8 +90,12 @@ server.get('/me', isLoggedIn, (req, res) => {
   res.json(req.user);
 });
 
-server.get('/required/greeting', (req, res) => {
-  res.status(200).json(`hello ${req.session.name}`);
+server.get('/restricted/users', (req, res) => {
+  User.find({})
+    .then((users) => {
+      res.status(200).json(users);
+    })
+    .catch(error => res.status(500).json('yololo'));
 });
 
 server.listen(5000);
