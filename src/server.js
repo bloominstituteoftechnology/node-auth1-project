@@ -3,7 +3,7 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 
-const cors = require('cors');
+const cors = require("cors");
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -29,8 +29,8 @@ server.use(
 );
 
 const corsOptions = {
-  "origin": "http://localhost:3000",
-  "credentials": true
+  origin: "http://localhost:3000",
+  credentials: true
 };
 server.use(cors(corsOptions));
 
@@ -45,10 +45,20 @@ const sendUserError = (err, res) => {
   }
 };
 
+const loggedIn = function(check) {
+  return function(req, res, next) {
+    if (req.session && req.session.name) {
+      next();
+    } else {
+      res.status(422).json(sendUserError);
+    }
+  };
+};
+
 // TODO: implement routes
 
 // TODO: add local middleware to this route to ensure the user is logged in
-server.get("/me", (req, res) => {
+server.get("/me", loggedIn, (req, res) => {
   // Do NOT modify this route handler in any way.
   res.json(req.user);
 });
@@ -102,15 +112,12 @@ server.post("/logout", (req, res) => {
   res.status(200).json({ message: "User has successfully logged out." });
 });
 
-server.use((err, req, res, next) => {
-  if (err) {
-    res.status(500).json(sendUserError(err, res));
-  }
-});
- server.get('/restricted', (req, res) => {
-   res.status(200).json({ message: 'You have accessed the restricted content.' })
- })
 
+server.get("/restricted", (req, res) => {
+  res
+    .status(200)
+    .json({ message: "You have accessed the restricted content." });
+});
 
 const restricted = (req, res, next) => {
   const path = req.path;
