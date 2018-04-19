@@ -2,18 +2,34 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 const User = require('./user.js');
-
+const cors = require('cors');
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
+
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true,
+};
 
 const server = express();
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
 server.use(
   session({
+    name: 'Auth', //will give default if not given and attackers can hack in easier
     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+    httpOnly: true, //allows cookie to be sent over http
+    resave: true,
+    saveUninitialized: false, // creates sessions for unlogged people if true
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 }, // 1 day miliseconds
+    secure: false, // works with http protocol
+    store: new MongoStore({
+      url: 'mongodb://localhost/sessions',
+      ttl: 10 * 60, // seconds
+    }),
   })
 );
+server.use(cors(corsOptions));
 
 //local middleware
 const protected = function(msg) {
@@ -57,7 +73,7 @@ server.post('/users', (req, res) => {
     .catch((err) => res.status(500).json({ err: 'Server is not connected' }));
 });
 
-server.post('/log-in', (req, res) => {
+server.post('/login', (req, res) => {
   const { username, password } = req.body;
   if (!username) return sendUserError('Enter valid username and password', res);
   User.findOne({ username })
@@ -88,6 +104,27 @@ server.post('/log-in', (req, res) => {
       }
     })
     .catch((err) => res.status(500).json({ err: 'Server is not connected' }));
+});
+
+// server.post('/logout', (req, res) => {
+//   req.session.destroy(function(err) {
+//     if (err) {
+//       sendUserError(err, res);
+//     } else {
+//       res.status(200).json({ message: 'You have signed out :)' });
+//     }
+//   });
+// });
+
+server.post('/logout', (req, res) => {
+  const username = req.session.name;
+  if (username) {
+    req.session.destroy;
+    res.status(200).json({ message: 'You are logged out :)' }); // only wants a json message no object after
+    return;
+  } else {
+    sendUserError({ message: 'You arent logged out' }, res);
+  }
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in

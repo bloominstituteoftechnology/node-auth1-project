@@ -5,6 +5,6 @@ mongoose
   .connect('mongodb://127.0.0.1/auth', { useMongoClient: true })
   .then(() => {
     console.log('connected to the mongo database');
-    server.listen(3000);
+    server.listen(5000);
   })
   .catch((err) => console.log(err));
