@@ -17,6 +17,7 @@
     "cors": "^2.8.4",
     "express": "^4.15.4",
     "express-session": "^1.15.5",
+    "jsonwebtoken": "^8.2.1",
     "mocha": "^3.5.0",
     "mongoose": "^4.11.7"
   },

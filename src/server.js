@@ -1,9 +1,10 @@
 // const bodyParser = require('body-parser');
 const express = require('express');
 const cors = require('cors');
-const session = require('express-session');
+//const session = require('express-session');
 const mongoose = require('mongoose');
-const MongoStore = require('connect-mongo')(session);
+//const MongoStore = require('connect-mongo')(session);
+const jwt = require('jsonwebtoken');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -20,20 +21,33 @@ server.use(cors(corsOptions));
 
 server.use(express.json());
 
-server.use(
-  session({
-    name: 'auth',
-    secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
-    cookie: {maxAge: 1 * 24 * 60 * 60 * 1000 }, //ms
-    secure: false,
-    saveUninitialized: false,
-    resave: false,
-    store: new MongoStore({
-      url: 'mongodb://localhost/sessions',
-      ttl: 10*60,//seconds
-    }),
-  })
-);
+// server.use(
+//   session({
+//     name: 'auth',
+//     secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
+//     cookie: {maxAge: 1 * 24 * 60 * 60 * 1000 }, //ms
+//     secure: false,
+//     saveUninitialized: true,
+//     resave: false,
+//     store: new MongoStore({
+//       url: 'mongodb://localhost/sessions',
+//       ttl: 10*60,//seconds
+//     }),
+//   })
+// );
+
+function generateToken (user) {
+  const timestamp = new Date().getTime();
+  const payload = {
+    username: user.username,
+    _id: user._id,
+    iat: timestamp
+  };
+  const secret = 'Nothing here'
+  return token = jwt.sign(payload, secret, {
+    expiresIn: 60 * 60 * 24
+  });
+}
 
 const isLoggedIn = function (req, res, next) {
   console.log(req.session.name);
@@ -64,11 +78,11 @@ const sendUserError = (err, res) => {
 };
 
 // TODO: implement routes
-server.post('/users', (req, res) => {
+server.post('/api/users', (req, res) => {
   console.log(req.body);
   const { username, password } = req.body;
   const passwordHash = password.trim();
-  const newUser = new User({ username, passwordHash });
+  const user = new User({ username, passwordHash });
 
   if(!username) {
     return sendUserError('Username is missing', res);
@@ -77,16 +91,17 @@ server.post('/users', (req, res) => {
     return sendUserError('Password is missing', res);
   }
 
-  newUser
+  user
     .save((error, user) => {
       if (error) {
         return sendUserError(error, res);
       }
-      res.status(200).json(user);
-    })
+      const token = generateToken(user);
+      res.status(200).json({token});
+    });
 });
 //login
-server.post('/login', function(req, res, next) {
+server.post('/api/login', function(req, res, next) {
   const { username, password } = req.body;
   console.log("in login, username: ", username);
   if (username && password.trim()) {
@@ -94,8 +109,13 @@ server.post('/login', function(req, res, next) {
       if (user) {
         user.isPasswordValid(password).then(isValid => {
           if (isValid) {
-            req.session.name = username;
-            res.status(200).json({success: true});
+            const token = generateToken(user);
+            // req.session.name = username;
+            // res.status(200).json({success: true});
+            res.json({
+              user,  
+              token
+            });
             //console.log(req.session.name)
           } else {
             return sendUserError({ error:'Incorrect Credentials' }, res);
@@ -127,7 +147,7 @@ server.get('/me', isLoggedIn, (req, res) => {
   res.json(req.user);
 });
 
-server.get('/api/users', (req, res) => {
+server.get('/api/restricted/users', (req, res) => {
   User
     .find()
     .then((users) => {
@@ -138,7 +158,7 @@ server.get('/api/users', (req, res) => {
     })
 })
 //logout
-server.post('/logout', function(req, res, next) {
+server.post('/api/logout', function(req, res, next) {
   if (req.session) {
     req.session.destroy(function(err) {
       if (err) {
