@@ -5,12 +5,51 @@ const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(session);
+const cors = require('cors');
 
 const User = require('./user');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 const server = express();
+
+//sends user error when one is generated
+const sendUserError = (err, res) => {
+  res.status(STATUS_USER_ERROR);
+  if (err && err.message) {
+    res.json({ message: err.message, stack: err.stack });
+  } else {
+    res.json({ error: err });
+  }
+};
+
+//validates whether user has a session
+const validate = function(req, res, next) {
+  if (req && req.session) {
+    User.findById(req.session.user_id)
+    .then(res => {
+      req.user = res;
+      next();
+    }).catch(console.log('No user could be found.'));
+  } else {
+    sendUserError({ error: "You are not logged in." }, res);
+    return;
+  } 
+};
+
+//middleware for restricted base url
+const restricted = (req, res, next) => {
+  if(req.url.includes('/restricted')) {
+    if(req) {
+      next();
+    } else {
+      sendUserError({message: 'You are not currently logged in.'}, res);
+      return;
+    }
+  } else {
+    next();
+  }
+}
 
 mongoose
   .connect('mongodb://localhost/authdb')
@@ -19,6 +58,12 @@ mongoose
   })
   .catch(err => console.log('database connection failed', err));
 
+const corsOptions = {
+  "origin": "http://localhost:3000",
+  "credentials": true,
+};
+
+server.use(cors(corsOptions));
 server.use(bodyParser.json());
 server.use(session({
   secret: 'e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re',
@@ -29,25 +74,19 @@ server.use(session({
     mongooseConnection: mongoose.connection,
   }),
 }));
+server.use(restricted);
 
-/* Sends the given err, a string or an object, to the client. Sets the status
-   code appropriately. */
-const sendUserError = (err, res) => {
-  res.status(STATUS_USER_ERROR);
-  if (err && err.message) {
-    res.json({ message: err.message, stack: err.stack });
-  } else {
-    res.json({ error: err });
-  }
-};
+
 
 // TODO: implement routes
 
-server.get('/users', (req, res) => {
+server.get('/restricted/users', (req, res) => {
   User
     .find()
-    .then(users => res.status(200).json(users))
-    .catch(err => sendUserError(err, res));
+    .then(results => {
+      res.status(200).json(results);
+    })
+    .catch(err => res.json);
 });
 
 server.post('/users', (req, res) => {
@@ -83,19 +122,15 @@ server.post('/login', (req, res) => {
   }
 });
 
-const validate = function(req, res, next) {
-  if (req.session && req.session.user_id) {
-    User.findById(req.session.user_id)
-    .then(res => {
-      console.log(res);
-      req.user = res;
-      next();
-    }).catch(console.log('sorry'));
+server.post('/logout', (req, res) => {
+  if(req.session.user_id) {
+    req.session.destroy();
+    res.status(200).json({ message: 'See you soon!' });
   } else {
-    sendUserError({ error: "wrong user" }, res);
-    return;
+    sendUserError({ message: 'You aren\'t logged in!' }, res);
   }
-};
+})
+
 
 // TODO: add local middleware to this route to ensure the user is logged in
 server.get('/me', validate, (req, res) => {
