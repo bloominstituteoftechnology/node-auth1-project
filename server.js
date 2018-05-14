@@ -21,7 +21,10 @@ server.get('/', (req, res) => {
 });
 
 function authenticate(req, res, next) {
-    if (req.body.password === 'password') {
+    const userSchema = req.params;
+    const password = userSchema(password);
+
+    if (req.body.password === ({ password })) {
         next();
     } else {
         res.status(401).send('You shall not pass!');
