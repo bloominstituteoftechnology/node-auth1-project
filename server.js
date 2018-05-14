@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
 
+const server = express();
+
 //connect to db
 mongoose
   .connect("mongodb://localhost/authdb")
