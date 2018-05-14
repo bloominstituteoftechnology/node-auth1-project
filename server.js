@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const User = require('./User/User');
-const session = require('session');
+const session = require('express-session');
 
 mongoose
 .connect('mongodb://localhost/authndb')
@@ -16,6 +16,9 @@ const server = express();
 
 // Middleware
 server.use(express.json());
+server.use(session({
+    secret: 'ffdmfdmfdkfdfdgjfdjknfdnkjdfkjndsm'
+}));
 
 // Custom Middleware
 function login (req, res, next){
@@ -46,8 +49,15 @@ server.post('/api/register', (req, res) => {
 
 // Login route
 server.post('/api/login', login, (req, res) => {
-    res.send('Logged in');
-    
+    const session = req.session;
+    if (!session.viewCount) {
+        viewCount = 0;
+    } else {
+        session.viewCount++;
+        res.json({ viewCount: session.viewCount })
+    }
+
+    res.send(session);
 })
 
 server.post('/api/users', (req, res) => {
