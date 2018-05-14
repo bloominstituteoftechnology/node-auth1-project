@@ -15,25 +15,6 @@ mongoose.connect("mongodb://localhost/Auth")
 
 const server = express();
 
-// function validatePassword(password)  {
-//     let passHash;
-//     bcrypt.hash(password, 15, (err, hash) => {
-//         if(err) {
-//             return false;
-//         } else {
-//             passHash = hash
-//             console.log('validatingg', passHash)
-//             return passHash;
-//         }
-//     })
-// }
-
-
-
-// bcrypt.compare(myPlaintextPassword, hash, function(err, res) {
-//     // res == true
-// });
-
 function validate(password, passwordDB) {
     bcrypt.compare(password, passwordDB, function(err, res) {
         console.log(res)
@@ -43,15 +24,11 @@ function validate(password, passwordDB) {
 
 
 function seperateObject(info) {
-    // let usernameKey = Object.keys(info, [0]);
     let usernameVal = Object.values(info, [0]);
-    // usernameKey = usernameKey[0]
     usernameVal = usernameVal[0]
-    // console.log(usernameKey, usernameVal);
     let obj = {
         username: usernameVal.toString()
     }
-    // console.log('function test', obj)
     return obj;
 }
 
@@ -71,7 +48,7 @@ server.post('/register', (req, res) => {
     })
 })
 
-server.post('/login', (req, res) => {
+server.post('/login', (req, res, next) => {
     const login = req.body;
     // console.log(login)
     
@@ -79,8 +56,16 @@ server.post('/login', (req, res) => {
         // console.log(login.password)
         // console.log(user.password)
 
-        validate(login.password, user.password)
-        res.send(user)
+        bcrypt.compare(login.password, user.password, (err, valid) => {
+            if(err) {
+                res.status(400).json({Error: "Wrong password"});
+            } 
+
+            if(valid) {
+                res.send(user);
+                next()
+            }
+        })
     }).catch(err => {
         res.status(400).json({
             error: "Could not find that username"
@@ -90,4 +75,3 @@ server.post('/login', (req, res) => {
 
 server.listen(5000, () => console.log('API RUNNING ON PORT 5000'));
 
-// { username: 'cookie' }
