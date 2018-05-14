@@ -25,8 +25,12 @@ server.post('/api/register', function(req, res) {
 
     user
         .save()
-        .then()
-        .catch();
+        .then(user => {
+            res.status(201).json(user);
+        })
+        .catch(err => {
+            res.status(500).send(err);
+        });
 })
 
 // server.post('/login', function(req, res) {
