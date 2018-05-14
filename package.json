@@ -1,0 +1,19 @@
+{
+  "name": "Auth",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": "https://github.com/faulkenfett11/Auth.git",
+  "author": "faulkenfett11 <36997363+faulkenfett11@users.noreply.github.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "express": "^4.16.3",
+    "mongoose": "^5.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.4"
+  }
+}
