@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const User = require('./user/User');
+
 mongoose
     .connect('mongodb://localhost/authprojdb')
     .then(go => {
@@ -17,5 +19,24 @@ server.use(express.json());
 server.get('/', (req, res) => {
     res.send('API IS LIT FAM')
 });
+
+server.post('/api/register', function(req, res) {
+    const user = new User(req.body);
+
+    user
+        .save()
+        .then()
+        .catch();
+})
+
+// server.post('/login', function(req, res) {
+//     .then()
+//     .catch()
+// })
+
+// server.get('/user', function(req, res) {
+//     .then()
+//     .catch()
+// })
 
 server.listen(8000, () => console.log('Listening...'));
