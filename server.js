@@ -20,6 +20,14 @@ server.get('/', (req, res) => {
     res.send('API IS LIT FAM')
 });
 
+function authenticate(req, res, next) {
+    if (req.body.password === 'password') {
+        next();
+    } else {
+        res.status(401).send('You shall not pass!');
+    }
+}
+
 server.post('/api/register', function(req, res) {
     const user = new User(req.body);
 
@@ -33,12 +41,11 @@ server.post('/api/register', function(req, res) {
         });
 })
 
-// server.post('/login', function(req, res) {
-//     .then()
-//     .catch()
-// })
+server.post('/api/login', authenticate, (req, res) => {
+    res.send('Logged in');
+})
 
-// server.get('/user', function(req, res) {
+// server.get('/api/user', function(req, res) {
 //     .then()
 //     .catch()
 // })
