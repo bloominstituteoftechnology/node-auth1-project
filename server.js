@@ -33,8 +33,10 @@ server.post('/api/register', function(req, res) {
 })
 
 server.post('/login', function(req, res) {
-    // .then()
-    // .catch()
+
+    user
+     .then()
+     .catch()
 })
 
 server.get('/users', function(req, res) {
