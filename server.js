@@ -1,5 +1,6 @@
 const express = require('express');
 const server = express();
+const User = require('./models/user');
 
 const mongoose = require('mongoose');
 
@@ -19,4 +20,15 @@ const auth = (req, res, next) => {
 
 server.post('/api/login', auth, (req, res) => {
   res.status(200).send("You're logged in!"); 
+});
+
+server.post('/api/register', (req, res) => {
+  const user = new User(req.body);
+
+  user.save()
+    .then(user => res.status(200).send(user))
+    .catch(err => {
+      console.log(err);
+      res.status(505).send(err)
+    });
 });
