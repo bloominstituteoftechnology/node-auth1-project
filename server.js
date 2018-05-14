@@ -11,8 +11,14 @@ mongoose
 
   const server = express();
 
+  // const auth = (req, res, next) {
+  //   if (req.body.password )
+  // }
+
   server.get('/', (req, res) => {
     res.send({api: 'running'})
   })
+
+
 
   server.listen(5000, () => console.log('n\ === API Running! === \n'))
