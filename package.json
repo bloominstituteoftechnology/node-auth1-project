@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "nodedemon server.js"
+    "start": "nodemon server.js"
   },
   "repository": "https://github.com/Supertatortots/Auth.git",
   "author": "totsuya <supertatortots@gmail.com>",
