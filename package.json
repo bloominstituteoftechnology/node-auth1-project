@@ -1,0 +1,29 @@
+{
+  "name": "auth",
+  "version": "1.0.0",
+  "description": "## Topics",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nedu/Auth.git"
+  },
+  "keywords": [],
+  "author": "Nedu Robert",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nedu/Auth/issues"
+  },
+  "homepage": "https://github.com/Nedu/Auth#readme",
+  "devDependencies": {
+    "nodemon": "^1.17.4"
+  },
+  "dependencies": {
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "helmet": "^3.12.0",
+    "mongoose": "^5.1.0"
+  }
+}
