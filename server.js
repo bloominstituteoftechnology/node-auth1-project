@@ -27,7 +27,7 @@ server.get('/', (req, res) => {
 });
 
 server.get('/api/users', (req, res) => {
-  res.send(username);
+  res.send(users);
 });
 
 server.post('/api/register', function(req,res) {
