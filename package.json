@@ -1,0 +1,20 @@
+{
+  "name": "auth",
+  "version": "1.0.0",
+  "description": "Auth Assignment 1",
+  "main": "server.js",
+  "repository": "https://github.com/cjmarsh725/Auth.git",
+  "author": "Chris Marsh",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "express": "^4.16.3",
+    "mongoose": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.4"
+  },
+  "scripts": {
+    "start": "nodemon server.js"
+  }
+}
