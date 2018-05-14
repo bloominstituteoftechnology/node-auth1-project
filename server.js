@@ -4,6 +4,11 @@ const helmet = require('helmet');
 const cors = require('cors');
 const session = require('express-session');
 
+const registerRouter = require('./users/registerRouter.js');
+const loginRouter = require('./users/loginRouter.js');
+const usersRouter = require('./users/usersRouter.js');
+
+
 const server = express();
 
 mongoose

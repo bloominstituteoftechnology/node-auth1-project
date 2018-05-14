@@ -4,7 +4,7 @@
   "description": "* Authentication\r * Express Middleware\r * Mongoose Middleware and Methods\r * Sessions and Cookies",
   "main": "server.js",
   "scripts": {
-    "test": "nodemon server.js"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
