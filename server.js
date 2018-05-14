@@ -1,9 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const helmet = require('helmet');
-const cors = require('cors');
 const port = 5000;
-const User = './Models/Profile.js';
+const User = require('./Models/Profile.js');
+const bcrypt = require('bcrypt');
 
 mongoose.connect('mongodb://localhost/userdb')
   .then(() => {
@@ -15,10 +14,29 @@ mongoose.connect('mongodb://localhost/userdb')
 
 const server = express();
 
+const auth = (req, res, next) => {
+  User.findOne({username: req.body.username}).select('username password -_id')
+    .then(obj => {
+      bcrypt.compare(req.body.password, obj.password)
+        .then(response => {
+          console.log(response);
+          if (response) {
+            req.user = {...obj._doc};
+          } else {
+            req.user = {login: 'unsuccessful'};
+          }
+          next();
 
-server.use(helmet());
-server.use(cors());
+        })
+        .catch(err => console.log(err));
+    })
+}
+
 server.use(express.json());
+
+server.get('/', (req, res) => {
+  res.json({message: 'connected to api'})
+});
 
 server.get('/api/users', (req, res) => {
   User.find()
@@ -36,6 +54,10 @@ server.post('/api/register', (req, res) => {
   .then(response => {
     res.status(201).json(response);
   })
+});
+
+server.post('/api/login', auth, (req, res) => {
+  res.json({...req.user});
 });
 
 server.listen(port, () => {
