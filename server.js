@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const Register = require('./register/register');
+const Login = require('./login/login');
 
 mongoose 
     .connect('mongodb://localhost/authdb')
@@ -14,6 +15,7 @@ const server = express();
 
 server.use(express.json());
 server.use('/register', Register);
+server.use('/login', Login);
 
 server.get('/', (req, res) => {
     res.send({ api: 'running' });
