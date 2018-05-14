@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -12,5 +13,24 @@ const userSchema = new mongoose.Schema({
     required: true
   },
 });
+
+userSchema.pre('save', function(next) {
+
+  bcrypt.hash(this.password, 14, (err, hash) => {
+    if(err) {
+      return next(err);
+    }
+
+    this.password = hash;
+
+    return next(); //saves to the db
+  });
+});
+
+// userSchema.post('save', function(next) {
+//   console.log('post save hook')
+
+//   next();
+// });
 
 module.exports = mongoose.model('User', userSchema);
