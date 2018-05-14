@@ -1,9 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const User = require('./User/User');
 
 mongoose
-.connect('mongodb://localhost/authN')
-.then(connects => {
+.connect('mongodb://localhost/authndb')
+.then(connect => {
     console.log('You got connected');
 })
 .catch(err => {
@@ -22,6 +23,14 @@ server.get('/', (req, res) => {
 
 server.post('/api/register', (req, res) => {
 
+    User
+    .create(req.body)
+    .then(user => {
+        res.status(201).json({ user })
+    })
+    .catch(err => {
+        res.status(500).send('Error Creating!')
+    })
 })
 
 server.post('/api/login', (req, res) => {
