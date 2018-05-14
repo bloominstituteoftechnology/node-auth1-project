@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     }
-})
+});
 
 userSchema.pre('save', function(next) {
     bcrypt.hash(this.password, 12, (err, hash) => {
@@ -21,7 +21,11 @@ userSchema.pre('save', function(next) {
         }
         this.password = hash;
         return next();
-    })
-})
+    });
+});
+
+userSchema.methods.authenticate = function(password) {
+    return bcrypt.compare(password, this.password);
+};
 
 module.exports = mongoose.model('User', userSchema);
