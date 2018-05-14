@@ -1,0 +1,17 @@
+{
+  "name": "Auth",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": "https://github.com/markstez05/Auth.git",
+  "author": "markstez05 <36493764+markstez05@users.noreply.github.com>",
+  "license": "MIT",
+  "dependencies": {
+    "nodemon": "^1.17.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.4"
+  }
+}
