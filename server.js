@@ -24,7 +24,7 @@ server.get('/', (req, res) => {
   res.send({ route: '/', message: req.message });
 });
 
-server.post('api/login', authenticate, (req, res) => {
+server.post('/api/login', authenticate, (req, res) => {
   res.send('Welcome to the Mines of Moria!');
 });
 
