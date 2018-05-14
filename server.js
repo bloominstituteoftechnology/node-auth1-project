@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const session = require('express-session');
 
 mongoose.connect('mongodb://localhost/userauthdb')
 .then(conn => {
@@ -11,7 +12,8 @@ mongoose.connect('mongodb://localhost/userauthdb')
     console.log(`error connecting to database: ${err}`);
 })
 
-const routes = require('./routes');
+const authRoutes = require('./routes');
+const userRoutes = require('./routes/users');
 
 const server = express();
 
@@ -19,7 +21,15 @@ server.use(helmet());
 server.use(cors());
 server.use(express.json());
 
-server.use('/api', routes)
+server.use(session({
+    secret: 'you shall not pass',
+    cookies: { maxAge: 1 * 24 * 60 * 1000},
+    secure: false,
+    name: 'auth'
+}))
+
+server.use('/api', authRoutes);
+server.use('/api', userRoutes);
 
 const port = process.env.PORT || 5000;
 server.listen(port, () => console.log(`\n=== API running on port ${port} ===\n`));
