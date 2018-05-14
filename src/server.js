@@ -2,6 +2,8 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const session = require("express-session");
 
+const user = require("./user");
+
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
 
@@ -25,14 +27,30 @@ const sendUserError = (err, res) => {
   }
 };
 
+function authenticate(req, res, next) {
+  if (req.body.password === "melon") {
+    next();
+  } else {
+    res.status(401).send("Access denied.");
+  }
+}
+
 // TODO: implement routes
+server.use("/users", user)
+
+server.get('/', )
+
 server.post("/users", function(req, res) {
-  const user = new user(req.body);
+  const user = new User(req.body);
 
   user
     .save()
-    .then(user => res.staus(201).send(user))
+    .then(newUser => res.staus(200).send(newUser))
     .catch(err => res.status(500).send(err));
+});
+
+server.post("/login", authenticate, (req, res) => {
+  res.send("User authenticated");
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
