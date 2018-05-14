@@ -26,6 +26,10 @@ server.get('/', (req, res) => {
   res.send({ route: '/', message: req.message });
 });
 
+server.get('/api/users', (req, res) => {
+  res.send(username);
+});
+
 server.post('/api/register', function(req,res) {
   const user = new User(req.body);
 
