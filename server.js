@@ -15,15 +15,32 @@ mongoose.connect("mongodb://localhost/Auth")
 
 const server = express();
 
-function validatePassword(req, res, next)  {
-    bcrypt.hash(req.body.password, 15, (err, hash) => {
-        if(err) {
-            return false;
-        } else {
-            return true;
-        }
+// function validatePassword(password)  {
+//     let passHash;
+//     bcrypt.hash(password, 15, (err, hash) => {
+//         if(err) {
+//             return false;
+//         } else {
+//             passHash = hash
+//             console.log('validatingg', passHash)
+//             return passHash;
+//         }
+//     })
+// }
+
+
+
+// bcrypt.compare(myPlaintextPassword, hash, function(err, res) {
+//     // res == true
+// });
+
+function validate(password, passwordDB) {
+    bcrypt.compare(password, passwordDB, function(err, res) {
+        console.log(res)
     })
 }
+
+
 
 function seperateObject(info) {
     // let usernameKey = Object.keys(info, [0]);
@@ -59,9 +76,11 @@ server.post('/login', (req, res) => {
     // console.log(login)
     
     User.findOne(seperateObject(login)).then(user => {
-        console.log(login)
+        // console.log(login.password)
+        // console.log(user.password)
+
+        validate(login.password, user.password)
         res.send(user)
-        seperateObject(login)
     }).catch(err => {
         res.status(400).json({
             error: "Could not find that username"
