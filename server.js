@@ -14,8 +14,8 @@ mongoose
 
 // sub-applications
 const Register = require("./register/Register");
-const Login = require("./login/Login");
-const Users = require("./users/Users");
+// const Login = require("./login/Login");
+// const Users = require("./users/Users");
 
 const server = express();
 
@@ -31,9 +31,9 @@ server.get("/", (req, res) => {
 // create a user with a hashed password
 server.use("/api/register", Register);
 // validate login and create a new session for a user
-server.use("/api/login", Login);
+// server.use("/api/login", Login);
 // send an array of all users in the database
-server.use("/api/users", Users);
+// server.use("/api/users", Users);
 
 server.listen(5000, () => {
 	console.log("\n===api running on 5000===\n");
