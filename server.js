@@ -14,6 +14,24 @@ const server = express();
 
 server.use(express.json());
 
+// Register new user
+server.post('/api/register', (req, res) => {
+  const newUser = new User(req.body);
+
+  newUser.save()
+    .then(user => {
+      res.status(201).json(user);
+    })
+    .catch(err => {
+      res.status(500).json({
+        error: 'Could not complete registration'
+      })
+    });
+});
+
+// Login exsiting user
+
+// Retrieve users
 server.get('/api/users', (req, res) => {
   User.find()
     .then(users => {
