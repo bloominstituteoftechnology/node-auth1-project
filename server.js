@@ -18,7 +18,10 @@ function authenticate(req, res, next) {
     User.findOne({ username: req.body.username }, function(err, user) {
         if (err) throw err;
         else user.comparePassword(req.body.password, function(err, isMatch) {
-            if (err) throw err;
+            if (err) {
+                console.log(req.body.username + 'failed to login');
+                res.status(401).json({ error: 'invalid username/password pair'}) ;   
+            };
             console.log(req.body.username + ' has logged in')
             next();
         })
