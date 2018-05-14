@@ -5,12 +5,13 @@
   "author": "Jared Cuffe <jcuffe@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": ""
+    "start": "nodemon src/server.js"
   },
   "devDependencies": {
     "nodemon": "^1.17.4"
   },
   "dependencies": {
+    "bcrypt": "^2.0.1",
     "express": "^4.16.3",
     "mongoose": "^5.1.0"
   }
