@@ -52,21 +52,20 @@ server.post('/api/login', (req, res, next) => {
         });
 });
 
-const verificationCheck = function (req, res, next) {
+server.use('/api/restricted/', function (req, res, next){
     const username = req.session.name;
-    if (username) {
-        User.findOne({username})
-        .then((poo) => {
-            next();
-        })
-    } else return res.status(404).json({message: 'login darnit'});
-};
+        if (username) {
+            User.findOne({username})
+            .then((poo) => {
+                next();
+            })
+        } else return res.status(404).json({message: 'login darnit'});
+})
 
 
-server.get('/api/users', verificationCheck, (req, res) => {
+server.get('/api/restricted/users', (req, res) => {
 User.find({})
     .then(poo => {
-       
         // const doo = poo.map(poop => { return poop.username});
         // console.log(doo)
         res.status(200).json(poo);
