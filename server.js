@@ -16,6 +16,16 @@ const server = express();
 // Middleware
 server.use(express.json());
 
+// Custom Middleware
+function login (req, res, next){
+    if (req.body.user === 'helloz' && req.body.password === 'austin') {
+        res.send('Logged in')
+        next();
+    } else {
+        res.send('You shall not pass!')
+    }
+}
+
 // Initial route
 server.get('/', (req, res) => {
     res.send('api running');
@@ -33,7 +43,20 @@ server.post('/api/register', (req, res) => {
     })
 })
 
-server.post('/api/login', (req, res) => {
+server.post('/api/login', login, (req, res) => {
+
+    User
+    .create(req.body)
+    .then(login => {
+        res.json(login)
+    })
+    .catch(err => {
+        res.send('Not creating')
+    })
+    
+})
+
+server.post('/api/users', (req, res) => {
 
 })
 
