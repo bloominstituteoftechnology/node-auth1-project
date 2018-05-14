@@ -11,6 +11,10 @@ module.exports = {
     status: 500,
     error: 'Unable to fetch users'
   },
+  userNotFound: {
+    status: 404,
+    error: 'Unable to find user'
+  },
   userLoginMissingFields: {
     status: 401,
     error: 'Please provide a username and password'

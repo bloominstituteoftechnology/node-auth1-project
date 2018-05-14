@@ -1,28 +1,21 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
+const session = require('express-session')
 const User = require('./models/user.js')
-const Token = require('./models/token.js')
 const errors = require('./errors.js')
 
 const server = express()
+server.use(session({
+  secret: 'shhhhhh',
+  resave: false,
+  saveUninitialized: false
+}))
 server.use(express.json())
 
-function userAuthenticated(req, res, next) {
-  const { token } = req.headers
-  if (token) {
-    Token.findById(token)
-      .then(token => {
-        if (token.isValid()) {
-          next()
-        } else {
-          next(errors.userTokenExpired)
-        }
-      })
-  } else {
-    next(errors.userNotLoggedIn)
-  }  
-}
+const userAuthenticated = (req, res, next) => req.session.username
+  ? next()
+  : next(errors.userNotLoggedIn)
 
 server.get('/api/users', userAuthenticated, (req, res, next) => {
   User.find()
@@ -36,21 +29,25 @@ server.post('/api/login', (req, res, next) => {
 
   User.findOne({ username })
     .then(user => {
+      if (!user) next(errors.userNotFound) 
       bcrypt.compare(password, user.password)
-        .then(hash => {
-          Token.create({ userId: user._id })
-            .then(token => res.send({
-              user: user,
-              token: token._id
-            }))
+        .then(result => {
+          req.session.username = username
+          res.send(user)
         })
     })
 })
 
+server.get('/api/logout', (req, res, next) => {
+  if (!req.session.username) next(errors.userNotLoggedIn)
+  req.session.username = null
+  res.send('Logged out')
+})
+
 server.post('/api/register', (req, res, next) => {
-  if (!req.body.username) { next(errors.userRegisterMissingName) }
-  if (!req.body.password) { next(errors.userRegisterMissingPassword) }
-  if (req.body.password.length < 7) { next(errors.userRegisterInvalidPassword)}
+  if (!req.body.username) next(errors.userRegisterMissingName)
+  if (!req.body.password) next(errors.userRegisterMissingPassword)
+  if (req.body.password.length < 7) next(errors.userRegisterInvalidPassword)
 
   const user = new User(req.body)
   user.save()  
