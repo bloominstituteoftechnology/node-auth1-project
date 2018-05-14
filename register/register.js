@@ -5,8 +5,7 @@ const router = express.Router();
 const User = require('../users/User');
 
 router 
-    route('/')
-    .post((req, res) => {
+    .post('/', (req, res) => {
         const user = new User(req.body);
 
         user
@@ -15,4 +14,4 @@ router
         .catch(err => res.status(500).send(err));
     });
 
-export default router;
+module.exports = router;

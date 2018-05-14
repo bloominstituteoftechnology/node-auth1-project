@@ -19,4 +19,4 @@ server.get('/', (req, res) => {
     res.send({ api: 'running' });
 });
 
-server.listen(5000, () => console.log(`\n=== api running on ${port} ===\n`));
+server.listen(5000, () => console.log(`\n=== api running on port 5000 ===\n`));
