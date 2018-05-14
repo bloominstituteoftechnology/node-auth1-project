@@ -25,14 +25,11 @@ function authenticate(req, res, next) {
 server.use(express.json());
   
 server.post('/register', function(req, res) {
-	const userData = req.body;
-	const user = new User(userData);
-  user.save().then(user => {
-			res.status(201).send(user);
-		})
-		.catch(err => {
-			res.status(500).send(err);
-		})
+	const user = new User(req.body);
+	user
+		.save()
+		.then(user => res.status(201).send(user))
+		.catch(err =>	res.status(500).send(err))
   });
   
   server.post('/login', authenticate, (req, res) => {
