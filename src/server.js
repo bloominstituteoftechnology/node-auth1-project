@@ -2,7 +2,7 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const session = require("express-session");
 
-const user = require("./user");
+const User = require("./user");
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -36,17 +36,21 @@ function authenticate(req, res, next) {
 }
 
 // TODO: implement routes
-server.use("/users", user)
+// server.use("/users", user)
 
-server.get('/', )
+server.get("/users", (req, res) => {
+  User.find()
+    .then(users => res.json(users))
+    .catch(err => res.status(500).send(err));
+});
 
-server.post("/users", function(req, res) {
+server.post("/register", function(req, res) {
   const user = new User(req.body);
 
   user
     .save()
-    .then(newUser => res.staus(200).send(newUser))
-    .catch(err => res.status(500).send(err));
+    .then(newUser => res.status(201).json(newUser))
+    .catch(err => res.status(500).json(err));
 });
 
 server.post("/login", authenticate, (req, res) => {
