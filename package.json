@@ -1,0 +1,20 @@
+{
+  "name": "authproj",
+  "version": "1.0.0",
+  "description": "Lambda Auth Project",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": "https://github.com/Davidless/Auth.git",
+  "author": "David Alexander Morales <damorales89@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "express": "^4.16.3",
+    "mongoose": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.4"
+  }
+}
