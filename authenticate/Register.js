@@ -1,0 +1,3 @@
+const Register = props => {
+    return;
+}

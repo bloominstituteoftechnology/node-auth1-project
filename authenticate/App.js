@@ -17,7 +17,11 @@ class App extends Component {
     render() {
         return (
             <div>
-                <View users={this.state.users}/>
+               <Navigation />
+               <Route exact path ="/" component={Login} />
+               <Route path="/Login" component={Login} />
+               <Route path="/View" component={View} />
+               <Route path="/Index" compoent={index} />
             </div>
         )
     }
