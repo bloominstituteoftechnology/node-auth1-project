@@ -1,0 +1,14 @@
+{
+  "name": "Auth",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": "https://github.com/yshuman1/Auth.git",
+  "author": "Yasin Shuman <email@yasin.io>",
+  "license": "MIT",
+  "dependencies": {
+    "nodemon": "^1.17.4"
+  }
+}
