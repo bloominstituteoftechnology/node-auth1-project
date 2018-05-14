@@ -75,6 +75,20 @@ server.get("/users", (req, res, next) => {
   }
 });
 
+// GET /logout
+server.get("/logout", (req, res, next) => {
+  if (req.session) {
+    // delete session object
+    req.session.destroy(err => {
+      if (err) {
+        res.status(400).json(err);
+      } else {
+        res.status(200).json({ message: "Logged out" });
+      }
+    });
+  }
+});
+
 const port = process.env.PORT || 5000;
 server.listen(port, () => {
   console.log(`Server up and running on ${port}`);
