@@ -32,3 +32,9 @@ server.post('/api/register', (req, res) => {
       res.status(505).send(err)
     });
 });
+
+server.get('/api/users', async (req, res) => {
+  const users = await User.find({});
+
+  res.status(200).json(users);
+});
