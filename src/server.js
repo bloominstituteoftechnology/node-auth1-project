@@ -13,19 +13,18 @@ server.use(session({
 }))
 server.use(express.json())
 
+// Middlewares!
 const userAuthenticated = (req, res, next) => req.session.username
   ? next()
   : next(errors.userNotLoggedIn)
 
-server.get('/api/users', userAuthenticated, (req, res, next) => {
-  User.find()
-    .then(users => res.send(users))
-    .catch(() => next(errors.usersFetch))
-})
+// User Api
+const api = express.Router()
+server.use('/api', api)
 
-server.post('/api/login', (req, res, next) => {
+api.post('/login', (req, res, next) => {
   const { username, password } = req.body
-  if (!username || !password) { next(errors.userLoginMissingFields) }
+  if (!username || !password) next(errors.userLoginMissingFields)
 
   User.findOne({ username })
     .then(user => {
@@ -38,13 +37,13 @@ server.post('/api/login', (req, res, next) => {
     })
 })
 
-server.get('/api/logout', (req, res, next) => {
+api.get('/logout', (req, res, next) => {
   if (!req.session.username) next(errors.userNotLoggedIn)
   req.session.username = null
   res.send('Logged out')
 })
 
-server.post('/api/register', (req, res, next) => {
+api.post('/register', (req, res, next) => {
   if (!req.body.username) next(errors.userRegisterMissingName)
   if (!req.body.password) next(errors.userRegisterMissingPassword)
   if (req.body.password.length < 7) next(errors.userRegisterInvalidPassword)
@@ -55,6 +54,20 @@ server.post('/api/register', (req, res, next) => {
     .catch(err => next({ status: 500, error: err }))
 })
 
+// Restricted section of user api
+const restricted = express.Router()
+api.use('/restricted', restricted)
+
+// Use authentication middleware for all requests to this router
+restricted.use(userAuthenticated)
+
+restricted.get('/users', (req, res, next) => {
+  User.find()
+    .then(users => res.send(users))
+    .catch(() => next(errors.usersFetch))
+})
+
+// Catch-all error handler
 server.use(({ status, error }, req, res, next) => {
   console.log(error)
   res.status(status).send({ error })
