@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const User = require('./user/user');
+
 mongoose.connect('mongodb://localhost/authProjectdb')
 .then(conn => {
     console.log('\n== Connected to Database! ==\n')
@@ -17,19 +19,27 @@ server.get('/', (req, res) => {
     res.send('Connected')
 });
 
-server.post('/register', function(req, res) {
-    .then()
-    .catch()
+server.post('/api/register', function(req, res) {
+    const user = new User(req.body);
+
+    user 
+    .save()
+    .then(user => {
+        res.status(201).json({ user })
+    })
+    .catch(err => {
+        res.status(500).send('Error creating, uh oh!');
+    });
 })
 
 server.post('/login', function(req, res) {
-    .then()
-    .catch()
+    // .then()
+    // .catch()
 })
 
 server.get('/users', function(req, res) {
-    .then()
-    .catch()
+    // .then()
+    // .catch()
 })
 
 server.listen(5000, () => console.log('Server running on port 5000'));
