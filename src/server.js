@@ -15,19 +15,16 @@ function authenticate(req, res, next) {
   User.find({ username: req.body.username }).then(matchedUser => {
     const user = matchedUser[0];
     if (user) {
-      const authenticated = user.comparePassword(req.body.password, function(
-        err,
-        hash
-      ) {
-        if (hash && !err) {
+      user.comparePassword(req.body.password, function(err, isMatch) {
+        if (isMatch && !err) {
           return res.json({
-            authenticated: true,
+            authenticated: isMatch,
             user: user.username,
             message: "Authentification was successful"
           });
         } else
           return res.json({
-            authenticated: false,
+            authenticated: isMatch,
             user: user.username,
             message: "Authentification was unsuccessful"
           });
