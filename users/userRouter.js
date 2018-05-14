@@ -2,11 +2,21 @@ const express = require('express');
 const User = require('./userModel');
 const router = express.Router();
 
-const authenticateUser = (req, res, next) => {
-  const { username, password } = req.body;
-  if (username && password) { next() }
-  if (!username && pasword) { res.send("must provide a username") }
-  if (username && !password) { res.send("must provide a password") }
+const authenticateUsername = (req, res, next) => {
+  const { username } = req.body;
+
+  if (username) {
+    User
+      .find({ username: req.body.username })
+      .then(user => user.length === 0 ? next() : res.send("that username is already in use."))
+      .catch(err => res.send("error authenticating username"))
+  } else {
+    res.send("must provide a username")
+  }
+}
+
+const authenticatePW = (req, res, next) => {
+  req.body.password ? next() : res.send("you must provide a password")
 }
 
 router.route('/')
@@ -17,7 +27,7 @@ router.route('/')
       .catch(err => res.status(500).json("error fetching users"))
   })
 
-  .post(authenticateUser, (req, res) => {
+  .post(authenticateUsername, authenticatePW, (req, res) => {
     User
       .create(req.body)
       .then(user => res.status(201).json(user))
