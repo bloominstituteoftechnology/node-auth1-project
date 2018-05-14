@@ -19,6 +19,10 @@ server.use(helmet());
 server.use(cors());
 server.use(express.json());
 
+server.use('/api/register', registerRouter);
+server.use('/api/login', loginRouter);
+server.use('/api/users', usersRouter);
+
 server.get('/', function(req, res) {
     res.status(200).json({ api: 'running' })
 })
