@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const User = require("./Users/User")
+const User = require("./Users/User");
+const bcrypt = require('bcrypt')
+
 
 
 mongoose.connect("mongodb://localhost/Auth")
@@ -13,9 +15,28 @@ mongoose.connect("mongodb://localhost/Auth")
 
 const server = express();
 
-// function validatePassword(req, res, next)  {
+function validatePassword(req, res, next)  {
+    bcrypt.hash(req.body.password, 15, (err, hash) => {
+        if(err) {
+            return false;
+        } else {
+            return true;
+        }
+    })
+}
 
-// }
+function seperateObject(info) {
+    // let usernameKey = Object.keys(info, [0]);
+    let usernameVal = Object.values(info, [0]);
+    // usernameKey = usernameKey[0]
+    usernameVal = usernameVal[0]
+    // console.log(usernameKey, usernameVal);
+    let obj = {
+        username: usernameVal.toString()
+    }
+    // console.log('function test', obj)
+    return obj;
+}
 
 server.use(express.json())
 
@@ -35,11 +56,12 @@ server.post('/register', (req, res) => {
 
 server.post('/login', (req, res) => {
     const login = req.body;
-    console.log(login)
-
-    User.findOne(login).then(username => {
-        // console.log(`this is the ${username}`)
-        res.status(200).json(username);
+    // console.log(login)
+    
+    User.findOne(seperateObject(login)).then(user => {
+        console.log(login)
+        res.send(user)
+        seperateObject(login)
     }).catch(err => {
         res.status(400).json({
             error: "Could not find that username"
@@ -48,3 +70,5 @@ server.post('/login', (req, res) => {
 })
 
 server.listen(5000, () => console.log('API RUNNING ON PORT 5000'));
+
+// { username: 'cookie' }
