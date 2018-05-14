@@ -1,0 +1,16 @@
+{
+    "name": "auth",
+    "version": "1.0.0",
+    "description": "Authorization project 1 for week 11",
+    "main": "server.js",
+    "scripts": {
+        "start": "nodemon server.js"
+    },
+    "dependencies": {
+        "express":"^4.16.3",
+        "mongoose": "^5.0.17"
+    },
+    "devDependencies": {
+        "nodemon": "^1.17.4"
+    }
+}
