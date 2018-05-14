@@ -32,7 +32,7 @@ function authenticate(req, res, next) {
 server.use(express.json());
 
 server.get('/', (req, res) => {
-    res.send({ route: '/', message: req.message });
+    res.send({ route: 'Directing to', message: 'Fruit Farm' });
 });
 
 // server.post('/register', function(req, res) {
