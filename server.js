@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
+const session = require("express-session");
+const middleware = require("./middleware/authenticate");
 
 // connect to mongodb
 mongoose
@@ -14,7 +16,7 @@ mongoose
 
 // sub-applications
 const Register = require("./register/Register");
-// const Login = require("./login/Login");
+const Login = require("./login/Login");
 // const Users = require("./users/Users");
 
 const server = express();
@@ -22,6 +24,14 @@ const server = express();
 // middleware
 server.use(express.json());
 server.use(helmet());
+server.use(
+	session({
+		secret: "M2346eZhJM3Np1v8vTZdJRImHSkIIyf2kbIM5h+VuABXaFJAX96KyXKxX8pU+h8F",
+		saveUninitialized: false,
+		resave: false,
+		cookie: {}
+	})
+);
 
 // routes
 server.get("/", (req, res) => {
@@ -31,7 +41,7 @@ server.get("/", (req, res) => {
 // create a user with a hashed password
 server.use("/api/register", Register);
 // validate login and create a new session for a user
-// server.use("/api/login", Login);
+server.use("/api/login", middleware.authenticate, Login);
 // send an array of all users in the database
 // server.use("/api/users", Users);
 
