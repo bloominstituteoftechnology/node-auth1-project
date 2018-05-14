@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const User = require('./users/User');
+
 mongoose
   .connect('mongodb://localhost/authdb')
   .then(conn => {
@@ -23,6 +25,15 @@ server.use(express.json());
 server.get('/', (req, res) => {
   res.send({ route: '/', message: req.message });
 });
+
+server.post('/api/register', function(req,res) {
+  const user = new User(req.body);
+
+  user
+    .save()
+    .then(user => res.status(201).send(user))
+    .catch(err => res.status(500).send(err));
+})
 
 server.post('/api/login', authenticate, (req, res) => {
   res.send('Welcome to the Mines of Moria!');
