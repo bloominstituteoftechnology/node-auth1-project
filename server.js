@@ -7,11 +7,17 @@ const session = require("express-session");
 
 const server = express();
 
-// const authenticate = (req, res, next) => {
-//   if (req.body.password === "mellon") next();
-//   else res.status(401).send("Wrong password");
-// };
-
+const restrictAccess = (req, res, next) => {
+  if (req.path.startsWith("/api/restricted")) {
+    if (req.session && req.session.userId) next();
+    else
+      res
+        .status(422)
+        .json({ message: "This content is restricted to logged in users" });
+  } else {
+    next();
+  }
+};
 //use sessions for tracking logins
 server.use(
   session({
@@ -22,6 +28,7 @@ server.use(
 );
 
 server.use(bodyParser.json());
+server.use(restrictAccess);
 
 mongoose
   .connect("mongodb://localhost/authdb")
@@ -36,7 +43,7 @@ server.get("/", (req, res, next) => {
   res.send("API running");
 });
 
-server.post("/register", (req, res, next) => {
+server.post("/api/register", (req, res, next) => {
   const user = new User(req.body);
 
   if (user.username && user.password)
@@ -47,7 +54,7 @@ server.post("/register", (req, res, next) => {
   else res.status(400).json({ error: "Fields can't be empty" });
 });
 
-server.post("/login", (req, res, next) => {
+server.post("/api/login", (req, res, next) => {
   User.authenticate(req.body.username, req.body.password, function(
     error,
     user
@@ -61,7 +68,7 @@ server.post("/login", (req, res, next) => {
   });
 });
 
-server.get("/users", (req, res, next) => {
+server.get("/api/users", (req, res, next) => {
   if (req.session.userId) {
     User.find()
       .then(users => {
@@ -73,6 +80,13 @@ server.get("/users", (req, res, next) => {
   } else {
     res.status(401).json({ error: "You shall not pass" });
   }
+});
+
+server.get(`/api/restricted/:name`, (req, res, next) => {
+  const name = req.params.name;
+  res.status(200).json({
+    message: `Welcome to special ${name} page restricted to VIP users`
+  });
 });
 
 // GET /logout
