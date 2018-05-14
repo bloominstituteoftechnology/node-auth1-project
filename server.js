@@ -61,6 +61,20 @@ server.post("/login", (req, res, next) => {
   });
 });
 
+server.get("/users", (req, res, next) => {
+  if (req.session.userId) {
+    User.find()
+      .then(users => {
+        res.status(200).json(users);
+      })
+      .catch(error => {
+        res.status(500).json(error);
+      });
+  } else {
+    res.status(401).json({ error: "You shall not pass" });
+  }
+});
+
 const port = process.env.PORT || 5000;
 server.listen(port, () => {
   console.log(`Server up and running on ${port}`);
