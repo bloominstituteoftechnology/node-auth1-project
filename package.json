@@ -1,0 +1,28 @@
+{
+  "name": "auth",
+  "version": "1.0.0",
+  "description": "Auth day 1 project 1",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rhogan29/Auth.git"
+  },
+  "author": "Robert Hogan <rhogan029@yahoo.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rhogan29/Auth/issues"
+  },
+  "homepage": "https://github.com/rhogan29/Auth#readme",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "express": "^4.16.3",
+    "mongoose": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.4"
+  }
+}
