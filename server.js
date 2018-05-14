@@ -13,6 +13,10 @@ mongoose.connect("mongodb://localhost/Auth")
 
 const server = express();
 
+// function validatePassword(req, res, next)  {
+
+// }
+
 server.use(express.json())
 
 server.get("/", (req, res) => {
@@ -26,6 +30,20 @@ server.post('/register', (req, res) => {
         res.send(user)
     }).catch(err => {
         res.send("There was an error registering as a new user")
+    })
+})
+
+server.post('/login', (req, res) => {
+    const login = req.body;
+    console.log(login)
+
+    User.findOne(login).then(username => {
+        // console.log(`this is the ${username}`)
+        res.status(200).json(username);
+    }).catch(err => {
+        res.status(400).json({
+            error: "Could not find that username"
+        })
     })
 })
 
