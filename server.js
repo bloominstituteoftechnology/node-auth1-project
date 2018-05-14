@@ -48,6 +48,13 @@ server.post('/api/login', authenticate, (req, res) => {
     res.send('Logged In');
 });
 
-server.get('')
+server.get('/api/users', (req, res) => {
+    bcrypt.
+    if (req.body.password === 'kiwi') {
+        next();
+    } else {
+        res.status(401).send('You shall not pass!');
+    }
+})
 
 server.listen(5000, () => console.log('\n=== API Running on 5K ===\n'));
