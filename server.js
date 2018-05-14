@@ -12,5 +12,21 @@ mongoose
 
 const server = express();
 
+// Middleware
+server.use(express.json());
+
+// Initial route
+server.get('/', (req, res) => {
+    res.send('api running');
+})
+
+server.post('/api/register', (req, res) => {
+
+})
+
+server.post('/api/login', (req, res) => {
+
+})
+
 const port = 5000;
 server.listen(port, () => console.log(`Connected on port: ${port}`))
