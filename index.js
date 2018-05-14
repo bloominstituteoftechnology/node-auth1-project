@@ -12,6 +12,13 @@ mongoose
 
   const server = express();
 
+  function authenticate(req,res,next) {
+    if(req.body.password === 'testing') {
+      next();
+    } else {
+      res.status(401).send('wrong password please try again.')
+    }
+  }
   server.use(express.json());
 
   server.get('/', (req, res) => {
@@ -25,5 +32,16 @@ mongoose
       .then(user => res.status(201).send(user))
       .catch(err => res.status(500).send(err));
   });
+
+
+  server.post('/api/login', authenticate, (req, res) => {
+    console.log(res.body);
+     res.send('User is now logged in');
+  })
+
+server.get('/api/users', (req, res) => {
+  // put info here for checking if users is logged in display all users
+})
+
 
   server.listen(5000, () => console.log('\n=== api running on port 5000 ===\n'));
