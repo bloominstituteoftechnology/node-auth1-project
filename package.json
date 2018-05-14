@@ -1,0 +1,17 @@
+{
+  "name": "Auth",
+  "version": "1.0.0",
+  "repository": "git@github.com:jcuffe/Auth.git",
+  "author": "Jared Cuffe <jcuffe@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": ""
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.4"
+  },
+  "dependencies": {
+    "express": "^4.16.3",
+    "mongoose": "^5.1.0"
+  }
+}
