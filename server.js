@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const User = require('./User/User');
+const session = require('session');
 
 mongoose
 .connect('mongodb://localhost/authndb')
@@ -19,7 +20,6 @@ server.use(express.json());
 // Custom Middleware
 function login (req, res, next){
     if (req.body.user === 'helloz' && req.body.password === 'austin') {
-        res.send('Logged in')
         next();
     } else {
         res.send('You shall not pass!')
@@ -31,6 +31,7 @@ server.get('/', (req, res) => {
     res.send('api running');
 })
 
+// Register route
 server.post('/api/register', (req, res) => {
 
     User
@@ -43,16 +44,9 @@ server.post('/api/register', (req, res) => {
     })
 })
 
+// Login route
 server.post('/api/login', login, (req, res) => {
-
-    User
-    .create(req.body)
-    .then(login => {
-        res.json(login)
-    })
-    .catch(err => {
-        res.send('Not creating')
-    })
+    res.send('Logged in');
     
 })
 
