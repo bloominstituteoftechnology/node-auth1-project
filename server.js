@@ -9,3 +9,8 @@ mongoose
 .catch(err => {
     console.log('Can\'t connect');
 })
+
+const server = express();
+
+const port = 5000;
+server.listen(port, () => console.log(`Connected on port: ${port}`))
