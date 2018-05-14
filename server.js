@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 const server = express();
 
-server.unsubscribe(express.json());
+server.use(express.json());
 
 server.get("/", (req, res) => {
   res.send({ route: "/", message: "req.message" });
