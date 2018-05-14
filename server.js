@@ -1,5 +1,7 @@
 import express from 'express'
-import mongoose, { mongo } from 'mongoose'
+import mongoose from 'mongoose'
+
+import mainRouter from './routes'
 
 const app = express()
 
@@ -14,5 +16,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.get('/', (req, res) => {
   res.send('love')
 })
+
+app.use('/api', mainRouter)
 
 app.listen(8080, () => console.log('\n=== server listening on http://localhost:8080 ===\n'))
