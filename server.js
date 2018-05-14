@@ -26,8 +26,13 @@ server.get("/", (req, res, next) => {
   res.send("API running");
 });
 
-server.post("/login", authenticate, (req, res, next) => {
-  res.send("Logged in");
+server.post("/register", (req, res, next) => {
+  const user = new User(req.body);
+
+  user
+    .save()
+    .then(user => res.status(201).send(user))
+    .catch(err => res.status(500).send(err));
 });
 
 const port = process.env.PORT || 5000;
