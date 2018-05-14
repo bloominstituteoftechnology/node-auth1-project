@@ -4,14 +4,13 @@ const userModel = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    lowecase: true,
-    unique: true
+    unique: true,
+    lowercase: true
   },
   password: {
     type: String,
-    required: true,
-    minlength: 4
+    required: true
   }
 });
 
-module.exports = mongoose.model('User, userModel');
+module.exports = mongoose.model('User', userModel);
