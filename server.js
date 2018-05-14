@@ -19,14 +19,13 @@ function authenticate(req, res, next) {
         if (err) throw err;
         else user.comparePassword(req.body.password, function(err, isMatch) {
             if (err) {
-                console.log(req.body.username + 'failed to login');
-                res.status(401).json({ error: 'invalid username/password pair'}) ;   
-            };
-            console.log(req.body.username + ' has logged in')
+                throw err;
+                console.log(req.body.username + ' could not login');
+            console.log(req.body.username + ' has logged in');
             next();
-        })
+        }})
     })
-};
+}
 
 //this is the middleware we have created
 // function authenticate(req, res, next) {
