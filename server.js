@@ -15,13 +15,18 @@ mongoose.connect("mongodb://localhost/Auth")
 
 
 const server = express();
-// server.use(
-//     session({
-//         secret: 'keyboard cat',
-//         resave: false,
-//         saveUninitialized: true,
-//         cookie: { secure: true }
-//   }))
+server.use(
+    session({
+        secret: 'nobody tosses a dwarf!',
+        cookie: {
+          maxAge: 1 * 24 * 60 * 60 * 1000,
+        }, // 1 day in milliseconds
+        httpOnly: true,
+        secure: false,
+        resave: true,
+        saveUninitialized: false,
+        name: 'noname',
+  }))
 function validate(password, passwordDB) {
     bcrypt.compare(password, passwordDB, function(err, res) {
         console.log(res)
@@ -41,9 +46,14 @@ function seperateObject(info) {
 
 server.use(express.json())
 
-server.get("/", (req, res) => {
-    res.send("CONNECTED TO POSTMAN")
-})
+server.get('/', (req, res) => {
+    if (req.session && req.session.username) {
+      res.send(`welcome back ${req.session.username}`);
+    } else {
+      res.send('who are you? who, who?');
+    }
+  });
+  
 
 server.post('/register', (req, res) => {
     const user = new User(req.body);
@@ -65,9 +75,10 @@ server.post('/login', (req, res, next) => {
 
         user.isPasswordValid(login.password).then(valid => {
             if(valid) {
-                res.send("Login Successfult")
+                req.session.username = user.username
+                res.send("Login successful")
             } else {
-                res.send("login failed")
+                res.send("Login failed")
             }
         })
     }).catch(err => {
