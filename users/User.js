@@ -10,12 +10,11 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true
+    required: true,
   },
 });
 
 userSchema.pre('save', function(next) {
-
   bcrypt.hash(this.password, 14, (err, hash) => {
     if(err) {
       return next(err);
@@ -26,6 +25,10 @@ userSchema.pre('save', function(next) {
     return next(); //saves to the db
   });
 });
+
+userSchema.methods.isPasswordValid = function(passwordGuess) {
+  return bcrypt.compare(passwordGuess, this.password);
+};
 
 // userSchema.post('save', function(next) {
 //   console.log('post save hook')
