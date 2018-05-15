@@ -39,13 +39,17 @@ const authenticateUserInput = (req, res, next) => {
   } else { res.send("must provide a username and password") }
 }
 
+const isLoggedIn = (req, res, next) => {
+  req.session && req.session.username ? next() : res.status(401).json({ error: 'you shall not pass!' })
+}
+
 // DISPLAY ALL USERS - for development purposes
-server.get('/users', (req, res) => {
-  User
-    .find()
-    .then(users => res.status(200).json(users))
-    .catch(err => res.status(500).json({ error: "error fetching users" }))
-})
+// server.get('/users', (req, res) => {
+//   User
+//     .find()
+//     .then(users => res.status(200).json(users))
+//     .catch(err => res.status(500).json({ error: "error fetching users" }))
+// })
 
 // CREATE NEW USER
 server.post('/register', authenticateUserInput, (req, res) => {
@@ -58,19 +62,28 @@ server.post('/register', authenticateUserInput, (req, res) => {
 // LOGIN WITH EXISTING USER
 server.post('/login', (req, res) => {
   const { username, password } = req.body;
+  User.findOne({ username }).then(user => {
+    if (user) {
+      user.isPasswordValid(password).then(isValid => {
+        if (isValid) {
+          req.session.username = user.username;
+          res.send('have a cookie');
+        } else {
+          res.send('invalid login credentials') // invalid password
+        }
+      })
+    } else {
+      res.send('invalid login credentials') // invald username - dons't exist in database
+    }
+  })
+})
+
+// GET LIST OF ALL USERS IF LOGGED IN
+server.get('/users', isLoggedIn, (req, res) => {
   User
-    .findOne({ username })
-    .then(user => {
-      user ? (
-        user.isPasswordValid(password).then(isValid => {
-          if (isValid) {
-            req.session.username = user.username;
-            res.send('have a cookie');
-          } else {
-            res.send('invalid login credentials') // invalid password
-          } 
-        })) : ( res.send('invalid login credentials') ) // invald username - dons't exist in database
-    })
+    .find()
+    .then(users => res.status(200).json(users))
+    .catch(err => res.status(500).json({ error: "error fetching users" }))
 })
 
 // TEST IF SERVER IS CONNECTED
