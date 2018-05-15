@@ -52,22 +52,22 @@ export class Login extends Component {
       <div>
         {this.state.users.map((user, index) => (
           <div className="opacity w-50 mx-auto rounded">
-          <div key={index} className="border border-dark m-3 p-3 bg-light rounded" style={{"z-index": 2222}}>
-            <div>
+            <div key={index} className="border border-dark m-3 p-3 bg-light rounded" style={{"z-index": 2222}}>
               <div>
-                <h5>username:</h5>
-                <p>{user.username}</p>
-              </div>
-              <div>
-                <h5>password hash:</h5>
-                <p>{user.password}</p>
-              </div>
-              <div>
-                <h5>user id:</h5>
-                <p>{user._id}</p>
+                <div>
+                  <h5>username:</h5>
+                  <p>{user.username}</p>
+                </div>
+                <div>
+                  <h5>password hash:</h5>
+                  <p>{user.password}</p>
+                </div>
+                <div>
+                  <h5>user id:</h5>
+                  <p>{user._id}</p>
+                </div>
               </div>
             </div>
-          </div>
           </div>
         ))}
       </div>

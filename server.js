@@ -76,8 +76,8 @@ server.post('/login', (req, res) => {
   })
 })
 
-// GET LIST OF ALL USERS IF LOGGED IN
-server.get('/users', (req, res) => {
+// GET LIST OF ALL USERS IF LOGGED IN ~ remove "/restricted" for react app
+server.get('/restricted/users', (req, res) => {
   User
     .find()
     .then(users => res.status(200).json(users))
