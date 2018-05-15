@@ -2,7 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
 const session = require("express-session");
-const middleware = require("./middleware/authenticate");
+const authMiddleware = require("./middleware/authenticate");
+const logInMiddleware = require("./middleware/validateLogIn");
 
 // connect to mongodb
 mongoose
@@ -17,7 +18,7 @@ mongoose
 // sub-applications
 const Register = require("./register/Register");
 const Login = require("./login/Login");
-// const Users = require("./users/Users");
+const Users = require("./users/User");
 
 const server = express();
 
@@ -41,9 +42,9 @@ server.get("/", (req, res) => {
 // create a user with a hashed password
 server.use("/api/register", Register);
 // validate login and create a new session for a user
-server.use("/api/login", middleware.authenticate, Login);
+server.use("/api/login", authMiddleware.authenticate, Login);
 // send an array of all users in the database
-// server.use("/api/users", Users);
+server.use("/api/users", logInMiddleware.validateLogIn, Users);
 
 server.listen(5000, () => {
 	console.log("\n===api running on 5000===\n");
