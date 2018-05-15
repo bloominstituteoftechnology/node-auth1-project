@@ -45,7 +45,12 @@ server.use(session(sessionConfig));
 //GET
 //Postman Test ok! http://localhost:8000
 server.get('/', (req, res) => {
-    res.send({ route: '/', message: req.message });
+    if (req.session && req.session.username) {
+    // res.send({ route: '/', message: req.message });
+    res.send(`Welcome Back ${req.session.username}`);
+  } else {
+    res.send('Invalid Credentials');
+  }
 });
 
 //POST /api/register
@@ -61,17 +66,46 @@ server.post('/register', function(req, res) {
 
 //POST /api/login
 //Postman Test ok! http://localhost:8000/login
-server.post('/login', authenticate, (req, res) => {
-    res.send('Logged in');
+server.post('/login', (req, res) => {
+    const { username, password } = req.body;
+
+User.findOne({ username })
+    .then(user => {
+        if (user) {
+            user.isPasswordValid(password).then(isValid => {
+                if(isValid) {
+                    req.session.username = user.username;
+                    res.send('Logged in');
+                } else {
+                    res.status(401).send('invalid password');
+                }
+            });
+        } else {
+            res.status(401).send('invalid username');
+        }
+    })
+    .catch(err => res.send(err));
 });
 
 //GET /api/users
-server.get('/users', (req, res) => {
-    User.find({})
-    .then(user => res.status(201).send(user))
-    .catch(err => res.status(500).send(err));
+//Postman Test ok! http://localhost:8000/users
+server.get('/users', authenticate, (req, res) => {
+    User.find()
+    .then(users => res.send(users));
 });
 
-server.use(express.json());
+//GET /api/logout
+//Postman Test ok! http://localhost:8000/logout
+server.get('/logout', (req, res) => {
+    if (req.session) {
+      req.session.destroy(function(err) {
+        if (err) {
+          res.send('error');
+        } else {
+          res.send('Good Bye');
+        }
+      });
+    }
+  });
 
 server.listen(8000, () => console.log('\n=== API RUNNING on 8000 ===\n')); 
