@@ -25,4 +25,10 @@ userSchema.pre("save", function(next) {
 	});
 });
 
+// compare passwords with a custome mongoose methods
+// wait on a password to be given from user
+userSchema.methods.isPasswordValid = function(passwordGuess) {
+	return bcrypt.compare(passwordGuess, this.password);
+};
+
 module.exports = mongoose.model("User", userSchema);
