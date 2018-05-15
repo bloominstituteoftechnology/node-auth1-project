@@ -1,0 +1,17 @@
+{
+  "name": "friends-auth",
+  "version": "1.0.0",
+  "main": "server.js",
+  "license": "MIT",
+   "scripts": {
+    "client": "cd client && yarn start",
+    "server": "nodemon server.js",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+  },
+  "dependencies": {
+    "express": "^4.16.2"
+  },
+  "devDependencies": {
+    "concurrently": "^3.5.0",
+    "nodemon": "^1.17.4"
+}
