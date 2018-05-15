@@ -49,7 +49,8 @@ server.post('/api/login', authenticate, (req, res) => {
 });
 
 server.get('/api/users', (req, res) => {
-    bcrypt.
+    bcrypt.compare(password, hash, function(err, res) {
+    })
     if (req.body.password === 'kiwi') {
         next();
     } else {
