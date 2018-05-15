@@ -32,13 +32,30 @@ function authenticate(req, res, next) {
 
 // server.use(greet);
 
+const sessionConfig = {
+    secret: 'Amanda Secret',
+    cookie: {
+        maxAge: 1 * 24 * 60 * 60 * 1000,
+    }, // 1 Day in milliseconds
+    httpOnly: true,
+    secure: false,
+    resave: true,
+    saveUninitialized: false,
+    name: 'noname',
+    store: new MongoStore ({
+        url: 'mongodb://localhost/sessions',
+        ttl: 60 * 10,
+    }),
+};
+
 server.use(express.json());
+server.use(session(sessionConfig));
 
 server.get('/api', (req, res) => {
     if (req.session && req.session.username) {
       res.send(`Welcome Back ${req.session.username}`);
     } else {
-      res.send( 'You shall not pass!');
+      res.send( 'You shall not pass!' );
     }
 });
 
@@ -63,7 +80,7 @@ server.post('/api/login', (req, res) => {
             if(user) { // Comparing Passwords
                 user.isPasswordValid(password).then(isValid => {
                     if(isValid) {
-                      req.sessions.username = user.username;
+                      req.session.username = user.username;
                       res.send('Have a Cookie');
                     } else {
                       res.status(401).send('You shall not pass!');
