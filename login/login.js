@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
 const session = require ('express-session');
-const MongoStore = require('connect-mongo')(sesson);
+const MongoStore = require('connect-mongo')(session);
 
 const User = require('../users/User');
 
