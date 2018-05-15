@@ -1,32 +1,55 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const helmet = require("helmet");
+const session = require("express-session");
+const MongoStore = require("connect-mongo")(session);
 
-const server = express();
-const User = require("./user");
+const User = require("./users/User");
 
-//connect to db
 mongoose
   .connect("mongodb://localhost/authdb")
   .then(conn => {
-    console.log("\n=== connected to mongo ====\n");
+    console.log("\n=== connected to mongo ===\n");
   })
   .catch(err => console.log("error connecting to mongo", err));
 
-//middleware
-server.use(helmet());
-server.use(express.json());
+const server = express();
 
-//routes
+function authenticate(req, res, next) {
+  if (req.session && req.session.username) {
+    next();
+  } else {
+    res.status(401).send("You shall not pass!!!");
+  }
+}
 
-// server.use(greet);
+const sessionConfig = {
+  secret: "nobody tosses a dwarf!",
+  cookie: {
+    maxAge: 1 * 24 * 60 * 60 * 1000
+  }, // 1 day in milliseconds
+  httpOnly: true,
+  secure: false,
+  resave: true,
+  saveUninitialized: false,
+  name: "noname",
+  store: new MongoStore({
+    url: "mongodb://localhost/sessions",
+    ttl: 60 * 10
+  })
+};
+
 server.use(express.json());
+server.use(session(sessionConfig));
 
 server.get("/", (req, res) => {
-  res.send({ route: "/", message: req.message });
+  if (req.session && req.session.username) {
+    res.send(`welcome back ${req.session.username}`);
+  } else {
+    res.send("who are you? who, who?");
+  }
 });
 
-server.post("/api/register", function(req, res) {
+server.post("/register", function(req, res) {
   const user = new User(req.body);
 
   user
@@ -35,26 +58,42 @@ server.post("/api/register", function(req, res) {
     .catch(err => res.status(500).send(err));
 });
 
-server.post("/api/login", (req, res) => {
+server.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  User.findOne({ username }).then(user => {
-    if (user) {
-      user
-        .isPasswordValid(password)
-        .then(isValid => {
+  User.findOne({ username })
+    .then(user => {
+      if (user) {
+        // compare the passwords
+        user.isPasswordValid(password).then(isValid => {
           if (isValid) {
-            res.send("login successful");
+            req.session.username = user.username;
+            res.send("have a cookie");
           } else {
-            res.status(401).send("invalid credentials");
+            res.status(401).send("invalid password");
           }
-        })
-        .catch(err => res.send(err));
-    }
-  });
+        });
+      } else {
+        res.status(401).send("invalid username");
+      }
+    })
+    .catch(err => res.send(err));
 });
 
-const port = process.env.PORT || 5000;
-server.listen(port, () =>
-  console.log(`\n\nAPI running on http://localhost:${port}`)
-);
+server.get("/users", authenticate, (req, res) => {
+  User.find().then(users => res.send(users));
+});
+
+server.get("/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy(function(err) {
+      if (err) {
+        res.send("error");
+      } else {
+        res.send("good bye");
+      }
+    });
+  }
+});
+
+server.listen(8000, () => console.log("\n=== api running on 8k ===\n"));
