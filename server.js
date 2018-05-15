@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const User = require('./User/User');
 const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
 mongoose
     .connect('mongodb://localhost/authndb')
@@ -19,7 +20,11 @@ const sessionConfig = {
     httpOnly: true,
     secure: false,
     resave: true,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: new MongoStore({
+        url: 'mongodb://localhost/sessions',
+        ttl: 60 * 10
+    })
 }
 
 // Middleware
@@ -101,11 +106,9 @@ server.get('/api/logout', (req, res) => {
             } else {
                 res.send('Goodbye')
             }
-        })
-    } else {
-        res.send('Not logged in');
-    }
-})
+        });
+    } 
+});
 
 const port = 5000;
 server.listen(port, () => console.log(`Connected on port: ${port}`))
