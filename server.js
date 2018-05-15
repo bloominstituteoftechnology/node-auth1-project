@@ -38,20 +38,15 @@ const server = express();
 // }
 
 function restricted(req, res, next) {
-    console.log('middleware runnign', req, req.session)
     let url = req.url.split('/');
     if (url.includes('restricted')) {
-        console.log('reached restricted')
         if (req.session && req.session.username) {
-            console.log('reached username')
             next();
         }
         else {
-            console.log(req.session, req.session.username)
             res.status(401).send('sorry restricted content ahead :(');
         }
     } else {
-        console.log(req, 'not restricted')
         next();
     }
 }
