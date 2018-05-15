@@ -27,13 +27,13 @@ server.use(express.json());
 server.use(session(sessionConfig))
 
 // Custom Middleware
-// function login (req, res, next){
-//     if (req.body.user === 'helloz' && req.body.password === 'austin') {
-//         next();
-//     } else {
-//         res.send('You shall not pass!')
-//     }
-// }
+function login (req, res, next){
+    if (req.session && req.session.user) {
+        next();
+    } else {
+        res.send('You shall not pass!')
+    }
+}
 
 // Initial route
 server.get('/', (req, res) => {
@@ -79,7 +79,7 @@ server.post('/api/login', (req, res) => {
     })
 })
 
-server.get('/api/users', (req, res) => {
+server.get('/api/users', login, (req, res) => {
 
     User
     .find()
