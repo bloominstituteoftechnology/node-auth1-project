@@ -1,0 +1,26 @@
+button {
+    background-color: rgb(248, 209, 135);
+    border: none;
+    height: 10%;
+    width: 20%;
+    margin: 0 7vw 0 7vw;
+    position: relative;
+    top: 40%;
+}
+a {
+    text-decoration: none;
+    color: rgb(175, 78, 78);
+}
+
+button:hover {
+    cursor: pointer;
+    height: 11%;
+    width: 21%;
+}
+
+.login{
+    background-color: #86fbff;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+}

@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
-
+const cors = require('cors')
 
 //DATABASE CONNECTION
 const User = require("./Users/User");
@@ -17,6 +17,7 @@ mongoose.connect("mongodb://localhost/Auth")
 
 //SERVER
 const server = express();
+server.use(cors())
 
 server.use(
     session({
