@@ -28,7 +28,7 @@ server.use(session({
   store: new MongoStore({ url: "mongodb://localhost/sessions" })
 }))
 
-// LOCAL MIDDLEWARE //
+// LOCAL MIDDLEWARE // validate username and password input
 const authenticateUserInput = (req, res, next) => {
   const { username, password } = req.body;
   if (username && password) {
@@ -39,17 +39,10 @@ const authenticateUserInput = (req, res, next) => {
   } else { res.send("must provide a username and password") }
 }
 
+// LOCAL MIDDLEWARE // check if a user is loggen in
 const isLoggedIn = (req, res, next) => {
   req.session && req.session.username ? next() : res.status(401).json({ error: 'you shall not pass!' })
 }
-
-// DISPLAY ALL USERS - for development purposes
-// server.get('/users', (req, res) => {
-//   User
-//     .find()
-//     .then(users => res.status(200).json(users))
-//     .catch(err => res.status(500).json({ error: "error fetching users" }))
-// })
 
 // CREATE NEW USER
 server.post('/register', authenticateUserInput, (req, res) => {
@@ -84,6 +77,15 @@ server.get('/users', isLoggedIn, (req, res) => {
     .find()
     .then(users => res.status(200).json(users))
     .catch(err => res.status(500).json({ error: "error fetching users" }))
+})
+
+// LOGOUT 
+server.get('/logout', (req, res) => {
+  req.session ?
+    req.session.destroy(err => {
+      err ? res.send('error logging out') : res.send('goodbye')
+    })
+    : null
 })
 
 // TEST IF SERVER IS CONNECTED
