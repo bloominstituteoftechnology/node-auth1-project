@@ -5,8 +5,14 @@ const User = require("./src/user.js");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
+const cors = require("cors");
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true
+};
 
 const server = express();
+server.use(cors(corsOptions));
 
 const restrictAccess = (req, res, next) => {
   if (req.path.startsWith("/api/restricted")) {
