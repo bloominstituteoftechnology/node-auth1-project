@@ -37,7 +37,9 @@ router.post("/", (req, res) => {
 				res.status(401).send("invalid credentials");
 			}
 		})
-		.catch();
+		.catch(err => {
+			res.status(500).send(err);
+		});
 });
 
 module.exports = router;
