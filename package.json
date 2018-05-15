@@ -1,0 +1,27 @@
+{
+  "name": "auth",
+  "version": "1.0.0",
+  "description": "## Topics",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaivonmassena/Auth.git"
+  },
+  "author": "Jaivon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jaivonmassena/Auth/issues"
+  },
+  "homepage": "https://github.com/jaivonmassena/Auth#readme",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "connect-mongo": "^2.0.1",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "mongoose": "^5.1.1",
+    "nodemon": "^1.17.4"
+  }
+}
