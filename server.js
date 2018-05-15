@@ -1,7 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const User = require("./Users/User");
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const session = require('express-session')
 
 
 
@@ -14,7 +15,13 @@ mongoose.connect("mongodb://localhost/Auth")
 
 
 const server = express();
-
+// server.use(
+//     session({
+//         secret: 'keyboard cat',
+//         resave: false,
+//         saveUninitialized: true,
+//         cookie: { secure: true }
+//   }))
 function validate(password, passwordDB) {
     bcrypt.compare(password, passwordDB, function(err, res) {
         console.log(res)
