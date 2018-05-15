@@ -28,10 +28,10 @@ class Users extends Component {
 
 
     render(){
-        const {user} = this.props;
+        // const {user} = this.props;
         return (
             <div>
-                {this.props.users.map(user => {
+                {this.state.users.map(user => {
                     return (
                         <h3>{user.username}</h3>
                     )

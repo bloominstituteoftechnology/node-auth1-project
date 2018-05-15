@@ -46,7 +46,7 @@ handleInputChange = e => {
             name="password"
             type="text"
           />
-          <Link to='/users'><button onClick={this.addUser} value='submit' type='submit'>Register</button></Link>
+          <Link to='/'><button onClick={this.addUser} value='submit' type='submit'>Register</button></Link>
           </form>
             </div>
         )

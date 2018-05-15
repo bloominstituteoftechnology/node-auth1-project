@@ -34,7 +34,7 @@ class App extends Component {
       <div className="App">
      <Route exact path='/register' component={Register} />
      <Route exact path='/' component={Login} />
-     <Route exact path='/users' component={Users} />
+     <Route exact path='/users' component={Users}/>
       </div>
     );
   }

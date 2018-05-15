@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const cors = require('cors');
 const User = require('./users/User');
+const MongoStore = require('connect-mongo')(session);
 
 mongoose
   .connect('mongodb://localhost/authdb')
@@ -20,7 +21,16 @@ server.use(
     session({
         secret: '$2b$11$sEJoB2SkT/cpEXxFwM.kKS0PAenuO',
         resave: false,
-        saveUninitialized: false
+        httpOnly: true,
+        saveUninitialized: false,
+        cookie: {
+            maxAge: 1 * 24 * 60 * 60 * 1000,
+          },
+          store: new MongoStore({
+            url: 'mongodb://localhost/sessions',
+            ttl: 60 * 10,
+          }),
+          name: 'noname',
     })
 )
 
@@ -65,7 +75,7 @@ server.use('/api/restricted/', function (req, res, next){
             .then((poo) => {
                 next();
             })
-        } else return res.status(404).json({message: 'login darnit'});
+        } else return res.send(404).json({message: 'login darnit'});
 })
 
 
