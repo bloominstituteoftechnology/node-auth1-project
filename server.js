@@ -11,6 +11,24 @@ mongoose
 
 const server = express();
 
+function authenticate(req, res, next) {
+  const {username, password } = req.body;
+  User.findOne({ username }).then(user => {
+    if (user) {
+      user.comparePassword(password).then(isMatch => {
+        if (isMatch) {
+          res.send('Welcome to the mines of moria fam');
+        } else {
+          res.status(401).send('Invalid Username/password');
+        }
+      });
+    } else
+    res
+      .status(404)
+      .send('Invalid Username/Password!')
+  }); 
+}
+
 server.use(express.json());
 
 server.get('/', (req, res) => {
@@ -29,11 +47,11 @@ server.post('/api/register', (req, res) => {
     });
 })
 
-server.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  if (!username) {
-    res.status(500).send({ error: 'invalid info'})
-  }
-})
+
+server.post("/api/login", authenticate, (req, res) => {
+  res.send("Welcome to the Mines of Moria");
+});
+
+
 
 server.listen(5000, () => console.log('n\ === API Running! === \n'))
