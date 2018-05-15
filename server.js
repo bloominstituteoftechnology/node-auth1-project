@@ -1,7 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
-const usersRouter = require("./user/usersRouter");
+const usersRouter = require("./users/usersRouter");
+const registerRouter = require("./register/registerRouter");
 
 const server = express();
 
@@ -15,6 +16,7 @@ mongoose
   .catch(error => console.log("Error connecting to AuthDB.", error));
 
 server.use("/api/users", usersRouter);
+server.use("/api/register", registerRouter);
 
 server.get("/", (req, res) => {
   res.send("--- API is Running ---");
