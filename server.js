@@ -14,6 +14,7 @@ mongoose.connect('mongodb://localhost/authdb')
 server.listen(5000, () => console.log('server running on port 5000'));
 
 server.use(express.json());
+const restrictedRoutes = require('./routes/restricted');
 
 const sessionConfig = {
   secret: 'doh!',
@@ -39,6 +40,8 @@ const auth = (req, res, next) => {
   res.status(401).send("You shall not pass!");
 }
 
+server.use('/api/restricted', auth, restrictedRoutes);
+
 server.get('/', (req, res) => {
   if (req.session && req.session.username) {
     res.send(`welcome back ${req.session.username}`);
@@ -63,13 +66,6 @@ server.post('/api/login', async (req, res) => {
   }
 });
 
-server.get('/api/logout', auth, async (req, res) => {
-  if (req.session) {
-    req.session.destroy( err => {
-      err ? res.send('error') : res.send("you're logged out");
-    });
-  }
-});
 
 server.post('/api/register', async (req, res) => {
   const user = new User(req.body);
@@ -80,10 +76,4 @@ server.post('/api/register', async (req, res) => {
       console.log(err);
       res.status(500).send(err)
     });
-});
-
-server.get('/api/users', auth, async (req, res) => {
-  const users = await User.find({});
-
-  res.status(200).json(users);
 });
