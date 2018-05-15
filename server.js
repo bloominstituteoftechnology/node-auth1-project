@@ -30,6 +30,13 @@ const sessionConfig = {
 server.use(express.json());
 server.use(session(sessionConfig));
 
+const authenticate = (req, res, next) => {
+  if (req.session && req.session.username)
+    next();
+  else
+    res.status(401).json({msg: 'Please login to proceed'});
+}
+
 server.get('/', (req, res) => res.send("API Connected"));
 
 server.post('/register', (req, res) => {
@@ -56,6 +63,19 @@ server.post('/login', (req, res) => {
         res.status(401).json({msg: 'Invalid Credentials'});
       }
     }).catch (err => res.status(500).json(err))
+})
+
+server.get('/users', authenticate, (req, res) => {
+  User.find().then(users => res.json(users));
+})
+
+server.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) res.status(500).json(err);
+      else res.status(200).json({msg: 'Successfully logged out'});
+    })
+  }
 })
 
 server.listen(5000, () => console.log("\n=== Server Active on Port 5000 ===\n"));
