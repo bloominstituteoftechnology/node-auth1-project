@@ -1,9 +1,13 @@
+
 const express = require('express');
 const server = express();
 const mongoose = require('mongoose');
 const User = require('./users/User');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
+const Restricted = require('./restricted/Restricted');
 
 mongoose.connect('mongodb://localhost/authdb')
   .then(resp => console.log('connected to mongodb'))
@@ -11,85 +15,31 @@ mongoose.connect('mongodb://localhost/authdb')
 
 server.use(express.json());
 
+server.use(session({
+  secret: 'You shall not pass!',
+  cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
+  secure: false,
+  name: 'AuthAplicationProject',
+  store: new MongoStore({
+    url: 'mongodb://localhost/sessions',
+    ttl: 60 * 10,
+  })
+}));
 
 function authenticate(req, res, next) {
-  const username = req.body.username;
-  const passBody = req.body.password;
 
-
-  User.find({ username: username })
-    .then(user => {
-      bcrypt.compare(passBody, user[0].password)
-        .then(function (ifPass) {
-          // res == true
-          if (ifPass) {
-            console.log('from if pass', user[0]._id)
-            if (!user[0].session) {
-              User.findByIdAndUpdate(user[0]._id, { session: 1 }, { new: true }, function (err, model) {
-              })
-            } else {
-              User.findByIdAndUpdate(user[0]._id, { session: user[0].session + 1 }, { new: true }, function (err, model) {
-              })
-            }
-            console.log('after update', user.session)
-            next();
-          } else {
-            res.status(401).send('You shall not pass!!!');
-          }
-        }).catch(err => console.log(err))
-    }).catch(err => console.log(err))
+  if (req.session && req.session.username) {
+    next();
+  } else {
+    res.status(401).send('You shall not pass!!');
+  }
 }
 
 
-
-
-function checkLogin(req, res, next){
-  const username = req.body.username;
-  const passBody = req.body.password;
-
-
-  User.find({ username: username })
-    .then(user => {
-      bcrypt.compare(passBody, user[0].password)
-        .then(function (ifPass) {
-          // res == true
-          if (ifPass) {
-            console.log('from if pass', user[0]._id)
-            if (!user[0].session) {
-              User.findByIdAndUpdate(user[0]._id, { session: 1 }, { new: true }, function (err, model) {
-              })
-            } else {
-              User.findByIdAndUpdate(user[0]._id, { session: user[0].session + 1 }, { new: true }, function (err, model) {
-              })
-            }
-            console.log('after update', user.session)
-            next();
-          } else {
-            res.status(401).send('You shall not pass!!!');
-          }
-        }).catch(err => console.log(err))
-    }).catch(err => console.log(err))
-}
-
-server.get('/api/users', (req, res) => {
-  let query =  User.find();
-
-  query.where('session').gt(0)
-  .then( user => {
-    console.log('line 78',user)
-    if(user.length){
-
-      User.find()
-      .then(resp => res.json(resp))
-      .catch(err => console.log(err))
-      console.log(user)
-    } else {
-      res.status(404).send('You shall not pass!');
-    }
+server.get('/api/users', authenticate, (req, res) => {
+  User.find().then(users => {
+    res.send(users)
   })
-    .catch(err => console.log(err))
-})
-
 
 
 server.post('/api/register', function (req, res) {
@@ -101,11 +51,59 @@ server.post('/api/register', function (req, res) {
     .catch(err => res.status(500).send(err));
 });
 
-server.post('/api/login', authenticate, (req, res) => {
-  res.send('Logged in');
+
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    console.log('Current Session logout, session:', req.session);
+    req.session.destroy(function (err) {
+      if (err) {
+        res.send("error");
+      } else {
+        res.send('Goodbye');
+      }
+    });
+  };
+
+
+});
+
+server.get('/api/', (req, res) => {
+
+  if (req.session && req.session.username) {
+    res.send(`Welcome back ${req.session.username}`)
+  } else {
+    res.send("Who are you, really? Don't lie to me!")
+  }
 });
 
 
+server.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  const passBody = req.body.password;
+
+  const userInfo = { username, password };
+  User.findOne({ username })
+    .then(user => {
+      if (user) {
+        user.isPasswordValid(password).then(isValid => {
+          if (isValid) {
+            req.session.username = user.username;
+            res.send("Have a cookie");
+
+          } else {
+            res.status(401).send('Invalid user-name')
+          }
+        });
+      } else {
+        res.status(404).send("Invalid PASSWORD")
+      }
+    }).catch(err => res.send(err))
+
+
+});
+
+
+  server.use('/api/restricted/', authenticate, Restricted);
 
 
 server.listen(8000, () => console.log("server running on port 8000"));
