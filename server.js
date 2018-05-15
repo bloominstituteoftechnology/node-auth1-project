@@ -13,6 +13,7 @@ mongoose
 
 const server = express();
 
+// Global middleware to authenticate login
 function authenticate(req, res, next) {
   if (req.session && req.session.username) next();
   else res.status(401).send('You shall not pass!!!');
