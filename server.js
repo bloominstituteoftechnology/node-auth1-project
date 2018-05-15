@@ -48,9 +48,12 @@ server.use(express.json())
 
 server.get('/', (req, res) => {
     if (req.session && req.session.username) {
-      res.send(`welcome back ${req.session.username}`);
+        User.find().then(users => {
+            res.status(200).json(users)
+        })
+    //   res.send(`welcome back ${req.session.username}`);
     } else {
-      res.send('who are you? who, who?');
+      res.send('YOU SHALL NOT PASS');
     }
   });
   
