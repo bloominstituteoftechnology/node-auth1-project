@@ -4,13 +4,31 @@ const bcrypt = require('bcrypt')
 const session = require('express-session')
 const User = require('./models/user.js')
 const errors = require('./errors.js')
+const MongoStore = require('connect-mongo')(session)
+
+mongoose
+  .connect('mongodb://localhost/authdb')
+  .then(conn => {
+    console.log('\n=== connected to mongo ===\n');
+  })
+.catch(err => console.log('error connecting to mongo', err));
+
+const sessionConfig = {
+  secret: 'shhhhhh',
+  cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 }, //1 day in ms
+  resave: true,
+  httpOnly: true, 
+  secure: false, 
+  saveUninitialized: false,
+  name: 'noneya', 
+  store: new MongoStore({
+    url: 'mongodb://localhost/sessions',
+    ttl: 60 * 10,
+  }),
+};
 
 const server = express()
-server.use(session({
-  secret: 'shhhhhh',
-  resave: false,
-  saveUninitialized: false
-}))
+server.use(session(sessionConfig))
 server.use(express.json())
 
 // Middlewares!
@@ -39,7 +57,7 @@ api.post('/login', (req, res, next) => {
 
 api.get('/logout', (req, res, next) => {
   if (!req.session.username) next(errors.userNotLoggedIn)
-  req.session.username = null
+  req.session.destroy();
   res.send('Logged out')
 })
 
@@ -68,9 +86,9 @@ restricted.get('/users', (req, res, next) => {
 })
 
 // Catch-all error handler
-server.use(({ status, error }, req, res, next) => {
+server.use((error, req, res, next) => {
   console.log(error)
-  res.status(status).send({ error })
+  res.status(500).send({ error })
 }) 
 
 mongoose.connect('mongodb://localhost/auth')
