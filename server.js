@@ -8,15 +8,15 @@ const User = require('./user/User');
 mongoose
     .connect('mongodb://localhost/authprojdb')
     .then(go => {
-        console.log('\n Connected to DB \n');
+        console.log('\n== Connected to DB\n');
     })
     .catch(err => {
-        console.log('\n MUST CONSTRUCT MORE PYLONS! \n', err);
+        console.log('\nMUST CONSTRUCT MORE PYLONS!\n', err);
     });
 
 const server = express();
 const sessionConfig = {
-    secret: 'Nobody tosses a dwarf!',
+    secret: 'Cookie Monster Is Coming For You',
     cookie: {
         maxAge: 1 * 24 * 60 * 60 * 1000,
     }, // 1 day in milliseconds
@@ -27,7 +27,7 @@ const sessionConfig = {
     name: 'noname',
     store: new MongoStore({
         url: 'mongodb://localhost/sessions',
-        ttl: 60 * 10,
+        ttl: 60 * 10, //seconds
     }),
 }
 
@@ -70,13 +70,15 @@ server.post('/api/login', (req, res) => {
         .then(user => {
             if (user) {
                 //compare the passwords
-                user.isPasswordValid(password).then(isValid => {
-                    if (isValid) {
-                        req.session.username = user.username;
-                        res.send('Login Successful - Here is a Cookie!');
-                    } else {
-                        res.status(401).send('Invalid Password');
-                    }
+                user
+                    .isPasswordValid(password)
+                    .then(isValid => {
+                        if (isValid) {
+                            req.session.username = user.username;
+                            res.send('Login Successful - Here is a Cookie!');
+                        } else {
+                            res.status(401).send('Invalid Password');
+                        }
                 })
             } else {
                 res.status(401).send('Invalid Username');
@@ -97,11 +99,11 @@ server.get('/api/user', authenticate, (req, res) => {
         // });
 });
 
-server.get('/logout', (req, res) => {
+server.get('/api/logout', (req, res) => {
     if (req.session) {
         req.session.destroy(function(err) {
             if (err) {
-                res.send('error');
+                res.send(err);
             } else {
                 res.send('Good Riddance!');
             }
@@ -109,4 +111,4 @@ server.get('/logout', (req, res) => {
     }
 });
 
-server.listen(8000, () => console.log('Listening...'));
+server.listen(8000, () => console.log('\n== Listening...\n'));
