@@ -44,6 +44,9 @@ const isLoggedIn = (req, res, next) => {
   req.session && req.session.username ? next() : res.status(401).json({ error: 'you shall not pass!' })
 }
 
+// applies specified middleware to all matching routes 
+server.all('/restricted', isLoggedIn);
+
 // CREATE NEW USER
 server.post('/register', authenticateUserInput, (req, res) => {
   User
@@ -72,7 +75,7 @@ server.post('/login', (req, res) => {
 })
 
 // GET LIST OF ALL USERS IF LOGGED IN
-server.get('/users', isLoggedIn, (req, res) => {
+server.get('/restricted/users', isLoggedIn, (req, res) => {
   User
     .find()
     .then(users => res.status(200).json(users))
@@ -84,8 +87,7 @@ server.get('/logout', (req, res) => {
   req.session ?
     req.session.destroy(err => {
       err ? res.send('error logging out') : res.send('goodbye')
-    })
-    : null
+    }) : null
 })
 
 // TEST IF SERVER IS CONNECTED

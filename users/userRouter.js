@@ -1,6 +1,6 @@
-const express = require('express');
-const User = require('./userModel');
-const router = express.Router();
+// const express = require('express');
+// const User = require('./userModel');
+// const router = express.Router();
 
 // const authenticateUsername = (req, res, next) => {
 //   if (req.body.username) {
@@ -15,13 +15,13 @@ const router = express.Router();
 //   req.body.password ? next() : res.send("you must provide a password")
 // }
 
-router.route('/users')
-  .get((req, res) => {
-    User
-      .find()
-      .then(users => res.status(200).json(users))
-      .catch(err => res.status(500).json("error fetching users"))
-  })
+// router.route('/users')
+//   .get((req, res) => {
+//     User
+//       .find()
+//       .then(users => res.status(200).json(users))
+//       .catch(err => res.status(500).json("error fetching users"))
+//   })
 
 // router.route('/register')
 //   .post(authenticateUsername, authenticatePW, (req, res) => {
@@ -46,4 +46,4 @@ router.route('/users')
 //       .catch(err => res.send('error'))
 //   })
 
-module.exports = router;
+// module.exports = router;
