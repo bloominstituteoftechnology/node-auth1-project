@@ -2,18 +2,16 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
-
   username: {
     type: String,
-    required: true,
+    required: [true, 'a username is required'],
     unique: true
   },
-
   password: {
     type: String,
-    required: true
+    required: [true, 'password is required'],
+    minlength: [5, 'password must be longer than 5 characters']
   }
-  
 });
 
 userSchema.pre("save", function(next) {
@@ -23,5 +21,9 @@ userSchema.pre("save", function(next) {
     return next();
   })
 })
+
+userSchema.methods.isPasswordValid = function(password) {
+  return bcrypt.compare(password, this.password);
+}
 
 module.exports = mongoose.model('User', userSchema);
