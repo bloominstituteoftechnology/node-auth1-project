@@ -24,9 +24,9 @@ const server = express();
 
 function authenticate(req, res, next) {
     if (req.session && req.session.username) {
-        next();
+      next();
     } else {
-        res.status(401).send('You shall not pass!');
+      res.status(401).send('You shall not pass!');
     }
 }
 
@@ -76,25 +76,8 @@ server.post('/api/login', (req, res) => {
         .catch(err => res.send(err));
 });
 
-server.post('/api/users', (req, res) => {
-    const { username, password } = req.body;
-
-    User.findOne({ username })
-        .then(user => {
-            if (user) {
-            // Compare the Passwords
-            user.isPasswordValid(password).then(isValid => {
-                if(isValid) {
-                    res.send('Login Successful');
-                } else {
-                    res.status(401).send('You shall not pass!');
-                }
-            });
-          } else {
-            res.status(401).send('Invalid Credentials');
-        }
-    })
-    .catch(err => res.send(err));
+server.get('/api/users', authenticate, (req, res) => {
+    User.find().then(users => res.send(users));
 });
 
-server.listen(5000, () => console.log('\n=== API Running on 5K ===\n'));
+server.listen(5000, () => console.log('\n=== Amanda Running on 5K ===\n'));
