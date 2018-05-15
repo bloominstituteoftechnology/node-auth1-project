@@ -14,9 +14,19 @@ mongoose
   .then(connected => console.log("connected to mongo"))
   .catch(error => console.log("error connecting to mongo"))
 
-// DATA SECURITY AND BODY PARSER 
+// DATA SECURITY, BODY PARSER, SESSION
 server.use(helmet())
 server.use(express.json())
+server.use(session({
+  secret: "U>:vt5r]U{_s]`c].}rED,>fK*d/omM_DG2H2<S2psBW<C/S.wLPEk@SY]F)",
+  cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
+  httpOnly: true,
+  secure: false,
+  name: "anon",
+  resave: true,
+  saveUninitialized: false,
+  store: new MongoStore({ url: "mongodb://localhost/sessions" })
+}))
 
 // LOCAL MIDDLEWARE //
 const authenticateUserInput = (req, res, next) => {
@@ -53,8 +63,12 @@ server.post('/login', (req, res) => {
     .then(user => {
       user ? (
         user.isPasswordValid(password).then(isValid => {
-          isValid ? res.send('login success') : res.send('invalid login attempt')
-          // isValid ? req.session.username = user.username : res.send('invalid login credentials') // invalid password
+          if (isValid) {
+            req.session.username = user.username;
+            res.send('have a cookie');
+          } else {
+            res.send('invalid login credentials') // invalid password
+          } 
         })) : ( res.send('invalid login credentials') ) // invald username - dons't exist in database
     })
 })
@@ -63,5 +77,3 @@ server.post('/login', (req, res) => {
 server.get('/', (req, res) => res.send("server is running"))
 
 server.listen(5000, () => console.log("server is listening on port 5k"))
-
-// server.use(session({ secret: "U>:vt5r]U{_s]`c].}rED,>fK*d/omM_DG2H2<S2psBW<C/S.wLPEk@SY]F)" }))
