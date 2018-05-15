@@ -12,7 +12,6 @@ const corsOptions = {
 };
 
 const server = express();
-server.use(cors(corsOptions));
 
 const restrictAccess = (req, res, next) => {
   if (req.path.startsWith("/api/restricted")) {
@@ -41,6 +40,7 @@ server.use(
 );
 
 server.use(bodyParser.json());
+server.use(cors(corsOptions));
 server.use(restrictAccess);
 
 mongoose
