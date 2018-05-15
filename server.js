@@ -1,5 +1,6 @@
 const express = require('express');
 const helmet = require('helmet');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
@@ -14,9 +15,10 @@ mongoose
   .then(connected => console.log("connected to mongo"))
   .catch(error => console.log("error connecting to mongo"))
 
-// DATA SECURITY, BODY PARSER, SESSION
+// DATA SECURITY, BODY PARSER, CORS, SESSION
 server.use(helmet())
 server.use(express.json())
+server.use(cors())
 server.use(session({
   secret: "U>:vt5r]U{_s]`c].}rED,>fK*d/omM_DG2H2<S2psBW<C/S.wLPEk@SY]F)",
   cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
