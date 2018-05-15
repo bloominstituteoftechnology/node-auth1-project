@@ -81,13 +81,13 @@ server.post('/api/login', (req, res) => {
                 user.isPasswordValid(password).then(isValid => {
                     if(isValid) {
                       req.session.username = user.username;
-                      res.send('Have a Cookie');
+                      res.send('Logged in');
                     } else {
                       res.status(401).send('You shall not pass!');
                     }
                 });
             } else {
-              res.status(401).send('You shall not user!');
+              res.status(401).send('Invalid Credentials');
             }
         })
         .catch(err => res.send(err));
