@@ -2,9 +2,10 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
+const MongoStore = require("connect-mongo")(session);
 
 const User = require("./users/User");
-
+const restrictedRouter = require("./restrictedRouter");
 mongoose
   .connect("mongodb://localhost/authdb")
   .then(conn => {
@@ -14,7 +15,7 @@ mongoose
 
 const server = express();
 
-function authenticate(req, res, next) {
+function loginAuthenticate(req, res, next) {
   const authdb = mongoose.connect(`mongodb://localhost/authdb`);
   const searchUser = req.body.username;
   let passwordFlag = false;
@@ -35,11 +36,37 @@ function authenticate(req, res, next) {
   }
 }
 
-server.use(express.json());
+function authenticate(req, res, next) {
+  req.session && req.session.username
+    ? next()
+    : res.status(401).send("You shall not pass!");
+}
 
-server.post("/api/users", authenticate, (req, res) => {
+const sessionConfig = {
+  secret: "this is our secret",
+  cookie: {
+    maxAge: 86400000
+  }, // 1 day in ms
+  httpOnly: true,
+  secure: false,
+  resave: true,
+  saveUninitialized: false,
+  name: "noname",
+  store: new MongoStore({
+    url: "mongodb://localhost/sessions",
+    ttl: 60 * 10
+  })
+};
+
+server.use(express.json());
+server.use(session(sessionConfig));
+
+server.use("/api/restricted", authenticate, restrictedRouter);
+
+
+server.get("/api/users", authenticate, (req, res) => {
   User.find()
-    .select("username -_id")
+    .select("-_id -__v")
     .then(result => {
       res.status(201).json(result);
     });
@@ -56,9 +83,14 @@ server.post("/api/register", function(req, res) {
   );
 });
 
-server
-  .post("/api/login", authenticate, (req, res) => {
-    res.send("Welcome to the Mines of Moria");
-  })
+server.post("/api/login", loginAuthenticate, (req, res) => {
+  const username = req.body.username;
+  User.findOne({ username }).then(user => {
+    req.session.username = user.username;
+    res.send("have a cookie");
+  });
+});
 
-  .listen(8000, () => console.log("\n=== api running on 8k ===\n"));
+
+
+  server.listen(8000, () => console.log("\n=== api running on 8k ===\n"));
