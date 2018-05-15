@@ -16,7 +16,10 @@ export class Login extends Component {
     const { username, password } = this.state;
     axios
       .post("http://localhost:5000/login", { username, password })
-      .then(user => this.setState({ validLogin: true, logoutOption: true }))
+      .then(user => {
+        this.getUsers()
+        this.setState({ validLogin: true, logoutOption: true })
+      })
       .catch(err => this.setState({ validLogin: false }));
     this.setState({ username: "", password: "" });
   }
@@ -48,19 +51,23 @@ export class Login extends Component {
     return (
       <div>
         {this.state.users.map((user, index) => (
-          <div key={index} className="border border-dark m-3 p-3">
+          <div className="opacity w-75 mx-auto">
+          <div key={index} className="border border-dark m-3 p-3 bg-light" style={{"z-index": 2222}}>
             <div>
-              <h5>username:</h5>
-              <p>{user.username}</p>
+              <div>
+                <h5>username:</h5>
+                <p>{user.username}</p>
+              </div>
+              <div>
+                <h5>password hash:</h5>
+                <p>{user.password}</p>
+              </div>
+              <div>
+                <h5>user id:</h5>
+                <p>{user._id}</p>
+              </div>
             </div>
-            <div>
-              <h5>password hash:</h5>
-              <p>{user.password}</p>
-            </div>
-            <div>
-              <h5>user id:</h5>
-              <p>{user._id}</p>
-            </div>
+          </div>
           </div>
         ))}
       </div>
@@ -70,34 +77,35 @@ export class Login extends Component {
   render() {
     return (
       <div>
-        <input 
-          type="text"
-          name="username"
-          placeholder="username"
-          value={this.state.username}
-          onChange={event => this.setState({ [event.target.name]: event.target.value })}
-        />
-        <input 
-          type="text"
-          name="password"
-          placeholder="password"
-          value={this.state.password}
-          onChange={event => this.setState({ [event.target.name]: event.target.value })}
-        />
-        {this.state.logoutOption ? (
-          <Button onClick={() => this.handleLogout()}>Logout</Button>
-        ) : (
-          <Button onClick={() => this.handleLoginAttempt()}>Login</Button>
-        )}
-        <Button onClick={() => this.handleNewUser()}>Register</Button>
-        {this.state.validLogin ? (<div>login successful</div>) : null}
-        {this.state.logoutSuccess ? (<div>logged out</div>) : null}
-        {this.state.validLogin ? (
-          <div>
-            {this.getUsers()}
-            {this.displayUsers()}
-          </div>
-        ) : null}
+        <div className="mt-3 d-flex align-center justify-content-center">
+          <input 
+            className="userInput"
+            type="text"
+            name="username"
+            placeholder="username"
+            value={this.state.username}
+            onChange={event => this.setState({ [event.target.name]: event.target.value })}
+          />
+          <input 
+            className="userInput ml-2"
+            type="text"
+            name="password"
+            placeholder="password"
+            value={this.state.password}
+            onChange={event => this.setState({ [event.target.name]: event.target.value })}
+          />
+          {this.state.logoutOption ? (
+            <Button className="ml-2" color="dark" onClick={() => this.handleLogout()}>Logout</Button>
+          ) : (
+            <Button className="ml-2" color="dark" onClick={() => this.handleLoginAttempt()}>Login</Button>
+          )}
+          <Button className="ml-2" color="dark" onClick={() => this.handleNewUser()}>Register</Button>
+        </div>
+        <div className="">
+          {this.state.validLogin ? (<div style={{color: "white"}} className="mt-2">login successful</div>) : null}
+          {this.state.logoutSuccess ? (<div style={{color: "white"}} className="mt-2">logged out</div>) : null}
+          {this.state.validLogin ? this.displayUsers() : null}
+        </div>
       </div>
     )
   }
