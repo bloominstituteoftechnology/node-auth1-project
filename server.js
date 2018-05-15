@@ -51,8 +51,29 @@ server.post('/api/register', function(req, res) {
         .catch(err => res.status(500).send(err));
 });
 
-server.post('/api/login', authenticate, (req, res) => {
-    res.send('Logged In');
+// server.post('/api/login', authenticate, (req, res) => {
+//     res.send('Logged In');
+// });
+
+server.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+
+    User.findOne({ username })
+        .then(user => {
+            if(user) { // Comparing Passwords
+                user.isPasswordValid(password).then(isValid => {
+                    if(isValid) {
+                      req.sessions.username = user.username;
+                      res.send('Have a Cookie');
+                    } else {
+                      res.status(401).send('You shall not pass!');
+                    }
+                });
+            } else {
+              res.status(401).send('You shall not user!');
+            }
+        })
+        .catch(err => res.send(err));
 });
 
 server.post('/api/users', (req, res) => {
