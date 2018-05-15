@@ -77,7 +77,7 @@ server.post('/login', (req, res) => {
 })
 
 // GET LIST OF ALL USERS IF LOGGED IN
-server.get('/restricted/users', (req, res) => {
+server.get('/users', (req, res) => {
   User
     .find()
     .then(users => res.status(200).json(users))
