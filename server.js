@@ -1,6 +1,8 @@
 const express = require('express');
 const server = express();
 const User = require('./models/user');
+const session = require('express-session');
+
 
 const mongoose = require('mongoose');
 
@@ -12,6 +14,13 @@ server.listen(5000, () => console.log('server running on port 5000'));
 
 server.use(express.json());
 
+server.use(session({
+  secret: 'doh',
+  cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 }, // 1 day in milliseconds
+  httpOnly: true,
+  secure: true,
+}));
+
 const auth = (req, res, next) => {
   if (req.body.password === 'password') return next();
 
@@ -22,7 +31,7 @@ server.post('/api/login', auth, (req, res) => {
   res.status(200).send("You're logged in!"); 
 });
 
-server.post('/api/register', (req, res) => {
+server.post('/api/register', async (req, res) => {
   const user = new User(req.body);
 
   user.save()

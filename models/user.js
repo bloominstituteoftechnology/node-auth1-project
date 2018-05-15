@@ -27,7 +27,7 @@ userSchema.pre('save', function(next) {
 
 userSchema.post('save', function(next) {
   console.log('post save hook');
-  // next();
+  // return next();
 });
 
 module.exports = mongoose.model('User', userSchema);
