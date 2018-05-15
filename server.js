@@ -7,6 +7,9 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
+const cors = require('cors'); 
+
+
 const Restricted = require('./restricted/Restricted');
 
 mongoose.connect('mongodb://localhost/authdb')
@@ -14,6 +17,7 @@ mongoose.connect('mongodb://localhost/authdb')
   .catch(err => console.log(err));
 
 server.use(express.json());
+server.use(cors()); 
 
 server.use(session({
   secret: 'You shall not pass!',
