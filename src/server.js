@@ -1,6 +1,7 @@
 const bodyParser = require("body-parser");
 const express = require("express");
 const session = require("express-session");
+const MongoStore = require('connect-mongo')(session);
 
 const User = require("./user");
 
@@ -18,9 +19,13 @@ server.use(
     secure: false, // option to use either http or https; false for http (development model)
     resave: true,
     saveUninitialized: false,
-    name: "noNom" // default name is connect.sid;
+    name: "noNom", // default name is connect.sid;
     // default name gives away to potential hackers that we are using express-session.
     // one more reason to make your security vulnerable.
+    store: new MongoStore({
+      url: "mongodb://localhost/sessions",
+      ttl: 60 * 10
+    })
   })
 );
 
