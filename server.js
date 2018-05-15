@@ -3,6 +3,9 @@ const helmet = require('helmet');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+
+const { restrictAccess } = require('./middlewares');
 
 mongoose.connect('mongodb://localhost/userauthdb')
 .then(conn => {
@@ -21,12 +24,21 @@ server.use(helmet());
 server.use(cors());
 server.use(express.json());
 
-server.use(session({
+server.use(
+  session({
+    name: 'auth',
     secret: 'you shall not pass',
-    cookies: { maxAge: 1 * 24 * 60 * 1000},
+    resave: 'true',
+    saveUninitialized: false,
+    cookies: { maxAge: 1 * 24 * 60 * 1000 },
     secure: false,
-    name: 'auth'
-}))
+    store: new MongoStore({
+        url: `mongodb://localhost/sessions`,
+        ttl: 10 * 60
+    })
+  }),
+);
+server.use(restrictAccess);
 
 server.use('/api', authRoutes);
 server.use('/api', userRoutes);
