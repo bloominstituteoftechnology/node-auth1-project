@@ -8,21 +8,29 @@
 }
 
 .App-header {
-  background-color: #222;
+  background-image: url("https://www.phyramid.com/images/blog/making-phyramid-coms-procedurally-rendered-3d-header/header-background-indexed.png");
   height: 150px;
   padding: 20px;
   color: white;
 }
 
 .App-title {
-  font-size: 1.5em;
+  font-size: 3.5em;
+  margin-top: 40px;
 }
 
 .App-intro {
   font-size: large;
 }
 
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.loginForm {
+  width: 600px;
+  height: 100px;
+  border: 2px solid black;
+  padding-top: 55px;
+  margin: 10px auto;
+  margin-bottom: 10px;
+  background: lightgray;
+  box-shadow: 3px 5px;
+  font-weight: bolder;
 }
