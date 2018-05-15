@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
 const User = require('./users/User');
 
@@ -14,10 +16,39 @@ mongoose
 const server = express();
 
 function authenticate(req, res, next) {
-  
+  if (req.session && req.session.username) {
+    next();
+  } else {
+    res.status(401).send('You shall not pass!!!');
+  }
 }
 
+const sessionConfig = {
+  secret: 'nobody tosses a dwarf!',
+  cookie: {
+    maxAge: 1 * 24 * 60 * 60 * 1000,
+  }, // 1 day in milliseconds
+  httpOnly: true,
+  secure: false,
+  resave: true,
+  saveUninitialized: false,
+  name: 'noname',
+  store: new MongoStore({
+    url: 'mongodb://localhost/sessions',
+    ttl: 60 * 10,
+  }),
+};
+
 server.use(express.json());
+server.use(session(sessionConfig));
+
+server.get('/', (req, res) => {
+  if (req.session && req.session.username) {
+    res.send(`welcome back ${req.session.username}`);
+  } else {
+    res.send('who are you?');
+  }
+});
 
 // Register new user
 server.post('/api/register', (req, res) => {
@@ -38,17 +69,18 @@ server.post('/api/login', (req, res) => {
   User.findOne({ username: username })
     .then(user => {
       // If user is not found then return error
-      if(!user) res.status(404).json({ error: 'Invalid credentials' });
+      if(!user) res.status(401).json('Invalid credentials');
       // Check if password matches hash
-      bcrypt.compare(password, user.password, function(err, match) {
-        // Store cookie to track match
-        if(match) res.json(`Logged in as ${username}`);
-        else res.status(401).json('You shall not pass!!!');
+      user.isPasswordValid(password).then(isValid => {
+        if(isValid) { // Create session cookie
+          req.session.username = user.username;
+          res.json(`Logged in as ${username}`);
+        } else res.status(401).send('invalid password');
       });
     })
     .catch(err => {
       res.status(500).json({
-        error: 'User could not be logged in'
+        error: 'Something went wrong while logginh in'
       })
     });
 });
