@@ -30,6 +30,7 @@ const sessionConfig = {
 // Middleware
 server.use(express.json());
 server.use(session(sessionConfig))
+server.use(restricted)
 
 // Custom Middleware
 function login (req, res, next){
@@ -40,13 +41,27 @@ function login (req, res, next){
     }
 }
 
+function restricted (req, res, next) {
+    let path = req.path;
+
+    if (path.includes('restricted')) {
+        if (!req.session.user) {
+            res.send('GET OUT')
+        } else {
+            next()
+        }
+    } else {
+        next()
+    }
+}
+
 // Initial route
 server.get('/', (req, res) => {
     res.send('api running');
 })
 
 // Register route
-server.post('/api/register', (req, res) => {
+server.post('/api/restricted/register', (req, res) => {
 
     User
     .create(req.body)
@@ -85,7 +100,7 @@ server.post('/api/login', (req, res) => {
 })
 
 // View users when logged in
-server.get('/api/users', login, (req, res) => {
+server.get('/api/restricted/users', login, (req, res) => {
 
     User
     .find()
