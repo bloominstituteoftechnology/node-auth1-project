@@ -82,7 +82,9 @@ server.post('/register', (req, res) => {
     user.save().then(user => {
         res.send(user)
     }).catch(err => {
-        res.send("There was an error registering as a new user")
+        res.status(400).json({
+            error: "There was an error registering as a new user"
+        })
     })
 })
 
