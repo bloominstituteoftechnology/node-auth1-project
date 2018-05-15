@@ -45,7 +45,7 @@ const isLoggedIn = (req, res, next) => {
 }
 
 // applies specified middleware to all matching routes 
-server.all('/restricted', isLoggedIn);
+server.all('/restricted/*', isLoggedIn);
 
 // CREATE NEW USER
 server.post('/register', authenticateUserInput, (req, res) => {
@@ -75,7 +75,7 @@ server.post('/login', (req, res) => {
 })
 
 // GET LIST OF ALL USERS IF LOGGED IN
-server.get('/restricted/users', isLoggedIn, (req, res) => {
+server.get('/restricted/users', (req, res) => {
   User
     .find()
     .then(users => res.status(200).json(users))
