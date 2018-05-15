@@ -44,7 +44,7 @@ function login (req, res, next){
 function restricted (req, res, next) {
     let path = req.path;
 
-    if (path.includes('restricted')) {
+    if (path.includes('/api/restricted')) {
         if (!req.session.user) {
             res.send('GET OUT')
         } else {
