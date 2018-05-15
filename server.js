@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
-
+const cors = require('cors');
 const User = require('./users/User');
 
 mongoose
@@ -14,6 +14,7 @@ mongoose
 
 const server = express();
 server.use(express.json());
+server.use(cors());
 
 server.use(
     session({
