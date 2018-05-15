@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const session = require('express-session');
 
 const User = require('./users/User');
 
@@ -31,6 +32,28 @@ server.post('/register', function(req, res) {
   .catch(err => {
     res.status(500).send(err);
   });
+})
+
+server.post('/login', (req, res) => {
+  const { username, password } = req.body;
+
+  User.findOne({ username })
+    .then(user => {
+      if (user) {
+        user
+          .isPasswordValid(password)
+          .then(isValid => {
+            if (isValid) {
+              res.send('Login successful.');
+            } else {
+              res.status(401).send('Invalid credentials.');
+            }
+          });
+      } else {
+        res.status(401).send('Invalid credentials.');
+      }
+    })
+    .catch();
 })
 
 server.listen(5000, () => console.log('\n=== api running on port 5000 ==='));
