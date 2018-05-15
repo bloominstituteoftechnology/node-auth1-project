@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const User = require("./src/user.js");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
+const MongoStore = require("connect-mongo")(session);
 
 const server = express();
 
@@ -23,7 +24,13 @@ server.use(
   session({
     secret: "My super secret",
     resave: true,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 }, // 1 day in milliseconds
+    name: "DontPWNmeh",
+    store: new MongoStore({
+      url: "mongodb://localhost/sessions",
+      ttl: 60 * 10
+    })
   })
 );
 
