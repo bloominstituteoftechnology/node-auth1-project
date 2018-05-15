@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const helmet = require("helmet");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
+
+const User = require("./users/userModel");
 const authMiddleware = require("./middleware/authenticate");
 
 // connect to mongodb

@@ -13,6 +13,7 @@ router.post("/", (req, res) => {
 					if (isValid) {
 						// store username in session object after log in
 						req.session.username = user.username;
+						req.session.userID = user._id;
 						res.send("log in successful");
 					} else {
 						res.status(400).send("invalid credentials");
