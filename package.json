@@ -18,11 +18,14 @@
   },
   "homepage": "https://github.com/CruiseBrantley/Auth#readme",
   "dependencies": {
+    "axios": "^0.18.0",
     "bcrypt": "^2.0.1",
+    "bootstrap": "^4.1.1",
+    "connect-mongo": "*",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
-    "mongoose": "^5.1.0", 
-    "connect-mongo": "*"
+    "mongoose": "^5.1.0",
+    "reactstrap": "^6.0.1"
   },
   "devDependencies": {
     "nodemon": "^1.17.4"
