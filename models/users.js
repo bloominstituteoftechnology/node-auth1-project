@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose'
-// import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt'
 
 const UserSchema = new Schema({
   username: {
@@ -14,11 +14,17 @@ const UserSchema = new Schema({
   }
 })
 
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function (next) {
   // handle hashing here
-  console.log(this.password)
-  next()
+  bcrypt.hash(this.password, 11, (err, hash) => {
+    if (err) return next(err)
+    this.password = hash;
+    return next()
+  })
 })
 
-const UserModel = mongoose.model('User', UserSchema)
-export default UserModel
+UserSchema.methods.isPasswordValid = function (pass) {
+  return bcrypt.compare(pass, this.password)
+}
+
+export default mongoose.model('User', UserSchema)

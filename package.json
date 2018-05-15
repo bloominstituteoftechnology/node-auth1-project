@@ -4,9 +4,7 @@
   "description": "## Topics",
   "main": "server.js",
   "scripts": {
-    "babel-node": "babel-node --presets=env",
-    "start": "nodemon --exec npm run babel-node -- server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon --exec babel-node server.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +19,7 @@
   "homepage": "https://github.com/axhon/Auth#readme",
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "dotenv": "^5.0.1",
     "nodemon": "^1.17.4"
@@ -31,5 +30,9 @@
     "helmet": "^3.12.0",
     "mongoose": "^5.1.0",
     "morgan": "^1.9.0"
+  },
+  "babel": {
+    "presets": ["env"],
+    "plugins": ["transform-object-rest-spread"]
   }
 }
