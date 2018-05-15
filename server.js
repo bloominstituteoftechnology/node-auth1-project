@@ -20,9 +20,7 @@ function authenticate(req, res, next) {
 
 const sessionConfig = {
   secret: 'nobody tosses a dwarf!',
-  cookie: {
-    maxAge: 1 * 24 * 60 * 60 * 1000,
-  }, // 1 day in milliseconds
+  cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
   httpOnly: true,
   secure: false,
   resave: true,
@@ -102,4 +100,6 @@ server.get('/api/logout', (req, res) => {
   }
 });
 
-server.listen(8000, () => console.log('=== api running on port 8000 ==='));
+server.listen(8000, () => {
+  console.log('=== api running on port 8000 ===')
+});
