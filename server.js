@@ -47,7 +47,17 @@ function seperateObject(info) {
     return obj;
 }
 
+function restrictedCheck(req, res) {
+    if(req.session && req.session.username) {
+        res.send("You may pass")
+    } else {
+        res.send("YOU SHALL NOT PASS");
+    }
+}
+
 server.use(express.json())
+
+server.use('/api/restricted', restrictedCheck)
 
 
 
@@ -110,5 +120,8 @@ server.get("/logout", (req, res) => {
     }
 })
 
+server.get("/api/restricted", (req, res) => {
+    res.send("RESTRICTED SERVER RUNNING")
+})
 server.listen(5000, () => console.log('API RUNNING ON PORT 5000'));
 
