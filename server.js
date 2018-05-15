@@ -8,6 +8,8 @@
 
 const express = require('express');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
 const User = require('./users/User');
 
@@ -21,7 +23,7 @@ mongoose
 const server = express();
 
 function authenticate(req, res, next) {
-    if (req.body.password === 'kiwi') {
+    if (req.session && req.session.username) {
         next();
     } else {
         res.status(401).send('You shall not pass!');
@@ -29,10 +31,15 @@ function authenticate(req, res, next) {
 }
 
 // server.use(greet);
+
 server.use(express.json());
 
 server.get('/api', (req, res) => {
-    res.send({ route: 'Directing to', message: 'Fruit Farm' });
+    if (req.session && req.session.username) {
+      res.send(`Welcome Back ${req.session.username}`);
+    } else {
+      res.send( 'You shall not pass!');
+    }
 });
 
 server.post('/api/register', function(req, res) {
@@ -48,14 +55,25 @@ server.post('/api/login', authenticate, (req, res) => {
     res.send('Logged In');
 });
 
-server.get('/api/users', (req, res) => {
-    bcrypt.compare(password, hash, function(err, res) {
+server.post('/api/users', (req, res) => {
+    const { username, password } = req.body;
+
+    User.findOne({ username })
+        .then(user => {
+            if (user) {
+            // Compare the Passwords
+            user.isPasswordValid(password).then(isValid => {
+                if(isValid) {
+                    res.send('Login Successful');
+                } else {
+                    res.status(401).send('You shall not pass!');
+                }
+            });
+          } else {
+            res.status(401).send('Invalid Credentials');
+        }
     })
-    if (req.body.password === 'kiwi') {
-        next();
-    } else {
-        res.status(401).send('You shall not pass!');
-    }
-})
+    .catch(err => res.send(err));
+});
 
 server.listen(5000, () => console.log('\n=== API Running on 5K ===\n'));
