@@ -89,5 +89,17 @@ server.get('/api/users', authenticate, (req, res) => {
     });
 });
 
+// Logout current user
+server.get('/api/logout', (req, res) => {
+  console.log(req.session);
+  if(req.session) {
+    const username = req.session.username;
+    req.session.destroy(err => {
+      console.log(req.session);
+      if (err) res.json('Error')
+      else res.json(`Good Bye`);
+    });
+  }
+});
 
 server.listen(8000, () => console.log('=== api running on port 8000 ==='));
