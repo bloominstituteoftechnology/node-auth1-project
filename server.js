@@ -63,6 +63,14 @@ server.post('/api/login', async (req, res) => {
   }
 });
 
+server.get('/api/logout', auth, async (req, res) => {
+  if (req.session) {
+    req.session.destroy( err => {
+      err ? res.send('error') : res.send("you're logged out");
+    });
+  }
+});
+
 server.post('/api/register', async (req, res) => {
   const user = new User(req.body);
 
@@ -74,7 +82,7 @@ server.post('/api/register', async (req, res) => {
     });
 });
 
-server.get('/api/users', async (req, res) => {
+server.get('/api/users', auth, async (req, res) => {
   const users = await User.find({});
 
   res.status(200).json(users);
