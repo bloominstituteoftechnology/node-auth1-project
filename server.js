@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const express = require('express');
+const User = require ('./User.js');
 
 mongoose
   .connect('mongodb://localhost/authdb')
@@ -8,17 +9,31 @@ mongoose
   })
   .catch(error => console.log('issues connecting to mongo', error));
 
+const server = express();
 
-  const server = express();
+server.use(express.json());
 
-  // const auth = (req, res, next) {
-  //   if (req.body.password )
-  // }
+server.get('/', (req, res) => {
+  res.send({api: 'running'})
+})
 
-  server.get('/', (req, res) => {
-    res.send({api: 'running'})
-  })
+server.post('/api/register', (req, res) => {
+  const user = new User (req.body);
+  user
+    .save()
+    .then(user => {
+      res.status(201).json({ user })
+    })
+    .catch(error => {
+      res.status(500).send('error')
+    });
+})
 
+server.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  if (!username) {
+    res.status(500).send({ error: 'invalid info'})
+  }
+})
 
-
-  server.listen(5000, () => console.log('n\ === API Running! === \n'))
+server.listen(5000, () => console.log('n\ === API Running! === \n'))
