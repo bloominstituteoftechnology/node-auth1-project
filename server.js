@@ -26,7 +26,7 @@ function authenticate(req, res, next) {
     if (req.session && req.session.username) {
       next();
     } else {
-      res.status(401).send('You shall not pass!');
+      res.status(401).send( 'You shall not pass!' );
     }
 }
 
@@ -95,6 +95,18 @@ server.post('/api/login', (req, res) => {
 
 server.get('/api/users', authenticate, (req, res) => {
     User.find().then(users => res.send(users));
+});
+
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(function(err) {
+            if (err) {
+                res.send('Error');
+            } else {
+                res.send('Good Bye');
+            }
+        });
+    }
 });
 
 server.listen(5000, () => console.log('\n=== Amanda Running on 5K ===\n'));
