@@ -26,6 +26,7 @@ const server = express();
 // middleware
 server.use(express.json());
 server.use(helmet());
+// express-session configuration
 server.use(
 	session({
 		secret: "M2346eZhJM3Np1v8vTZdJRImHSkIIyf2kbIM5h+VuABXaFJAX96KyXKxX8pU+h8F",
