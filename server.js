@@ -19,6 +19,7 @@ mongoose
 const Register = require("./register/Register");
 const Login = require("./login/Login");
 const Users = require("./users/User");
+const Logout = require("./logout/Logout");
 
 const server = express();
 
@@ -59,6 +60,8 @@ server.use("/api/register", Register);
 server.use("/api/login", Login);
 // send an array of all users in the database
 server.use("/api/users", Users);
+// log a user out of the current session
+server.use("/api/logout", Logout);
 
 server.listen(5000, () => {
 	console.log("\n===api running on 5000===\n");
