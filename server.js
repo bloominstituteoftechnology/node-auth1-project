@@ -37,11 +37,14 @@ server.post('/api/register', (req, res) => {
 
 server.post('/api/login', (req, res, next) => {
     const { username, password} = req.body;
+    //Since usernames are unique i use them as an id and pass it through to findone
     User.findOne({username})
     .then((test) => {
         if (test) test.validation(password)
+        //I then test whether the password passed in is in fact the origin password for that username
         .then((valid) => {
            if (valid) {
+               //if that password attempt is valid and correct then i set the username as the session username and pass a message
                req.session.name = username;
                res.status(200).json({message: "Logged In"});
            }
@@ -53,6 +56,8 @@ server.post('/api/login', (req, res, next) => {
 });
 
 server.use('/api/restricted/', function (req, res, next){
+    //I figured out how to make this global instead of local by wrapping my previous function in server.use;
+    //I use req.session.name to pass the username throughout the session 
     const username = req.session.name;
         if (username) {
             User.findOne({username})
@@ -66,8 +71,9 @@ server.use('/api/restricted/', function (req, res, next){
 server.get('/api/restricted/users', (req, res) => {
 User.find({})
     .then(poo => {
-        // const doo = poo.map(poop => { return poop.username});
-        // console.log(doo)
+        // const doo = poo.map(poop => { return {username: poop.username}}); 
+        //If i just wanted the username i could take out the key value pair and return poop.username;
+        // console.log(doo); 
         res.status(200).json(poo);
     })
     .catch(err => {
