@@ -28,11 +28,31 @@ const server = express();
 //         })
 // }
 
-authen = (req, res, next) => {
-    if (req.session && req.session.username) {
-        next();
+// authen = (req, res, next) => {
+//     if (req.session && req.session.username) {
+//         console.log(req, req.session, 'username', req.session.username)
+//         next();
+//     } else {
+//         res.status(401).send('Try again later :(');
+//     }
+// }
+
+function restricted(req, res, next) {
+    console.log('middleware runnign', req, req.session)
+    let url = req.url.split('/');
+    if (url.includes('restricted')) {
+        console.log('reached restricted')
+        if (req.session && req.session.username) {
+            console.log('reached username')
+            next();
+        }
+        else {
+            console.log(req.session, req.session.username)
+            res.status(401).send('sorry restricted content ahead :(');
+        }
     } else {
-        res.status(401).send('Try again later :(');
+        console.log(req, 'not restricted')
+        next();
     }
 }
 
@@ -54,6 +74,7 @@ const sessionConfig = {
 
 server.use(express.json());
 server.use(session(sessionConfig));
+server.use(restricted);
 
 server.get('/', (req, res) => {
     if (req.sessions && req.session.username) {
@@ -63,12 +84,19 @@ server.get('/', (req, res) => {
     }
 });
 
-server.get('/api/users', authen, (req, res) => {
+server.get('/api/restricted/users', (req, res) => {
     User
         .find()
         .then(users => res.status(200).send(users))
         .catch(err => res.status(500).send(err));
 });
+
+// server.get('/api/users', authen, (req, res) => {
+//     User
+//         .find()
+//         .then(users => res.status(200).send(users))
+//         .catch(err => res.status(500).send(err));
+// });
 
 server.post('/api/register', (req, res) => {
     const user = new User(req.body);
@@ -86,7 +114,6 @@ server.post('/api/login', (req, res) => {
             user.isPasswordValid(password)
                 .then(valid => {
                     if (valid) {
-                        console.log(user)
                         req.session.username = user.username
                         res.send('login successful');
                     }
@@ -97,9 +124,9 @@ server.post('/api/login', (req, res) => {
 })
 
 server.get('/api/logout', (req, res) => {
-    if(req.session) {
-        req.session.destroy(function(err) {
-            if(err) res.send(err);
+    if (req.session) {
+        req.session.destroy(function (err) {
+            if (err) res.send(err);
             else res.send('Come back again!');
         });
     }
