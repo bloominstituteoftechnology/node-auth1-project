@@ -1,8 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const MongoStore = require('connect-mongo')(session);
 const User = require('./User/user');
+const MongoStore = require('connect-mongo')(session);
+
 const app = express();
 
 mongoose
@@ -49,11 +50,11 @@ app.get('/', (req, res) => {
   }
 });
 
-app.get('/users', authenticate, (req, res) => {
+app.get('/api/users', authenticate, (req, res) => {
   User.find().then(users => res.send(users));
 });
 
-app.post('/register', function(req, res) {
+app.post('/api/register', function(req, res) {
   const user = new User(req.body);
 
   user
@@ -62,7 +63,7 @@ app.post('/register', function(req, res) {
     .catch(err => res.status(500).send(err));
 });
 
-app.post('/login', (req, res) => {
+app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
 
   User.findOne({ username })

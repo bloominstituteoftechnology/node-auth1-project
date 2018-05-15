@@ -8,12 +8,12 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     lowercase: true,
+  },
   password: {
     type: String,
     required: true,
   },
-});
-
+})
 
 userSchema.pre('save', function(next) {
   bcrypt.hash(this.password, 11, (err, hash) => {
