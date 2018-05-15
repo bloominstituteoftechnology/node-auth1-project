@@ -24,4 +24,8 @@ User.pre('save', function(next) {
     });
 });
 
+User.methods.isPasswordValid = function(passwordGuess) {
+    return bcrypt.compare(passwordGuess, this.password);
+}
+
 module.exports = mongoose.model('User', User);

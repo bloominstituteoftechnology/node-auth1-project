@@ -1,8 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const session = require('express-session');
 
 const Register = require('./register/register');
 const Login = require('./login/login');
+const sessionConfig = require('./login/login');
 
 mongoose 
     .connect('mongodb://localhost/authdb')
@@ -14,6 +16,7 @@ mongoose
 const server = express();
 
 server.use(express.json());
+server.use(session(sessionConfig));
 server.use('/register', Register);
 server.use('/login', Login);
 
