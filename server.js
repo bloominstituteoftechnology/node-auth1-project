@@ -79,6 +79,7 @@ server.post('/api/login', (req, res) => {
     })
 })
 
+// View users when logged in
 server.get('/api/users', login, (req, res) => {
 
     User
@@ -89,6 +90,21 @@ server.get('/api/users', login, (req, res) => {
     .catch(err => {
         res.status(500).send('You shall not pass!');
     })
+})
+
+// Logout route
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(function(err) {
+            if (err) {
+                res.send('Error')
+            } else {
+                res.send('Goodbye')
+            }
+        })
+    } else {
+        res.send('Not logged in');
+    }
 })
 
 const port = 5000;
