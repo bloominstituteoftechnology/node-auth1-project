@@ -1,10 +1,12 @@
+//MODULES
 const express = require('express');
 const mongoose = require('mongoose');
-const User = require("./Users/User");
 const bcrypt = require('bcrypt');
-const session = require('express-session')
+const session = require('express-session');
 
 
+//DATABASE CONNECTION
+const User = require("./Users/User");
 
 mongoose.connect("mongodb://localhost/Auth")
 .then(connected => {
@@ -13,8 +15,9 @@ mongoose.connect("mongodb://localhost/Auth")
     console.log('error connecting to db')
 })
 
-
+//SERVER
 const server = express();
+
 server.use(
     session({
         secret: 'nobody tosses a dwarf!',
@@ -27,13 +30,13 @@ server.use(
         saveUninitialized: false,
         name: 'noname',
   }))
+
+//SERVER FUNCTIONS/MIDDLEWARE
 function validate(password, passwordDB) {
     bcrypt.compare(password, passwordDB, function(err, res) {
         console.log(res)
     })
 }
-
-
 
 function seperateObject(info) {
     let usernameVal = Object.values(info, [0]);
@@ -45,6 +48,10 @@ function seperateObject(info) {
 }
 
 server.use(express.json())
+
+
+
+//SERVER HANDLERS
 
 server.get('/', (req, res) => {
     if (req.session && req.session.username) {
@@ -89,6 +96,18 @@ server.post('/login', (req, res, next) => {
             error: "Could not find that username"
         })
     })
+})
+
+server.get("/logout", (req, res) => {
+    if(req.session) {
+        req.session.destroy(function(err) {
+            if(err) {
+                res.send('Error')
+            } else {
+                res.send("Logged out, goodbye(:")
+            }
+        })
+    }
 })
 
 server.listen(5000, () => console.log('API RUNNING ON PORT 5000'));
