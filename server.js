@@ -1,6 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 const User = require('./users/User');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+
 
 mongoose
     .connect('mongodb://localhost/auth')
@@ -12,14 +16,31 @@ mongoose
 const server = express();
 
 function authenticate(req, res, next) {
-    if (req.body.password === 'pugbutts') {
+    if (req.session && req.session.username) {
         next();
     } else {
         res.status(401).send('You shall not pass!')
     }
 }
 
+const sessionConfig = {
+    secret: 'shh it is a secret', 
+    cookie: {
+        maxAge: 1 * 24 * 60 * 60 * 1000, 
+    }, //1 day in milliseconds
+    httpOnly: true, 
+    secure: false,
+    resave: true,
+    saveUninitialized: false,
+    name: 'noname',
+    store: new MongoStore({
+        url: 'mongodb://localhost/sessions',
+        ttl: 60 * 10,
+    }),
+};
+
 server.use(express.json());
+server.use(session(sessionConfig));
 
 //GET
 //Postman Test ok! http://localhost:8000
@@ -46,7 +67,9 @@ server.post('/login', authenticate, (req, res) => {
 
 //GET /api/users
 server.get('/users', (req, res) => {
-    res.send({ route: '/', message: req.message });
+    User.find({})
+    .then(user => res.status(201).send(user))
+    .catch(err => res.status(500).send(err));
 });
 
 server.use(express.json());
