@@ -51,8 +51,8 @@ export class Login extends Component {
     return (
       <div>
         {this.state.users.map((user, index) => (
-          <div className="opacity w-75 mx-auto">
-          <div key={index} className="border border-dark m-3 p-3 bg-light" style={{"z-index": 2222}}>
+          <div className="opacity w-50 mx-auto rounded">
+          <div key={index} className="border border-dark m-3 p-3 bg-light rounded" style={{"z-index": 2222}}>
             <div>
               <div>
                 <h5>username:</h5>
@@ -88,7 +88,7 @@ export class Login extends Component {
           />
           <input 
             className="userInput ml-2"
-            type="text"
+            type="password"
             name="password"
             placeholder="password"
             value={this.state.password}
@@ -102,8 +102,8 @@ export class Login extends Component {
           <Button className="ml-2" color="dark" onClick={() => this.handleNewUser()}>Register</Button>
         </div>
         <div className="">
-          {this.state.validLogin ? (<div style={{color: "white"}} className="mt-2">login successful</div>) : null}
-          {this.state.logoutSuccess ? (<div style={{color: "white"}} className="mt-2">logged out</div>) : null}
+          {this.state.validLogin ? (<div style={{color: "white"}} className="mt-3 font-weight-bold">login successful</div>) : null}
+          {this.state.logoutSuccess ? (<div style={{color: "white"}} className="mt-3 font-weight-bold">logged out</div>) : null}
           {this.state.validLogin ? this.displayUsers() : null}
         </div>
       </div>
