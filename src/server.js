@@ -5,6 +5,9 @@ const session = require('express-session')
 const User = require('./models/user.js')
 const errors = require('./errors.js')
 const MongoStore = require('connect-mongo')(session)
+const cors = require('cors')
+
+
 
 mongoose
   .connect('mongodb://localhost/authdb')
@@ -30,6 +33,7 @@ const sessionConfig = {
 const server = express()
 server.use(session(sessionConfig))
 server.use(express.json())
+server.use(cors())
 
 // Middlewares!
 const userAuthenticated = (req, res, next) => req.session.username
@@ -46,7 +50,8 @@ api.post('/login', (req, res, next) => {
 
   User.findOne({ username })
     .then(user => {
-      if (!user) next(errors.userNotFound) 
+      console.log(user)
+      if (!user) return next(errors.userNotFound) 
       bcrypt.compare(password, user.password)
         .then(result => {
           req.session.username = username
