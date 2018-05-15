@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const User = require('./User/User');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
+const cors = require('cors');
 
 mongoose
     .connect('mongodb://localhost/authndb')
@@ -31,6 +32,7 @@ const sessionConfig = {
 server.use(express.json());
 server.use(session(sessionConfig))
 server.use(restricted)
+server.use(cors())
 
 // Custom Middleware
 function login (req, res, next){
@@ -100,7 +102,7 @@ server.post('/api/login', (req, res) => {
 })
 
 // View users when logged in
-server.get('/api/users', login, (req, res) => {
+server.get('/api/users', (req, res) => {
 
     User
     .find()
