@@ -2,16 +2,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
 
-const Register = require('../register/register');
+
+const User = require('../users/User');
 
 function authenticate(req, res, next) {
-    const username = Register.username;
-    const password = Register.password;
-    if (req.body.username === username && req.body.password === password) {
-        next();
-    } else {
-        res.status(401).send('You shall not pass!');
-    }
+    
 }
 
 router 
