@@ -56,14 +56,11 @@ server.post('/login', (req, res, next) => {
         // console.log(login.password)
         // console.log(user.password)
 
-        bcrypt.compare(login.password, user.password, (err, valid) => {
-            if(err) {
-                res.status(400).json({Error: "Wrong password"});
-            } 
-
+        user.isPasswordValid(login.password).then(valid => {
             if(valid) {
-                res.send(user);
-                next()
+                res.send("Login Successfult")
+            } else {
+                res.send("login failed")
             }
         })
     }).catch(err => {
