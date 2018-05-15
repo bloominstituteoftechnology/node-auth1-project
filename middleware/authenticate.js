@@ -32,6 +32,7 @@ module.exports = {
 						req.username = username;
 						req.password = password;
 						req.userID = user[0]._id;
+						req.user = user[0];
 						next();
 					}
 				});
