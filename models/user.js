@@ -24,6 +24,10 @@ userSchema.pre('save', function(next) {
   })
 });
 
+userSchema.methods.isPasswordValid = function(password) {
+  return bcrypt.compare(password, this.password);
+}
+
 
 userSchema.post('save', function(next) {
   console.log('post save hook');
