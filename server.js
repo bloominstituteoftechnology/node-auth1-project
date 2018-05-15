@@ -44,10 +44,14 @@ server.use(session(sessionConfig));
 server.use('/register', Register);
 
 server.get('/', (req, res) => {
-    res.send({ api: 'running' });
+    if (req.session && req.session.username) {
+        res.send(`Welcome back ${req.session.username}`);
+    } else {
+        res.send('Who are you?');
+    }
 });
 
-server.post('/login', authenticate, (req, res) => {
+server.post('/login', (req, res) => {
     const { username, password } = req.body;
 
     User.findOne({ username })
@@ -68,5 +72,22 @@ server.post('/login', authenticate, (req, res) => {
         })
         .catch(err => res.send(err));
 });
+
+server.get('/users', authenticate, (req, res) => {
+    User.find().then(users => res.send(users));
+});
+
+server.get('/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(function(err) {
+            if (err) {
+                res.send('error');
+            } else {
+                res.send('Goodbye');
+            }
+        });
+    };
+});
+
 
 server.listen(5000, () => console.log(`\n=== api running on port 5000 ===\n`));
