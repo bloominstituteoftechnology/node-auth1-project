@@ -25,11 +25,6 @@ mongoose
   .then(() => console.log('\n=== MongoDB Connected ===\n'))
   .catch(err => console.error(err.message, '\n', '\n=======\n', err.stack))
 
-const authenticate = (req, res, next) =>
-  req.session && req.session.username
-    ? next()
-    : res.status(401).send('Mithrandil looks down upon you')
-
 const sessionConfig = {
   secret: 'tacos and bells',
   cookie: {

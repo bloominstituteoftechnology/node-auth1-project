@@ -7,7 +7,6 @@ loginRouter.post('/', (req, res) => {
   User.findOne({ username })
     .then(user => {
       if (user) {
-        console.log(user.username)
         user.isPasswordValid(password).then(isValid => {
           if (isValid) {
             req.session.username = user.username
