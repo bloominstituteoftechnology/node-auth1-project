@@ -2,8 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
 const session = require("express-session");
+const MongoStore = require("connect-mongo")(session);
 const authMiddleware = require("./middleware/authenticate");
-const logInMiddleware = require("./middleware/validateLogIn");
 
 // connect to mongodb
 mongoose
@@ -28,23 +28,37 @@ server.use(helmet());
 server.use(
 	session({
 		secret: "M2346eZhJM3Np1v8vTZdJRImHSkIIyf2kbIM5h+VuABXaFJAX96KyXKxX8pU+h8F",
+		cookie: {
+			maxAge: 1 * 24 * 60 * 60 * 1000
+		},
+		httpOnly: true,
+		secure: false,
+		resave: true,
 		saveUninitialized: false,
 		resave: false,
-		cookie: {}
+		name: "noname",
+		store: new MongoStore({
+			url: "mongodb://localhost/sessions",
+			ttl: 60 * 10
+		})
 	})
 );
 
 // routes
 server.get("/", (req, res) => {
-	res.send({ route: "/", message: "made it to home page" });
+	if (req.session && req.session.username) {
+		res.send(`welcome back ${req.session.username}`);
+	} else {
+		res.send("who are you? who, who?");
+	}
 });
 
 // create a user with a hashed password
 server.use("/api/register", Register);
 // validate login and create a new session for a user
-server.use("/api/login", authMiddleware.authenticate, Login);
+server.use("/api/login", Login);
 // send an array of all users in the database
-server.use("/api/users", logInMiddleware.validateLogIn, Users);
+server.use("/api/users", Users);
 
 server.listen(5000, () => {
 	console.log("\n===api running on 5000===\n");
