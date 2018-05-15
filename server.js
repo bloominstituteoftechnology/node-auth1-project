@@ -7,7 +7,7 @@ const session = require('express-session');
 const registerRouter = require('./users/registerRouter.js');
 const loginRouter = require('./users/loginRouter.js');
 const usersRouter = require('./users/usersRouter.js');
-
+const sessionConfig = require('./users/sessionConfig.js');
 
 const server = express();
 
@@ -23,6 +23,7 @@ mongoose
 server.use(helmet());
 server.use(cors());
 server.use(express.json());
+server.use(session(sessionConfig));
 
 server.use('/api/register', registerRouter);
 server.use('/api/login', loginRouter);
