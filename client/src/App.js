@@ -1,20 +1,62 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import { Route } from 'react-router-dom';
+import {
+  Collapse,
+  Navbar,
+  NavbarToggler,
+  NavbarBrand,
+  Nav,
+  NavItem,
+  NavLink,
+} from 'reactstrap';
+
+import Login from './Components/login';
+import Register from './Components/register';
+import Users from './Components/users';
 import './App.css';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isOpen: false,
+      users: [],
+      username: '',
+      password:''
+    };
+  }
+
+  toggleNavbar = () => {
+    this.setState({ isOpen: !this.state.isOpen });
+  }
+
   render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
+    return <div>
+        <Navbar color="dark" light expand="md">
+          <NavbarBrand href="/" className="text-white">
+            UsersBook
+          </NavbarBrand>
+          <NavbarToggler onClick={this.toggleNavbar} />
+          <Collapse isOpen={this.state.isOpen} navbar>
+            <Nav className="ml-auto" navbar>
+              <NavItem>
+                <NavLink className="text-white" href="/login">
+                  Login
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink className="text-white" href="/register">
+                  Register
+                </NavLink>
+              </NavItem>
+            </Nav>
+          </Collapse>
+        </Navbar>
+        <Route exact path='/login' component={Login} />
+        <Route exact path='/register' component={Register} />
+        <Route exact path='/users' component={Users} />
+      </div>;
   }
 }
 
