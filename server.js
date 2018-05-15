@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const express = require('express');
+const session = require('session');
 const User = require ('./User.js');
 
 mongoose
@@ -11,7 +12,23 @@ mongoose
 
 const server = express();
 
-//authtication method, might need tinkering later
+//express session stuff from lecture
+const sessionConfig = {
+  secret: 'nobody tosses a dwarf!',
+  cookie: {
+    maxAge: 1 * 24 * 60 * 60 * 1000
+  }, // 1 day in milliseconds
+  httpOnly: true,
+  secure: false,
+  resave: true,
+  saveUninitialized: false,
+  name: 'noname',
+  store: new MongoStore({
+    url: 'mongodb://localhost/sessions',
+    ttl: 60 * 10
+  })
+};
+//authtication method, might need tinkering later and switch with express session
 function authenticate(req, res, next) {
   const {username, password } = req.body;
   User.findOne({ username }).then(user => {
@@ -29,6 +46,8 @@ function authenticate(req, res, next) {
       .send('Invalid Username/Password!')
   }); 
 }
+
+
 
 server.use(express.json());
 
@@ -68,6 +87,8 @@ server.get("/api/users", (req, res) => {
       });
     });
 });
+
+
 
 
 server.listen(5000, () => console.log('n\ === API Running! === \n'))
