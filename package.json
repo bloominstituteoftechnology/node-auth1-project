@@ -9,7 +9,10 @@
   "author": "markstez05 <36493764+markstez05@users.noreply.github.com>",
   "license": "MIT",
   "dependencies": {
-    "nodemon": "^1.17.4"
+    "connect-mongo": "^2.0.1",
+    "express-session": "^1.15.6",
+    "nodemon": "^1.17.4",
+    "session": "^0.1.0"
   },
   "devDependencies": {
     "nodemon": "^1.17.4"
