@@ -12,28 +12,20 @@ mongoose
 const server = express();
 
 function authenticate(req, res, next) {
-  User.find({ username: req.body.username }).then(matchedUser => {
-    const user = matchedUser[0];
+  const { username, password } = req.body;
+  User.findOne({ username }).then(user => {
     if (user) {
-      user.comparePassword(req.body.password, function(err, isMatch) {
-        if (isMatch && !err) {
-          return res.json({
-            authenticated: isMatch,
-            user: user.username,
-            message: "Authentification was successful"
-          });
-        } else
-          return res.json({
-            authenticated: isMatch,
-            user: user.username,
-            message: "Authentification was unsuccessful"
-          });
+      user.comparePassword(password).then(isMatch => {
+        if (isMatch) {
+          res.send("login successful");
+        } else {
+          res.status(401).send("invalid credentials");
+        }
       });
-      // next();
     } else
-      return res.json(
-        `There is no user with the username ${req.body.username}.`
-      );
+      res
+        .status(404)
+        .send(`There is no user with the username ${req.body.username}.`);
   });
 }
 
