@@ -12,7 +12,15 @@ const server = express();
 server.use(bodyParser.json());
 server.use(
   session({
-    secret: "e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re"
+    secret: "e5SPiqsEtjexkTj3Xqovsjzq8ovjfgVDFMfUzSmJO21dtXs4re",
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
+    httpOnly: true,
+    secure: false, // option to use either http or https; false for http (development model)
+    resave: true,
+    saveUninitialized: false,
+    name: "noNom" // default name is connect.sid;
+    // default name gives away to potential hackers that we are using express-session.
+    // one more reason to make your security vulnerable.
   })
 );
 
@@ -28,7 +36,7 @@ const sendUserError = (err, res) => {
 };
 
 function authenticate(req, res, next) {
-  if (req.body.password === "melon") {
+  if (req.session === req.session.usename) {
     next();
   } else {
     res.status(401).send("Access denied.");
@@ -36,7 +44,14 @@ function authenticate(req, res, next) {
 }
 
 // TODO: implement routes
-// server.use("/users", user)
+
+server.get("/me", (req, res) => {
+  if (req.session && req.session.username) {
+    res.send(`welcome back commander ${req.session.username}`);
+  } else {
+    res.send("Who are you???");
+  }
+});
 
 server.get("/users", (req, res) => {
   User.find()
@@ -53,8 +68,25 @@ server.post("/register", function(req, res) {
     .catch(err => res.status(500).json(err));
 });
 
-server.post("/login", authenticate, (req, res) => {
-  res.send("User authenticated");
+server.post("/login", (req, res) => {
+  const { username, password } = req.body;
+
+  User.findOne({ username })
+    .then(user => {
+      if (user) {
+        user.isPasswordValid(password).then(isValid => {
+          if (isValid) {
+            req.session.username = user.username;
+            res.send("login was successful");
+          } else {
+            res.status(401).send("invalid credentials");
+          }
+        });
+      } else {
+        res.status(401).send("invalid username");
+      }
+    })
+    .catch(err => res.send(err));
 });
 
 // TODO: add local middleware to this route to ensure the user is logged in
