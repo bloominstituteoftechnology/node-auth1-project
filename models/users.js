@@ -14,16 +14,16 @@ const UserSchema = new Schema({
   }
 })
 
-UserSchema.pre('save', function (next) {
+UserSchema.pre('save', function(next) {
   // handle hashing here
   bcrypt.hash(this.password, 11, (err, hash) => {
     if (err) return next(err)
-    this.password = hash;
+    this.password = hash
     return next()
   })
 })
 
-UserSchema.methods.isPasswordValid = function (pass) {
+UserSchema.methods.isPasswordValid = function(pass) {
   return bcrypt.compare(pass, this.password)
 }
 

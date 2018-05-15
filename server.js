@@ -2,12 +2,13 @@ import express from 'express'
 import mongoose from 'mongoose'
 import helmet from 'helmet'
 import morgan from 'morgan'
-import session from "express-session";
+import session from 'express-session'
 import connectMongo from 'connect-mongo'
 
 const MongoStore = connectMongo(session)
 
 import mainRouter from './routes'
+import { Server } from 'https'
 
 const app = express()
 
@@ -25,12 +26,12 @@ mongoose
   .catch(err => console.error(err.message, '\n', '\n=======\n', err.stack))
 
 const authenticate = (req, res, next) =>
-  (req.session && req.session.username
+  req.session && req.session.username
     ? next()
-    : res.status(401).send('Mithrandil looks down upon you'))
+    : res.status(401).send('Mithrandil looks down upon you')
 
 const sessionConfig = {
-  secret: process.env.MONGO_SECRET,
+  secret: 'tacos and bells',
   cookie: {
     maxAge: 1 * 24 * 60 * 60 * 1000
   },
@@ -38,15 +39,20 @@ const sessionConfig = {
   secure: false,
   resave: true,
   saveUninitialized: false,
-  name: 'ad',
+  name: 'noname',
   store: new MongoStore({
     url: process.env.MONGO_URIBASE + 'sessions',
     ttl: 60 * 10
   })
 }
+app.use(session(sessionConfig))
 
 app.get('/', (req, res) => {
-  res.send('love')
+  if (req.session && req.session.username) {
+    res.send(`welcome back ${req.session.username}`)
+  } else {
+    res.send('who are you? who, who?')
+  }
 })
 
 app.use('/api', mainRouter)
