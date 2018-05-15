@@ -13,8 +13,10 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.use(morgan('dev'))
 app.use(helmet())
+app.use(express.json())
 
-mongoose.connect(process.env.MONGO_URI)
+mongoose
+  .connect(process.env.MONGO_URI)
   .then(() => console.log('\n=== MongoDB Connected ===\n'))
   .catch(err => console.error(err))
 
@@ -24,4 +26,6 @@ app.get('/', (req, res) => {
 
 app.use('/api', mainRouter)
 
-app.listen(8080, () => console.log('\n=== server listening on http://localhost:8080 ===\n'))
+app.listen(8080, () =>
+  console.log('\n=== server listening on http://localhost:8080 ===\n')
+)
