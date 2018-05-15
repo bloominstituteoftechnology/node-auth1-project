@@ -61,7 +61,7 @@ server.get('/', (req, res) => {
 })
 
 // Register route
-server.post('/api/restricted/register', (req, res) => {
+server.post('/api/register', (req, res) => {
 
     User
     .create(req.body)
@@ -100,7 +100,7 @@ server.post('/api/login', (req, res) => {
 })
 
 // View users when logged in
-server.get('/api/restricted/users', login, (req, res) => {
+server.get('/api/users', login, (req, res) => {
 
     User
     .find()
