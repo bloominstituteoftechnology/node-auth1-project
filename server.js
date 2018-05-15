@@ -11,6 +11,7 @@ mongoose
 
 const server = express();
 
+//authtication method, might need tinkering later
 function authenticate(req, res, next) {
   const {username, password } = req.body;
   User.findOne({ username }).then(user => {
@@ -31,10 +32,12 @@ function authenticate(req, res, next) {
 
 server.use(express.json());
 
+//meant to see if the server is actually working
 server.get('/', (req, res) => {
   res.send({api: 'running'})
 })
 
+//register user, adds to mongo database on completetion 
 server.post('/api/register', (req, res) => {
   const user = new User (req.body);
   user
@@ -47,11 +50,24 @@ server.post('/api/register', (req, res) => {
     });
 })
 
-
+//login function
 server.post("/api/login", authenticate, (req, res) => {
   res.send("Welcome to the Mines of Moria");
 });
 
+
+//grabs users
+server.get("/api/users", (req, res) => {
+  User.find()
+    .then(users => {
+      res.json(users);
+    })
+    .catch(error => {
+      res.status(500).json({
+        error: 'Could not retrieve users',
+      });
+    });
+});
 
 
 server.listen(5000, () => console.log('n\ === API Running! === \n'))
