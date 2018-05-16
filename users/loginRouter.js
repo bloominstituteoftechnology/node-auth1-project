@@ -1,15 +1,16 @@
 const router = require('express').Router();
-const session = require('express-session');
 
 const User = require('./users.js');
 
 router.post('/', (req, res) => {
     const { username, password } = req.body;
 
-    User.findOne({ username })
+    User
+    .findOne({ username })
     .then(user => {
         if (user) {
-            user.isPasswordValid(password)
+            user
+            .isPasswordValid(password)
             .then(isValid => {
                 if (isValid) {
                     req.session.username = user.username;
