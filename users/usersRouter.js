@@ -2,7 +2,17 @@ const router = require('express').Router();
 
 const User = require('./users.js');
 
-router.get('/', (req, res) => {
+//=========MIDDLEWARE=========
+function authenticate(req, res, next) {
+    if (req.session && req.session.username) {
+        next();
+    }
+    else {
+        res.status(401).json({ message:'You Shall Not Pass!' })
+    }
+}
+
+router.get('/', authenticate, (req, res) => {
     User
     .find()
     .then(users => {
