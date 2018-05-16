@@ -10,24 +10,19 @@ class LoginForm extends Component {
     };
   }
 
-  register = event => {
+  login = event => {
     event.preventDefault();
     const user = {
       username: this.state.name,
       password: this.state.password
     };
-    axios.post("http://localhost:5000/api/login", user).then(response => {
-      axios
-        .get("http://localhost:5000/api/users")
-        .then(response => {
-          console.log(response).catch(err => {
-            console.log(err);
-          });
-        })
-        .catch(err => {
+    axios
+      .post("http://localhost:5000/api/login", user, { withCredentials: true })
+      .then(response => {
+        this.props.history.push("/users").catch(err => {
           console.log(err);
         });
-    });
+      });
 
     this.setState({
       name: "",
@@ -56,11 +51,7 @@ class LoginForm extends Component {
             value={this.state.password}
             name="password"
           />
-          <button
-            className="submitButton"
-            type="submit"
-            onClick={this.register}
-          >
+          <button className="submitButton" type="submit" onClick={this.login}>
             Login
           </button>
         </form>

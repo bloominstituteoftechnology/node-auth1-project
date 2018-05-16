@@ -7,11 +7,13 @@ class Users extends React.Component {
   };
 
   getUsers = () => {
-    axios.get("http://localhost:5000/api/users").then(response => {
-      console.log(response).catch(err => {
-        console.log(err);
+    axios
+      .get("http://localhost:5000/api/users", { withCredentials: true })
+      .then(response => {
+        this.setState({ users: response.data }).catch(err => {
+          console.log(err);
+        });
       });
-    });
   };
 
   render() {
@@ -19,7 +21,7 @@ class Users extends React.Component {
       <div>
         <button onClick={this.getUsers()}>Get Users </button>
         {this.state.users.map(user => {
-          return user.username;
+          return <p>{user.username}</p>;
         })}
       </div>
     );
