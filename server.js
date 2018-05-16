@@ -17,12 +17,6 @@ mongoose
     console.log(error)
   });
 
-
-const port = 3000;//to declare a server port for our _**what**
-const server = express(); //to tell our server we are using express/node
-server.use(express.json()); //to tell our server to use json syntax
-server.use(session(sessionConfig)); //to tell our server to use the sessionConfig library **why**
-
 //define our session config 
 const sessionConfig = {
   cookie: {
@@ -39,6 +33,11 @@ const sessionConfig = {
   }),
 };
 
+const port = 3000;//to declare a server port for our local server
+const server = express(); //to tell our server we are using express/node
+server.use(express.json()); //to tell our server to use json syntax
+server.use(session(sessionConfig)); //to tell our server to use the sessionConfig 
+
 // create an authentication function which can be used as local middleware
 // check if a session/username are present, if so, move on to the next middleware
 function authenticate(req, res, next) {
@@ -49,6 +48,7 @@ function authenticate(req, res, next) {
     res.send('Login failed, please try again');
   };
 }
+
 //**is this necessary?**
 //endpoint HTTP Request: at default path '/', check if the session/username are present. 
 server.get('/', (req, res) => {
@@ -101,7 +101,8 @@ server.post('/login', (req, res) => {
 // run the authenticate middleware above. it checks for a session/username.
 // if it passes, find the username in the user database, and send the user object back
 server.get('/users', authenticate, (req, res) => {
-  User.find().then(users => {
+  const { username } = req.body
+  User.find({ username }).then(users => {
     res.send(users)})
 });
 
@@ -120,7 +121,7 @@ server.get('/logout', (req, res) => {
 });
 
 
-// Gglobal middleware that ensures a user is logged in when accessing any route 
+// Global middleware that ensures a user is logged in when accessing any route 
 //prefixed by /api/restricted/. For instance, /api/restricted/something, /api/restricted/other, 
 // and /api/restricted/a should all be protected by the middleware; only logged in users should be 
 // able to access these routes.

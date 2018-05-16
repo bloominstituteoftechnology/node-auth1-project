@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-// Can the schema above be written as follows:
+// The schema above be written as follows:
 
 // const definitions = {
 //     username: username: {
@@ -30,8 +30,8 @@ const userSchema = new mongoose.Schema({
 // const options = {
 //     ...
 // }
+// const userSchema = new mongoose.Schema({ definitions,options })
 
-//const userSchema = new mongoost.Schema({ definitions,options })
 
 // create a lifecycle hook that starts on the pre-save function of server.js, which hashs the password
 // used in server.js line 64-71
