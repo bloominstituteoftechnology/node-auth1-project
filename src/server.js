@@ -41,7 +41,7 @@ const sendUserError = (err, res) => {
 };
 
 function authenticate(req, res, next) {
-  if (req.session === req.session.usename) {
+  if (req.session === req.session.username) {
     next();
   } else {
     res.status(401).send("Access denied.");
