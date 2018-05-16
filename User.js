@@ -26,11 +26,24 @@ userSchema.pre('save', function(next) {
   });
 });
 
-userSchema.methods.comparePassword = function(candidatePassword, cb) {
-    bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-        if (err) return cb(err);
-        cb(null, isMatch);
-    });
-};
+//my attempt at prototyping below
+// userSchema.methods.comparePassword = function(candidatePassword, cb) {
+//     bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+//         if (err) return cb(err);
+//         cb(null, isMatch);
+//     });
+// };
+
+userSchema.methods.isPasswordValid = function(passwordGuess) {
+  //return a promise that comes out of bcrypt that compares
+  return bcrypt.compare(passwordGuess, this.password);
+}
+
+//Luis had below in gist
+// userSchema.post('save', function(next) {
+//   console.log('post save hook');
+
+//   next();
+// });
 
 module.exports = mongoose.model('User', userSchema);
