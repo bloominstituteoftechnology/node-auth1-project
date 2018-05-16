@@ -42,6 +42,15 @@ server.use(
 server.use(bodyParser.json());
 server.use(cors(corsOptions));
 server.use(restrictAccess);
+// server.use(function(req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+//   res.header("Access-Control-Allow-Credentials", true);
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept"
+//   );
+//   next();
+// });
 
 mongoose
   .connect("mongodb://localhost/authdb")
@@ -75,13 +84,16 @@ server.post("/api/login", (req, res, next) => {
     if (error || !user) {
       res.status(401).json({ error: "You shall not pass" });
     } else {
+      console.log("Logged in");
       req.session.userId = user._id;
+      console.log(req.session.userId);
       res.status(200).json("Logged in successfully!");
     }
   });
 });
 
 server.get("/api/users", (req, res, next) => {
+  console.log(`trying to login as ${req.session.userId}`);
   if (req.session.userId) {
     User.find()
       .then(users => {
