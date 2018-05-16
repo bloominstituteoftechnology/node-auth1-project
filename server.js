@@ -3,8 +3,7 @@ const mongoose = require("mongoose");
 const helmet = require("helmet");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
-
-const User = require("./users/userModel");
+// global middleware that will require login on restricted pages
 const authMiddleware = require("./middleware/authenticate");
 
 // connect to mongodb
@@ -61,10 +60,10 @@ server.get("/", (req, res) => {
 server.use("/api/register", Register);
 // validate login and create a new session for a user
 server.use("/api/login", Login);
-// send an array of all users in the database
-server.use("/api/users", Users);
 // log a user out of the current session
 server.use("/api/logout", Logout);
+// send an array of all users in the database
+server.use("/api/restricted/users", authMiddleware.authenticate, Users);
 
 server.listen(5000, () => {
 	console.log("\n===api running on 5000===\n");

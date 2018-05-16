@@ -1,14 +1,19 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
-const User = require("../users/userModel");
 module.exports = {
 	authenticate: function authenticate(req, res, next) {
-		if (req.session && req.session.username) {
-			// user is logged in -> go to the next middleware/route
+		const restricted = /restricted/;
+		const path = req.baseUrl;
+		console.log("path: ", path);
+		// force users to log in when path contains "restricted"
+		if (restricted.test(path) && req.session.username) {
+			console.log("made it to a restricted page");
 			next();
 		} else {
-			res.status(401).send("You shall not pass!!!");
+			// user is not logged in, redirect user
+			console.log("THIS IS A RESTRICTED PAGE. GO LOG IN");
+			res.redirect("/");
 		}
 	}
 };
