@@ -1,7 +1,9 @@
 const express = require('express');
+const helmet = require('helmet');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);  // must be after session as it calls session
+const cors = require('cors');
 
 const User = require('./users/User');
 
@@ -10,9 +12,15 @@ mongoose
   .then(conn => {
     console.log('\n=== connected to mongodb ===\n');
   })
-  .catch(err => console.log ('error connecting to mongodb', err));
+  .catch(err => {
+    console.log ('error connecting to mongodb', err)
+  });
 
   const server = express();
+
+  server.use(helmet());
+  server.use(cors());
+  server.use(express.json());
 
   function authenticate(req, res, next) {
     if(req.session && req.session.username) {
@@ -32,7 +40,7 @@ mongoose
       httpOnly: true,
       secure: false,
       resave: true,
-      saveUnintialized: false,
+      saveUninitialized: false,
       name: 'GodIsWatchingYou',
       store: new MongoStore({
         url: 'mongodb://localhost/sessions',
@@ -49,7 +57,7 @@ mongoose
     };
   });
 
-  server.get('/users', authenticate, (req, res) => {
+  server.get('/api/users', authenticate, (req, res) => {
     User.find().then(users => res.send(users));
   });
 

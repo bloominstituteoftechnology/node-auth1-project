@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import axios from 'axios';
 
 export default class UserList extends Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {
-      users: null,
+      users: [],
+      err: null,
     }
   };
 
@@ -14,20 +15,25 @@ export default class UserList extends Component {
   }
 
 
-  fetchUsers = variableName => {
+  fetchUsers = () => {
     axios
       .get(`http://localhost:5000/api/users`)
+      .then(res => {
+        return res.json();
+      })
       .then(response => {
         this.setState(() => ({ users: response.data }));
       })
-      .catch(response => {
-        console.log(response);
+      .catch(err => {
+        console.log(err);
+        this.setState(() => (err.error));
       })
   }
 
   render() {
     if (!this.state.users) {
-      return <div>{this.state.auth}</div>;
+      console.log(this.state);
+      return <div>{this.state.err}</div>;
     }
 
     const users = this.state.users;
