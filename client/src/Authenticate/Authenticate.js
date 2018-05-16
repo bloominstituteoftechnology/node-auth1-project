@@ -1,6 +1,9 @@
 import React from 'react';
 import axios from 'axios';
 import AuthDisplay from './AuthDisplay';
+import { connect } from 'react-redux';
+import {LogInAction} from '../actions/actions';
+// import { stat } from 'fs/promises';
 
 class Authenticate extends React.Component {
     constructor(props) {
@@ -35,14 +38,20 @@ class Authenticate extends React.Component {
             username: username,
             password: password
         };
+        let userObject = {
+            username: username,
+            loggedIn: true
+        }
         console.log('This is the Authentication Credentials',newObject);
         // axios.post('http://localhost:8000/api/login/', {username, password})
         axios.post('http://localhost:8000/api/login/', newObject)
     
         .then(res => {
+            console.log('this is the response for log in',res);
                 this.setState({credentials: {}, username: '', password: ''});
                 if (res) {
                     this.setState({loggedIn: true})
+                    this.props.LogInAction(userObject);
                 }
                 this.props.fetchData;
 
@@ -87,4 +96,12 @@ class Authenticate extends React.Component {
     }
     
 }
-export default Authenticate;
+
+const mapDispatchProps = (state) => {
+    return {
+        user: state.users,
+    };
+};
+
+// export default Authenticate;
+export default connect(mapDispatchProps, {LogInAction})(Authenticate);
