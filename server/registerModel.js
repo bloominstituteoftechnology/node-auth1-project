@@ -22,7 +22,6 @@ const options = {
 };
 
 const registerSchema = new Schema(definition, options);
-const registerModel = mongoose.model("Register", registerSchema);
 
 registerSchema.pre("save", function(next) {
   bcrypt.hash(this.password, 11, (err, hash) => {
@@ -34,4 +33,10 @@ registerSchema.pre("save", function(next) {
   });
 });
 
+registerSchema.methods.isPasswordValid = function(passwordGuess) {
+  const val = bcrypt.compare(passwordGuess, this.password);
+  return val;
+};
+
+const registerModel = mongoose.model("Register", registerSchema);
 module.exports = registerModel;
