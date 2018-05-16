@@ -15,13 +15,46 @@ mongoose
 
 const server = express();
 
+server.use(
+  session({
+    secret: 'nobody tosses a dwarf!',
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000
+    },
+    httpOnly: true,
+    secure: false,
+    resave: true,
+    saveUninitialized: false,
+    name: 'noname',
+  })
+);
+
 server.use(express.json());
 
 server.get('/', (req, res) => {
-  res.send('API running on port 5000.');
-});
+  if (req.session && req.session.username) {
+    res.send(`Welcome back, ${req.session.username}!`);
+  } else {
+    res.send('You must first log in.');
+  }
+})
 
-server.post('/register', function(req, res) {
+server.get('/api/users', (req, res) => {
+  if (req.session && req.session.username) {
+    User
+      .find()
+      .then(users => {
+        res.send(users);
+      })
+      .catch(err => {
+        res.status(500).send(err);
+      });
+  } else {
+    res.send('You must first log in.');
+  }
+})
+
+server.post('/api/register', function(req, res) {
   const user = new User(req.body);
 
   user
@@ -34,7 +67,7 @@ server.post('/register', function(req, res) {
   });
 })
 
-server.post('/login', (req, res) => {
+server.post('/api/login', (req, res) => {
   const { username, password } = req.body;
 
   User.findOne({ username })
@@ -44,7 +77,8 @@ server.post('/login', (req, res) => {
           .isPasswordValid(password)
           .then(isValid => {
             if (isValid) {
-              res.send('Login successful.');
+              req.session.username = user.username;
+              res.send('A cookie has been saved.');
             } else {
               res.status(401).send('Invalid credentials.');
             }
@@ -54,6 +88,10 @@ server.post('/login', (req, res) => {
       }
     })
     .catch();
+})
+
+server.get('/api/users', (req, res) => {
+
 })
 
 server.listen(5000, () => console.log('\n=== api running on port 5000 ==='));
