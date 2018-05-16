@@ -1,0 +1,31 @@
+{
+  "name": "auth",
+  "version": "1.0.0",
+  "description": "Auth Project",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ilhoKim/Auth.git"
+  },
+  "author": "Il Ho Kim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ilhoKim/Auth/issues"
+  },
+  "homepage": "https://github.com/ilhoKim/Auth#readme",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "connect-mongo": "^2.0.1",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "helmet": "^3.12.0",
+    "mongoose": "^5.1.1",
+    "nodemon": "^1.17.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.3"
+  }
+}
