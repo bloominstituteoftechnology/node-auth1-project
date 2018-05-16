@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
-import axios from "axios"
+// import axios from "axios"
 import {Route, Switch} from "react-router-dom"
 import Register from "./components/register/register"
 import Home from "./components/Home/Home"
+import Login from "./components/Login/Login"
+
 
 class App extends Component {
   constructor() {
@@ -18,6 +19,7 @@ class App extends Component {
     return (
       <Switch>
         <Route exact path="/" component={Home}/>
+        <Route exact path="/login"  component={Login}/>
         <Route exact path="/register" component={Register}/>
       </Switch>
     );

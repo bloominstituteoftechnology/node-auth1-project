@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from "axios"
-class Register extends Component {
+
+class Login extends Component {
     constructor() {
         super();
         this.state={
@@ -33,16 +34,16 @@ class Register extends Component {
 
     handleSubmit = e => {
         e.preventDefault()
-        const newUser = {
+        const user = {
             username: this.state.username,
             password: this.state.password
         }
 
-        axios.post(("http://localhost:5000/register"), newUser)
+        axios.post(("http://localhost:5000/login"), user)
         .then(sucessful => {
-            alert("User created")
+            alert("Logged in")
         }).catch(err => {
-            alert("Could not create user")
+            alert("Wrong username or password")
             console.log(err)
         })
     }
@@ -63,4 +64,4 @@ class Register extends Component {
     }
 }
 
-export default Register
+export default Login
