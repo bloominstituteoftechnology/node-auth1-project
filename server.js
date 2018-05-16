@@ -18,7 +18,7 @@ function authenticate(req, res, next) {
     if(req.session && req.session.username) {
         next();
     } else {
-        res.status(401).send('What do you want?');
+        res.status(401).send('You shall not pass!!!');
     }
 }
 
@@ -45,7 +45,7 @@ server.get('/', (req, res) => {
     if (req.session && req.session.username) {
         res.send(`Good to see you, ${req.session.username}`);
     } else {
-        res.send('What is your purpose here?');
+        res.send('You shall not pass!!!');
     }
 });
 
