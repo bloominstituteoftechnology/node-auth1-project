@@ -7,6 +7,7 @@ const User = require('./users/User');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
+const cors = require('cors');
 
 const Restricted = require('./restricted/Restricted');
 
@@ -15,7 +16,7 @@ mongoose.connect('mongodb://localhost/authdb')
   .catch(err => console.log(err));
 
 server.use(express.json());
-
+server.use(cors());
 server.use(session({
   secret: 'You shall not pass!',
   cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
@@ -84,6 +85,11 @@ server.get('/api/users', authenticate, (req, res) => {
   //     }
   //   })
   //   .catch(err => console.log(err))
+})
+server.get('/api/test', (req,res) => {
+  User.find().then(users => {
+    res.send(users)
+  })
 })
 
 
