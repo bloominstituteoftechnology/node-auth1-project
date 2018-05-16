@@ -20,6 +20,16 @@ mongoose
     console.log('error connecting to mongo', err)
 })
 
+//=========MIDDLEWARE=========
+function authenticate(req, res, next) {
+    if (req.session && req.session.username) {
+        next();
+    }
+    else {
+        res.status(401).json({ message:'You Shall Not Pass!' })
+    }
+}
+
 server.use(helmet());
 server.use(cors());
 server.use(express.json());
