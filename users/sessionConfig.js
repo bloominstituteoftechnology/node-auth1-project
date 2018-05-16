@@ -1,4 +1,5 @@
 const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
 const sessionConfig = {
     secret: 'everyone likes cake!',
@@ -10,6 +11,10 @@ const sessionConfig = {
     resave: true,
     saveUninitialized: false,
     name: 'bluebird',
+    store: new MongoStore ({
+        url: 'mongodb://localhost/sessions',
+        ttl: 60 * 20,
+    })
 };
 
 module.exports = sessionConfig;
