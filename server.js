@@ -63,7 +63,6 @@ server.use(session(sessionConfig));
 
 server.use("/api/restricted", authenticate, restrictedRouter);
 
-
 server.get("/api/users", authenticate, (req, res) => {
   User.find()
     .select("-_id -__v")
@@ -91,6 +90,16 @@ server.post("/api/login", loginAuthenticate, (req, res) => {
   });
 });
 
+server.get("/api/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy(function(err) {
+      if (err) {
+        res.send("error");
+      } else {
+        res.send("good bye");
+      }
+    });
+  }
+});
 
-
-  server.listen(8000, () => console.log("\n=== api running on 8k ===\n"));
+server.listen(8000, () => console.log("\n=== api running on 8k ===\n"));
