@@ -3,7 +3,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
+var MongoStore = require('mongoose')(session);
 
 mongoose.connect('mongodb://localhost/5000');
 var db = mongoose.connection;
@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
-app.use(express.static(__dirname + '/templateLogReg'));
+app.use(express.static(__dirname));
 
 var routes = require('../../route/router.js');
 app.use('/', routes);
