@@ -21,13 +21,15 @@ server.use('/api', api)
 
 api.post('/login', authenticate, (req, res, next) => {
   const { user } = req
-  res.send({ user, token: makeToken(user) })
+  res.send(user)
 })
 
 api.get('/logout', (req, res, next) => {
-  if (!req.session.username) next(errors.userNotLoggedIn)
-  req.session.destroy();
-  res.send('Logged out')
+  const token = req.headers.authorization.slice(7)
+  User.findOne({ token })
+    .then(user => user.update({ $set: { token: null } })
+      .then(() => res.send('Logged out successfully')))
+    .catch(err => next(err))
 })
 
 api.post('/register', (req, res, next) => {

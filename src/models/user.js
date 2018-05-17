@@ -11,20 +11,24 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
-  }
+  },
+  token: String
 })
 
 userSchema.pre('save', function (next) {
-  bcrypt.hash(this.password, 11, (err, hash) => {
-    if (err) {
-      return next(err)
-    }
+  if (this.isNew) {
+    bcrypt.hash(this.password, 11, (err, hash) => {
+      if (err) {
+        return next(err)
+      }
 
-    this.password = hash
+      this.password = hash
 
-    return next()
-  })
+      return next()
+    })
+  } else return next()
 })
+
 
 userSchema.methods.validatePassword = function(passwordGuess) {
   return bcrypt.compare(passwordGuess, this.password)

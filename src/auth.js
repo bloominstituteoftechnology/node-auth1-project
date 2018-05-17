@@ -21,11 +21,19 @@ const makeToken = (user) => {
 const localStrat = new LocalStrategy((username, password, done) => {
   User.findOne({ username })
     .then(user => {
-      if (!user) return done(null, false)
+      if (!user) return done('whoah', false)
+      console.log(user)
+      console.log(password)
       user.validatePassword(password)
         .then(valid => {
-          if (valid) return done(null, user)
-          else return done (null, false)
+          console.log(valid)
+          if (valid) {
+            user.set({ token: makeToken(user) })
+            user.save()  
+              .then(() => done(null, user))
+              .catch(err => done(err))
+          }
+          else return done ('nelly', false)
         })
     })
 })
@@ -33,13 +41,17 @@ const localStrat = new LocalStrategy((username, password, done) => {
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: secret,
+  passReqToCallback: true
 }
-const jwtStrat = new JwtStrategy(jwtOptions, (payload, done) => {
-  console.log('here')
-  console.log(payload)
-  User.findById(payload.sub)
+const jwtStrat = new JwtStrategy(jwtOptions, (req, payload, done) => {
+  const token = req.headers.authorization.slice(7)
+  User.findOne({ token })
     .then(user => {
-      if (user) done(null, user)
+      if (user) {
+        console.log('i: ', token)
+        console.log('u: ', user.token)
+        done(null, user)
+      }   
       else done(null, false)
     })
     .catch(err => done(err))
