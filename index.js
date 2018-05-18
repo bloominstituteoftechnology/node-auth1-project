@@ -1,5 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+
 
 const User = require('./users/User');
 
@@ -13,16 +16,35 @@ mongoose
   const server = express();
 
   function authenticate(req,res,next) {
-    if(req.body.password === 'testing') {
+    if(req.session && req.session.username) {
       next();
     } else {
       res.status(401).send('wrong password please try again.')
     }
   }
   server.use(express.json());
+  server.use(
+    session({
+      secret: 'nobody tosses a dwarf',
+      cookie: { maxAge: 1*24*60*60*1000},
+      httpOnly: true,
+      secure: false,
+      resave: true,
+      saveUninitialized: false,
+      name: 'noname',
+      store: new MongoStore({
+        url: 'mongodb://localhost/sessions',
+        ttl: 60*10,
+        
+      })
+    })
+  )
 
   server.get('/', (req, res) => {
-    res.send({ route: '/', message: req.message });
+    if (req.session && req.session.username) {
+      res.send(`Welcome back ${req.session.username}`);
+    }
+    res.send(`Who are you`);
   });
 
   server.post('/api/register', function(req, res) {
@@ -34,14 +56,31 @@ mongoose
   });
 
 
-  server.post('/api/login', authenticate, (req, res) => {
+  server.post('/api/login', (req, res) => {
     console.log(res.body);
-     res.send('User is now logged in');
-  })
+    const { username, password} = req.body;
+    User.findOne({username}).then(user => {
+      if(user) {
+        user.isPasswordValid(password).then(isValid => {
+          if(isValid) {
+            req.session.username = user.username;
+            res.send('Login successful')
+          } else {
 
-server.get('/api/users', (req, res) => {
+          }
+        })
+      } else {
+        res.status(401).send('Invalid Creditials')
+      }
+
+    }).catch(err => res.send(err))
+   
+  });
+
+server.get('/api/users', authenticate, (req, res) => {
+ User.find().then(users => res.send(users))
   // put info here for checking if users is logged in display all users
 })
 
 
-  server.listen(5000, () => console.log('\n=== api running on port 5000 ===\n'));
+  server.listen(8000, () => console.log('\n=== api running on port 8000 ===\n'));
