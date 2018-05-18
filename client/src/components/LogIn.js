@@ -2,9 +2,10 @@ import React, { Component } from "react";
 import axios from "axios";
 
 // connect to API: /api/login
-// create a new user and send to the database via a cookie
+// log in an existing user
+// otherwise if a user does not exist redirect user to Register
 
-class RegistrationForm extends Component {
+class LogIn extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -17,11 +18,11 @@ class RegistrationForm extends Component {
 		this.setState({ [event.target.name]: event.target.value });
 	};
 
-	registerUser = event => {
+	logInUser = event => {
 		event.preventDefault();
 		const user = this.state;
 		axios
-			.post("http://localhost:5000/api/register", user)
+			.post("http://localhost:5000/api/login", user)
 			.then(response => {
 				console.log(response.data);
 			})
@@ -32,10 +33,11 @@ class RegistrationForm extends Component {
 	};
 
 	render() {
-		// console.log(this.state.username);
-		// console.log(this.state.password);
+		console.log(this.state.username);
+		console.log(this.state.password);
 		return (
-			<form onSubmit={this.registerUser}>
+			<form onSubmit={this.logInUser}>
+				<h3>LOG IN HERE</h3>
 				<label>
 					Username:
 					<input
@@ -60,4 +62,4 @@ class RegistrationForm extends Component {
 	}
 }
 
-export default RegistrationForm;
+export default LogIn;

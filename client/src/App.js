@@ -3,6 +3,7 @@ import { Switch, Route } from "react-router-dom";
 // components
 import Navigation from "./components/Navigation";
 import RegistrationForm from "./components/RegistrationForm";
+import LogIn from "./components/LogIn";
 import UserProfile from "./components/UserProfile";
 import Users from "./components/Users";
 // material components
@@ -27,6 +28,7 @@ class App extends Component {
         {/* Application Routes */}
         <Switch>
           <Route exact path="/" component={RegistrationForm} />
+          <Route exact path="/login" component={LogIn} />
           <Route path="/userprofile" component={UserProfile} />
           <Route path="/users" component={Users} />
         </Switch>
