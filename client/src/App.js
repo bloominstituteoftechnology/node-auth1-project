@@ -6,7 +6,7 @@ import RegistrationForm from "./components/RegistrationForm";
 import UserProfile from "./components/UserProfile";
 import Users from "./components/Users";
 // material components
-import AppBar from "material-ui/AppBar";
+// import AppBar from "material-ui/AppBar";
 
 // styles
 import logo from "./logo.svg";
