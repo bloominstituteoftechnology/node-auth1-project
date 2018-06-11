@@ -19,12 +19,15 @@ UserSchema.pre('save', function (next) {
     console.log('pre save hook')
 
     bcrypt.hash(this.password, 12, (err, hash) => {
-        if (err) return next(err)
+        console.log(this.password)
+        if (err) {
+            return next(err)
+        }
         this.password = hash
         next()
 
     })
 
 })
-const userModel = mongoose.model('User', UserSchema, 'users')
-module.exports = userModel;
+
+module.exports = mongoose.model('User', UserSchema, 'users');
