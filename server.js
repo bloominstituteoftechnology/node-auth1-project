@@ -33,8 +33,15 @@ server.post('/api/login', (req, res) => {
                 res.status(401).json('You shall not pass.');
             }
             else {
-
-                res.status(200).json('Logged In');
+                user.isPasswordValid(password)
+                    .then(isValid => {
+                        if (isValid) {
+                            res.status(200).json('Logged In');
+                        }
+                        else {
+                            res.status(401).json('You shall not pass.');
+                        }
+                    })
             }
         })
         .catch(error => {
