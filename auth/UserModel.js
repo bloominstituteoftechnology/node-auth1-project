@@ -13,11 +13,6 @@ const userSchema = new mongoose.Schema ({
         required: true,
         minlength: 4,
     },
-    password: {
-        type: String,
-        required: true,
-        minlength: 4,
-    },
 });
 
 userSchema.pre('save', function(next) {
@@ -28,9 +23,13 @@ userSchema.pre('save', function(next) {
         return next(err);
         }
         this.password = hash;
-        next(); 
+        return next(); // goes on to save to the db
     });
 });
+
+userSchema.methods.isPasswordValid = function(passwordGuess) {
+    return bcrypt.compare(passwordGuess, this.password);
+};
 
 
 
