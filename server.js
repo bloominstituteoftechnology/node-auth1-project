@@ -31,14 +31,14 @@ server.get('/', (req, res) => {
     // console.log(req)
     res.status(200).json({ api: "running", req: req.session })
 })
-
+// Register here: 
 server.post('/api/register', (req, res) => {
     User.create(req.body)
         .then(result => res.status(201).json(result))
         .catch(err => res.status(500).json({ error: err.message }))
     // save the user to the db
 })
-
+// Login here: 
 server.post('/api/login', async function (req, res) {
     let { username, password } = req.body
     User.findOne({ username })
@@ -50,6 +50,7 @@ server.post('/api/login', async function (req, res) {
                 return res.status(401).send('You shall not pass!')
             } else {
                 //sets properties in the session for this user
+                console.log("fire")
                 req.session.loggedIn = true;
                 req.session.uid = result._id
                 return res.status(200).send('Succesfully logged in!')
