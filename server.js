@@ -2,8 +2,13 @@ const express = require("express");
 const mongoose = require('mongoose');
 const server = express();
 const port = 5555;
+const usersRouter = require("./routes/usersRouter");
+
+
 
 server.use(express.json());
+
+server.use("/", usersRouter);
 
 mongoose.connect("mongodb://localhost/userdb")
   .then(() => {
