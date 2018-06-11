@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -12,6 +13,18 @@ const UserSchema = new mongoose.Schema({
         required: true,
         minlength: 4,
     },
+})
+
+UserSchema.pre('save', function(next) {
+    console.log('pre save is working');
+    
+    bcrypt.hash(this.password, 12, (err, hash) => {
+        if(err){
+            return next(err);
+        } 
+            this.password = hash;
+            next();
+    })
 })
 
 module.exports = mongoose.model('User', UserSchema, 'users');
