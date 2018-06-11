@@ -1,0 +1,23 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "## Topics",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mr-burton/auth-i.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mr-burton/auth-i/issues"
+  },
+  "homepage": "https://github.com/mr-burton/auth-i#readme",
+  "dependencies": {
+    "nodemon": "^1.17.5"
+  }
+}
