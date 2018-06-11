@@ -1,0 +1,19 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon"
+  },
+  "repository": "https://github.com/maribelcuales/auth-i.git",
+  "author": "maribelcuales <maribelcuales@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^1.17.5"
+  },
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "express": "^4.16.3",
+    "mongoose": "^5.1.4"
+  }
+}
