@@ -1,0 +1,27 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "## Topics",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaklundun/auth-i.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jaklundun/auth-i/issues"
+  },
+  "homepage": "https://github.com/jaklundun/auth-i#readme",
+  "devDependencies": {
+    "nodemon": "^1.17.5"
+  },
+  "dependencies": {
+    "express": "^4.16.3",
+    "mongoose": "^5.1.4"
+  }
+}
