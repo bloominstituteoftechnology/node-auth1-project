@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const User = require('./auth/userModel.js');
-
+const cookieParser = require('cookie-parser');
 const session = require('express-session');
 
 
@@ -11,6 +11,8 @@ mongoose.connect('mongodb://localhost/auth-i').then(() => {
 });
 
 const server = express();
+
+server.use(cookieParser());
 
 server.use(express.json());
 
@@ -37,8 +39,7 @@ server.post('/api/login', (req,res) => {
     else user.comparePassword(password, (err, auth) => {
       if (err) res.status(500).json({ err });
       else if (auth) {
-        req.session.loggedInAs = user;
-        res.json({ auth });
+        res.cookie('cs10logincookie', user._id, {maxAge : 360000}).json({ message: "Logged in!" });
       }
       else res.status(401).json({ message: "Invalid password" });
     })
@@ -46,7 +47,7 @@ server.post('/api/login', (req,res) => {
 })
 
 server.post('/api/logout', (req, res) => {
-  req.session.loggedInAs = null;
+  res.clearCookie('cs10logincookie');
   res.json({ message: "Logged out." });
 });
 
@@ -61,8 +62,29 @@ server.post('/api/register', (req, res) => {
 });
 
 server.get('/api/whoami', (req, res) => {
-  const { loggedInAs } = req.session;
-  if (loggedInAs) res.json({ username: loggedInAs.username });
+  if (req.cookies.cs10logincookie) {
+    User.findById(req.cookies.cs10logincookie)
+      .then(user => {
+        res.json({ user });
+      })
+      .catch(err => {
+        res.status(500).json(err);
+      });
+  }
+  else res.status(403).json({ message: "You are not logged in" });
+});
+
+server.get('/api/users', (req,res) => {
+  if (req.cookies.cs10logincookie) {
+    User.find()
+      .select('-password')
+      .then(users => {
+        res.json({ users });
+      })
+      .catch( err => {
+        res.status(500).json({ err });
+      });
+  }
   else res.status(403).json({ message: "You are not logged in" });
 });
 
