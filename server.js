@@ -22,23 +22,22 @@ server.use(express.json())
 
 server.use('api/login', loginController)
 server.use('api/user', userController)
-server.use('api/register', registerController)
+//server.use('api/register', registerController)
 
 //Mongoose
-mongoose.connect('mongodb://localhost/CS10', () => {
+mongoose.connect('mongodb://localhost/auth-i', () => {
     console.log(`*** Connected to the Database ***`);
   })
 
+// server.get('/', (req,res) =>{
+//     res.status(200).json({API: "is up and running"})
+// })
 
+// server.post('/api/register' , (req,res) =>{
+//     //const {username, password} = req.body
 
-server.get('/', (req,res) =>{
-    res.status(200).json({API: "is up and running"})
-})
+//})
 
-server.post('/api/register' , (req,res) =>{
-    //const {username, password} = req.body
-
-})
 server.listen(port, () => {
     console.log(`*** Server up and running on ${port} ***`);
   });
