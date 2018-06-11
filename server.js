@@ -26,6 +26,21 @@ server.post('/api/register', (req, res) => {
         })
 })
 
+server.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+    User.findOne({ username })
+        .then(user => {
+            if (user) {
+                user.isPasswordValid(password).then(isValid => {
+                    if(isValid) {
+                        req.session.username = user.username;
+                        res.send('Logged in');
+                    }
+                })
+            }
+        })
+})
+
 
 const port = process.env.PORT || 5000;
 server.listen(port, () => {
