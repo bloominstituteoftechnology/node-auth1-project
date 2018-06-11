@@ -17,7 +17,9 @@ server.get('/', (req, res) =>{
 });
 
 server.post('/api/register', (req, res) => {
-    User.create(req.body).then(user => {
+    User
+    .create(req.body)
+    .then(user => {
         res.status(200).json(user)
     })
     .catch(err =>{
@@ -27,9 +29,11 @@ server.post('/api/register', (req, res) => {
 
 server.post('/api/login', (req, res) => {
     const {password} = req.body
-    Login.find(function(err, password){
+    Login
+    .find(function(err, password){
         if(err) return handleError(err)
-    }).then(user => {
+    })
+    .then(user => {
         res.status(200).json(user)
     })
     .catch(err =>{
@@ -38,7 +42,10 @@ server.post('/api/login', (req, res) => {
 })
 
 server.get('/api/users', (req, res) => {
-    User.find().populate().then(user => {
+    User
+    .find()
+    .populate()
+    .then(user => {
         res.status(200).json(user)
     })
     .catch(err => {
