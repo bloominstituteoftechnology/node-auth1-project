@@ -15,7 +15,21 @@ Router.post("/api/register", (req, res) => {
 })
 
 Router.post("/api/login", (req, res) => {
-
+  const { username, password } = req.body;
+  User.findOne({username})
+    .then(user => {
+      if(user) {
+        user.compareHash(password, user.password, function(err, isMatch) {
+          if(err) {
+            return res.json(err);
+          }
+          if(!isMatch) {
+            return res.json({msg: "Incorrect info"})
+          }
+          res.json({user, msg: "Success login"});
+        })
+      }    
+    })
 })
 
 Router.get("/api/users", (req, res) => {

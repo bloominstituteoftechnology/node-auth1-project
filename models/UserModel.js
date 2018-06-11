@@ -16,6 +16,15 @@ const userSchema = new Schema({
   }
 });
 
+userSchema.methods.compareHash = function(userPass, hash, cb) {
+  bcrypt.compare(userPass, hash, function(err,isMatch) {
+    if(err) {
+      return cb(err);
+    }
+    return cb(null, isMatch);
+  });
+}
+
 userSchema.pre("save", function(next) {
   bcrypt.hash(this.password, 12)
     .then(hash => {
