@@ -37,7 +37,7 @@ server.post('/api/login', (req,res) => {
     else user.comparePassword(password, (err, auth) => {
       if (err) res.status(500).json({ err });
       else if (auth) {
-        req.session.loggedInAs = username;
+        req.session.loggedInAs = user;
         res.json({ auth });
       }
       else res.status(401).json({ message: "Invalid password" });
@@ -46,7 +46,7 @@ server.post('/api/login', (req,res) => {
 })
 
 server.post('/api/logout', (req, res) => {
-  req.session.loggidInAs = null;
+  req.session.loggedInAs = null;
   res.json({ message: "Logged out." });
 });
 
@@ -62,12 +62,7 @@ server.post('/api/register', (req, res) => {
 
 server.get('/api/whoami', (req, res) => {
   const { loggedInAs } = req.session;
-  if (loggedInAs) {
-    User.findOne({ username: loggedInAs }, (err, user) => {
-      if (err) res.status(500).json({ err });
-      else res.json({ user });
-    })
-  }
+  if (loggedInAs) res.json({ username: loggedInAs.username });
   else res.status(403).json({ message: "You are not logged in" });
 });
 
