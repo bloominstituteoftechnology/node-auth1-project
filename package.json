@@ -1,0 +1,27 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "Authentication Project 1",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ilhoKim/auth-i.git"
+  },
+  "author": "Il Ho Kim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ilhoKim/auth-i/issues"
+  },
+  "homepage": "https://github.com/ilhoKim/auth-i#readme",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "express": "^4.16.3",
+    "mongoose": "^5.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.5"
+  }
+}
