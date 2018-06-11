@@ -27,7 +27,7 @@ userSchema.pre('save', function(next) {
 });
 
 //from https://www.mongodb.com/blog/post/password-authentication-with-mongoose-part-1
-UserSchema.methods.comparePassword = function(candidatePassword, cb) {
+userSchema.methods.comparePassword = function(candidatePassword, cb) {
     bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
         if (err) return cb(err);
         cb(null, isMatch);

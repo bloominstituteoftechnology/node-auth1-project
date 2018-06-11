@@ -23,15 +23,32 @@ server.get('/', (req, res,) => {
 });
 
 server.get('/view-counter', (req, res) => {
-	const session = req.session
-	if (!session.viewCount) {
-		session.viewCount = 0;
+	if (!req.session.viewCount) {
+		req.session.viewCount = 0;
 	}
-	session.viewCount++;
+	req.session.viewCount++;
 	res.json({ viewCount: session.viewCount })
-	// req.session is a persistent object that you'll see across requests for the same client
-// contains all the session variables that you set
-}) // First get request is 1, second is 2 / Doesn't just persist across one route
+})
+
+server.post('/api/login', (req,res) => {
+  const { username, password } = req.body
+  User.findOne({ username }, (err, user) => {
+    if (err) res.status(500).json({ err })
+    else user.comparePassword(password, (err, auth) => {
+      if (err) res.status(500).json({ err });
+      else if (auth) {
+        req.session.loggedInAs = username;
+        res.json({ auth });
+      }
+      else res.status(401).json({ message: "Invalid password" });
+    })
+  })
+})
+
+server.post('/api/logout', (req, res) => {
+  req.session.loggidInAs = null;
+  res.json({ message: "Logged out." });
+});
 
 server.post('/api/register', (req, res) => {
   User.create(req.body)
@@ -41,6 +58,17 @@ server.post('/api/register', (req, res) => {
   .catch(err => {
     res.status(500).json(err);
   });
+});
+
+server.get('/api/whoami', (req, res) => {
+  const { loggedInAs } = req.session;
+  if (loggedInAs) {
+    User.findOne({ username: loggedInAs }, (err, user) => {
+      if (err) res.status(500).json({ err });
+      else res.json({ user });
+    })
+  }
+  else res.status(403).json({ message: "You are not logged in" });
 });
 
 server.listen(5000, () => {
