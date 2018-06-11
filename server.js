@@ -23,7 +23,14 @@ server.post('/api/register', (req, res) => {
 
 // server.post('/api/login', (req, res) => {
 //     const user = { username, password } = req.body
-//     User.
+//     User.findOne({username})
+//         .then( foundUser => {
+//             if (foundUser) {
+//                 if (foundUser.isPasswordValid(password)){
+//                     req.session
+//                 }
+//             }
+//         })
 // })
 
 server.listen(5000, () => {
