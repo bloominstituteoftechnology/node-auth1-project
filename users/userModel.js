@@ -17,7 +17,6 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.pre('save', function(next) {
-    console.log('pre save works')
     bcrypt.hash(this.password, 10, (err, hash) => {
         if (err) return next(err);
         this.password = hash;
@@ -25,4 +24,4 @@ userSchema.pre('save', function(next) {
     })
 })
 
-module.exports = mongoose.model('user', userSchema)
+module.exports = mongoose.model('User', userSchema)
