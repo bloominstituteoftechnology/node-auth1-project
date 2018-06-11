@@ -14,7 +14,7 @@ const loginModel = new mongoose.Schema({
   }
 });
 
-loginModel.Schema.pre("save", function(next) {
+loginModel.pre("save", function(next) {
   bcrypt.hash(this.password, 10, (err, hash) => {
     if (err) {
       return next(err);

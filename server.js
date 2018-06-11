@@ -8,30 +8,32 @@ const port = process.env.PORT || 5000;
 
 //Routes
 
-const registerController = require('./register/registerController')
-const userController = require('./users/userController')
+//const registerController = require('./register/registerController')
+//const userController = require('./users/userController')
 const loginController = require('./login/loginController')
 
 //Gobal Middleware
 
-server.use(halmet())
+server.use(helmet())
 server.use(cors())
 server.use(express.json())
 
 //Endpoints
 
-server.use('api/login', loginController)
-server.use('api/user', userController)
-//server.use('api/register', registerController)
+server.use('/api/login', loginController)
+//server.use('/api/user', userController)
+//server.use('/api/register', registerController)
 
 //Mongoose
-mongoose.connect('mongodb://localhost/auth-i', () => {
-    console.log(`*** Connected to the Database ***`);
-  })
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://localhost/auth-i')
+.then(() => console.log("\n*** API Connected to MongoDB at localhost/27017 ***\n"))
+.catch(err => console.log("\n*** ERROR Connecting to Database ***\n", err))
 
-// server.get('/', (req,res) =>{
-//     res.status(200).json({API: "is up and running"})
-// })
+
+server.get('/', (req,res) =>{
+    res.status(200).json({API: "is up and running"})
+})
 
 // server.post('/api/register' , (req,res) =>{
 //     //const {username, password} = req.body
