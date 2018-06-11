@@ -87,4 +87,17 @@ server.get('/api/users', authenticate, (req, res) => {
     User.find().then(users => res.send(users))
 })
 
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+        let name = req.session.username
+        req.session.destroy(function(err) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.send(`Goodbye, ${name}, ye shall be missed`)
+            }
+        })
+    }
+})
+
 server.listen(8000, () => { console.log('\n*** API running on port 8K ***\n')})
