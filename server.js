@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
+const helmet = require('helmet');
 
 const User = require('./auth/UserModel');
 
@@ -12,6 +14,9 @@ mongoose.connect('mongodb://localhost/auth-i')
 const app = express();
 
 app.use(express.json());
+app.use(cors());
+app.use(helmet());
+
 
 app
     .get('/', (req, res) => {
