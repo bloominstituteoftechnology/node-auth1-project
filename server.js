@@ -46,15 +46,15 @@ server.post('/api/login', (req, res) => {
     .then(user => {
         if(user) {
             //compare the passwords
-            user.isPaswordVaild(password).then(isValid => {
+            user.isPasswordValid(password).then(isValid => {
                 if(isValid) {
-                res.send('login successful')
+                res.send('login successful');
         } else {
-        res.status(401).send('invalid credentials');
+        res.status(401).send('You shall not pass!');
         }
     });
     } else {
-        res.status(401).send('invalid credentials');
+        res.status(401).send('You shall not pass!');
     }
 })
     .catch(err => res.send(err));
