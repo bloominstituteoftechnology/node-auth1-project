@@ -1,0 +1,17 @@
+{
+  "name": "june11",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "express": "^4.16.3",
+    "mongoose": "^5.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.5"
+  }
+}
