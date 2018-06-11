@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-//const User = require('/.auth/UserModel');
+const User = require('./UserModel');
 
 mongoose.connect('mongodb://localhost/cs10').then(() => {
   console.log('\n*** Connected to database ***\n');
