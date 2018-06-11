@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre('save', function(next) {
-    console.log('Pre saved hook!');
+    // console.log('Pre saved hook!');
 
     bcrypt.hash(this.password, 12, (err, hash) => {
         if (err) {

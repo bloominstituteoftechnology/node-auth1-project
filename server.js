@@ -7,8 +7,11 @@ mongoose
     .connect('mongodb://localhost/auth-i')
     .then(() => {
         console.log('\n ===== Connected to database ===== \n');    
-});
-
+    })
+    .catch(err => {
+        console.log('Error connecting to database', err)
+    });
+    
 const server = express();
 
 server.use(express.json());
@@ -28,5 +31,5 @@ server.post('/api/register', (req, res) => {
 });
 
 server.listen(8333, () => {
-    console.log('\n ===== API running on Port 8000 ===== \n');
+    console.log('\n ===== API running on Port 8333 ===== \n');
 });
