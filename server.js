@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bcrpyt = require('bcrypt');
 
 const User = require('./auth/UserModel.js');
 
@@ -27,6 +28,42 @@ server.post('/api/register', (req, res) => {
     .catch(err => {
       res.status(500).json(err);
     });
+})
+
+server.post('/api/login', (req, res) => {
+  const {username, password } = req.body;
+  let hashPassword;
+ 
+  User.find({username: username})
+    .then(user => {
+      bcrpyt.compare(password, user[0].password, function(err, res2) {
+        if(err){
+          return res.status(500).json(err)
+        }
+        if(res2){
+          res.json('login')
+        }else {
+          res.json("not logged in") 
+        }
+      })
+      
+      
+      // bcrpyt.hash(password, 12, (err, hash) => {
+      //   if(err) {
+      //     return res.status(500)
+      //   }
+        
+      //   console.log(hash)
+      //   if(user[0].password === hash){
+      //     console.log("login")
+      //   }else {
+      //   console.log('not logged in', hash, user[0].password)
+      //   res.json(user)
+      //   }
+        
+      // })
+      
+    })
 })
 
 
