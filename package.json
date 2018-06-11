@@ -1,8 +1,21 @@
 {
   "name": "auth-i",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon"
+  },
   "repository": "https://github.com/danteocualesjr/auth-i.git",
+  "keywords": [],
   "author": "Dante O. Cuales, Jr. <danteocualesjr@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^1.17.5"
+  },
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "express": "^4.16.3",
+    "mongoose": "^5.1.4"
+  }
 }
