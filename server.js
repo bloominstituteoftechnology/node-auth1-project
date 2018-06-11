@@ -14,7 +14,28 @@ mongoose.connect('mongodb://localhost/cs10').then(() => {
 
 const server = express();
 server.use(express.json());
+//session
+const sessionConfig = {
+  session({
+    secret: 'one does not simply walk into mordor',
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000
+    },
+    httpOnly: true,
+    secure: false,
+    resave: true,
+    saveUninitialized: false,
+    name: 'noname', //change from default so hackers don't know you're using express
+    store: new MongoStore({
+      url: 'mongodb://localhost/sessions',
+      ttl: 60 * 10
+    })
+  })
+};
 
+server.use(session(sessionConfig));
+	 
+	  
 //testing to show that server is running
 server.get('/', (req, res) => {
   res.status(200).json({ api: 'running...' });
