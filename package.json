@@ -1,8 +1,19 @@
 {
   "name": "auth-i",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
   "repository": "https://github.com/wladimir917/auth-i.git",
-  "author": "Fausto Wladimir Fraga <wladimir917@hotmail.com>",
-  "license": "MIT"
+  "author": "Lambda School",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "express": "^4.16.3",
+    "mongoose": "^5.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.2"
+  }
 }
