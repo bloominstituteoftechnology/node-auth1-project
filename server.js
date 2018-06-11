@@ -37,6 +37,15 @@ server.post('/api/login', (req, res) => {
     })
 })
 
+server.get('/api/users', (req, res) => {
+    User.find().populate().then(user => {
+        res.status(200).json(user)
+    })
+    .catch(err => {
+        res.status(500).json(err)
+    })
+})
+
 
 
 
