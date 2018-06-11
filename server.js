@@ -20,6 +20,10 @@ server.use(express.json())
 
 //Endpoints
 
+server.use('api/login', loginController)
+server.use('api/user', userController)
+server.use('api/register', registerController)
+
 //Mongoose
 mongoose.connect('mongodb://localhost/CS10', () => {
     console.log(`*** Connected to the Database ***`);
