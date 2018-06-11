@@ -13,8 +13,8 @@ server.use(express.json())
 
 // global middleware initialising a session w/ secret key, adds session to the req object
 server.use(session({
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     secret: `I sexually Identify as an Attack Helicopter. Ever since I was a boy I dreamed of soaring over the oilfields dropping hot sticky loads on foreigners. People say to me that a person being a helicopter is Impossible and I'm fucking retarded but I don't care, I'm beautiful.I'm having a plastic surgeon install rotary blades, 30 mm cannons and AMG-114 Hellfire missiles on my body. From now on I want you guys to call me "Apache" and respect my right to kill from above and kill needlessly. If you can't accept me you're a heliphobe and need to check your vehicle privilege. Thank you for being so understanding.`
 }))
 
@@ -57,6 +57,7 @@ server.post('/api/login', async function (req, res) {
             }
         })
 })
+// protected by global middleware is our users resource
 server.get('/api/users', (req, res) => {
     // if user is logged in, he will be able to request all users
     User.find({}, { username: 1, _id: 0, password: 1 })
