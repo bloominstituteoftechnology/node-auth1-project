@@ -25,17 +25,21 @@ server.post('/api/register', (req, res) => {
         })
 });
 
-// server.post('/api/login', (req, res) => {
-//     const { id, username, password } = req.body;
-//     User.find({ username: { $regex: username }, password: password })
-//         .then(user => {
-//             console.log(user.password);
-//             res.status(200).json(`Logged In`);
-//         })
-//         .catch(error => {
-//             res.status(400).json('You shall not pass.');
-//         })
-// })
+server.post('/api/login', (req, res) => {
+    const { id, username, password } = req.body;
+    User.findOne({ username: { $regex: username }, password: password })
+        .then(user => {
+            console.log('User', user);
+            if (user === null) {
+                res.status(400).json('You shall not pass.'); 
+            }
+            else {
+                res.status(200).json('Logged In');
+            }        })
+        .catch(error => {
+            res.status(500).json('An error occurred while logging in.');
+        })
+})
 
 server.listen(61118, () => {
     console.log('\n*** API running on port 61118 ***\n');
