@@ -2,4 +2,18 @@ body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+  background: lightgray;
+}
+.app {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+  flex-direction: column;
+  align-content: center;
+}
+h1 {
+  align-self: center;
+}
+a {
+  align-self: center;
 }

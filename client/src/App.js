@@ -6,7 +6,7 @@ import { UserList } from './components/UsersList'
 class App extends Component {
   render() {
     return (
-      <div>
+      <div class="app">
         <h1>Welcome to this awesome backend Project!</h1>
         <Link to="/register"><h5>If you haven't got an account yet, please register here</h5></Link>
         <Link to="/login"><h5>Sign In Here</h5></Link>
