@@ -26,16 +26,17 @@ server.post('/api/register', (req, res) => {
 });
 
 server.post('/api/login', (req, res) => {
-    const { id, username, password } = req.body;
-    User.findOne({ username: { $regex: username }, password: password })
+    const { username, password } = req.body;
+    User.findOne({ username })
         .then(user => {
-            console.log('User', user);
             if (user === null) {
-                res.status(400).json('You shall not pass.'); 
+                res.status(401).json('You shall not pass.');
             }
             else {
+
                 res.status(200).json('Logged In');
-            }        })
+            }
+        })
         .catch(error => {
             res.status(500).json('An error occurred while logging in.');
         })
