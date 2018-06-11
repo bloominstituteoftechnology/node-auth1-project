@@ -21,17 +21,19 @@ server.post('/api/register', (req, res) => {
         res.status(200).json(user)
     })
     .catch(err =>{
-        res.status(500).json(user, {error: 'You could not register, please try again.'})
+        res.status(500).json({error: 'You could not register, please try again.'})
     })
 })
 
 server.post('/api/login', (req, res) => {
-    const { id } = req.params
-    User.findById(req.params).then(user => {
+    const {password} = req.body
+    Login.find(function(err, password){
+        if(err) return handleError(err)
+    }).then(user => {
         res.status(200).json(user)
     })
     .catch(err =>{
-        res.status(500).json({error: 'You could not login, please try again.'})
+        res.status(500).json(err)
     })
 })
 
