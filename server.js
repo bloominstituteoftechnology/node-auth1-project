@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const userRouter = require('./users/UserRouter');
 const User = require('./users/UserModel');
 const localHost = 'localhost:27017';
 const database = 'usersdb';
@@ -18,7 +17,7 @@ mongoose
     });
 
 function authenticate(req, res, next) {
-    if(req.body.password === 'mellon') {
+    if(req.session && req.session.username) {
         next();
     } else {
         res.status(401).send("You Shall Not Pass!")
@@ -26,7 +25,6 @@ function authenticate(req, res, next) {
 }
 
 server.use(express.json());
-server.use('/api', userRouter);
 server.use(
     session({
         secret: 'nobody tosses a dwarf!',
@@ -47,7 +45,29 @@ server.get('/', (req, res) => {
     }
 });
 
-server.post('/api/login', (req, res) => {
+server.get('/users', authenticate, (req, res) => {
+    User
+        .find()
+        .then(users => {
+            res.status(200).json(users)
+        })
+        .catch(error => {
+            res.status(500).error("YOU SHALL NOT PASS!")
+        })
+})
+
+server.post('/register', (req, res) => {
+    User
+        .create(req.body)
+        .then(user => {
+            res.status(201).json({ success: "New User Added to Database", user })
+        })
+        .catch(error => {
+            res.status(500).error({ error: error.message })
+        })
+})
+
+server.post('/login', (req, res) => {
     const { username, password } = req.body;
     User
         .findOne({ username })
