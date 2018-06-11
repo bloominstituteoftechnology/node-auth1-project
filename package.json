@@ -1,0 +1,25 @@
+{
+  "name": "authentication",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Blast3d/auth-i.git"
+  },
+  "keywords": [],
+  "author": "Jake Henry",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "express": "^4.16.3",
+    "helmet": "^3.12.0",
+    "mongoose": "^4.13.14"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.2"
+  }
+}
