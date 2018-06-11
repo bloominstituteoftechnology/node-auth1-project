@@ -16,10 +16,10 @@ const UserSchema = new mongoose.Schema({
 })
 
 UserSchema.pre('save', function (next) {
-    console.log('pre save hook')
+    // console.log('pre save hook')
 
     bcrypt.hash(this.password, 12, (err, hash) => {
-        console.log(this.password)
+        // console.log(this.password)
         if (err) {
             return next(err)
         }

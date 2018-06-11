@@ -17,14 +17,14 @@ server.post('/api/register', (req, res) => {
 
 server.post('/api/login', async function (req, res) {
     let { username, password } = req.body
-    console.log(password)
-    const hash = await bcrypt.hash(password, 12)
-    User.find({ username: username })
+    // console.log(password)
+    // const hash = await bcrypt.hash(password, 12)
+    User.findOne({ username })
         .then(result => {
             if (!result) {
                 return res.status(401).send('Invalid username')
-            } else if (result[0].password !== hash) {
-                console.log("user pw", result[0].password, "login", hash)
+            } else if (!bcrypt.compareSync(password, result.password)) {
+                // console.log("user pw", result[0].password, "login", hash)
                 return res.status(401).send('Invalid username or password')
             } else {
                 return res.status(200).send('Succesfully logged in!')
