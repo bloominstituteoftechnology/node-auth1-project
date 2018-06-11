@@ -1,0 +1,8 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/wladimir917/auth-i.git",
+  "author": "Fausto Wladimir Fraga <wladimir917@hotmail.com>",
+  "license": "MIT"
+}
