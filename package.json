@@ -1,0 +1,8 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/danteocualesjr/auth-i.git",
+  "author": "Dante O. Cuales, Jr. <danteocualesjr@gmail.com>",
+  "license": "MIT"
+}
