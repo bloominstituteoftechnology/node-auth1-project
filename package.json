@@ -1,0 +1,28 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "## Topics",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bbenefield89/auth-i.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bbenefield89/auth-i/issues"
+  },
+  "homepage": "https://github.com/bbenefield89/auth-i#readme",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "express": "^4.16.3",
+    "mongoose": "^5.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.5"
+  }
+}
