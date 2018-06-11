@@ -5,9 +5,12 @@ mongoose.connect("mongodb://localhost/LoginDB").then(() => {
   console.log("Connected to the database");
 });
 
+const registerRouter = require("./registerRouter");
+
 const server = express();
 
 server.use(express.json());
+server.use("/api", registerRouter);
 
 server.get("/", (req, res) => res.send("API is running..."));
 
