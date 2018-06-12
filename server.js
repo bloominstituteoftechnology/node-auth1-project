@@ -9,15 +9,38 @@ const MongoStore = require("connect-mongo")(session);
 
 const User = require('./users/userModel')
 
+const restrictAuth = (req, res, next) => {
+    if (req.path.startsWith("/restricted")) {
+        if (req.session && req.session.username) {
+            next();
+        }else{
+            res.status(422)
+                .json({ message: "This content is restricted to logged in users" });
+        }
+    } else {
+        next();
+    }
+};
+
+
+server.get(`/restricted/:username`, (req, res, next) => {
+    const username = req.params.username;
+    res.status(200).json({
+        message: `Welcome to special ${username} page restricted to VIP users`
+    });
+});
+
 mongoose.connect('mongodb://localhost/user')
         .then(() => {
-            console.log('connected to database')
+            console.log(`\n=== Connected to database=== \n`)
         })
         .catch(err => {
             console.log('database connection failed')
         })
 
 server.use(express.json())
+
+server.use(restrictAuth);
 
 server.use(
     session({
@@ -35,8 +58,7 @@ server.use(
     }) 
 )
 
-server.get('/', (req, res) => {
-    console.log(req.session)    
+server.get('/', (req, res) => {  
     if(req.session && req.session.username) {
         res.json({message: `welcome back ${req.session.username}`})
     }else {
@@ -93,13 +115,15 @@ server.get("/users", (req, res, next) => {
           }
     });
 
+
+
 server.get('/logout', (req, res) => {
     if (req.session) {
         req.session.destroy(err => {
             if (err) {
                 res.send('error logging out');
             } else {
-                res.send('good bye, please come back again!');
+                res.send('Good bye, please come back again!');
             }
         });
     }
@@ -107,6 +131,6 @@ server.get('/logout', (req, res) => {
 
 
 server.listen(5000, () => {
-    console.log('api running on port 5000')
+    console.log(`\n=== Api running on port 5000 ===\n`)
 })
 
