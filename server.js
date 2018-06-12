@@ -22,8 +22,21 @@ const sessionOptions = {
     name: 'anonymous',
 }
 
+function protected(req, res, next) {
+    if (req.path.includes('restricted')) {
+        if (req.session && req.session.username) {
+            next();
+        } else {
+            res.status(401).json({ message: 'Please login and try again.'})
+        }
+    } else {
+        next();
+    }
+}
+
 server.use(express.json());
 server.use(session(sessionOptions));
+server.use(protected);
 
 server.use('/api', userRouter);
 

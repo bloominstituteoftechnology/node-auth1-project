@@ -6,17 +6,9 @@ const User = require('./userModel.js');
 
 const router = express.Router();
 
-function protected(req, res, next) {
-    if (req.session && req.session.username) {
-        next();
-    } else {
-        res.status(401).json({ message: 'Please login and try again.'})
-    }
-}
-
 router
-    .route('/users')
-        .get(protected, (req, res) => {
+    .route('/restricted/users')
+        .get((req, res) => {
             User.find()
                 .then(users => res.json(users))
                 .catch(err => res.json(err))
