@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const User = require('./userModel.js');
 
-// Resource controll Local Middleware
+// Resource control Local Middleware
 const protected = (req, res, next) => {
     if (req.session.username) { 
         next();

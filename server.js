@@ -1,5 +1,6 @@
 // Modules
 const express = require('express');
+const router = require('express').Router();
 const server = express();
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -11,6 +12,7 @@ const port = process.env.PORT || 5000;
 const registerController = require('./auth/register/registerController.js');
 const loginController = require('./auth/login/loginController.js');
 const logoutController = require('./auth/logout/logoutController.js');
+const restrictedController = require('./auth/restricted/restrictedController.js');
 const userController = require('./data/user/userController.js');
 
 // Global Middleware
@@ -33,7 +35,10 @@ server.use(session(sessionOptions));
 server.use('/register', registerController);
 server.use('/login', loginController);
 server.use('/logout', logoutController);
+// API
 server.use('/api/users', userController);
+server.use('/api/restricted', restrictedController);
+
 
 // Mongoose
 mongoose.Promise = global.Promise;
