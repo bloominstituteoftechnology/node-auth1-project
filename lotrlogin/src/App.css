@@ -2,6 +2,8 @@
   text-align: center;
   height: 800px;
   background-color: rgb(78, 47, 47);
+  color: rgb(189, 170, 67);
+  text-shadow: 1px 1px 5px black;
 }
 
 .ring-logo {

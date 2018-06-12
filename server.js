@@ -18,13 +18,14 @@ mongoose
         console.log("Connection Failed")
     });
 
-function authenticate(req, res, next) {
-    if(req.session && req.session.username) {
-        next();
-    } else {
-        res.status(401).send("You Shall Not Pass!")
-    }
-}
+// function authenticate(req, res, next) {
+//     console.log("authentication", req.session)
+//     if(req.session && req.session.username) {
+//         next();
+//     } else {
+//         res.status(401).send("You Shall Not Pass!")
+//     }
+// }
 
 server.use(helmet());
 server.use(cors());
@@ -34,7 +35,7 @@ server.use(
     session({
         secret: 'nobody tosses a dwarf!',
         cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
-        httpOnly: true,
+        httpOnly: false,
         secure: false,
         resave: true,
         saveUninitialized: false,
@@ -50,15 +51,19 @@ server.get('/', (req, res) => {
     }
 });
 
-server.get('/users', authenticate, (req, res) => {
+server.get('/users',(req, res) => {
+    if(!req.session && !req.session.username) {
+        res.status(401).send("You Shall Not Pass!")
+    } else {
     User
         .find()
         .then(users => {
-            res.status(200).json(users)
+            res.status(200).json({ users })
         })
         .catch(error => {
             res.status(500).error("YOU SHALL NOT PASS!")
         })
+    }
 })
 
 server.post('/register', (req, res) => {
@@ -107,7 +112,7 @@ server.get('/logout', (req, res) =>{
             if(error){
                 res.send('error logging out')  
             } else {
-                res.send('goodbye')
+                res.status(200).send("Have a nice day!")
             }
         })
     }
