@@ -14,7 +14,7 @@ server.use(express.json())
 
 mongoose.connect('mongodb://localhost/cs10')
 
-// global middleware initialising a session w/ secret key, adds session to the req object
+// global middleware initialising a session w/ secret key, adds session to the req object and saves the session into the db
 server.use(session({
     resave: false,
     saveUninitialized: false,
@@ -27,12 +27,14 @@ server.use(session({
     name: 'noname',
     store: new MongoStore({ mongooseConnection: mongoose.connection })
 }))
+
+// global middleware that is dynamic and can be used to protect whatever route we want to
 const protected = function (req, res, next) {
     console.log(req.session)
     req.session.username && req.session ? next() : res.status(401).json({ error: "Please login to view this site" })
 }
 
-// global middleware that restricts access to restricted and following to non-logged in users
+// middleware protecting /restricted and subroutes
 server.use('/api/restricted', protected, (req, res, next) => {
     next()
 })
