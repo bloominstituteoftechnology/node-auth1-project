@@ -35,7 +35,7 @@ server.use(session(sessionOptions));
 
 server.get('/api/users', protected, (req, res) => {
     User.find()
-    .then(users => res.join(users))
+    .then(users => res.json(users))
     .catch(err => res.json(err));
 });
 
