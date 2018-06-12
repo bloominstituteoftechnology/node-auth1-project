@@ -4,4 +4,23 @@ const helmet = require('helmet');
 
 const server = express();
 
+const database = require('./data/database');
 
+const routes = require('./user/routes');
+
+database.connectTo('AuthMini')
+  .then(() => {
+      console.log('Connected to database!');
+  })
+  .catch(err => {
+      console.log(err);
+  })
+
+  server.use(helmet());
+  server.use(express.json());
+  server.use('/api/register', routes);
+
+  const port = process.env.PORT || 5000;
+  server.listen(port, () => {
+      console.log(`Server up on ${port}`);
+  })
