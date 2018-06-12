@@ -4,6 +4,8 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const server = express();
 const session = require('express-session');
+const MongoStore = require("connect-mongo")(session);
+
 
 const User = require('./users/userModel')
 
@@ -25,11 +27,16 @@ server.use(
         secure: false,
         saveUninitialized: false,
         resave: true,
-        name: 'noname'
+        name: 'noname',
+        store: new MongoStore({
+        url: "mongodb://localhost/sessions",
+                  ttl: 60 * 10
+                })
     }) 
 )
 
 server.get('/', (req, res) => {
+    console.log(req.session)    
     if(req.session && req.session.username) {
         res.json({message: `welcome back ${req.session.username}`})
     }else {
@@ -85,6 +92,18 @@ server.get("/users", (req, res, next) => {
             res.status(401).json({ error: "You shall not pass" });
           }
     });
+
+server.get('/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                res.send('error logging out');
+            } else {
+                res.send('good bye, please come back again!');
+            }
+        });
+    }
+});
 
 
 server.listen(5000, () => {
