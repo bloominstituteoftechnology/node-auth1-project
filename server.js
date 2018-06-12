@@ -22,5 +22,5 @@ database.connectTo('AuthMini')
 
   const port = process.env.PORT || 5000;
   server.listen(port, () => {
-      console.log(`Server up on ${port}`);
+      console.log(`Server up on port ${port}`);
   })

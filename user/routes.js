@@ -3,6 +3,13 @@ const User = require('./User');
 
 const router = express.Router();
 
+router.get('/', (req, res) => {
+    let query = User.find()
+      .sort('username')
+    query.then(users = res.status(200).json(users))
+      .catch( err => res.sendStatus(500));
+})
+
 router.post('/', (req, res) => {
     const newUser = req.body;
     const { username, password } = req.body;
@@ -16,4 +23,4 @@ router.post('/', (req, res) => {
       })
 })
 
-module.exports = Router;
+module.exports = router;
