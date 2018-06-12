@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
-const bcrypt = ('bcrypt');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
         unique: true,
         required: true,
-        lowerCase: true,
+        lowercase: true,
     },
     password: {
         type: String,
@@ -15,23 +15,25 @@ const userSchema = new mongoose.Schema({
     },
 });
 
-// pre => validate => post => pre => save => post
 userSchema.pre('save', function (next) {
-    console.log('pre save hook');
-
+    // console.log('pre save hook');
 
     bcrypt.hash(this.password, 12, (err, hash) => {
+        // it's actually 2 ^ 12 rounds
         if (err) {
             return next(err);
         }
+
         this.password = hash;
 
         next();
-    })
+    });
 });
+
 userSchema.methods.validatePassword = function (passwordGuess) {
-    return bcrypt.localeCompare(passwordGuess, user.password);
+    return bcrypt.compare(passwordGuess, this.password);
 };
-// 
 
 module.exports = mongoose.model('User', userSchema);
+
+
