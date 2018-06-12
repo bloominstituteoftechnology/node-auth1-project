@@ -18,15 +18,20 @@ const userSchema = new mongoose.Schema({
 // pre => validate => post => pre => save => post
 userSchema.pre('save', function (next) {
     console.log('pre save hook');
-    
+
+
     bcrypt.hash(this.password, 12, (err, hash) => {
         if (err) {
             return next(err);
         }
         this.password = hash;
+
+        next();
     })
-    
-    next();
 });
+userSchema.methods.validatePassword = function (passwordGuess) {
+    return bcrypt.localeCompare(passwordGuess, user.password);
+};
+// 
 
 module.exports = mongoose.model('User', userSchema);
