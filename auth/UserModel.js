@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -22,9 +23,7 @@ userSchema.pre('save', function (next) {
     if (err) {
       return next(err);
     }
-
     this.password = hash;
-
     next();
   });
 });
