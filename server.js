@@ -12,7 +12,10 @@ server.use(cors({}));
 server.use(express.json());
 server.use(session(sessionOptions));
 
-server.get('/', (req, res) => res.send('API Running...'));
+server.get('/', (req, res) => {
+  // req.session.username ? res.send('You are already logged in!') : res.send('API Running...');
+  req.session.username ? res.send({ REQ_SESSION: req.session }) : res.send({ REQ_SESSION: req.session });
+});
 server.use('/api', userRouter);
 
 const PORT = 6666;
