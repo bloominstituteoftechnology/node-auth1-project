@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import axios from 'axios';
+// import {Route, Link} from 'react-router-dom';
+
 import logo from './logo.svg';
 import './App.css';
-
-import axios from 'axios';
+import LoginForm from '../src/components/LoginForm'
 
 
 class App extends Component {
@@ -23,8 +25,6 @@ componentDidMount() {
     .catch(err => {
       console.log("error", err)
     });
-
-
 }
 
   render(){

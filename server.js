@@ -26,6 +26,14 @@ const sessionOptions = {
     name: 'noname'
 };
 
+function forceShield(req, res, next){
+    if (req.session && req.session.username){
+        next();
+    } else {
+        res.status(401).json({message: 'Unfortunately, you may not enter.'})
+    }
+}
+
 server.use(express.json());
 server.use(helmet());
 server.use(cors());
@@ -72,7 +80,7 @@ server.post('/api/login', (req, res) => {
     });
 });
 
-server.get('/api/users', (req, res) => {
+server.get('/api/users', forceShield, (req, res) => {
     User
     .find()
     .populate()
