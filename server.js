@@ -1,8 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bcrpyt = require('bcrypt');
+// const bcrpyt = require('bcrypt');
+const session = require('express-session')
+const cors = require('cors');
 
-const User = require('./auth/UserModel.js');
+const User = require('./auth/UserModel');
 
 mongoose.connect('mongodb://localhost/authweek').then(() => {
   console.log(`\n *** Connected to database *** \n`)
@@ -11,14 +13,45 @@ mongoose.connect('mongodb://localhost/authweek').then(() => {
 
 const server = express();
 
+
+const sessionConfig = {
+  secret: "this is something",
+  cooke: { maxAge: 1 * 24 * 60 * 60 * 1000},
+  httpOnly: true,
+  secure: false,
+  resave: true,
+  saveUninitialized: false,
+  name: 'noname' //hides name in cookie
+}
+
+server.use(cors());
 server.use(express.json());
+server.use(session(sessionConfig))
+
+function protected(req, res, next) {
+  if(req.session && req.session.username) {
+    next();
+  }else{
+    res.status(401).json({message: 'you shale not pass'})
+  }
+}
 
 server.get('/', (req, res) => {
-  res.status(200).json({ api: 'running....'});
+  if(req.session && req.session.username){
+    res.status(200).json({ api: `welcome back ${req.session.username}`})
+  } else{
+    res.status(401).json({message: 'who are you?'})
+  }
+  ;
 });
 
+server.get('/greet', (req, res) => {
+  const name = req.session
+  res.json(name)
+})
+
 server.post('/api/register', (req, res) => {
-  
+
   // save the user to the database
   console.log(req.body)
   User.create(req.body)
@@ -32,40 +65,64 @@ server.post('/api/register', (req, res) => {
 
 server.post('/api/login', (req, res) => {
   const {username, password } = req.body;
-  let hashPassword;
+  
  
-  User.find({username: username})
+  User.findOne({username})
     .then(user => {
-      bcrpyt.compare(password, user[0].password, function(err, res2) {
-        if(err){
-          return res.status(500).json(err)
-        }
-        if(res2){
-          res.json('login')
-        }else {
-          res.json("not logged in") 
-        }
-      })
-      
-      
-      // bcrpyt.hash(password, 12, (err, hash) => {
-      //   if(err) {
-      //     return res.status(500)
+  
+    //this was the working 
+      // bcrpyt.compare(password, user.password, function(err, res2) {
+      //   if(err){
+      //     return res.status(500).json(err)
       //   }
-        
-      //   console.log(hash)
-      //   if(user[0].password === hash){
-      //     console.log("login")
+      //   if(res2){
+      //     res.json('login')
       //   }else {
-      //   console.log('not logged in', hash, user[0].password)
-      //   res.json(user)
+      //     res.json("not logged in") 
       //   }
-        
       // })
+
+      //this only works with findOne
+       user.pwCheck(password)
+        .then(isValid => {
+          if(isValid){
+            req.session.username = user.username;
+            res.json('Logged In')
+          }
+          else{
+            res.status(401).json('You shall not pass')
+          }
+        })
+        .catch(err => {
+          res.status(500).json(err)
       
+        })
+      
+    })
+    .catch(err =>{
+      res.status(500).json(err.message)
+      console.log(err)
     })
 })
 
+server.get('/api/logout', (req, res) => {
+  if(req.session) {
+    req.session.destroy(err  => {
+      if (err){
+        res.json('error logging out')
+      } else {
+        res.json('goodbye')
+      }
+      
+    })
+  }
+})
+
+server.get('/api/users', protected, (req, res) => {
+  User.find()
+    .then(users => res.json(users))
+    .catch(err => res.json(err));
+})
 
 server.listen(8000, () => { 
   console.log(`\n *** API running on port 8k*** \n`)
