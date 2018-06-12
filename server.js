@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 const User = require('./UserModel.js'); //connecting with schema
 
 //making sure mongoose works
@@ -25,7 +26,13 @@ const sessionConfig = {
     resave: true,
     saveUninitialized: false,
     name: 'noname', //change from default so hackers don't know you're using express
+  store: new MongoStore ({
+    url: "mongodb://localhost/session",
+    ttl: 60 * 10
+  })
 };
+
+server.use(session(sessionConfig));
 
 //middleware
 function auth(req, res, next) {
@@ -35,9 +42,18 @@ function auth(req, res, next) {
     res.status(401).json('You shall not pass!');
   }
 };
+// restrict access to /api/restricted
+const restrictAccess = (req, res, next) => {
+  if (req.path.startsWith('/api/restricted')) {
+    if (req.session && req.session.userId) next ();
+    else
+      res.status(422).json('You must be logged in to see this.');
+  } else {
+    next();
+  }
+};
 
-server.use(session(sessionConfig));
-
+server.use(restrictAccess);
 
 //GET endpoint for /api/users that will only show array of users if logged in. Verify password is hashed before saved.
 server.get('/api/users', auth, (req, res) => {
