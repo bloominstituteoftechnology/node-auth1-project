@@ -16,7 +16,11 @@ router
           user.isPasswordValid(password)
             .then(login => {
               if(login){
-                res.send('Successful login. Start session.');
+                req.session.userId = user._id;
+                res.status(200).json({
+                  message: 'Logged in',
+                  userId: req.session.userId
+                });
               } else {
                 res.status(401).json({ error: 'You shall not pass!' });
               }
