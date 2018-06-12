@@ -13,8 +13,9 @@ class SignIn extends Component {
       name: '',
       pw: ''
     }
+    
   }
-
+  
   handleChange = event => {
     this.setState({ [event.target.name] : event.target.value });
   };
@@ -76,7 +77,7 @@ class SignIn extends Component {
         </FormControl>
         <FormControl >
           <InputLabel htmlFor="name-simple">Password</InputLabel>
-          <Input id="name-simple" name="pw" type="password" value={this.state.pw} onChange={this.handleChange} />
+          <Input id="password-simple" name="pw" type="password" value={this.state.pw} onChange={this.handleChange} />
         </FormControl>
         <Button variant="contained" color="primary" onClick={this.handleReturningUser}>
             login

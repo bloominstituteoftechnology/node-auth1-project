@@ -24,7 +24,9 @@ const sessionConfig = {
   name: 'noname' //hides name in cookie
 }
 
-server.use(cors());
+server.use(cors(
+  // {credentials: true}
+));
 server.use(express.json());
 server.use(session(sessionConfig))
 
