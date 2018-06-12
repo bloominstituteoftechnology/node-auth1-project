@@ -6,10 +6,6 @@ import {
 import axios from 'axios'
 
 export const UserList = (props) => {
-    axios.get("http://localhost:8000/api/users")
-        .then(result => props.users = result.data)
-        .catch(err => console.log(err.message))
-
     return (
         <div>
             {props.users.map((e) => {

@@ -30,11 +30,21 @@ class InputF extends React.Component {
     }
     loginRender = () => {
         return (
-            <Link to="/users"><Button text="Submit login" function={this.login} /></Link>
+            <Link to="/"><Button text="Submit login" function={this.login} /></Link>
         );
     }
     login = () => {
         axios.post("http://localhost:8000/api/login", { username: this.state.username, password: this.state.password })
+            .then(response => {
+                console.log("login", response)
+                axios.get("http://localhost:8000/api/users")
+                    .then(result => {
+                        console.log(result)
+                    })
+                    .catch(err => console.log(err.message))
+
+            })
+            .catch(err => console.log(err.message))
     }
     render() {
         console.log(this.props.match)
