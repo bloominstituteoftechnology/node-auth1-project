@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
+const helmet = require('helmet');
 const session = require('express-session');
 const User = require('./users/UserModel');
 const localHost = 'localhost:27017';
@@ -24,7 +26,9 @@ function authenticate(req, res, next) {
     }
 }
 
+server.use(helmet());
 server.use(express.json());
+
 server.use(
     session({
         secret: 'nobody tosses a dwarf!',
@@ -82,7 +86,10 @@ server.post('/login', (req, res) => {
                         } else {
                             res.status(401).send("Invalid Credentials")
                         }
-                })
+                    })
+                    .catch(error => {
+                        res.status(500).json({ error: error.message })
+                    })
             } else {
                 res.status(401).send("Invalid Credentials")
             }
