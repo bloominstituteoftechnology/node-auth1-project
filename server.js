@@ -4,14 +4,15 @@ const helmet = require('helmet');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
-// My mLabs DB <3
-const MONGO_URI = require('./config');
+// My Config File <3
+const { MONGO_URI, secret } = require('./config');
 // Routes
 const userRoutes = require('./user/userRoutes');
 
 /* Middleware Functions */
 const checkAuth = (req, res, next) => {
-  if (req.session._id) {
+  // console.log("checkAuth--req.session:",req.session,"req.session.username:",req.session.username);
+  if (req.session && req.session.username) {
     next();
   } else {
     res.status(403).json({ error: "Please login to access the resource" });
@@ -23,11 +24,15 @@ server.use(helmet());
 server.use(cors());
 server.use(express.json());
 server.use(session({
-  secret: `9cj2kz8bxezM2duz3n8S
-  JaKQZZ5q9LDn3alWB52M
-  YvP14Gz9Ja9CO6m4blBh
-  G4q41tkFHoPk0i3L14Em
-  0g2ekN4oGJ1umgD7hn7t`
+  secret,
+  cookie: {
+    maxAge: 1000 * 60 * 60
+  },
+  httpOnly: true,
+  secure: false,
+  resave: true,
+  saveUninitialized: false,
+  name: 'noname'
 }));
 server.use('/api/users', checkAuth);
 server.use('/api/restricted', checkAuth);

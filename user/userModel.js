@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const bcrypt = require('bcrypt');
 
 const UserSchema = new mongoose.Schema({
@@ -15,6 +14,10 @@ const UserSchema = new mongoose.Schema({
     minlength: 4
   }
 });
+
+UserSchema.methods.validatePassword = function(passwordInput) {
+  return bcrypt.compare(passwordInput, this.password);
+};
 
 UserSchema.pre('save', function(next) {
   bcrypt.hash(this.password, 12, (err, hash) => {
