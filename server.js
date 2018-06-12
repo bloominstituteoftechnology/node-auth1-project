@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose')
 const cors = require('cors');
 const helmet = require('helmet');
+const session = require('express-session');
 
 const User = require('./auth/UserModel');
 const Login = require('./auth/LoginModel')
@@ -13,9 +14,22 @@ mongoose.connect('mongodb://localhost/auth').then(() => {
 
 const server = express();
 
+const sessionOptions = {
+    secret: 'this is my secret',
+    cookie: {
+        maxAge: 1000 * 60 * 60
+    },
+    httpOnly: true,
+    secure: false,
+    resave: true,
+    saveUninitialized: false,
+    name: 'noname'
+};
+
 server.use(express.json());
 server.use(helmet());
 server.use(cors());
+server.use(session(sessionOptions));    
 
 
 server.get('/', (req, res) =>{
@@ -34,18 +48,29 @@ server.post('/api/register', (req, res) => {
 })
 
 server.post('/api/login', (req, res) => {
-    const {username} = req.body
-    Login
-    .find(function(err, password){
-        if(err) return handleError(err)
-    })
+    const {username, password} = req.body;
+    User
+    .findOne({username})
     .then(user => {
-        res.status(200).json(user)
-    })
-    .catch(err =>{
-        res.status(500).json(err)
-    })
-})
+        if(user){
+            user
+            .validatePassword(password)
+            .then(passwordMatch => {
+                if(passwordMatch){
+                    req.session.username = user.username
+                    res.status(200).send({success: 'You are logged in!'})
+                } else {
+                    res.status(401).send('invalid credentials')
+                }
+            })
+            .catch(err => {
+                res.send('error comapring passwords')
+            })
+        }else {
+            res.status(401).send('invalid credentials')
+        }
+    });
+});
 
 server.get('/api/users', (req, res) => {
     User
