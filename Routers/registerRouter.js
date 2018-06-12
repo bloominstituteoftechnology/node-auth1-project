@@ -1,5 +1,5 @@
 const express = require("express");
-const User = require("./User");
+const User = require("../User");
 const router = express.Router();
 
 router.route("/register").post((req, res) => {
