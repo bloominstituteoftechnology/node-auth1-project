@@ -45,6 +45,18 @@ router
 });
 
 router
+    .route('/')
+    .get((req, res) => {
+    if (req.session && req.session.username) {
+      res.status(200).json({ message: `welcome back ${req.session.username}` });
+    } else {
+      res.status(401).json({ message: 'speak friend and enter' });
+    }
+  });
+
+
+
+router
     .route('/api/register')
     .post((req, res) => {
     // traditional way of getting db info
@@ -103,7 +115,7 @@ router
                     if (err) {
                         res.send('error logging out');
                     } else {
-                        res.send('good-bye');
+                        res.send(`good-bye`);
                     }
                 })
             }
