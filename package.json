@@ -26,6 +26,7 @@
     "cors": "^2.8.4",
     "express": "^4.16.3",
     "helmet": "^3.12.1",
-    "mongoose": "^5.1.4"
+    "mongoose": "^5.1.4",
+    "react-router-dom": "^4.3.1"
   }
 }
