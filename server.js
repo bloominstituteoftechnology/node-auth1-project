@@ -5,7 +5,6 @@ const helmet = require('helmet');
 const session = require('express-session');
 
 const User = require('./auth/UserModel');
-const Login = require('./auth/LoginModel')
 
 mongoose.promise = global.Promise;
 mongoose.connect('mongodb://localhost/auth').then(() => {
@@ -80,7 +79,7 @@ server.post('/api/login', (req, res) => {
     });
 });
 
-server.get('/api/users', forceShield, (req, res) => {
+server.get('/api/users', (req, res) => {
     User
     .find()
     .populate()
