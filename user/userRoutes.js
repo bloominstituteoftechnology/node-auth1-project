@@ -28,11 +28,11 @@ router
           if (isValid) {
             console.log(isValid);
             console.log("The password is valid");
-            req.session.id = user._id;
+            req.session._id = user._id;
             console.log(`'/api/login' request.session:`,req.session);
             res.status(201).json({ "Success": "Logged in" });
           } else {
-            res.status(403).json({ "Hey Bruh": "Go fuck yourself" });
+            res.status(403).json({ "Hey Bruh": "Go away and have a nice day" });
           }
         });
       })
@@ -49,10 +49,6 @@ router
   router
     .route('/users')
     .get((req, res) => {
-      if (!req.session.id) {
-        res.status(403).json({error: "You must be logged in." });
-        return;
-      }
       userModel.find()
         .then(users => res.status(200).json(users))
         .catch(error => res.json(error));
