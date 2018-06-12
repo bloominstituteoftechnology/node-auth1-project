@@ -17,7 +17,8 @@ const server = express();
 server.use(express.json());
 
 // middleware
-function authenticate(req, res, next) {
+    // local middleware
+function authenticate(req, res, next) { 
     
     if (req.session && req.session.username) { // if that username is not there then they havent logged in
         next();
@@ -26,8 +27,8 @@ function authenticate(req, res, next) {
     }
 }
 
-
-server.use(
+    // global middleware
+server.use( 
     session({
         secret: 'nobody tosses a dwarf!',
         cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 }, // 1 day in milliseconds // session expiration time
@@ -38,6 +39,8 @@ server.use(
         name: 'noname' // we dont want hackers to know which library we're using, so use a generic name
     })
 );
+
+// end of middleware
 
 server.get('/', (req, res) => {
     if(req.session && req.session.username) {
@@ -62,8 +65,9 @@ server.post('/api/register', (req, res) => {
 
 // LOGIN
 server.post('/api/login', (req, res) => {
+    //grab credentials
     const { username, password } = req.body;
-
+    // find the user to get access to the stored password
     User.findOne({ username })
         .then(user => {
             if(user) {
@@ -83,7 +87,7 @@ server.post('/api/login', (req, res) => {
         })
 })
 
-// USERS // if server restarts, will have to use send post request to login route again otherwise will run into error: You shall not pass!
+// USERS // if server restarts, will have to send post request to login route again otherwise will run into error: You shall not pass! This is b/c the session exists in memory and does not persist across server restarts.
 server.get('/users', authenticate, (req, res) => {
     User.find()
         .then(users => {
@@ -97,10 +101,10 @@ server.get('/users', authenticate, (req, res) => {
 
 // LOGOUT 
 server.get('/logout', (req, res) => {
-    if(req.session) { // check to see if session exists, otherwise will get error saying can not call destroy on undefined
+    if(req.session) { // check to see if session exists, otherwise will get error saying -- cannot call destroy on undefined
         req.session.destroy(function(err) {
             if(err) {
-                res.send('error');
+                res.send('error logging out');
             } else {
                 res.send('good bye');
             }

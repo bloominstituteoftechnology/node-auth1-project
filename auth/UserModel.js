@@ -27,7 +27,7 @@ UserSchema.pre('save', function(next) {
     })
 });
 
-UserSchema.methods.isPasswordValid = function(passwordGuess) {
+UserSchema.methods.isPasswordValid = function(passwordGuess) { // have to use regular function not arrow so that 'this' binds to correct context 
     return bcrypt.compare(passwordGuess, this.password); // compare is a bcrypt method. // this line returns a promise which will be handled in the login route
 }
 
