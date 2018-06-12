@@ -11,7 +11,8 @@ server.use(require('express-session')({
     maxAge: 1 * 24 * 60 * 60 * 1000
   },
   resave: true,
-  saveUninitialized: false
+  saveUninitialized: false,
+  name: 'noname'
 }));
 server.use('/api/register', register);
 server.use('/api/login', login);
