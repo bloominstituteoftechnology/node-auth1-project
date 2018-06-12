@@ -69,6 +69,28 @@ server.post('/api/login', (req, res) => {
         })
 })
 
+server.get('/api/users', (req, res) => {
+    if (req.session && req.session.username) {
+        User.find()
+            .then( users => res.status(200).json( users ))
+            .catch( err => res.status(500).json({ error: err.message }))
+    } else {
+        res.status(401).json({ userError: 'not logged in' })
+    }
+})
+
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                res.status(500).json({ error: 'error logging out' })
+            } else {
+                res.status(200).json({ message: 'successfully logged out' })
+            }
+        })
+    }
+})
+
 server.listen(5000, () => {
     console.log('api running on port 5000')
 })
