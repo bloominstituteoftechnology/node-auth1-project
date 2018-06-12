@@ -1,3 +1,5 @@
+// ./auth/UserModel.js
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
@@ -19,6 +21,7 @@ UserSchema.pre('save', function(next) {
     // console.log('Pre saved hook!');
 
     bcrypt.hash(this.password, 12, (err, hash) => {
+        // Read: 2 ^ 12 rounds
         if (err) {
             return next(err);
         }
