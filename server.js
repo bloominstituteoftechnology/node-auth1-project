@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const connectionToDB = require('./db/db');
 const userRouter = require('./User/user.router');
+const session = require('express-session');
 
 connectionToDB.connectTo('auth_i');
 const server = express();

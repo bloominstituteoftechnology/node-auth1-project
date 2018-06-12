@@ -20,12 +20,31 @@ module.exports = class routerFactory {
 
   GET(path = '/') {
     this.router.route(path).get(handleGET.bind(this), sendResponseToClient.bind(this));
+    this.router.use(handleError.bind(this));
   }
   GET_id(path = '/:id') {
     this.router.route(path).get(isIdValid.bind(this), handleGET.bind(this), sendResponseToClient.bind(this));
+    this.router.use(handleError.bind(this));
   }
-  POST(path = '/') {
-    this.router.route(path).post(validateParameters.bind(this), handlePOST.bind(this), sendResponseToClient.bind(this));
+  POST(path = '/', firstMiddleware, ...middlewares) {
+    let handlers = [];
+    if (middlewares.length) {
+      if (firstMiddleware === 'handlePOST') {
+        handlers = [handlePOST.bind(this), ...middlewares];
+      } else {
+        handlers = [firstMiddleware, ...middlewares];
+      }
+    } else if (firstMiddleware) {
+      if (firstMiddleware === 'handlePOST') {
+        handlers = [handlePOST.bind(this)];
+      } else {
+        handlers = [firstMiddleware];
+      }
+    } else {
+      handlers = [handlePOST.bind(this)];
+    }
+    this.router.route(path).post(validateParameters.bind(this), ...handlers, sendResponseToClient.bind(this));
+    this.router.use(handleError.bind(this));
   }
   PUT(path = '/:id') {
     this.router.route(path).put(
@@ -35,9 +54,11 @@ module.exports = class routerFactory {
       handlePUT.bind(this),
       sendResponseToClient.bind(this)
     );
+    this.router.use(handleError.bind(this));
   }
   DELETE(path = '/:id') {
     this.router.route(path).delete(isIdValid.bind(this), handleDELETE.bind(this), sendResponseToClient.bind(this));
+    this.router.use(handleError.bind(this));
   }
 
   CRUD() {
@@ -90,7 +111,7 @@ module.exports = class routerFactory {
  */
 function handlePOST(req, res, next) {
   const parameters = req.body;
-
+  console.log('hanlde POST');
   const toPost = this.newModel(parameters);
   toPost
     .save()
