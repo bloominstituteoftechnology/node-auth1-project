@@ -19,22 +19,25 @@ router.route('/api/register').post((req, res) => {
         username: req.body.username,
         password: req.body.password
     });
-
+    
+    User.create(user, (err) => { 
+        res.status(201).json(err);
+    })
+        .catch(err => {
+            res.status(500).json(err);
+        });
 });
 
+router.route('/api/login').post((req, res) => {
+    const user = ({ username, password } = req.body);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    User.findOne(user, (err) => {
+        res.status(201).json(err);
+    })
+        .catch(err => {
+            res.status(500).json(err);
+        });
+    
+});
 
 module.exports = router;

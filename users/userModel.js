@@ -19,7 +19,7 @@ userSchema.pre('save', function(next) {
     // console.log('pre save hook');
 
     bcrypt.hash(this.password, 12, (err, hash) => {
-        // it's actually 2 ^ 12 rounds
+        const user = { username: this.username, password: hash };
         if (err) {
             return next(err);
         }
