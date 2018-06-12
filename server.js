@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 
 const User = require('./auth/UserModel');
 
@@ -13,8 +14,22 @@ server.get('/', (req, res) => {
     res.status(200).json({ api: 'running...' });
 });
 
+server.get('/api/users', (req, res) => {
+    res.status(200).json({ api: 'running...' });
+});
+
 server.post('/api/register', (req, res) => {
     User.create(req.body)
+        .then(user => {
+            res.status(201).json(user);
+        })
+        .catch(err => {
+            res.status(500).json(err)
+        });
+})
+
+server.post('/api/login', (req, res) => {
+    const { username, password } = req.body
         .then(user => {
             res.status(201).json(user);
         })
