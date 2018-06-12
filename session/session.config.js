@@ -1,7 +1,8 @@
 module.exports = {
   secret: 'super secret', // ?
   cookie: {
-    maxAge: 1000 * 60 * 60, // an hour : life expand of the cookie -> session diration
+    // maxAge: 1000 * 60 * 60, // an hour : life expand of the cookie -> session diration
+    maxAge: 10 * 1000, // n-seconds
   },
   httpOnly: true, // only available with HTTP connections
   secure: false, // allow non HTTPS connection

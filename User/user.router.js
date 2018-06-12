@@ -11,13 +11,23 @@ UserRouterFactory.setProjection({ __v: 0 });
 
 // Create a POST for /api/register
 UserRouterFactory.POST('/register');
+UserRouterFactory.GET('/register*', _404);
+
 UserRouterFactory.POST('/login', login);
-UserRouterFactory.GET('/users', ifLoggedGET, 'handleGET');
+UserRouterFactory.GET('/login*', _404);
+
+UserRouterFactory.GET('/users*', isLogged, 'handleGET');
+
+/**
+ * Router for: '/api/restricted/../../...'
+ * Restric: any nested path
+ */
+UserRouterFactory.GET('/restricted*', isLogged, 'handleGET');
 
 /**
  * Middlewares: custom route handlers
  */
-function ifLoggedGET(req, res, next) {
+function isLogged(req, res, next) {
   req.session.loggedIn ? next() : res.status(401).json('You must be logged in!');
 }
 function login(req, res, next) {
@@ -41,6 +51,9 @@ function login(req, res, next) {
         res.status(500).json('Something bad happend processing your ligin, try again');
       });
   });
+}
+function _404(req, res) {
+  res.status(404).json({ RESOURCE: '404 - Not found' });
 }
 
 module.exports = userRouter;
