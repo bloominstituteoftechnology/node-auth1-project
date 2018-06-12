@@ -1,11 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const User = require('./User.js');
+const MongoStore = require('connect-mongo')(session)
+const User = require('./users/User.js');
 
+const loginRouter = require('./loginRouter')
+const userRouter = require('./users/userRouter')
 
 mongoose.connect('mongodb://localhost/users').then(() => {
-    console.log('\n*** Connected to databased ***\n')
+    console.log('\n*** Connected to database ***\n')
 })
 
 const server = express();
@@ -19,7 +22,11 @@ server.use(session({
     secure: false,
     saveUninitialized: false,
     resave: true,
-    name: 'none'
+    name: 'none',
+    store: new MongoStore({
+        url: 'mongodb://localhost/sessions',
+        ttl: 60 * 10,
+    })
 }))
 
 
@@ -28,22 +35,22 @@ const sendUserError = (status, message, res) => {
     return;
 }
 
-server.get('/', (req, res, next) => {
-    if (req.session && req.session.username) {
-        res.send(`Welcome back ${req.session.username}`)
-    } else {
-        res.send(`Who are you?  Who?`)
-    }
-    res.status(200).json({ api: 'running...' })
-})
+// server.get('/', (req, res, next) => {
+//     if (req.session && req.session.username) {
+//         res.send(`Welcome back ${req.session.username}`)
+//     } else {
+//         res.send(`Who are you?  Who?`)
+//     }
+//     res.status(200).json({ api: 'running...' })
+// })
 
-function authenticate(req, res, next) {
-    if (req.session && req.session.username) {
-        next()
-    } else {
-        res.status(401).send('You shall not pass!!!')
-    }
-}
+// function authenticate(req, res, next) {
+//     if (req.session && req.session.username) {
+//         next()
+//     } else {
+//         res.status(401).send('You shall not pass!!!')
+//     }
+// }
 
 server.get('/view-counter', (req, res) => {
     const session = req.session
@@ -54,50 +61,52 @@ server.get('/view-counter', (req, res) => {
     res.json({ viewCount: session.viewCount })
 })
 
-server.post('/api/register', (req, res) => {
-    User.create(req.body).then(user => {
-        res.status(200).json(user)
-    }).catch(err => res.status(500).json(err))
-})
+// server.post('/api/register', (req, res) => {
+//     User.create(req.body).then(user => {
+//         res.status(200).json(user)
+//     }).catch(err => res.status(500).json(err))
+// })
 
-server.post('/api/login', (req, res) => {
-    let password = req.body.password
-    let username = req.body.username
-    if (!password || !username) {
-       sendUserError(400, err.message, res)
-    } else {
-        User.findOne({ username })
-        .then(user => {
-            if (user) {
-                user.isPasswordValid(password).then(isValid => {
-                    if (isValid) {
-                        req.session.username = user.username;
-                        res.status(200).json('Logged in')
-                    } else {
-                        res.status(401).send('You shall not pass!')
-                    }
-                })
-            } else {
-                sendUserError(401).send('You shall not pass!')
-        }}).catch(err => sendUserError(500, err.message, res)
-    )}
-})
+// server.post('/api/login', (req, res) => {
+//     let password = req.body.password
+//     let username = req.body.username
+//     if (!password || !username) {
+//        sendUserError(400, err.message, res)
+//     } else {
+//         User.findOne({ username })
+//         .then(user => {
+//             if (user) {
+//                 user.isPasswordValid(password).then(isValid => {
+//                     if (isValid) {
+//                         req.session.username = user.username;
+//                         res.status(200).json('Logged in')
+//                     } else {
+//                         res.status(401).send('You shall not pass!')
+//                     }
+//                 })
+//             } else {
+//                 sendUserError(401).send('You shall not pass!')
+//         }}).catch(err => sendUserError(500, err.message, res)
+//     )}
+// })
 
-server.get('/api/users', authenticate, (req, res) => {
-    User.find().then(users => res.send(users))
-})
+// server.get('/api/users', authenticate, (req, res) => {
+//     User.find().then(users => res.send(users))
+// })
 
-server.get('/api/logout', (req, res) => {
-    if (req.session) {
-        let name = req.session.username
-        req.session.destroy(function(err) {
-            if (err) {
-                res.send(err);
-            } else {
-                res.send(`Goodbye, ${name}, ye shall be missed`)
-            }
-        })
-    }
-})
+// server.get('/api/logout', (req, res) => {
+//     if (req.session) {
+//         let name = req.session.username
+//         req.session.destroy(function(err) {
+//             if (err) {
+//                 res.send(err);
+//             } else {
+//                 res.send(`Goodbye, ${name}, ye shall be missed`)
+//             }
+//         })
+//     }
+// })
+server.use('/api', loginRouter);
+server.use('/api/restricted', userRouter);
 
 server.listen(8000, () => { console.log('\n*** API running on port 8K ***\n')})
