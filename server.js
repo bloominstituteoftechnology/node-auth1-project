@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
 
 const User = require('./auth/UserModel');
 
@@ -16,19 +17,34 @@ const server = express();
 server.use(express.json());
 
 // middleware
-// function authenticate(req, res, next) {
+function authenticate(req, res, next) {
     
-//     if (req.body.password === 'testpassword') {
-//         next();
-//     } else {
-//         res.status(401).json({ message: 'You shall not pass!!!'})
-//     }
-// }
+    if (req.session && req.session.username) { // if that username is not there then they havent logged in
+        next();
+    } else {
+        res.status(401).send('You shall not pass!');
+    }
+}
 
 
+server.use(
+    session({
+        secret: 'nobody tosses a dwarf!',
+        cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 }, // 1 day in milliseconds
+        httpOnly: true,
+        secure: false, // use false for development. Whoever does deployment may later change to true if there's a need for secure network (i.e https)
+        resave: true, 
+        saveUninitialized: false,
+        name: 'noname'
+    })
+);
 
 server.get('/', (req, res) => {
-    res.status(200).json({ api: 'running...' });
+    if(req.session && req.session.username) {
+        res.json(`Welcome back ${req.session.username}`)
+    } else {
+        res.json('Who are you?');
+    }
 })
 
 // REGISTER
@@ -54,6 +70,7 @@ server.post('/api/login', (req, res) => {
                 // compare the passwords
                 user.isPasswordValid(password).then(isValid => {
                     if(isValid) {
+                        req.session.username = user.username;
                         res.send('login successful')
                     } else {
                         res.status(401).json('invalid credentials!') // use 401 instead of 404 so not to give away that user doesnt exist
@@ -64,6 +81,17 @@ server.post('/api/login', (req, res) => {
             }
         })
 })
+
+// USERS // if server restarts, will have to use send post request to login route again otherwise will run into error: You shall not pass!
+server.get('/users', authenticate, (req, res) => {
+    User.find()
+        .then(users => {
+            res.json(users)
+        })
+        .catch(err => {
+            res.status(500).json({ error: err.message });
+        })
+});
 
 
 
