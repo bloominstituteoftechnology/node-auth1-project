@@ -22,7 +22,11 @@ function login(req, res, next) {
     user
       .passValidation(password)
       .then(matchedPass => {
-        matchedPass ? res.status(200).json('You are loged in') : res.status(401).json('Information no valid');
+        if (!matchedPass) return res.status(401).json('Information no valid');
+
+        req.session.username = user.username;
+        req.session.anotherCookie = 'anotehrCookie';
+        res.status(200).json('You are loged in - with cookie');
       })
       .catch(e => {
         res.status(500).json('Something bad happend processing your ligin, try again');
