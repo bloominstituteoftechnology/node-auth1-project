@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const session = require('express-session')
 const User = require('./user/userModel')
 
 const server = express()
@@ -8,7 +9,20 @@ mongoose.connect('mongodb://localhost/user').then(() => {
     console.log('connected to database')
 })
 
+const sessionOptions = {
+    secret: 'nobody tosses a dwarf!',
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24
+    },
+    httpOnly: true,
+    secure: false,
+    resave: true,
+    saveUninitialized: false,
+    name: 'noname'
+}
+
 server.use(express.json())
+server.use(session(sessionOptions))
 
 server.get('/', (req, res) => {
     res.status(200).json({ api: "api running..." })
@@ -21,17 +35,39 @@ server.post('/api/register', (req, res) => {
         .catch( err => res.status(500).json({ error: err.message }))
 })
 
-// server.post('/api/login', (req, res) => {
-//     const user = { username, password } = req.body
-//     User.findOne({username})
-//         .then( foundUser => {
-//             if (foundUser) {
-//                 if (foundUser.isPasswordValid(password)){
-//                     req.session
-//                 }
-//             }
-//         })
-// })
+server.post('/api/login', (req, res) => {
+    const { username, password } = req.body
+    User.findOne({ username })
+        .then( foundUser => {
+            if (foundUser) {
+                foundUser.isPasswordValid(password)
+                    .then( valid => {
+                        if (valid) {
+                            req.session.username = foundUser.username;
+                            res.send('cookie sent')
+                        } else {
+                            res.status(401).json({ 
+                                userError: 'username or password is incorrect'
+                            })
+                        }
+                    })
+                    .catch( err => {
+                        res.status(500).json({
+                            error: 'error processing credentials'
+                        })
+                    })
+            } else {
+                res.status(401).json({ 
+                    userError: 'username or password is incorrect'
+                })
+            }
+        })
+        .catch( err => {
+            res.status(500).json({
+                error: 'error retrieving user'
+            })
+        })
+})
 
 server.listen(5000, () => {
     console.log('api running on port 5000')
