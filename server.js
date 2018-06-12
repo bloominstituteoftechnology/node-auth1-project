@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors')
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session)
 const User = require('./users/User.js');
@@ -13,7 +14,9 @@ mongoose.connect('mongodb://localhost/users').then(() => {
 
 const server = express();
 
+
 server.use(express.json());
+server.use(cors({ origin: 'http://localhost:3000' }))
 
 server.use(session({ 
     secret: "ifIg1v3mYc4t3nuFScr1TCh3sM4yBeHEWIllL34vEMyN0t3s470N3",
