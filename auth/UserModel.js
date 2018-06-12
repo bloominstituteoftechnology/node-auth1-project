@@ -23,11 +23,11 @@ userSchema.pre('save', function(next) {
         return next(err);
         }
         this.password = hash;
-        return next(); // goes on to save to the db
+        next(); // goes on to save to the db
     });
 });
 
-userSchema.methods.isPasswordValid = function(passwordGuess) {
+userSchema.methods.validatePassword = function(passwordGuess) {
     return bcrypt.compare(passwordGuess, this.password);
 };
 
