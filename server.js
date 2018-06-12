@@ -3,6 +3,7 @@ const port = 5000;
 const dbConnection = require('./dbConnection');
 const register = require('./routes/register');
 const login = require('./routes/login');
+const users = require('./routes/users');
 
 server.use(require('express').json());
 server.use(require('express-session')({
@@ -16,6 +17,7 @@ server.use(require('express-session')({
 }));
 server.use('/api/register', register);
 server.use('/api/login', login);
+server.use('/api/users', users);
 
 server.get('/', (req, res) => {
   res.status(200).send('Authentication API');
