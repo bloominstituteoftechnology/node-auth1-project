@@ -28,7 +28,7 @@ server.post('/api/register', (req, res) => {
 })
 
 server.post('/api/login', (req, res) => {
-    const {password} = req.body
+    const {username} = req.body
     Login
     .find(function(err, password){
         if(err) return handleError(err)
