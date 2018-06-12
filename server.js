@@ -1,11 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
-
 const User = require('./UserModel.js'); //connecting with schema
 
 //making sure mongoose works
-mongoose.connect('mongodb://localhost/cs10').then(() => {
+mongoose.connect('mongodb://localhost/temp').then(() => {
   console.log('\n*** Connected to database ***\n');
 })
   .catch(err => {
@@ -14,34 +13,42 @@ mongoose.connect('mongodb://localhost/cs10').then(() => {
 
 const server = express();
 server.use(express.json());
+
 //session
 const sessionConfig = {
-  session({
     secret: 'one does not simply walk into mordor',
     cookie: {
-      maxAge: 1 * 24 * 60 * 60 * 1000
+      maxAge: 1 * 24 * 60 * 60 * 1000 //one day in milliseconds
     },
     httpOnly: true,
     secure: false,
     resave: true,
     saveUninitialized: false,
     name: 'noname', //change from default so hackers don't know you're using express
-    store: new MongoStore({
-      url: 'mongodb://localhost/sessions',
-      ttl: 60 * 10
-    })
-  })
+};
+
+//middleware
+function auth(req, res, next) {
+  if(req.session && req.session.username) {
+    next();
+  } else {
+    res.status(401).json('You shall not pass!');
+  }
 };
 
 server.use(session(sessionConfig));
-	 
-	  
-//testing to show that server is running
-server.get('/', (req, res) => {
-  res.status(200).json({ api: 'running...' });
-});
 
-//need GET endpoint for /api/users that will only show array of users if logged in. Verify password is hashed before saved.
+
+//GET endpoint for /api/users that will only show array of users if logged in. Verify password is hashed before saved.
+server.get('/api/users', auth, (req, res) => {
+    User.find()
+      .then(users => {
+	res.status(200).json(users);
+      })
+      .catch(users => {
+        res.status(500).json(err);
+      });
+});
 
 //POST endpoint creating user inside body
 //hashing takes place in pre-function located in schema
@@ -57,28 +64,43 @@ server.post('/api/register', (req, res) => {
 });
 
 //POST endpoint using credentials to login the user
-//need to figure out how to create new session for user with cookie containing userid.
 server.post('/api/login', (req, res) => {
   const { username, password } = req.body;
-  User.findOne({ username }) //query middleware
+  User.findOne({ username })//query middleware
     .then(user => {
-    if (user) {
-    //compare passwords
-    user.isPasswordValid(password)
-      .then(isValid => {
-	if (isValid) {
-	   res.status(200).json('Logged In');
+      if(user) {
+       user.isPasswordValid(password)
+	.then(passwordsMatch => {
+	  if(passwordsMatch) {
+	    req.session.username = user.username;
+            res.status(201).json('have a cookie!');
+          } else {
+	    res.status(401).json('invalid credentials');
+	  }
+	})
+    .catch(err => {
+      res.send('error comparing passwords');
+    });
+} else {
+  res.status(401).json('invalid credentials');
+}
+    })
+    .catch(err => {
+      res.send(err);
+    });
+});
+      
+
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+      req.session.destroy(err => {
+	if(err) {
+	  res.send('There was an error logging out');
 	} else {
-	  res.status(401).send('You shall not pass!'); //username does not exist
+	  res.send('Logged out');
 	}
       });
-  } else {
-    res.status(401).json('You shall not pass!'); //password incorrect
-  }
-    })
-    .catch(err => res.send(err));
-});
+    }
+  });
 
-server.listen(8000, () => {
-  console.log('\n*** API running on port 8000 ***\n');
-});
+    server.listen(8000, () => console.log('\n*** API running on port 8000 ***\n'));
