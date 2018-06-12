@@ -1,0 +1,16 @@
+.containerM{
+  height: 100vh;  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.inputC{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 200px;
+  margin: 5px;
+  /* padding: 5px; */
+}

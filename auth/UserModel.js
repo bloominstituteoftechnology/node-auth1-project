@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const userSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     unique: true,
@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
   },
 })
 
-userSchema.pre('save', function(next){
+UserSchema.pre('save', function(next){
   bcrypt.hash(this.password, 12, (err, hash) => {
     if(err) {
       return next(err);
@@ -25,4 +25,9 @@ userSchema.pre('save', function(next){
   });
 });
 
-module.exports = mongoose.model('Person', userSchema)
+UserSchema.methods.pwCheck = function(plainTextPw) {
+      return bcrypt.compare(plainTextPw, this.password); 
+  // console.log('something')
+}
+
+module.exports = mongoose.model('Person', UserSchema)
