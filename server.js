@@ -30,12 +30,12 @@ function authenticate(req, res, next) {
 server.use(
     session({
         secret: 'nobody tosses a dwarf!',
-        cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 }, // 1 day in milliseconds
+        cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 }, // 1 day in milliseconds // session expiration time
         httpOnly: true,
         secure: false, // use false for development. Whoever does deployment may later change to true if there's a need for secure network (i.e https)
         resave: true, 
         saveUninitialized: false,
-        name: 'noname'
+        name: 'noname' // we dont want hackers to know which library we're using, so use a generic name
     })
 );
 
@@ -68,12 +68,13 @@ server.post('/api/login', (req, res) => {
         .then(user => {
             if(user) {
                 // compare the passwords
-                user.isPasswordValid(password).then(isValid => {
+                user.isPasswordValid(password).then(isValid => { //isPasswordValid is defined in UserModel.js
                     if(isValid) {
-                        req.session.username = user.username;
+                        // if user exists and password is valid, persist username inside req.session object // after you login the first time, the library will add a session object to req
+                        req.session.username = user.username; // by this point, we know the user exists and the password is valid
                         res.send('login successful')
                     } else {
-                        res.status(401).json('invalid credentials!') // use 401 instead of 404 so not to give away that user doesnt exist
+                        res.status(401).json('invalid credentials!') // use 401 instead of 404 so not to give away that user doesn't exist
                     }
                 })
             } else {
@@ -94,6 +95,18 @@ server.get('/users', authenticate, (req, res) => {
 });
 
 
+// LOGOUT 
+server.get('/logout', (req, res) => {
+    if(req.session) { // check to see if session exists, otherwise will get error saying can not call destroy on undefined
+        req.session.destroy(function(err) {
+            if(err) {
+                res.send('error');
+            } else {
+                res.send('good bye');
+            }
+        })
+    }
+});
 
 
 server.listen(3000, () => { 
