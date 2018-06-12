@@ -21,23 +21,23 @@ router.route('/api/register').post((req, res) => {
     });
     
     User.create(user, (err) => { 
+        if (err) {
+            return res.status(500).json(err);  
+        }    
         res.status(201).json(err);
     })
-        .catch(err => {
-            res.status(500).json(err);
-        });
+        
 });
 
 router.route('/api/login').post((req, res) => {
     const user = ({ username, password } = req.body);
 
     User.findOne(user, (err) => {
+        if (err) {
+            return res.status(500).json({ error: 'You shall not Pass' });
+        }
         res.status(201).json(err);
-    })
-        .catch(err => {
-            res.status(500).json(err);
-        });
-    
+    });
 });
 
 module.exports = router;
