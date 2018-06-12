@@ -8,12 +8,20 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
+          {/* <img src={logo} className="App-logo" alt="logo" />
+          <h1 className="App-title">Welcome to React</h1> */}
         </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <div className="App-intro">
+          <Link to ='/register'>
+            <p>
+              Please register for an account here
+            </p>
+          </Link>
+          <Link to='/login' component={Input} />
+          <Route exact path='/register' component={Input} />
+          <Route exact path='/login' component={Input} />
+          <Route exact path='/users' component={UserList} />
+        </div>
       </div>
     );
   }
