@@ -3,6 +3,7 @@ const port = 5000;
 const dbConnection = require('./dbConnection');
 const register = require('./routes/register');
 const login = require('./routes/login');
+const logout = require('./routes/logout');
 const users = require('./routes/users');
 
 // Middleware
@@ -21,6 +22,7 @@ server.use(require('./middleware/restrictAccess'));
 // Routes
 server.use('/api/register', register);
 server.use('/api/login', login);
+server.use('/api/logout', logout);
 server.use('/api/users', users.v1);
 server.use('/api/restricted/users', users.v2);
 
