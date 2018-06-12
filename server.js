@@ -39,8 +39,19 @@ function protected(req, res, next) {
 
 
 app
+    .get('/api/users', protected, (req, res) => {
+        User.find()
+            .then(users => res.json(users))
+            .catch(error => res.json(error))
+    })
+
+app
     .get('/', (req, res) => {
-        res.status(200).json({ message: `Welcome back ${ req.session.user }` });
+        if (req.session && req.session.username) {
+            res.json({ message: `Welcome back ${req.session.username}` });
+        } else {
+            res.status(401).json({ message: 'speak friend and enter'});
+        }
     })
 
 app
@@ -90,17 +101,6 @@ app
                 }
             })
         }
-    })
-
-app
-    .get('/api/users', protected, (req, res) => {
-        User.find()
-            .then(users => {
-                res.json(users)
-            })
-            .catch(error => {
-                res.json(error)
-            })
     })
 
 port = 5001;

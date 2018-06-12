@@ -14,13 +14,10 @@ class App extends Component {
         <div className="App-intro">
           <Link to ='/register'>
             <p>
-              Please register for an account here
+              Click this link to register for an account
             </p>
           </Link>
-          <Link to='/login' component={Input} />
-          <Route exact path='/register' component={Input} />
-          <Route exact path='/login' component={Input} />
-          <Route exact path='/users' component={UserList} />
+
         </div>
       </div>
     );
