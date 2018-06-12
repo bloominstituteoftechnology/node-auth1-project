@@ -84,21 +84,21 @@ server.post('/api/login', (req, res) => {
                 // compare password guess to the stores password
                 user
                     .validatePassword(password)
-                    .then(passwordMatch => {
+                    .then(passwordsMatch => {
                         // the passwords match, they can continue
                         if (passwordsMatch) {
-                            res.session.username = user.username;
+                            req.session.username = user.username;
                             res.send(`Here, this cookie is for you. But don't eat it.`);
                         } else {
-                            res.status(401).send('Invalid credentials');
+                            res.status(401).send('Incorrect username or password.');
                         }
                     })
                     .catch(err => {
-                        res.send('You shall not pass!');
+                        res.send('Incorrect username or password. You shall not pass!');
                     });
             } else {
                 // if not found
-                res.status(401).send('Invalid credentials');
+                res.status(401).send('Unauthorized access');
             }
         })
         .catch(err => {
@@ -107,7 +107,7 @@ server.post('/api/login', (req, res) => {
 });
 
 server.get('/api/logout', (req, res) => {
-    if (re.session) {
+    if (req.session) {
         req.session.destroy(err => {
             if (err) {
                 res.send('Error logging out.');
