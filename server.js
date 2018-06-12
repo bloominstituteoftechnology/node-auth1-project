@@ -5,7 +5,10 @@ const mongoose = require('mongoose');
 const server = express();
 const session = require('express-session');
 const MongoStore = require("connect-mongo")(session);
-
+const corsOptions = {
+    origin: "http://localhost:3000",
+    credentials: true
+};
 
 const User = require('./users/userModel')
 
@@ -41,6 +44,7 @@ mongoose.connect('mongodb://localhost/user')
 server.use(express.json())
 
 server.use(restrictAuth);
+server.use(cors(corsOptions));
 
 server.use(
     session({
@@ -66,12 +70,13 @@ server.get('/', (req, res) => {
 })
 
 server.post('/register', (req,res) => {
-    const newUser = new User(req.body);
-    if(!newUser.username || !newUser.password) {
-        res.status(400).json({ error: "Please provide both username and password for the user." });
-        return;
-    }
-    User.create(newUser)
+    // const newUser = new User(req.body);
+    // console.log(newUser)
+    // if(!newUser.username || !newUser.password) {
+    //     res.status(400).json({ error: "Please provide both username and password for the user." });
+    //     return;
+    // }
+    User.create(req.body)
         .then(user => {
             res.status(201).json(user)
         })

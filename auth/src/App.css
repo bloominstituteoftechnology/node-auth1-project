@@ -36,5 +36,17 @@
   background: #2BC1C4;
   color: white;
   border-radius: 6%;
-  width: 24%;
+  width: 100px
+}
+
+.home-button {
+  background: #2BC1C4;
+  color: white;
+  border-radius: 6%;
+  width: 100px
+}
+
+.register-buts {
+  display: flex;
+  justify-content: space-around
 }

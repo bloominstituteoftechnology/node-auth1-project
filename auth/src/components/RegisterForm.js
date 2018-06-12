@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
+
 
 class RegisterForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: "",
+            username: "",
             password: ""
         };
     }
@@ -13,7 +15,7 @@ class RegisterForm extends Component {
     register = event => {
         event.preventDefault();
         const user = {
-            username: this.state.name,
+            username: this.state.username,
             password: this.state.password
         };
         axios.post("http://localhost:5000/register", user).then(response => {
@@ -23,7 +25,7 @@ class RegisterForm extends Component {
         });
 
         this.setState({
-            name: "",
+            username: "",
             password: ""
         });
     };
@@ -33,19 +35,27 @@ class RegisterForm extends Component {
     };
 
     render() {
+        console.log(this.props.history)
         return (
             <div className="App">
-                <h2>Register New User: </h2>
-                <div class='register-form'>
+                <h2>Register New User </h2>
+                <div className='register-form'>
                     <div className="form-group">
-                        <input className="form-control" placeholder="Username" name='title' type="text" value={this.state.username} onChange={this.handleInputChange} />
+                        <input className="form-control" placeholder="Username" name='username' type="text" value={this.state.username} onChange={this.handleInputChange} />
                     </div>
                     <div className="form-group">
-                        <input className="form-control" placeholder="Password" name='content' type="text" value={this.state.password} onChange={this.handleInputChange} />
+                        <input className="form-control" placeholder="Password" name='password' type="text" value={this.state.password} onChange={this.handleInputChange} />
                     </div>
-                    <button type="submit" className="register-button" onClick={this.register}>
-                        Register
-            </button>
+                    <div className='register-buts'>
+                        <button type="submit" className="register-button" onClick={this.register}>
+                            Register
+                        </button>
+                        <Link to="/">
+                            <button className="home-button">
+                                Home
+                            </button>
+                        </Link>
+                    </div>
                 </div>
             </div>
         );
