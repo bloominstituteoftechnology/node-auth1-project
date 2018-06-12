@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose')
+const cors = require('cors');
+const helmet = require('helmet');
 
 const User = require('./auth/UserModel');
 const Login = require('./auth/LoginModel')
@@ -10,7 +12,11 @@ mongoose.connect('mongodb://localhost/auth').then(() => {
 });
 
 const server = express();
+
 server.use(express.json());
+server.use(helmet());
+server.use(cors());
+
 
 server.get('/', (req, res) =>{
     res.status(200).json({api: 'running....'})
@@ -52,8 +58,6 @@ server.get('/api/users', (req, res) => {
         res.status(500).json(err)
     })
 })
-
-
 
 
 server.listen(5000, () => {
