@@ -9,6 +9,7 @@ module.exports = (req, res, next) => {
     isLoggedIn(req)
       ? next()
       : res.status(401).json({ error: 'You shall not pass!' });
+  } else {
+    next();
   }
-  next();
 };
