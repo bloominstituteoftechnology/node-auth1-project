@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  background-image: url(https://img-www.tf-cdn.com/show/2/friends.jpeg?_v=20180412182138&w=1024&h=512&dpr=1&auto=compress&fm=pjpg&fit=crop&crop=faces%2Ctop);
+  background-color: #cccc;
 }
 
 .App-logo {
@@ -25,4 +27,15 @@
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+p {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid black;
+  width: 250px;
+  height: 100px;
+  color: whitesmoke;
+  background-color: grey; 
 }
