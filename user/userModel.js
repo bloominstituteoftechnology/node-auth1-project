@@ -28,8 +28,7 @@ UserSchema.pre('save', function(next) {
 
   UserSchema.methods.validatePassword = function(passwordGuess) {
     return bcrypt.compare(passwordGuess, this.password);
-  };
-
+  };  
 
 const UserModel = mongoose.model('User', UserSchema)
 module.exports = UserModel;

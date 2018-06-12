@@ -5,7 +5,29 @@ const session = require('express-session');
 const bcrypt = require('bcrypt');
 
 
-router.get('/api/users', (req, res) => {
+const sessionOptions = {
+    secret: 'nobody tosses a dwarf!',
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 1, 
+    },
+    httpOnly: true,
+    secure: false,
+    resave: true,
+    saveUninitialized: false,
+    name: 'noname',
+  };
+
+  router.use(session(sessionOptions));
+
+  function protected(req, res, next) {
+    if (req.session && req.session.username) {
+      next();
+    } else {
+      res.status(401).json({ message: 'you shall not pass!!' });
+    }
+  }
+
+router.get('/api/users', protected, (req, res) => {
  User.find()
  .then(user => {
      res.status(200).json(user)
@@ -14,6 +36,14 @@ router.get('/api/users', (req, res) => {
      res.status(500).json({error: err})
  })
 })
+
+router.get('/', (req, res) => {
+    if (req.session && req.session.username) {
+      res.status(200).json({ message: `welcome back ${req.session.username}` });
+    } else {
+      res.status(401).json({ message: 'speak friend and enter' });
+    }
+  });
 
 router.post('/api/register',(req, res) => {
     const { username, password } = req.body;
@@ -25,8 +55,7 @@ router.post('/api/register',(req, res) => {
     .catch(err => {
         res.status(500).json({error: err})
     })
-   })
-   
+   })   
    router.post('/api/login', (req, res) => {
       const {username, password } = req.body
       User.findOne({ username})
@@ -35,7 +64,9 @@ router.post('/api/register',(req, res) => {
                 user.validatePassword(password)   //helper function used-Defined in userModel.js          
                 // bcrypt.compare(password, user.password) without helper function
                 .then(match => {                    
-                    if(match) {                   
+                    if(match) {
+                    req.session.username = user.username;
+                       res.send('have a cookie');
                     res.status(201).json('success');
                     }
                     else {
@@ -52,6 +83,18 @@ router.post('/api/register',(req, res) => {
           })    
         .catch(err => res.status(500).json({ message: `You shall not pass! error: ${err}` }))
     });
+
+    router.get('/api/logout', (req, res) => {
+        if (req.session) {
+          req.session.destroy(err => {
+            if (err) {
+              res.send('error logging out');
+            } else {
+              res.send('good bye');
+            }
+          });
+        }
+      });
     
 
    module.exports = router;
