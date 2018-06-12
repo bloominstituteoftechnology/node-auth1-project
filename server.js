@@ -5,7 +5,9 @@ const register = require('./routes/register');
 const login = require('./routes/login');
 const users = require('./routes/users');
 
+// Middleware
 server.use(require('express').json());
+server.use(require('./middleware/restrictAccess'));
 server.use(require('express-session')({
   secret: '6CLkzW9rSGmuk8ALKXc68zkuvYQSEDBeTS4v8LkPLYkr6Ljc4M',
   cookie: {
@@ -15,6 +17,8 @@ server.use(require('express-session')({
   saveUninitialized: false,
   name: 'noname'
 }));
+
+// Routes
 server.use('/api/register', register);
 server.use('/api/login', login);
 server.use('/api/users', users);
