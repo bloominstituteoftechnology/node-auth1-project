@@ -15,7 +15,10 @@ const server = express();
 server.use(cors());
 server.use(express.json());
 
+server.use('/api/user', userRouter);
+
 const session = require('express-session');
+
 server.use(
   session({
     secret: 'nobody toss a dwarf!',
@@ -27,15 +30,41 @@ server.use(
   })
 );
 
-server.use('/api/user', userRouter);
-
 server.get('/', (req, res) => {
   res.status(200).json({
     api: 'running...'
   });
 });
 
+server.post('/api/register', (req, res) => {
+  const user = new User(req.body);
 
+  user.save().then(savedUser => res.status(200).json(savedUser))
+    .then(err => res.status(500).json(err));
+});
+
+server.post('/api/login', (req, res) => {
+  const {
+    username,
+    password
+  } = req.body;
+  user.findOne({
+    username
+  }).then(user => {
+    if (user) {
+      bcrypt.compare(password, user.password).then(passwordsMatch => {
+
+      }).catch(err => {
+        res.send('error comparing Password')
+      });
+    } else {
+      res.status(404).send('user not found');
+    }
+  }).catch(err => {
+    res.send(err)
+  });
+
+});
 
 mongoose.Promise = global.Promise;
 
