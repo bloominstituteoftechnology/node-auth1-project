@@ -20,15 +20,15 @@ const userSchema = new mongoose.Schema({
 // important to 'NOT' write arrow function to safe guard against issues with '.this'
 // arrow functions & this keyword context: running this will set 'this' to the global context
 // regular function & this keyword context: running this in the context of the userSchema. When we use this.password we are dynamically seting the context
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function(cat) {
     //console.log('pre save hook');
     bcrypt.hash(this.password, 12, (err, hash) => {
         //it's actually 2^12 rounds
         if (err) {
-            return next(err);
+            return cat(err);
         }
         this.password = hash;
-        next(); // carries out the save 
+        cat(); // carries out the save event
     });
 });
 
