@@ -13,3 +13,15 @@ const User = new mongoose.Schema({
     }
 })
 
+User.pre('save', function (next) {
+    bcrypt.hash(this.password, 11, (err, hash) => {
+        if (err) {
+            return next(err);
+        } else {
+            this.password = hash;
+            return next();
+        }
+    })
+})
+
+module.exports = mongoose.model('User', User);
