@@ -13,6 +13,7 @@ mongoose
         console.log('Error connecting to database', err)
     });
 
+    //connected my userController file to server.
 const userController = require('./users/userController.js'); 
 
 const server = express();
