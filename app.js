@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
 
 const User = require('./User.js');
 
@@ -9,10 +10,17 @@ const app = express();
 
 app.use(express.json());
 app.use(session({
+  cookie: {
+    maxAge: 1000 * 60 * 60
+  },
+  httpOnly: true,
+  secure: false,
   secret: 'keyboard cat',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  name: 'noname'
 }));
+app.use(cors());
 
 /*************************
 ** CUSTOM MIDDLEWARE **
@@ -21,6 +29,10 @@ app.use(session({
 const checkLogin = (req, res, next) => {
   
 }
+
+app.get('/api/auth', (req, res) => {
+  res.json({ req: req.session.id, cookie: req.session.cookie });
+})
 
 /*************************
 ** /api/users **
@@ -68,11 +80,18 @@ app.post('/api/login', (req, res) => {
           if (!match)
             return res.status(401).json({ err: 'Wrong password' });
 
-          return res.json({ succ: 'Authenticated' });
+          req.session.username = user.username;
+          req.session.save(err => {
+            res.json(req.session);
+          });
         })
         .catch(err => res.json(err));
     })
     .catch(err => res.json(err));
+});
+
+app.get('/api/restricted/something', (req, res) => {
+  res.json(req.session);
 });
 
 mongoose.connect('mongodb://localhost/auth-i', () => console.log('\n===== DATABASE STATUS: 200 =====\n'));
