@@ -52,11 +52,17 @@ server.post('/api/login', (req, res) => {
     username
   }).then(user => {
     if (user) {
-      bcrypt.compare(password, user.password).then(passwordsMatch => {
-
-      }).catch(err => {
-        res.send('error comparing Password')
-      });
+      // bcrypt.compare(password, user.password).then(passwordsMatch => {
+      User.validatePassword(password)
+        .then(passwordMatch => {
+          if (passwordsMatch) {
+            res.send('login successful')
+          } else {
+            res.send('invalid credentials')
+          }
+        }).catch(err => {
+          res.send('error comparing Password')
+        });
     } else {
       res.status(404).send('user not found');
     }
