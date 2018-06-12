@@ -15,9 +15,8 @@ Account.pre('save', function(next) {
   next()
 });
 
-Account.statics.comparePassword = function(inputPassword, hashPassword, cb) {
-  console.log('hashPassword', hashPassword)
-  bcrypt.compare(inputPassword, hashPassword, function(err, isMatch) {
+Account.methods.comparePassword = function(inputPassword, cb) {
+  bcrypt.compare(inputPassword, this.password, function(err, isMatch) {
     if (err) return cb(err);
     cb(isMatch)
   })
