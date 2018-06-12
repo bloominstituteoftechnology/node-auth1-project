@@ -88,13 +88,13 @@ server.post('/api/login', (req, res) => {
                         // the passwords match, they can continue
                         if (passwordsMatch) {
                             res.session.username = user.username;
-                            res.send('Have a cookie.');
+                            res.send(`Here, this cookie is for you. But don't eat it.`);
                         } else {
                             res.status(401).send('Invalid credentials');
                         }
                     })
                     .catch(err => {
-                        res.send('Error comparing passwords');
+                        res.send('You shall not pass!');
                     });
             } else {
                 // if not found
