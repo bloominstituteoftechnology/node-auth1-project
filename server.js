@@ -49,12 +49,12 @@ server.get('/', (req, res) => {
     if (req.session && req.session.username) {
         res.status(200).json({ message: `Welcome back, ${req.session.username}` });
     } else {
-        res.status(401).json({ message: 'Incorrect password or username.' });
+        res.status(401).json({ message: 'You need to login to continue.' });
     }
 });
 
 // server.get('/', (req, res) => {
-//     res.status(200).json({ api: 'API is running...' });
+//     res.status(200).json({ message: 'Your API is now running.' });
 // });
 
 server.post('/api/register', (req, res) => {
@@ -66,10 +66,10 @@ server.post('/api/register', (req, res) => {
     // or an alternative syntax would be this:
     User.create(req.body)
         .then(user => {
-            res.status(201).json(user);
+            res.status(201).json({ message: 'New user created.' });
         })
         .catch(err => {
-            res.status(500).json(err);
+            res.status(500).json({ message: 'Error in creating new user.' });
         });
 });
 
