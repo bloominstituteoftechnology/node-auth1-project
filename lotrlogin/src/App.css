@@ -1,25 +1,32 @@
 .App {
   text-align: center;
+  height: 800px;
+  background-color: rgb(78, 47, 47);
 }
 
-.App-logo {
+.ring-logo {
   animation: App-logo-spin infinite 20s linear;
   height: 80px;
 }
 
 .App-header {
-  background-color: #222;
   height: 150px;
   padding: 20px;
-  color: white;
+  color: rgb(189, 170, 67);
+  background: radial-gradient(rgba(38, 41, 51, 0.6), rgba(38, 41, 51, 0.6)), url("https://images-na.ssl-images-amazon.com/images/I/81%2B9QP8nLXL._SL1500_.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  box-shadow: 2px 2px 8px black;
 }
 
 .App-title {
-  font-size: 1.5em;
+  font-size: 2em;
 }
 
-.App-intro {
-  font-size: large;
+/* newUser.css */
+.input {
+  padding-top: 100px;
 }
 
 @keyframes App-logo-spin {

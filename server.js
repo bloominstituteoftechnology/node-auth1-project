@@ -27,6 +27,7 @@ function authenticate(req, res, next) {
 }
 
 server.use(helmet());
+server.use(cors());
 server.use(express.json());
 
 server.use(
@@ -61,6 +62,7 @@ server.get('/users', authenticate, (req, res) => {
 })
 
 server.post('/register', (req, res) => {
+    console.log(req.body)
     User
         .create(req.body)
         .then(user => {
@@ -97,6 +99,18 @@ server.post('/login', (req, res) => {
         .catch(error => {
             res.status(500).error({ error: error.message })
         })
+})
+
+server.get('/logout', (req, res) =>{
+    if (req.session) {
+        req.session.destroy(error => {
+            if(error){
+                res.send('error logging out')  
+            } else {
+                res.send('goodbye')
+            }
+        })
+    }
 })
 
 server.listen(port, () => {
