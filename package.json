@@ -1,0 +1,21 @@
+{
+    "name": "authmini",
+    "version": "1.0.0",
+    "description": "Authorization Mini",
+    "main": "server.js",
+    "scripts": {
+        "start": "nodemon server.js"
+    },
+    "keywords": [],
+    "author": "Lambda School",
+    "license": "ISC",
+    "dependencies": {
+        "bcrypt": "^2.0.1",
+        "express": "^4.16.3",
+        "helmet": "^3.12.1",
+        "mongoose": "^5.1.4"
+    },
+    "devDependencies": {
+        "nodemon": "^1.17.5"
+    }
+}
