@@ -29,6 +29,7 @@ function protected(req, res, next){
     }
 }
 
+
 server.use(express.json());
 server.use(session(sessionOptions));
 
@@ -40,9 +41,9 @@ server.get('/api/users', protected, (req, res) => {
 
 server.get('/', (req, res) => {
     if (req.session && req.session.username) {
-    res.status(200).json({ message: 'Welcome back ${req.session.username}' });
+    res.status(200).json({ message: `Welcome back ${req.session.username}` });
    } else {
-       res.status(401).json({ message: 'Speak friends and enter.' });
+       res.status(401).json({ message: 'Speak friend and enter.' });
    }
 });
 
@@ -121,7 +122,6 @@ server.get('/api/logout', (req, res) => {
         });
     }
 });
-
 
 
 server.listen(8000, () => {
