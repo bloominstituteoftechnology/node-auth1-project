@@ -35,7 +35,22 @@ server.post('/register', (req,res) => {
 })
 
 server.post('/login', (req,res) => {
-    
+    const { username, password} = req.body;
+    User.findOne( { username })
+        .then(user => {
+            if(user) {
+                user.isPasswordValid(password).then(isValid => {
+                    if(isValid) {
+                        res.send('login successful')
+                    }else {
+                        res.status(401).send('invalid credentials');
+                    }
+                })
+            }else {
+                res.status(401).send('invalid credentials')
+            }
+        })
+        .catch(err => res.status(500).send(err));
 })
 
 
