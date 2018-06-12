@@ -16,7 +16,7 @@ const server = express();
 
 const sessionConfig = {
   secret: "this is something",
-  cooke: { maxAge: 1 * 24 * 60 * 60 * 1000},
+  cookie: { maxAge: 1 * 24 * 60 * 60 * 1000},
   httpOnly: true,
   secure: false,
   resave: true,
@@ -65,39 +65,30 @@ server.post('/api/register', (req, res) => {
 
 server.post('/api/login', (req, res) => {
   const {username, password } = req.body;
-  
- 
+
+
   User.findOne({username})
     .then(user => {
-  
-    //this was the working 
-      // bcrpyt.compare(password, user.password, function(err, res2) {
-      //   if(err){
-      //     return res.status(500).json(err)
-      //   }
-      //   if(res2){
-      //     res.json('login')
-      //   }else {
-      //     res.json("not logged in") 
-      //   }
-      // })
-
-      //this only works with findOne
-       user.pwCheck(password)
+      if(!user){
+        res.status(401).json('brah, you aint gettin in');
+      }
+      else{
+        user.pwCheck(password)
         .then(isValid => {
           if(isValid){
             req.session.username = user.username;
-            res.json('Logged In')
+            res.json('Logged In') //why are we getting back id and password
           }
           else{
             res.status(401).json('You shall not pass')
           }
         })
         .catch(err => {
-          res.status(500).json(err)
-      
+          res.status(500).json("login error",err)
+
         })
-      
+      }
+
     })
     .catch(err =>{
       res.status(500).json(err.message)
@@ -113,7 +104,7 @@ server.get('/api/logout', (req, res) => {
       } else {
         res.json('goodbye')
       }
-      
+
     })
   }
 })
@@ -124,6 +115,6 @@ server.get('/api/users', protected, (req, res) => {
     .catch(err => res.json(err));
 })
 
-server.listen(8000, () => { 
+server.listen(8000, () => {
   console.log(`\n *** API running on port 8k*** \n`)
 });
