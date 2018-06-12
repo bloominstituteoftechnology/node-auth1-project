@@ -15,13 +15,17 @@ const checkAuth = (req, res, next) => {
   if (req.session && req.session.username) {
     next();
   } else {
-    res.status(403).json({ error: "Please login to access the resource" });
+    res.status(401).json({ error: "Please login to access the resource" });
   }
 }
+
 /* Server and General Middleware */
 const server = express();
 server.use(helmet());
-server.use(cors());
+server.use(cors({
+  origin: true,
+  credentials: true
+}));
 server.use(express.json());
 server.use(session({
   secret,

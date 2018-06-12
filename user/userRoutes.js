@@ -27,6 +27,7 @@ router
     res.json({ "Login Route": "Please do a POST request with user credentials in the body of the request." });
   })
   .post((req, res) => {
+    console.log("req:",req);
     const { username, password } = req.body;
     if (!fieldFilledCheck(req.body, res)) return;
     //==>
@@ -48,7 +49,7 @@ router
             })
             .catch(error => res.json(error));
         } else {
-          res.json(401).json({ error: "Could not log you into the server." });
+          res.status(401).json({ error: "Could not log you into the server." });
         }
 
       })

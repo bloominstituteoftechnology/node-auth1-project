@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import { Redirect } from 'react-router-dom';
 
@@ -21,40 +22,67 @@ class LoginForm extends React.Component {
     return <Input 
       type={type} 
       name={name} 
-      value={[`this.state.${name}`]} 
+      value= {this.state[name]} 
       onChange={handler}
     />;
   }
 
-  formSubmit() {
+  formSubmit = (e) => {
+    e.preventDefault();
+
+    const instance = axios.create({
+      headers: { "Access-Control-Allow-Credentials": true }
+    });
     const logInObj = { 
       username: this.state.username, 
       password: this.state.password
      };
 
     if (this.props.match.path === '/login') {
-      axios.post('http://localhost:5000/api/register', logInObj)
-        .then(authKey => {
-          console.log(authKey);
+      const reqObj = {
+          url: 'http://localhost:5000/api/login',
+          method: 'post',
+          data: logInObj,
+          withCredentials: true
+        };
+      instance(reqObj)
+        .then(res => {
+          console.log(res);
           this.setState({ redirect: true });
         })
-        .catch(error => console.log(err.message));
+        .catch(error => {
+          console.log("LoginForm error:",error);
+          alert('Login was unsuccessful. Please try again.');
+        });
     } else {
+      const reqObj = {
+        url: 'http://localhost:5000/api/register',
+        method: 'post',
+        data: logInObj,
+        withCredentials: true
+      };
 
+    instance(reqObj)
+      .then(() => this.setState({ redirect: true }))
+      .catch(error => {
+        console.log("RegisterForm error:",error);
+        alert('Registration was unsuccesful. Please try again.')
+      });
     }
   }
 
   render() {
-    if (this.state.redirect) return <Redirect to="/" />;
+    console.log("this.props",this.props);
+    if (this.state.redirect) return <Redirect to="/users" />;
     return (
       <Form onSubmit={this.formSubmit}>
         <FormGroup>
           <Label for="username">Username</Label>
-          {inputSpitter('username')}
+          {this.inputSpitter('username')}
         </FormGroup>
         <FormGroup>
           <Label for="password">Password</Label>
-          {inputSpitter('password', 'password')}
+          {this.inputSpitter('password', 'password')}
         </FormGroup>
         <Button>Submit</Button>
       </Form>
