@@ -40,6 +40,17 @@ server.get('/', (req, res) => {
     res.status(200).json({ api: "running..." })
 })
 
+server.get('/api/users', protected, (req, res) => {
+    User
+        .find()
+        .then(users => {
+            res.status(200).json(users)
+        })
+        .catch(err => {
+            res.status(500).json({ error: 'There was a problem finding users', err })
+        })
+})
+
 server.post('/api/register', (req, res) => {
     User.create(req.body)
         .then(user => {
