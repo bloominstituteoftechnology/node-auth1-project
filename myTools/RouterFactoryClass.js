@@ -18,8 +18,15 @@ module.exports = class routerFactory {
     console.log('Hello form %s instance', text);
   }
 
-  GET(path = '/') {
-    this.router.route(path).get(handleGET.bind(this), sendResponseToClient.bind(this));
+  GET(path = '/', ...middlewares) {
+    let handlers = [];
+    !middlewares.length
+      ? handlers.push(handleGET.bind(this))
+      : middlewares.forEach(middleware => {
+          middleware == 'handleGET' ? handlers.push(handleGET.bind(this)) : handlers.push(middleware);
+        });
+    console.log(handlers);
+    this.router.route(path).get(...handlers, sendResponseToClient.bind(this));
     this.router.use(handleError.bind(this));
   }
   GET_id(path = '/:id') {
