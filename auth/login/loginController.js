@@ -12,7 +12,8 @@ router.route('/')
                         .then(match => {
                             if (match) {
                                 req.session.username = user.username;
-                                res.json({ message: `Logged In`, id: user.id })
+                                req.session.userid = user._id;
+                                res.json({ message: `Logged In` })
                             } else {
                             res.status(401).json(`Invalid Credentials`);
                             }
