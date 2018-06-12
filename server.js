@@ -91,6 +91,17 @@ server.get('/api/users', (req, res) => {
     })
 })
 
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.send('error logging out');
+        } else {
+          res.send('good bye');
+        }
+      });
+    }
+  });
 
 server.listen(5000, () => {
     console.log('\n***API running on port 5000***\n')
