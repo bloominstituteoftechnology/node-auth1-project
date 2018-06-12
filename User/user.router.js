@@ -16,15 +16,16 @@ function login(req, res, next) {
   const { username, password } = req.body;
   User.findOne({ username }, function(err, user) {
     console.log(user);
+    err && res.status(500).json('Something bad happend processing your ligin, try again');
     !user && res.status(401).json('Information no valid');
-    bcrypt
-      .compare(password, user.password)
-      .then(matchedPasswords => {
-        console.log('matchedPasswords', matchedPasswords);
-        res.status(200).json('You are loged in');
+
+    user
+      .passValidation(password)
+      .then(matchedPass => {
+        matchedPass ? res.status(200).json('You are loged in') : res.status(401).json('Information no valid');
       })
       .catch(e => {
-        console.log('error', e);
+        res.status(500).json('Something bad happend processing your ligin, try again');
       });
   });
 }

@@ -25,4 +25,8 @@ userSchema.pre('save', function(next) {
   });
 });
 
+userSchema.methods.passValidation = function(loginPassword) {
+  return bcrypt.compare(loginPassword, this.password);
+};
+
 module.exports = mongoose.model('User', userSchema);
