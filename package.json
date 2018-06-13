@@ -1,0 +1,31 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "LS auth-i Lab",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CSPT1-TEAMS/auth-i.git"
+  },
+"dependencies": {
+"express": "^4.16.3",
+"mongoose": "^5.1.5"
+},
+"bcrypt": "^2.0.1",
+
+"devDependencies": {
+"nodemon": "^1.17.2"
+},
+  "keywords": [
+    "auth-i"
+  ],
+  "author": "Daniel Frehner",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CSPT1-TEAMS/auth-i/issues"
+  },
+  "homepage": "https://github.com/CSPT1-TEAMS/auth-i#readme"
+}
