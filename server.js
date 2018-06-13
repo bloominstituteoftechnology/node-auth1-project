@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const express = require("express");
 const session = require("express-session");
-
+const cors = require("cors");
 const User = require("./Models/UserModel");
 
 mongoose.connect("mongodb://localhost/auth").then(() => {
@@ -24,24 +24,24 @@ const sessionOptions = {
   name: "SuperSecretDB"
 };
 
-function protected(req, res, next) {
-  if (req.session && req.session.username) {
-      next();
-  } else {
-    res.status(401).json({ message: "No Entry" });
-  };
-};
-
 server.use(express.json());
+server.use(cors());
 server.use(session(sessionOptions));
 
-server.get("/", (req, res) => {
+function protected(req, res, next) {
   if (req.session && req.session.username) {
-    res.status(200).json({ message: `Welcome back ${req.session.username}` });
     next();
   } else {
-    res.status(401).json({ message: "Authorized" });
+    res.status(401).json({ message: "No Entry" });
   }
+}
+
+
+
+server.get("/", protected, (req, res) => {
+  User.find()
+    .then(users => res.json(users))
+    .catch(error => res.json(error));
 });
 
 server.get("/api/users", protected, (req, res) => {
@@ -50,18 +50,17 @@ server.get("/api/users", protected, (req, res) => {
     .catch(error => res.json(error));
 });
 
-server.get('/api/logout', (req, res) => {
-    if(req.session) {
-        req.session.destroy(error => {
-            if (error) {
-                res.send("error logging out");
-            } else {
-                res.send('You have been logged out');
-            }
-        });
-    }
+server.get("/api/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy(error => {
+      if (error) {
+        res.send("error logging out");
+      } else {
+        res.send("You have been logged out");
+      }
+    });
+  }
 });
-
 
 server.post("/api/register", (req, res) => {
   User.create(req.body)
@@ -75,28 +74,29 @@ server.post("/api/register", (req, res) => {
 
 server.post("/api/login", (req, res) => {
   const { username, password } = req.body;
-  User.findOne({ username }).then(user => {
-    if (user) {
-      user
-      .validatePassword(password)
-      .then(passMatch => {
-          if (passMatch) {
+  User.findOne({ username })
+    .then(user => {
+      if (user) {
+        user
+          .validatePassword(password)
+          .then(passMatch => {
+            if (passMatch) {
               req.session.username = user.username;
-              res.send('Login successful');
-          } else {
-              res.status(401).send('Invalid Credentials');
-          }
-      })
-      .catch(error => {
-          res.send("Error comparing Passwords")
-      });
-    } else {
+              res.send("Login successful");
+            } else {
+              res.status(401).send("Invalid Credentials");
+            }
+          })
+          .catch(error => {
+            res.send("Error comparing Passwords");
+          });
+      } else {
         res.status(404).send("Invalid Credentials");
-    }
-  })
-  .catch(error => {
-      res.send(error)
-  });
+      }
+    })
+    .catch(error => {
+      res.send(error);
+    });
 });
 
 server.listen(8000, () => {
