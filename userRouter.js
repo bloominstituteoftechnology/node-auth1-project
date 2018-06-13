@@ -1,4 +1,5 @@
 const express = require('express')
+const bcrypt = require('bcrypt')
 
 const User = require('./User')
 
@@ -22,6 +23,24 @@ router.post('/register', (req, res) => {
     })
     .catch((error) => {
         res.status(500).json(error)
+    })
+})
+
+router.post('/login', (req, res) => {
+    const {username, password} = req.body
+    User.findOne({username})
+    .then((user) => {
+        const passCheck = bcrypt.compare(password, user.password)
+        .then((passCheck) => {
+            if(passCheck) {
+                res.status(200).json({response:'login successful'})
+            } else {
+                res.status(500).json({error: 'login unsuccessful'})
+            }
+        })
+    })
+    .catch((error) => {
+        res.status(500).json(error, "error")
     })
 })
 
