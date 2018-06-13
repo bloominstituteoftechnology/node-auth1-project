@@ -29,5 +29,3 @@ server.post('/register', (req, res) => {
     .then(user => res.status(201).json(user))
     .catch(err => res.status(500).send(err))
 })
-
-module.exports = mongoose.model
