@@ -1,0 +1,20 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon"
+  },
+  "repository": "https://github.com/annecourtney/auth-i.git",
+  "author": "Anne Courtney <annecourtney_1@yahoo.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "mongoose": "^5.1.5"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.5"
+  }
+}
