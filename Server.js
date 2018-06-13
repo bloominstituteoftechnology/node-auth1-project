@@ -29,7 +29,3 @@ server.post('/api/register', (req, res) => {
     .then(user => res.status(201).json(user))
     .catch(err => res.status(500).send(err))
 })
-<<<<<<< HEAD
-=======
-
->>>>>>> 360402e1f7b1d6cd6d84c709b10b967f3bbfaddc
