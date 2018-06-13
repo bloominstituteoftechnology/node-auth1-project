@@ -2,9 +2,9 @@
   "name": "auth-i",
   "version": "1.0.0",
   "description": "LS auth-i Lab",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "yarn start",
+    "start": "nodemon start",
     "test": "test"
   },
   "repository": {
