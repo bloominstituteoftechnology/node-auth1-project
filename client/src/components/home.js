@@ -1,35 +1,20 @@
-import React, { Component } from 'react';
-import axios from 'axios';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
 
 class Home extends Component {
-    constructor(props) {
-        super(props);
-        this.state = { 
-            wutizit: {}
-         }
-    }
+  state = {};
+  render() {
+    return (
+      <div>
+        <h2> Welcome to this page, or whatever.</h2>
 
-componentDidMount() {
-this.getSession();
-};
-    getSession = () => {
-        axios
-            .get(`http://localhost:8000/`)
-            .then(res => {
-                console.log(res.data);
-                this.setState({ wutizit: res.data });
-            })
-            .catch(error => {
-                console.log({ error: error.message });
-            });
-
-        };
-    
-    render() { 
-        return ( 
-            <div />
-         )
-    }
+        <h4>
+          {" "}
+          <Link to="/api/login">Log in here!</Link>
+        </h4>
+      </div>
+    );
+  }
 }
- 
+
 export default Home;

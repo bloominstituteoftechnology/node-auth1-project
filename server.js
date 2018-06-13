@@ -38,7 +38,7 @@ function protected(req, res, next) {
 
 
 
-server.get("/", protected, (req, res) => {
+server.get("/", (req, res) => {
   User.find()
     .then(users => res.json(users))
     .catch(error => res.json(error));
