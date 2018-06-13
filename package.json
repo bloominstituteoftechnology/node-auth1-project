@@ -1,0 +1,16 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "server.js",
+  "repository": "https://github.com/CSPT1-TEAMS/auth-i.git",
+  "author": "Jesse Reichel <31119775+KryoKorpz@users.noreply.github.com>",
+  "scripts":{
+    "start": "nodemon server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "express": "^4.16.3",
+    "mongoose": "^5.1.5"
+  }
+}
