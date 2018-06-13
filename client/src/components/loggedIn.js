@@ -8,7 +8,7 @@ class Logged extends Component {
     render() { 
         return ( 
             <div>
-                You have been logged in!
+                <h2>You have been logged in!</h2>
                 </div>
          )
     }
