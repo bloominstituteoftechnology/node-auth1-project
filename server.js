@@ -10,6 +10,25 @@ const corsOptions = {
     credentials: true
 };
 
+server.use(express.json())
+server.use(cors(corsOptions));
+
+server.use(
+    session({
+        secret: 'en buyuk fener',
+        cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
+        httpOnly: true,
+        secure: false,
+        saveUninitialized: false,
+        resave: true,
+        name: 'noname',
+        store: new MongoStore({
+            url: "mongodb://localhost/sessions",
+            ttl: 60 * 10
+        })
+    })
+)
+
 const User = require('./users/userModel')
 
 const restrictAuth = (req, res, next) => {
@@ -24,6 +43,8 @@ const restrictAuth = (req, res, next) => {
         next();
     }
 };
+
+server.use(restrictAuth);
 
 
 server.get(`/restricted/:username`, (req, res, next) => {
@@ -41,26 +62,8 @@ mongoose.connect('mongodb://localhost/user')
             console.log('database connection failed')
         })
 
-server.use(express.json())
 
-server.use(restrictAuth);
-server.use(cors(corsOptions));
 
-server.use(
-    session({
-        secret: 'en buyuk fener',
-        cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
-        httpOnly: true,
-        secure: false,
-        saveUninitialized: false,
-        resave: true,
-        name: 'noname',
-        store: new MongoStore({
-        url: "mongodb://localhost/sessions",
-                  ttl: 60 * 10
-                })
-    }) 
-)
 
 server.get('/', (req, res) => {  
     if(req.session && req.session.username) {
@@ -70,12 +73,11 @@ server.get('/', (req, res) => {
 })
 
 server.post('/register', (req,res) => {
-    // const newUser = new User(req.body);
-    // console.log(newUser)
-    // if(!newUser.username || !newUser.password) {
-    //     res.status(400).json({ error: "Please provide both username and password for the user." });
-    //     return;
-    // }
+    const { username, password } = req.body;
+    if(!username || !password) {
+        res.status(400).json({ error: "Please provide both username and password for the user." });
+        return;
+    }
     User.create(req.body)
         .then(user => {
             res.status(201).json(user)

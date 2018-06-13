@@ -2,15 +2,21 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+function homeLink() {
+    return (window.location.href = "/");
+}
 
 class RegisterForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
             username: "",
-            password: ""
+            password: "",
+            error: false,
+            errorMessage: ''
         };
     }
+
 
     register = event => {
         event.preventDefault();
@@ -19,15 +25,20 @@ class RegisterForm extends Component {
             password: this.state.password
         };
         axios.post("http://localhost:5000/register", user).then(response => {
-            this.props.history.push(`/`).catch(err => {
-                console.log(err);
+            this.props.history.push(`/`)
+            console.log(response)
+            // window.location.href = "/"
+            this.setState({
+                error: false
             });
-        });
-
-        this.setState({
-            username: "",
-            password: ""
-        });
+        })
+        .catch(err => {
+            this.setState({
+                error: true,
+                errorMessage: err.response.data.error
+            })
+            // console.log(err.response.data)
+        })
     };
 
     handleInputChange = e => {
@@ -35,10 +46,12 @@ class RegisterForm extends Component {
     };
 
     render() {
-        console.log(this.props.history)
         return (
             <div className="App">
                 <h2>Register New User </h2>
+                <div className={this.state.error ? "error" : "hidden"}>
+                    {this.state.errorMessage}
+                </div>
                 <div className='register-form'>
                     <div className="form-group">
                         <input className="form-control" placeholder="Username" name='username' type="text" value={this.state.username} onChange={this.handleInputChange} />
