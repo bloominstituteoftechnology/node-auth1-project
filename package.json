@@ -1,0 +1,21 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "server.js",
+  "repository": "https://github.com/CSPT1-TEAMS/auth-i.git",
+  "author": "<alexisreyes90@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.5"
+  },
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "helmet": "^3.12.1",
+    "mongoose": "^5.1.5"
+  }
+}
