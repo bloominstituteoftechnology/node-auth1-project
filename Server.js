@@ -12,13 +12,6 @@ mongoose.connect('mongodb://localhost/auth-i')
   })
   .catch(err => console.log(err))
 
-
-  server.get('/api/users', (req,res) => {
-      User.find()
-      .then(users => res.status(200).json(users))
-      .catch(err => res.status(500).json(err))
-  })
-
 const wakeUp = (req, res, next) => {
   req.message = 'Good morning GD and JC...'
   next()
