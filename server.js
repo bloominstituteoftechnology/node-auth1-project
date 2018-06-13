@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 
 const userRouter = require('./Users/userRouter.js');
 const User = require('./Users/userSchema.js');
+const MongoStore = require('connect-mongo')(session);
 
 const server = express();
 
@@ -20,10 +21,14 @@ const sessionOptions = {
   resave: true,
   saveUninitialized: false,
   name: 'noname',
+  store: new MongoStore({
+    url: 'mongodb://localhost/sessions',
+    ttl: 60 * 10,
+  }),
 };
 
 function protected(req, res, next) {
-  if (req.session) {
+  if (req.session && req.session.username) {
     next();
   } else {
     res.status(401).json({ message: 'you shall not pass!!' });
