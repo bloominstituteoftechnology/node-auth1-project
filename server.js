@@ -22,7 +22,7 @@ const sessionOptions = {
     secure: false,
     resave: true,
     saveUninitialized: false,
-    name: 'noname'
+    name: 'noname',
 };
 
 function forceShield(req, res, next){
