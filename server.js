@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
 const User = require('./auth/UserModel');
 
@@ -36,7 +37,11 @@ server.use(
         secure: false, // use false for development. Whoever does deployment may later change to true if there's a need for secure network (i.e https)
         resave: true, 
         saveUninitialized: false,
-        name: 'noname' // we dont want hackers to know which library we're using, so use a generic name
+        name: 'noname', // we dont want hackers to know which library we're using, so use a generic name
+        store: new MongoStore({
+            url: 'mongodb://localhost/sessions',
+            ttl: 60 * 10, // time to live in seconds
+        }),
     })
 );
 
