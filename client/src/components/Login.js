@@ -1,6 +1,8 @@
 import React from 'react';
-import { Redirect } from 'react-router'
+// import { Redirect } from 'react-router'
 const axios = require('axios')
+
+axios.defaults.withCredentials = true;
 
 
 export default class Login extends React.Component {
@@ -28,15 +30,13 @@ export default class Login extends React.Component {
   handleSubmit = event => {
       let register = this.state.register
       axios.post(`http://localhost:8000/api/login`, register )
-      .then(response => {        
+      .then(response => {
+          console.log('response from login', response)        
           this.setState({
-          register: [],
+          register: {
            username: '',
            password: ''
-        })
-        if (response) {
-          <Redirect to="/home" />
-        } 
+        }})
 
       })
       .catch(error => {
@@ -44,6 +44,12 @@ export default class Login extends React.Component {
           username: '',
           password: ''
         })
+      })
+  }
+  logOut = event => {
+      axios.get(`http://localhost:8000/api/restricted/logout`)
+      .then(response => {
+          console.log('response from logout', response)
       })
   }
 
@@ -69,8 +75,10 @@ export default class Login extends React.Component {
           onSubmit={this.handleSubmit}
           value={this.state.password} />
         </form>
-        <button onClick={this.handleSubmit}> Register </button>
+        <button onClick={this.handleSubmit}> Log In </button>
+
+      <button onClick={this.logOut}> Log out </button>      
       </div>
-    );
+    )
   }
 }

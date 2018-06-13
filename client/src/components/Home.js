@@ -1,5 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { NavLink } from 'react-router-dom'
 
-export default class Home extends React.Component {
+const Home = props => {
+        return (
+            <div>
+                <NavLink to="/register"> Register </NavLink>
+            </div>
+        )
+    }
 
-}
+export default Home

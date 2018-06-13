@@ -34,6 +34,6 @@ router.route('/logout').get((req, res) => {
             }
         })
     }
-}) // if user is logged in, they can log out. If there is a session, destroy it - pull name from req.session.username and use it upon logout
+}) // if user is logged in, they can log out. If there is a session, destroy it - pull name from req.session.username and use it
 
 module.exports = router;

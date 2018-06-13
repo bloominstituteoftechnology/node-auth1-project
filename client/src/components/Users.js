@@ -1,17 +1,14 @@
 import React from 'react';
 
 
-export default class Users extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      register: [],
-      username: '',
-      password: ''
-      
-    }
+const Users = props => {
+      return (
+          <div>
+              Users!
+        </div>
+      )
   }
-}
 
+export { Users }
 
 

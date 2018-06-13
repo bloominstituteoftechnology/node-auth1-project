@@ -1,7 +1,8 @@
 import React from 'react';
-import { Redirect } from 'react-router'
+// import { Redirect } from 'react-router'
 const axios = require('axios')
 
+axios.defaults.withCredentials = true;
 
 export default class Register extends React.Component {
   constructor(props) {
@@ -9,7 +10,8 @@ export default class Register extends React.Component {
     this.state = {
       register: [],
       username: '',
-      password: ''
+      password: '',
+      cookie: ''
       
     }
   }
@@ -29,13 +31,13 @@ export default class Register extends React.Component {
       let register = this.state.register
       axios.post(`http://localhost:8000/api/register`, register )
       .then(response => {
-        if (response) {
-          <Redirect to="/login" />
-        } 
+        console.log('response from register', response)
         this.setState({
-          register: [],
+          register: {
            username: '',
-           password: ''
+           password: '',
+          },
+           cookie: response
         })
       })
       .catch(error => {

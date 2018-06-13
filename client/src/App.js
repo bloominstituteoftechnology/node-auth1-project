@@ -1,27 +1,47 @@
 import React, { Component } from 'react';
 import './App.css';
-import { Route, Switch } from 'react-router'
-import Register from './components/Register.js'
-import Home from './components/Home.js'
-import Login from './components/Login.js'
-import Users from './components/Users.js'
 
 class App extends Component {
   constructor() {
     super();
-    this.state = {}
+    this.state = {
+      register: {
+        username: '',
+        password: ''
+      },
+      login: {
+        username: '',
+        password: ''
+      }
+    }
 
   }
   render() {
     return (
-      <Switch>
-        <Route exact path="/" component={Home} />
-        <Route path="/register" component={Register} />
-        <Route path="/login" component={Login} />
-        <Route path="/users" component={Users} /> 
-      </Switch>
+  <div>    
+     <form onSubmit={this.handleSubmit}>
+       <input
+          type="text"
+          name="username"
+          id="username"
+          placeholder="Username"
+          onChange={this.handleChange}
+          onSubmit={this.handleSubmit}
+          value={this.state.username} />
+        <input 
+          type="text"
+          name="password"
+          id="password"
+          placeholder="Password"
+          onChange={this.handleChange}
+          onSubmit={this.handleSubmit}
+          value={this.state.password} />
+        </form>
+        <button onClick={this.handleSubmit}> Register </button>
+    </div>
     );
   }
 }
+// You were dragging things from your components and moving them over here to test if it was an issue with the server restarting (the fact that the cookie wasn't working)
 
 export default App;
