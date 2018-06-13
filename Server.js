@@ -23,7 +23,7 @@ server.get('/', (req, res) => {
   res.status(200).json({msg: 'Connected to server'})
 })
 
-server.post('/register', (req, res) => {
+server.post('/api/register', (req, res) => {
   const user = new User(req.body)
   user.save()
     .then(user => res.status(201).json(user))
