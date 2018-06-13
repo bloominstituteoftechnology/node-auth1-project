@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const session = require('express-session');
 const User = require('./auth/UserModel');
+const MongoStore = require('connect-mongo')(session);
 
 mongoose.connect('mongodb://localhost/auth-i')
     .then(
@@ -21,7 +22,12 @@ const sessionOptions = {
     httpOnly: true,
     secure: false,
     resave: true,
-    savedUninitialized: false
+    savedUninitialized: false,
+    name: 'noname',
+    store: new MongoStore({
+        url: 'mongodb://localhost/sessions',
+        ttl: 60 * 10,
+    }),
 }
 
 app.use(express.json());
@@ -103,7 +109,7 @@ app
         }
     })
 
-port = 5001;
+const port = process.env.PORT || 5001;
 
 app.listen(port, () => {
     console.log(`API running on port ${port}`);
