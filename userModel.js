@@ -11,19 +11,20 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        minlength: 4
     }
 });
 
 userSchema.pre('save', function (next) {
-    bcrypt.hash(this.passoword, 10, (err, hash) => {
-        if (err) {
-            return next(err);
-        }
+    return bcrypt
+        .hash(this.passoword, 10)
+        .then(hash => {
+            this.password = hash;
 
-        this.password = hash;
-        next();
-    });
+            return next();
+        })
+        .catch(err => {
+            return next(err);
+        });
 });
 
 userSchema.methods.validatePassword = function (passwordGuess) {

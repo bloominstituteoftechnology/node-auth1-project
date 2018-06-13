@@ -12,7 +12,7 @@ mongoose
 const server = express();
 
 const sessionOptions = {
-    secret: ' Space, the final frontier ',
+    secret: ' Space the final frontier ',
     cookie: {
         maxAge: 1000 * 60 * 60 * 24 // a day
     },
@@ -38,7 +38,7 @@ server.use(session(sessionOptions));
 //     res.status(201).json('Server Running')
 // });
 
-server.get('/', (req, res) => {
+server.get('/', function (req, res) {
     if (req.session && req.session.username) {
         res.status(200).json({ message: `Welcome back ${req.session.username}` });
     } else {
@@ -57,7 +57,7 @@ server.get('/', (req, res) => {
 //         })
 // })
 
-server.post('/api/register', (req, res) => {
+server.post('/api/register', function (req, res) {
     User
         .create(req.body)
         .then(user => {
@@ -69,14 +69,14 @@ server.post('/api/register', (req, res) => {
 });
 
 
-server.post('/api/login', (req, res) => {
+server.post('/api/login', function (req, res) {
     const { username, password } = req.body;
     User
         .findOne({ username })
         .then(user => {
             if (user) {
                 user
-                    .validPassword(password)
+                    .validatePassword(password)
                     .then(isValid => {
                         if (isValid) {
                             req.session.username = user.username;
@@ -96,7 +96,7 @@ server.post('/api/login', (req, res) => {
         .catch(err => res.status(500).json(err.message));
 });
 
-server.get('api/users', protected, (req, res) => {
+server.get('/api/users', protected, function (req, res) {
     User
         .find()
         .then(users => {
