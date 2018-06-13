@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import axios from "axios";
-import LoginForm from './components/LoginForm.js';
+import LoginForm from './components/view/LoginForm.js';
 import './App.css';
+import UserListContainer from './components/container/UserListContainer.js';
 
 class App extends Component {
   constructor() {
@@ -27,6 +28,7 @@ class App extends Component {
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
         <LoginForm/>
+        <UserListContainer/>
       </div>
     );
   }

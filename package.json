@@ -27,6 +27,10 @@
     "express": "^4.16.3",
     "express-session": "^1.15.6",
     "helmet": "^3.12.1",
-    "mongoose": "^5.1.4"
+    "mongoose": "^5.1.4",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0"
   }
 }
