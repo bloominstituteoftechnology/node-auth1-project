@@ -23,7 +23,6 @@ userSchema.pre('save', function(next){
             return next(err);
         }
         this.password = hash;
-
         next();
     });
 });
