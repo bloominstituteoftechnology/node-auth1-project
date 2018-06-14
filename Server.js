@@ -1,5 +1,4 @@
 const express = require('express')
-const bcrypt = require('bcrypt')
 const session = require('express-session')
 const mongoose = require('mongoose')
 const User = require('./User')
@@ -20,20 +19,19 @@ const wakeUp = (req, res, next) => {
   next()
 }
 
-const checkAuthorization = (req,res,next) => {
-  const {session} = req;
-  
-  if (session && session.isLoggedIn){
-    console.log('before next',req.session)
+const checkAuthorization = (req, res, next) => {
+  const {session} = req
+
+  if (session && session.isLoggedIn) {
+    console.log('before next', req.session)
     return next()
   } else {
     res.status(401).json({msg:'Not Authorized'})
   }
 }
 
-
 server.use(express.json())
-server.use(session({secret:'A very secret key'}))
+server.use(session({secret: 'A very secret key'}))
 server.use(wakeUp)
 server.get('/', (req, res) => {
   res.status(200).json({msg: 'Connected to server'})
@@ -47,7 +45,7 @@ server.post('/api/register', (req, res) => {
 })
 
 server.get('/api/users', (req,res) => {
-    User.find()
+  User.find()
     .then(users => res.status(200).json(users))
     .catch(err => res.status(500).send(err))
 })
@@ -57,25 +55,25 @@ server.put('/api/login', (req, res) => {
     res.sendStatus(400)
   }
 
-  const {username, password} = req.body;
+  const {username, password} = req.body
 
   User.findOne({username})
     .then(user => {
       user.comparePassword(password, isMatch => {
-        
         if (isMatch) {
-          req.session.isLoggedIn = true;
-          req.session.username = user.username;
-          res.status(200).json({msg:'Logged In!'})
-          } else {
-            res.status(401).json({ msg: 'Sorry not authorized'})
-           }
+          req.session.isLoggedIn = true
+          req.session.username = user.username
+          res.status(200).json({msg: 'Logged In!'})
+        } else {
+          res.status(401).json({msg: 'Sorry not authorized'})
+        }
       })
     })
-    .catch( err => {
-      res.status(500).send(err)})
+    .catch(err => {
+      res.status(500).send(err)
+    })
 })
 
-server.get('/protectedRoute',checkAuthorization,(req,res) =>{
-  res.status(200).json({msg:'Authorized!'})
+server.get('/protectedRoute', checkAuthorization, (req, res) => {
+  res.status(200).json({msg: 'Authorized!'})
 })
