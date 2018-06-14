@@ -19,7 +19,7 @@ database.connectTo('AuthMini')
 
   server.use(helmet());
   server.use(express.json());
-  server.use('/api/register', routes);
+  server.use('/api', routes);
 
   const port = process.env.PORT || 5000;
   server.listen(port, () => {

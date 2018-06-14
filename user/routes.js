@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const User = require('./User');
 
 const router = express.Router();
-
+// so I get from the api and post to the register
 router.get('/', (req, res) => {
     User.find()
       .then(users => {
@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
       })
 })
 
-router.post('/', (req, res) => {
+router.post('/register', (req, res) => {
     const newUser = req.body;
     const { username, password } = req.body;
     const user = new User(newUser);
