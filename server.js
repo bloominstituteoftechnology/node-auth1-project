@@ -10,7 +10,7 @@ mongoose.connect('mongodb://localhost/auth')
     console.log('Xerxes Mcwhiskers has intercepted Gerbilinidus, Gerbilinidus is no more.')
   })
   .catch(() => {
-    console.log('Gerbilinidus has escaped, try looking under the wall.')
+    console.log('Gerbilinidus has escaped, try looking behind the wall.')
   })
 server.use(express.json())
 

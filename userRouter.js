@@ -1,11 +1,28 @@
 const express = require('express')
 const bcrypt = require('bcrypt')
+const session = require('express-session')
+
+const server = express()
 
 const User = require('./User')
 
 const router = express.Router()
 
+server.use(express.json())
+server.use(session({secret:`Gerbilinidus's secret cache`, name:"XerxesIsLame"  }))
+
+const confirmAuth = (req, res, next) => {
+    const {session} = req.session;
+    if(session.isLoggedIn) {
+        return next()
+    } else {
+        res.status(401).json({ msg: 'unauth'})
+    }
+    next()
+}
+
 router.get('/users', (req, res) => {
+    console.log(req.session)
     User.find()
     .then((users) => {
         res.status(200).json(users)
@@ -26,10 +43,12 @@ router.post('/register', (req, res) => {
     })
 })
 
-router.post('/login', (req, res) => {
+router.post('/login', confirmAuth, (req, res) => {
+    console.log('req',req.session)
     const {username, password} = req.body
     User.findOne({username})
     .then((user) => {
+        console.log(user)
         const passCheck = bcrypt.compare(password, user.password)
         .then((passCheck) => {
             if(passCheck) {
