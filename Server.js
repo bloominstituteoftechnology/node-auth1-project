@@ -1,7 +1,10 @@
 const express = require('express')
-const server = express()
+const bcrypt = require('bcrypt')
+const session = require('express-session')
 const mongoose = require('mongoose')
 const User = require('./User')
+
+const server = express()
 
 mongoose.connect('mongodb://localhost/auth-i')
   .then(() => {
@@ -18,6 +21,7 @@ const wakeUp = (req, res, next) => {
 }
 
 server.use(express.json())
+server.use(session({secret:'A very secret key'}))
 server.use(wakeUp)
 server.get('/', (req, res) => {
   res.status(200).json({msg: 'Connected to server'})
@@ -28,4 +32,31 @@ server.post('/api/register', (req, res) => {
   user.save()
     .then(user => res.status(201).json(user))
     .catch(err => res.status(500).send(err))
+})
+
+server.get('/api/users', (req,res) => {
+    User.find()
+    .then(users => res.status(200).json(users))
+    .catch(err => res.status(500).send(err))
+})
+
+server.put('/api/login', (req, res) => {
+  if (!req.body.username || !req.body.password) {
+    res.sendStatus(400)
+  }
+
+  const {username, password} = req.body;
+
+  User.findOne({username})
+    .then(user => {
+      user.comparePassword(password, isMatch => {
+        if (isMatch) {
+          req.session.isLoggedIn = true;
+          res.status(200).json({msg:'Logged In!'})
+          } else {
+            res.status(401).json({ msg: 'Sorry not authorized'})
+           }
+      })
+    })
+    .catch( err => res.status(500).json(err))
 })
