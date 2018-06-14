@@ -19,7 +19,7 @@ UserSchema.pre('save', function (next) {
 })
 
 UserSchema.methods.comparePassword = function(plaintextPassword, cb) {
-  bcrypt.compare(plaintextPass, this.password)
+  bcrypt.compare(plaintextPassword, this.password)
   .then( isMatch => {
     cb(isMatch)
   })

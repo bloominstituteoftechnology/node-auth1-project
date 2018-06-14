@@ -20,6 +20,18 @@ const wakeUp = (req, res, next) => {
   next()
 }
 
+const checkAuthorization = (req,res,next) => {
+  const {session} = req;
+  
+  if (session && session.isLoggedIn){
+    console.log('before next',req.session)
+    return next()
+  } else {
+    res.status(401).json({msg:'Not Authorized'})
+  }
+}
+
+
 server.use(express.json())
 server.use(session({secret:'A very secret key'}))
 server.use(wakeUp)
@@ -50,13 +62,20 @@ server.put('/api/login', (req, res) => {
   User.findOne({username})
     .then(user => {
       user.comparePassword(password, isMatch => {
+        
         if (isMatch) {
           req.session.isLoggedIn = true;
+          req.session.username = user.username;
           res.status(200).json({msg:'Logged In!'})
           } else {
             res.status(401).json({ msg: 'Sorry not authorized'})
            }
       })
     })
-    .catch( err => res.status(500).json(err))
+    .catch( err => {
+      res.status(500).send(err)})
+})
+
+server.get('/protectedRoute',checkAuthorization,(req,res) =>{
+  res.status(200).json({msg:'Authorized!'})
 })
