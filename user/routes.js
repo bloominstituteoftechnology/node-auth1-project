@@ -1,13 +1,17 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 const User = require('./User');
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    let query = User.find()
-      .sort('username')
-    query.then(users = res.status(200).json(users))
-      .catch( err => res.sendStatus(500));
+    User.find()
+      .then(users => {
+          res.status(200).json(users);
+      })
+      .catch(err => {
+          res.status(500).json(err);
+      })
 })
 
 router.post('/', (req, res) => {
