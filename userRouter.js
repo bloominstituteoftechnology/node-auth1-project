@@ -1,6 +1,5 @@
 const express = require('express')
 const bcrypt = require('bcrypt')
-const session = require('express-session')
 
 const server = express()
 
@@ -9,20 +8,17 @@ const User = require('./User')
 const router = express.Router()
 
 server.use(express.json())
-server.use(session({secret:`Gerbilinidus's secret cache`, name:"XerxesIsLame"  }))
 
 const confirmAuth = (req, res, next) => {
-    const {session} = req.session;
+    const {session} = req;
     if(session.isLoggedIn) {
         return next()
     } else {
         res.status(401).json({ msg: 'unauth'})
     }
-    next()
 }
 
 router.get('/users', (req, res) => {
-    console.log(req.session)
     User.find()
     .then((users) => {
         res.status(200).json(users)
@@ -43,15 +39,20 @@ router.post('/register', (req, res) => {
     })
 })
 
-router.post('/login', confirmAuth, (req, res) => {
-    console.log('req',req.session)
+router.post('/login', (req, res) => {
     const {username, password} = req.body
     User.findOne({username})
     .then((user) => {
-        console.log(user)
         const passCheck = bcrypt.compare(password, user.password)
         .then((passCheck) => {
             if(passCheck) {
+                console.log(req.session)
+                req.session.isLoggedIn = true
+                console.log('before', req.session.user)
+                req.session.user = user
+                req.session.somethingCompletelyIrrelevant = user.password
+                console.log('after', req.session.user)
+                console.log('after-after', req.session)
                 res.status(200).json({response:'login successful'})
             } else {
                 res.status(500).json({error: 'login unsuccessful'})
@@ -61,6 +62,14 @@ router.post('/login', confirmAuth, (req, res) => {
     .catch((error) => {
         res.status(500).json(error, "error")
     })
+})
+
+router.get('/protected', confirmAuth, (req, res) => {
+    if (req.session.isLoggedIn === true) {
+        res.status(200).json(req.session.user)
+    } else {
+        req.status(500).json({msg: 'error caused, no cleverness right meow'})
+    }
 })
 
 module.exports = router
