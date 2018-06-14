@@ -29,14 +29,23 @@ server.post('/api/register', (req, res) => {
     .catch( err => res.status(500).send(err))
 });
 
-server.post('/api/login', (req, res) => {
+server.put('/api/login', (req, res) => {
+  
   const { username, password } = req.body;
-  let query = User.find()
-    query.where({ username: username })
-    // check password
-    // session
-    query.then( user => res.status(200).json('Found user!'))
-    query.catch( err => {
+  if(!req.body.username || !req.body.password) {
+    res.status(400).json({msg: 'Please enter a username & password'})
+  }
+  User.findOne({ username })
+    .then( user => {
+      user.comparePasswords( password, isMatch => {
+        if(isMatch) {
+          res.status(200).json({msg: 'Logged In!'})
+        } else {
+          res.status(401).json({msg: 'PASSWORD INCORRECT!'})
+        }
+      }) 
+    })
+    .catch( err => {
       res.status(500).json({ error: 'Error getting username', err});
     })
 })
