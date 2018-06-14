@@ -24,3 +24,5 @@ database.connectTo('AuthMini')
   server.listen(port, () => {
       console.log(`Server up on port ${port}`);
   })
+
+  

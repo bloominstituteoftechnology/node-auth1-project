@@ -13,7 +13,7 @@ const User = new mongoose.Schema({
     }
 })
 
-// I'm still not sure what the heck is going on here.
+// I'm still not sure what is going on here.
 // will have to watch the lecture video again. 
 User.pre('save', function (next) {
     bcrypt.hash(this.password, 11, (err, hash) => {
