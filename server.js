@@ -22,21 +22,16 @@ server.use(
         })
     })
 );
-
+//hash: $2b$12$3IgZps3lwJYJhU16WH5hNOIE5GSK6iHXxYkpyegOhDWpb.xK7rV.y
 const restrictAuth = (req, res, next) => {
-    if(req.path.startsWith('/restricted')){
-        if(req.session ** req.session.username){
+        if(req.session && req.session.username){
             next();
         }else{
             res.status(422).json({message: "This content is restricted to logged in users" })
         }
-    } else{
-        next();
-    }
 };
-server.use(restrictAuth);
 
-server.get(`/restricted/:username`, (req, res, next) => {
+server.get(`/restricted/:username`, restrictAuth, (req, res, next) => {
     const username = req.params.username;
     res.status(200).json({message: `Welcome to our VIP page, ${username}`})
 })
@@ -76,6 +71,7 @@ server.post('/login', (req, res) => {
         .then(user => {
             console.log(req.session);
             if(user){
+                console.log(user);
                 user.isPasswordValid(password).then(isValid => {
                     if(isValid){
                         req.session.username = user.username

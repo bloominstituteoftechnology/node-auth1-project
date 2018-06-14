@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: 4,
-        match: /(?=.*[a-zA-Z])(?=.*[0-9]+).*/,
+        // match: /(?=.*[a-zA-Z])(?=.*[0-9]+).*/,
         maxlength: 10
     }
 });
@@ -26,4 +26,7 @@ userSchema.pre('save', function(next){
         next();
     });
 });
+userSchema.methods.isPasswordValid = function(passwordEntry){
+    return bcrypt.compare(passwordEntry, this.password);
+}
 module.exports = mongoose.model('User', userSchema);
