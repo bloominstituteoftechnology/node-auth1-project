@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
 
 const User = new mongoose.Schema({
     username: {
@@ -25,5 +26,17 @@ User.pre('save', function(next) {
         return next();
     });
 });
+
+User.methods.passwordChecker = function(pass, cb) {
+    // put bcrypt compare stuff in here
+    
+    bcrypt.compare(pass, this.password)
+        .then(loggedIn => {
+            cb(loggedIn)
+        })
+        .catch( err => {
+            console.log(err)
+        })
+}
 
 module.exports = mongoose.model('User', User);
