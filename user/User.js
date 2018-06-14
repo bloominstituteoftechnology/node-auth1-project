@@ -26,12 +26,12 @@ User.pre('save', function (next) {
     })
 })
 
-User.methods.comparePasswords = function(plainText) {
+User.methods.comparePasswords = function(plainText, cb) {
     bcrypt.compare(plainText, this.password)
       .then( isMatch => {
           cb(isMatch);
       })
-      .catch( err => {
+      .catch(err => {
           console.log(err);
       })
 }

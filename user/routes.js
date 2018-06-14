@@ -27,6 +27,23 @@ router.post('/register', (req, res) => {
       })
 })
 
+router.put('/login', (req, res) => {
+    if (!req.body.username || !req.body.password) {
+        res.sendStatus(400);
+    }
 
+    const { username, password } = req.body;
+    User.findOne({username})
+      .then( user => {
+          user.comparePasswords(password, isMatch => {
+              if (isMatch) {
+                  res.status(200).json({message: 'logged in'});
+              } else {
+                  res.status(401).json({ message: 'unauthorized'});
+              }
+          })
+      })
+      .catch( err => res.status(500).json(err));
+})
 
 module.exports = router;
