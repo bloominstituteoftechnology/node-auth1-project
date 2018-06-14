@@ -13,8 +13,11 @@ UserRouterFactory.setProjection({ __v: 0 });
 UserRouterFactory.POST('/register');
 UserRouterFactory.GET('/register*', _404);
 
-UserRouterFactory.POST('/login', login);
+UserRouterFactory.POST('/login', handleLogin);
 UserRouterFactory.GET('/login*', _404);
+
+UserRouterFactory.GET('/logout', logout, _404);
+UserRouterFactory.GET('/logout*', _404);
 
 UserRouterFactory.GET('/users*', isLogged, 'handleGET');
 
@@ -30,7 +33,16 @@ UserRouterFactory.GET('/restricted*', isLogged, 'handleGET');
 function isLogged(req, res, next) {
   req.session.loggedIn ? next() : res.status(401).json('You must be logged in!');
 }
-function login(req, res, next) {
+function logout(req, res, next) {
+  !req.session ? next() : delete req.session.loggedIn;
+  res.status(200).json('Your session has been closed. See you soon!');
+  // : req.session.destroy(err => {
+  //     err
+  //       ? res.status(500).json('We can not logged you out, please try again')
+  //       : res.status(200).json('Your session has been closed. See you soon!');
+  // });
+}
+function handleLogin(req, res, next) {
   if (req.session.loggedIn) return res.send('You are already logged in!');
   const { username, password } = req.body;
   User.findOne({ username }, function(err, user) {
@@ -43,8 +55,9 @@ function login(req, res, next) {
       .then(matchedPass => {
         if (!matchedPass) return res.status(401).json('Information no valid');
 
-        req.session.loggedIn = user.username;
-        req.session.anotherCookie = 'anotehrCookie';
+        // req.session.username = user.username;
+        req.session.loggedIn = true;
+        req.session.anotherCookie = 'anotherCookie';
         res.status(200).json('You are loged in - with cookie');
       })
       .catch(e => {
