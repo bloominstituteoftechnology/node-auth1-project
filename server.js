@@ -25,18 +25,3 @@ database.connectTo('AuthMini')
   server.listen(port, () => {
       console.log(`Server up on port ${port}`);
   })
-
-  server.get('/', (req, res) => {
-      res.status(200).json({ message: 'Connected to server!' });
-  })
-
-  server.post('/register', (req, res) => {
-      const { username, password } = req.body;
-      if (!username || !password) res.sendStatus(400);
-      const user = new user(req.body);
-      user.save()
-        .then( user => res.status(201).json(user))
-        .catch( err => res.status(500).send(err));
-  })
-
-  
