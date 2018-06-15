@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const User = require('./auth/UserModel');
 const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
 mongoose.connect('mongodb://localhost/dbauth').then(() => { 
     console.log('/n*** Connected to database ***\n');
@@ -12,16 +13,20 @@ const server = express();
 const sessionOptions = {
     secret: 'nobody tosses a dwarf!',
     cookie: {
-        maxAge: 1000 * 60 * 60 //an hour
+        maxAge: 1000 * 60 * 60 //an hour in milliseconds
     },
     httpOnly: true,
     secure: false,
     resave: true,
     saveUninitialized: false,
     name: 'noname',
+    store: new MongoStore({
+        url: 'mongodb://localhost:/sessions',
+       ttl: 60 * 10, // time to live in seconds
+    }),
 };
 
-function protected(req, res, next){
+function yourSafe(req, res, next){
     if (req.session && req.session.username) {
         next();
     } else { 
@@ -33,7 +38,7 @@ function protected(req, res, next){
 server.use(express.json());
 server.use(session(sessionOptions));
 
-server.get('/api/users', protected, (req, res) => {
+server.get('/api/users', yourSafe, (req, res) => {
     User.find()
     .then(users => res.json(users))
     .catch(err => res.json(err));
