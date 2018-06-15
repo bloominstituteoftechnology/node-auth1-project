@@ -1,6 +1,16 @@
 const router = require('express').Router();
 const User = require('./userModel');
 
+const isAuthorized = (req, res, next) => {
+    const { session } = req;
+    
+    if(session.userLoggedIn) {
+        return next();
+    } else {
+        res.status(401).json({ Error: 'Not authorized to see the data.'})
+    }
+}
+
 router
     .post('/register', (req, res) => {
 
@@ -14,7 +24,7 @@ router
             })
     })
     .post('/login', (req, res) => {
-        
+
         const { username, password } = req.body;
 
         if(!username || !password) {
@@ -36,17 +46,11 @@ router
             res.status(402).json({ msg: 'You shall not pass!'});
         })
     })
-    .get('/users', (req, res) => {
-
-        const { session } = req;
+    .get('/users', isAuthorized, (req, res) => {
 
         User.find()
         .then(userData => {
-            if(session.userLoggedIn) {
                 res.status(200).json(userData)
-            } else {
-                res.status(401).json({ msg: 'You are not authorized to get this data.'})
-            }
         })
         .catch(err => {
             res.status(500).json(err);
