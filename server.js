@@ -32,5 +32,3 @@ mongoose.connect('mongodb://localhost/UserAuthDB')
   server.listen(port, () => {
       console.log(`===== Connected on port ${port} =====`)
   });
-
-  // yarn add express-session/ import session = require('express-sessions');

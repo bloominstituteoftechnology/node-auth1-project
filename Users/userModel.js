@@ -28,7 +28,6 @@ User.pre('save', function(next) {
 });
 
 User.methods.passwordChecker = function(pass, cb) {
-    // put bcrypt compare stuff in here
     
     bcrypt.compare(pass, this.password)
         .then(loggedIn => {
