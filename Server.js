@@ -26,7 +26,7 @@ const checkAuthorization = (req, res, next) => {
     console.log('before next', req.session)
     return next()
   } else {
-    res.status(401).json({msg:'Not Authorized'})
+    res.status(401).json({msg: 'You must login first.  Please login.'})
   }
 }
 
@@ -44,7 +44,7 @@ server.post('/api/register', (req, res) => {
     .catch(err => res.status(500).send(err))
 })
 
-server.get('/api/users', (req,res) => {
+server.get('/api/users', (req, res) => {
   User.find()
     .then(users => res.status(200).json(users))
     .catch(err => res.status(500).send(err))
@@ -77,3 +77,4 @@ server.put('/api/login', (req, res) => {
 server.get('/protectedRoute', checkAuthorization, (req, res) => {
   res.status(200).json({msg: 'Authorized!'})
 })
+
