@@ -74,7 +74,11 @@ server.put('/api/login', (req, res) => {
     })
 })
 
-server.get('/protectedRoute', checkAuthorization, (req, res) => {
-  res.status(200).json({msg: 'Authorized!'})
+server.get('/api/restricted/userContactInfo', checkAuthorization, (req, res) => {
+  res.status(200).json({msg: 'Authorized to see contact info!'})
 })
 
+server.get('/api/restricted/userMessages', checkAuthorization, (req, res) => {
+  res.status(200).json({msg: 'Authorized to see messages!'})
+})
+// Using an asterisk '*' as the endpoint will allow user to access every endpoint in the restricted path: `server.get('/api/restricted/*'`
