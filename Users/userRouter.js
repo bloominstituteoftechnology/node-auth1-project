@@ -14,7 +14,12 @@ router
             })
     })
     .post('/login', (req, res) => {
+        
         const { username, password } = req.body;
+
+        if(!username || !password) {
+            res.status(401).json({error: 'Enter log-in credentials (username and password).'})
+        }
 
         User.findOne({username})
         .then( user => {
@@ -32,6 +37,7 @@ router
         })
     })
     .get('/users', (req, res) => {
+
         const { session } = req;
 
         User.find()
@@ -47,5 +53,5 @@ router
         })
     })
 
-    
+
     module.exports = router;
