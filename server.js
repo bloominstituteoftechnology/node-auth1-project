@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const session = require("express-session");
 
 const User = require("./UserModel");
 const server = express();
@@ -13,13 +14,33 @@ mongoose.connect("mongodb://localhost:27017/userAuthdb")
         console.log(err.message);
     });
 
+//middleware
+
+const sessionOptions = {
+    secret: "You're killing me, Smalls...",
+    cookie: {
+        maxAge: 60*60*1000 //1 day
+    },
+    httpOnly: true,
+    secure: false,
+    saveUninitialized: true,
+    resave: true,
+    name: "yadayadayada"
+}
+
 server.use(express.json());
 server.use(cors());
+server.use(session(sessionOptions)); //global middleware
 
 
 server.get('/', (req, res) => {
-    res.status(200).json({Success: "API is running . . ."});
-});
+    console.log(req.session);
+    if(req.session && req.session.username) {
+        res.status(200).json({message: `welcome back ${req.session.username}`});
+    }
+    else {
+        res.status(401).json({message: "Login to enter"})
+    }});
 
 server.get('/api/users', (req, res) => {
     User.find()
@@ -53,14 +74,19 @@ server.post("/api/login", (req, res) => {
                 user
                     .passwordValidation(password)
                     .then(passwordsMatch => {
-                        passwordsMatch?res.status(200).json({Success: "Log-in successful"}):res.status(401).json({Error: "invalid password"});
+                        if (passwordsMatch){
+                            req.session.username = user.username;  
+                            res.status(200).json({Success: "Log-in successful"});
+                        } else{
+                            res.status(401).json({Error: "invalid password"});
+                        }
                     })
                     .catch(err => {
                         res.status(500).json({Error: err.message});
                     });
             }
         })
-})
+});
 
 
 let port = process.env.PORT || 5000;
