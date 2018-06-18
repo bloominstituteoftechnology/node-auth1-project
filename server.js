@@ -21,7 +21,14 @@ server.post('/api/register', (req, res) => {
         })
 
         .catch(error => {
-            res.status(500).json({error: "User could not be created"});
+            //res.status(500).json({error: "User could not be created", error});
+            //"code": 11000,
+            if(error.code === 11000) {
+                res.status(500).json({error: "Username already taken!"})
+            } else {
+                res.status(500).json({error: "User could not be created", error});
+            }
+            
         });
 
 });
