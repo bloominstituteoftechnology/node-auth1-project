@@ -1,0 +1,17 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "auth project back-end",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Server",
+    "Express",
+    "Mongo",
+    "MERN"
+  ],
+  "author": "FireInjun",
+  "license": "MIT"
+}
