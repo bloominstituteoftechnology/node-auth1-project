@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const server = express();
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
-const routes = require('./routes');
-const restrictedRoutes = require('./restrictedRoutes');
+const routes = require('./user/routes');
+const restrictedRoutes = require('./user/restrictedRoutes');
 
 mongoose.connect('mongodb://localhost/SkyNetDB');
 
