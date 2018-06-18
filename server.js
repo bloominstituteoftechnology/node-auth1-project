@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const User = require("./UserModel");
 const server = express();
@@ -13,6 +14,7 @@ mongoose.connect("mongodb://localhost:27017/userAuthdb")
     });
 
 server.use(express.json());
+server.use(cors());
 
 
 server.get('/', (req, res) => {
@@ -25,7 +27,7 @@ server.get('/api/users', (req, res) => {
             res.status(200).json(user);
         })
         .catch(err => {
-            res.status(500).json({error: err.message})
+            res.status(500).json({error:err.message, message:"You shall not pass!"})
         })
 
 })
