@@ -17,11 +17,10 @@ server.get('/', (req, res) => {
     res.status(200).json({ api: 'running...' });
 });
 
-router
-.route( '/api/register' )
-server.get( ( req, res ) =>
+
+server.get('/api/users', ( req, res ) =>
 {
-userSchema.find()
+User.find()
     .then( users =>
     {
     res.status( 200 ).json( users );
