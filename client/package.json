@@ -3,14 +3,27 @@
   "version": "1.0.0",
   "description": "auth project front-end",
   "main": "index.js",
+  "private": true,
+  "author": "FireInjun",
+  "license": "MIT",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   },
   "keywords": [
     "React",
     "Client",
     "Front-End"
   ],
-  "author": "FireInjun",
-  "license": "MIT"
+  "dependencies": {
+    "axios": "^0.18.0",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-redux": "^5.0.7",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "1.1.4",
+    "redux": "^4.0.0"
+  }
 }
