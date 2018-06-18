@@ -42,7 +42,7 @@ router
                        res.send('Comparing Password Error.')
                    })
                 } else {
-                    res.status(404).json('User Not found');
+                    res.status(404).json('Invalid Credentials');
                 }
             })
             .catch(error => {
