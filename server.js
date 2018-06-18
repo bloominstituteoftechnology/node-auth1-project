@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const User = require('./auth/UserModel');
 
-mongoose.connect('mongodb://localhost/users').then(() => {
+mongoose.connect('mongodb://localhost/auth-i').then(() => {
     console.log('\n*** Connected to database ***\n');
 });
 

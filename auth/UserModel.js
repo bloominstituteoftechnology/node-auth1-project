@@ -18,5 +18,4 @@ userSchema.pre('save', function(next) {
     console.log('pre save hook')
     next();
 });
-
-const userModel = mongoose.model('Person', userSchema);
+module.exports = mongoose.model('Person', userSchema);
