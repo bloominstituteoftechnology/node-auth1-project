@@ -5,12 +5,16 @@ const mongoose = require('mongoose');
 
 const server = express();
 
-// add routes here 
-//const userRouter = require('./users/userRouter.js');
+const port = 5555;
 
 server.use(helmet());
 server.use(cors());
-server.use(express.json());
+server.use(express.json()); //this needs to be bofore route(line 15) becoz it needs to be json format before passing to the route.
+
+// add route here 
+const userRouter = require('./users/userRouter');
+
+server.use('/api', userRouter);
 
 server.get('/', (req, res) => res.send('API Running...'))
 
@@ -20,7 +24,7 @@ mongoose.connect('mongodb://localhost/users', {userMongoClient: true}, (error) =
     console.log('\n*** Connected to database ***\n');
 })
 
-const port = 5555;
+
 server.listen(port, () => {
     console.log(`Server up and running on ${port}` )
 })
