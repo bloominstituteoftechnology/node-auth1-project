@@ -1,0 +1,21 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "Lambda School Auth I",
+  "main": "server.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Derrick-Mei/auth-i.git"
+  },
+  "author": "Derrick Mei",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Derrick-Mei/auth-i/issues"
+  },
+  "homepage": "https://github.com/Derrick-Mei/auth-i#readme"
+}
