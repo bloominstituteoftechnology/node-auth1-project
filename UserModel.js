@@ -28,6 +28,10 @@ UserSchema.pre('save', function(next) {
     });
 });
 
+UserSchema.methods.passwordValidation = function(attempt) {
+    return bcrypt.compare(attempt, this.password);
+};
+
 const UserModel = mongoose.model("User", UserSchema, "users");
 
 module.exports = UserModel;

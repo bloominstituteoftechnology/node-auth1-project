@@ -41,6 +41,26 @@ server.post("/api/register", (req, res) => {
         });
 });
 
+server.post("/api/login", (req, res) => {
+    const { username, password } = req.body;
+    User.findOne({ username })
+        .then(user => {
+            if(!user) {
+                res.status(404).json(`${username} not found`)
+            }
+
+            else {
+                user
+                    .passwordValidation(password)
+                    .then(passwordsMatch => {
+                        passwordsMatch?res.status(200).json({Success: "Log-in successful"}):res.status(401).json({Error: "invalid password"});
+                    })
+                    .catch(err => {
+                        res.status(500).json({Error: err.message});
+                    });
+            }
+        })
+})
 
 
 let port = process.env.PORT || 5000;
