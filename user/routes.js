@@ -1,47 +1,32 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
+const router = express.Router();
 const User = require('./User');
 
-const router = express.Router();
-// so I get from the api and post to the register
-router.get('/', (req, res) => {
-    User.find()
-      .then(users => {
-          res.status(200).json(users);
-      })
-      .catch(err => {
-          res.status(500).json(err);
-      })
-})
-
 router.post('/register', (req, res) => {
-    const newUser = req.body;
-    const { username, password } = req.body;
-    const user = new User(newUser);
-    user.save()
-      .then(user => {
+    const userInfo = req.body;
+    const newUser = new User(userInfo);
+    newUser.save()
+      .then( user => {
           res.status(201).json(user);
       })
-      .catch(err => {
-          res.status(500).json(err);
-      })
+      .catch( err => res.status(500).json(err));
 })
 
-router.put('/login', (req, res) => {
-    if (!req.body.username || !req.body.password) {
-        res.sendStatus(400);
-    }
-
+router.post('/login', (req, res) => {
     const { username, password } = req.body;
     User.findOne({username})
       .then( user => {
-          user.comparePasswords(password, isMatch => {
-              if (isMatch) {
-                  res.status(200).json({message: 'logged in'});
-              } else {
-                  res.status(401).json({ message: 'unauthorized'});
-              }
-          })
+          if (user === null) res.sendStatus(404);
+          user.comparePasswords(password)
+            .then( isMatch => {
+                if (isMatch) {
+                    req.session.loggedIn = true;
+                    res.status(200).json({msg: 'Logged in.'});
+                } else {
+                    res.status(401).json({msg: 'YOU SHALL NOT PASS!'});
+                }
+            })
+            .catch( err => res.sendStatus(500));
       })
       .catch( err => res.status(500).json(err));
 })
