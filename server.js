@@ -19,6 +19,16 @@ server.get('/', (req, res) => {
     res.status(200).json({Success: "API is running . . ."});
 });
 
+server.get('/api/users', (req, res) => {
+    User.find()
+        .then(user => {
+            res.status(200).json(user);
+        })
+        .catch(err => {
+            res.status(500).json({error: err.message})
+        })
+
+})
 server.post("/api/register", (req, res) => {
     User.create(req.body)
         .then(user => {
