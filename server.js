@@ -1,27 +1,34 @@
-const mongoose = require('mongoose');
 const express = require('express');
-const helmet = require('helmet');
-
+const mongoose = require('mongoose');
 const server = express();
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+const routes = require('./routes');
+const restrictedRoutes = require('./restrictedRoutes');
 
-const database = require('./data/database');
+mongoose.connect('mongodb://localhost/SkyNetDB');
 
-const routes = require('./user/routes');
-const user = require('./user/User');
+const auth = (req, res, next) => {
+    const { session } = req;
+    if (session.loggedIn) {
+        return next();
+    } else {
+        res.status(401).json({ msg: 'YOU SHALL NOT PASS!' });
+    }
+}
 
-database.connectTo('AuthMini')
-  .then(() => {
-      console.log('Connected to database!');
-  })
-  .catch(err => {
-      console.log(err);
-  })
+server.listen(5000, () => {
+    console.log('\n === SERVER LISTENING ON PORT 5000 === \n');
+})
 
-  server.use(helmet());
-  server.use(express.json());
-  server.use('/api', routes);
+server.use(express.json());
+server.use(session({
+    name: 'SkyNetMountain',
+    secret: 'Destroy all humans!',
+    store: new MongoStore({
+        url: 'mongodb://localhost/sessions'
+    })
+}))
 
-  const port = process.env.PORT || 5000;
-  server.listen(port, () => {
-      console.log(`Server up on port ${port}`);
-  })
+server.use('/api/restricted', auth, restrictedRoutes);
+server.use('/api', routes);
