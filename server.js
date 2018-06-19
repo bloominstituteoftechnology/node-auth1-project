@@ -13,7 +13,7 @@ const server = express();
 const sessionOptions = {
     secret: 'nobody tosses a dwarf!',
     cookie: {
-        maxAge: 1000 * 60 * 60 //anhour
+        maxAge: 1000 * 60 * 60 //an hour
     },
     httpOnly: true,
     secure: false,
@@ -22,14 +22,29 @@ const sessionOptions = {
     name: 'noname',
 
 };
-
+//PROTECTED middleware
+function protected(req, res, next) {
+    if(req.session && req.session.username) {
+        next();
+    } else {
+        res.status(401).json({message: 'you shall not pass!!'});
+    }
+}
+//.use is GLOBAL middleware
 server.use(express.json());
 server.use(session(sessionOptions));
+
+//GET access to only logged in users using LOCAL middleware
+server.get('/api/user', protected, (req, res) => {
+    User.find()
+        .then(users => res.json(users))
+        .catch(err => res.json(err));
+});
 
 //GET check if server is running
 server.get('/', (req, res) => {
     if(req.session && req.session.username) {
-        res.status(200).json({ message: `welcome back ${req.session.usrname}` });
+        res.status(200).json({ message: `welcome back ${req.session.username}` });
     } else {
         res.status(401).json({message: 'speak friend and enter'});
     }
@@ -109,5 +124,6 @@ server.get('/api/logout', (req, res) => {
         });
     }
 });
+
 
 server.listen(5000, () => {console.log('\n*** API running on port 5000***\n')})
