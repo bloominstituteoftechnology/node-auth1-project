@@ -25,6 +25,7 @@
     "bcrypt": "^2.0.1",
     "cors": "^2.8.4",
     "express": "^4.16.3",
+    "express-session": "^1.15.6",
     "mongoose": "^5.1.5"
   }
 }

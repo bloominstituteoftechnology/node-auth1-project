@@ -1,20 +1,38 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const session = require('express-session');
+
 const User = require('./auth/UserModel');
-
-
 
 mongoose.connect('mongodb://localhost/auth-i').then( () => {
     console.log('\n*** Connected to database ***\n');
 });
 
 const server = express();
+//middleware
+const sessionOptions = {
+    secret: 'nobody tosses a dwarf!',
+    cookie: {
+        maxAge: 1000 * 60 * 60 //anhour
+    },
+    httpOnly: true,
+    secure: false,
+    resave: true,
+    saveUninitialized: false,
+    name: 'noname',
+
+};
 
 server.use(express.json());
+server.use(session(sessionOptions));
 
 //GET check if server is running
 server.get('/', (req, res) => {
-    res.status(200).json({ api: 'running...' });
+    if(req.session && req.session.username) {
+        res.status(200).json({ message: `welcome back ${req.session.usrname}` });
+    } else {
+        res.status(401).json({message: 'speak friend and enter'});
+    }
 });
 
 //GET array of all users if they are logged in
@@ -31,6 +49,23 @@ User.find()
     } );
 } )
 
+//POST Creates a user using the information sent inside the body of the request. Hash the password before saving the user to the database.
+server.post('/api/register', (req, res) => {
+    //save the user to the database
+
+    //const user = new User(req.body);
+    //user.save().then().catch;
+
+    //or an alternative syntax would be:
+    User.create(req.body)
+        .then(user => {
+            res.status(201).json(user);
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        });
+});
+
 //POST
 server.post('/api/login', (req, res) => {
     //grab cradentials
@@ -45,7 +80,8 @@ server.post('/api/login', (req, res) => {
                 .then(passwordsMatch => {
                     //the passwords math, user can continue
                     if(passwordsMatch) {
-                        res.send('log in successful');
+                        req.session.username = user.username;
+                        res.send('have a cookie');
                     } else {
                         res.status(401).send('invalid credentials');
                     }
@@ -62,22 +98,16 @@ server.post('/api/login', (req, res) => {
     });
 });
 
-
-//POST Creates a user using the information sent inside the body of the request. Hash the password before saving the user to the database.
-server.post('/api/register', (req, res) => {
-    //save the user to the database
-
-    //const user = new User(req.body);
-    //user.save().then().catch;
-
-    //or an alternative syntax would be:
-    User.create(req.body)
-        .then(user => {
-            res.status(201).json(user);
-        })
-        .catch(err => {
-            res.status(500).json(err);
+server.get('/api/logout', (req, res) => {
+    if(req.session) {
+        req.session.destroy(err => {
+            if (err) {
+            res.send('error logging out');
+        } else {
+            res.send('good bye')
+        }
         });
+    }
 });
 
 server.listen(5000, () => {console.log('\n*** API running on port 5000***\n')})
