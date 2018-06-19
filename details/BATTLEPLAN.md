@@ -19,3 +19,11 @@ Use the following:
 and 
  * **cookies** 
  to keep a record of logged in users.
+
+
+
+
+
+
+
+# How we intend to do this:
