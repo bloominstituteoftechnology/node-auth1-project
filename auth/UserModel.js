@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrtyp = require('bcrypt');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -16,15 +16,19 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre('save', function(next) {
-    console.log('pre save hook');
+     console.log('pre save hook');
     bcrypt.hash(this.password, 12, (err, hash) => {
         if (err) {
             return next(err);
         }
         this.password = hash;
         next();
-    });
+    }); 
 });
+
+userSchema.methods.validatePassword = function(passwordGuess) {
+   return bcrypt.compare(passwordGuess, this.password);
+};
 
 
 module.exports = mongoose.model('User', userSchema);
