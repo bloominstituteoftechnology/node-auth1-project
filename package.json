@@ -1,0 +1,22 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/ujaved931/auth-i.git",
+  "author": "Usman Javed <ujaved931@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "helmet": "^3.12.1",
+    "mongoose": "^5.1.6"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.5"
+  }
+}
