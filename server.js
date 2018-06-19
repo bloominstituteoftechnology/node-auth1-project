@@ -54,7 +54,7 @@ server.get('/', (req, res) => {
 server.get('/api/users', restricted, (req, res) => {
     User.find()
         .then(user => {
-            res.status(200).json(user);
+            res.status(200).json({users: user});
         })
         .catch(err => {
             res.status(500).json({error:err.message, message:"You shall not pass!"})
