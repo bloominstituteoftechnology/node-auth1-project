@@ -88,6 +88,17 @@ server.post("/api/login", (req, res) => {
         })
 });
 
+server.get("/api/logout", (req, res) => {
+    if(req.session){
+        req.session.destroy(err => {
+            if(err){
+                res.status(500).json(`error logging out`);
+            } else {
+                res.status(200).json(`Goodbye!!`)
+            }
+        });
+    }
+});
 
 let port = process.env.PORT || 5000;
 
