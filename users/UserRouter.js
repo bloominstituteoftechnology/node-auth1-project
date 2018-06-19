@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const session = require('express-session');
 
 const User = require('./userModel.js');
 
@@ -22,6 +23,7 @@ router
 //find the user to get access to the store password
 //compare the password guess to the stored one from the model.
 //if not found, give 'You shall NOT pass'.
+//add session in order to save the data in the device.
 router
     .route('/login')
     .post((req, res) => {
@@ -33,7 +35,8 @@ router
                    user.validatePassword(password)
                    .then(matchedPwd => {
                        if(matchedPwd) {
-                           res.send('Logged In Successfully')
+                           req.session.username = user.username;
+                           res.send('Cookie for you')
                        } else {
                            res.send('You shall NOT pass!')
                        }
