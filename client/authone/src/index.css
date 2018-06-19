@@ -1,0 +1,25 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+.header-wrapper{
+  display:flex;
+  flex-direction:column;
+  justify-content: center;
+  align-items: center;
+  height:100vh;
+  background:#408080;
+  color:#eee8ed
+}
+.headline-wrapper{
+  font-size:2rem;
+}
+.user-input{
+  display:flex;
+  flex-direction:column;
+  margin: 20px;
+}
+.user-name{
+  margin-bottom:20px;
+}
