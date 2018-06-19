@@ -19,10 +19,30 @@ const sessionOptions = {
     secure: false,
     resave: true,
     saveUninitialized: false,
+    name: 'noname',
 };
+
+function protected( req, res, next )
+{
+    if ( req.session && req.session.username)
+    {
+        next();
+
+    } else
+    {
+        res.status( 403 ).json( { message: 'you shall not pass!' } );
+    }
+}
 
 server.use( express.json() );
 server.use( session( sessionOptions ) );
+
+server.get( '/api/users', protected, ( req, res ) =>
+{
+    User.find()
+        .then( users => res.json( users ) )
+        .catch( err => res.json( err ) );
+} );
 
 
 server.get( '/api/users', ( req, res ) =>
@@ -42,7 +62,7 @@ server.get( '/', ( req, res ) =>
 {
     if ( req.session && req.session.username )
     {
-        res.status( 200 ).json( { message: `welcomeback${ req.session.username }` } )
+        res.status( 200 ).json( { message: `welcomeback${ req.session.username }` } );
     } else
     {
         res.status( 401 ).json( { message: 'speak friend and enter' } );
@@ -108,8 +128,28 @@ server.post( '/api/login', ( req, res ) =>
         .catch( err =>
         {
             res.send( err );
+
+
         } )
 } );
+server.get( '/api/logout', ( req, res ) =>
+{
+    if ( req.session )
+    {
+        req.session.destroy( err =>
+        {
+            if ( err )
+            {
+                res.send( 'error logging out' );
+            } else
+            {
+                res.send( 'good bye' );
+            }
+        } );
+    }
+} );
+
+
 server.listen( 5000, () =>
 {
     console.log( '/n*** API running on port 5000 ***/n' );
