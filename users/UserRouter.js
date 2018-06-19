@@ -35,8 +35,8 @@ router
                    user.validatePassword(password)
                    .then(matchedPwd => {
                        if(matchedPwd) {
-                           req.session.username = user.username;
-                           res.send('Cookie for you')
+                           req.session.username = user.username; //add session
+                           res.send('Cookie for you') //check cookie
                        } else {
                            res.send('You shall NOT pass!')
                        }
@@ -51,6 +51,20 @@ router
             .catch(error => {
                 res.status(500).json(error)
             })
-    })
+})
+
+router
+    .route('/logout')
+    .get((req, res) => {
+        if(req.session) {
+            req.session.destroy(error => {  //req.session.destroy is a method in session.
+                if(error) {
+                    res.send('Logging Out Error')
+                } else {
+                    res.send('Hope to See You Soon')
+                }
+            })
+        }
+})
 
 module.exports = router;

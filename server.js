@@ -27,7 +27,6 @@ server.use(express.json()); //this needs to be bofore route(line 15) becoz it ne
 server.use(session(sessionOptions));
 
 
-
 // add route here 
 const userRouter = require('./users/userRouter');
 
