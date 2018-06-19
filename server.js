@@ -16,6 +16,7 @@ const sessionOptions = {
     },
     httpOnly: true,
     secure: false,
+    resave: true,
     saveUninitialized: false,
     name: 'someone'
 };
