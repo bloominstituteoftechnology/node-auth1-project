@@ -32,7 +32,7 @@ function onlyLoggedIn(req, res, next) {
 server.use(express.json());
 server.use(session(sessionSetup));
 
-server.get('/api/users', onlyLoggedIn, (req, res) => {
+server.get('/api/restricted/users', onlyLoggedIn, (req, res) => {
     User
         .find()
         .then(users => res.json(users))

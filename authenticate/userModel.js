@@ -16,19 +16,18 @@ const userSchema = new mongoose.Schema({
     },
 });
 
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function (next) {
     bcrypt.hash(this.password, 10, (error, hash) => {
-        if(error) {
+        if (error) {
             return next(error);
         }
 
         this.password = hash;
-
         return next();
     });
 });
 
-userSchema.methods.validatePassword = function(passwordGuess) {
+userSchema.methods.validatePassword = function (passwordGuess) {
     return bcrypt.compare(passwordGuess, this.password);
 };
 
