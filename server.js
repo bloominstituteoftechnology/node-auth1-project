@@ -4,6 +4,8 @@ const cors = require("cors");
 const session = require("express-session");
 
 const User = require("./UserModel");
+const restrictedRouter = require("./restrictedRouter");
+const unrestrictedRouter = require("./unrestrictedRouter");
 const server = express();
 
 mongoose.connect("mongodb://localhost:27017/userAuthdb")
@@ -28,7 +30,7 @@ const sessionOptions = {
     name: "yadayadayada"
 }
 
-function restricted(req, res, next){
+const restricted = (req, res, next) => {
     if(req.session && req.session.username){
         next();
     }
@@ -39,77 +41,14 @@ function restricted(req, res, next){
     }
 }
 
+//global middleware
 server.use(express.json());
 server.use(cors());
-server.use(session(sessionOptions)); //global middleware
+server.use(session(sessionOptions));
+server.use('/api/vip', restricted, restrictedRouter);
+server.use('/api', unrestrictedRouter)
 
 
-server.get('/', (req, res) => {
-    console.log(req.session);
-    if(req.session && req.session.username) {
-        res.status(200).json({message: `welcome back ${req.session.username}`});
-    }
-    else {
-        res.status(401).json({message: "Login to enter"})
-    }});
-
-server.get('/api/users', restricted, (req, res) => {
-    User.find()
-        .then(user => {
-            res.status(200).json({users: user});
-        })
-        .catch(err => {
-            res.status(500).json({error:err.message, message:"You shall not pass!"})
-        })
-
-})
-server.post("/api/register", (req, res) => {
-    User.create(req.body)
-        .then(user => {
-            res.status(201).json(user);
-        })
-        .catch(err => {
-            res.status(500).json(err.message);
-        });
-});
-
-server.post("/api/login", (req, res) => {
-    const { username, password } = req.body;
-    User.findOne({ username })
-        .then(user => {
-            if(!user) {
-                res.status(404).json(`${username} not found`)
-            }
-
-            else {
-                user
-                    .passwordValidation(password)
-                    .then(passwordsMatch => {
-                        if (passwordsMatch){
-                            req.session.username = user.username;  
-                            res.status(200).json({Success: "Log-in successful"});
-                        } else{
-                            res.status(401).json({Error: "invalid password"});
-                        }
-                    })
-                    .catch(err => {
-                        res.status(500).json({Error: err.message});
-                    });
-            }
-        })
-});
-
-server.get("/api/logout", (req, res) => {
-    if(req.session){
-        req.session.destroy(err => {
-            if(err){
-                res.status(500).json(`error logging out`);
-            } else {
-                res.status(200).json(`Goodbye!!`)
-            }
-        });
-    }
-});
 
 let port = process.env.PORT || 5000;
 
