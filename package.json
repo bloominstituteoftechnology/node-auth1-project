@@ -2,7 +2,9 @@
   "dependencies": {
     "bcrypt": "^2.0.1",
     "express": "^4.16.3",
-    "mongoose": "^5.1.5"
+    "express-session": "^1.15.6",
+    "mongoose": "^5.1.5",
+    "session": "^0.1.0"
   },
   "name": "auth-i",
   "version": "1.0.0",
