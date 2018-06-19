@@ -33,4 +33,8 @@ userSchema.pre( 'save', function ( next )
     } );
     
 } );
+userSchema.methods.validatePassword = function ( passwordGuess )
+{
+  return  bcrypt.compare( passwordGuess, this.password );
+};
 module.exports = mongoose.model( 'Student', userSchema );
