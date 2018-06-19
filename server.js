@@ -18,10 +18,28 @@ server.get('/', (req, res) => {
 server.post('/api/register', (req, res) => {
     User.create(req.body)
     .then(user => {
-        res.status(201).json(user);
+        res.status(201).json({message: 'Logged In'});
     })
     .catch(err => {
         res.status(500).json(err)
+    });
+});
+
+server.post('/api/login', (req, res)=> {
+    const { username, password } = req.body;
+    User.findOne({ username })
+    .then(user => {
+        if(user) {
+           /*  bcrypt.compare(password, user.password).then(passwordsMatch => {
+            }).catch(err => {
+                res.send('error comparing passwords');
+            }); */
+        } else {
+            res.status(400).send('You shall not pass!');
+        }
+    })
+    .catch(err => {
+        res.send(err);
     });
 });
 
