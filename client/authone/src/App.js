@@ -9,8 +9,8 @@ class App extends Component {
   render() {
     return (
       <Switch>
-        <Route exact path="/" component={Header}/>
-        <Route exact path ="/restricted" component={Header}/>
+        <Route exact path="/" component={UserList}/>
+        <Route exact path ="/login" component={Header}/>
         <Route path="/restricted/users" component={UserList}/>
       </Switch>
     );

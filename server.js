@@ -33,7 +33,9 @@ function restricted(req, res, next){
         next();
     }
     else{
-        res.status(401).json("You shall not pass!")
+        (err) => {
+            res.status(401).json({Error: err.message});
+        }
     }
 }
 

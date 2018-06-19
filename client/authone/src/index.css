@@ -20,6 +20,34 @@ body {
   flex-direction:column;
   margin: 20px;
 }
-.user-name{
+.username{
   margin-bottom:20px;
+}
+
+.userslist-wrapper{
+  display:flex;
+  flex-direction:column;
+  align-items: center;
+  background:#408080;
+  height: 100vh;
+  border: 2px solid #979797;
+}
+.userslist-header{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  width:200px;
+  height:30px;
+  color: #ebe7ed;
+  text-decoration: underline;
+}
+.indiv-user{
+  display:flex;
+  justify-content: center;
+  align-items:center;
+  height: 30px;
+  width: 200px;
+  background: #ebe7ed;
+  padding:15px;
+  margin:15px;
 }
