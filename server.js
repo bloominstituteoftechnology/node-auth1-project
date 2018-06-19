@@ -11,17 +11,18 @@ mongoose.connect( 'mongodb://localhost' ).then( () =>
 const server = express();
 //middleware
 const sessionOptions = {
-    sercert: 'nobody tosses a dwarf',
+    secret: 'nobody tosses a dwarf',
     cookie: {
         maxAge: 1000 * 60 * 60
     },
     httpOnly: true,
     secure: false,
-    resavedUninitialzed: false,
+    resave: true,
+    saveUninitialized: false,
 };
 
 server.use( express.json() );
-server.use(session(sessionOptions))
+server.use( session( sessionOptions ) );
 
 
 server.get( '/api/users', ( req, res ) =>
@@ -37,9 +38,15 @@ server.get( '/api/users', ( req, res ) =>
         } );
 } )
 
-server.get( '/api/users', ( req, res ) =>
+server.get( '/', ( req, res ) =>
 {
-    res.send( { message: 'what is going on here' } );
+    if ( req.session && req.session.username )
+    {
+        res.status( 200 ).json( { message: `welcomeback${ req.session.username }` } )
+    } else
+    {
+        res.status( 401 ).json( { message: 'speak friend and enter' } );
+    }
 } );
 
 server.post( '/api/register', ( req, res ) =>
@@ -73,10 +80,20 @@ server.post( '/api/login', ( req, res ) =>
             if ( user )
             {
 
-                user.validatePassword( password )
+                user
+                    .validatePassword( password )
                     .then( passwordsMatch =>
                     {
-                        res.send( 'loging successful' );
+                        if ( passwordsMatch )
+                        {
+                            req.session.username = user.username;
+
+                            res.send( 'have a cookie' );
+                        } else
+                        {
+                            res.status( 401 ).send( 'invalid credentails' );
+                        }
+
                     } )
                     .catch( err =>
                     {
@@ -84,7 +101,7 @@ server.post( '/api/login', ( req, res ) =>
                     } );
             } else
             {
-                res.status( 404 ).send( 'user not found' );
+                res.status( 404 ).send( 'invalid creditials' );
             }
 
         } )
