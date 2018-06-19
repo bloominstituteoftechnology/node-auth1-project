@@ -5,6 +5,8 @@ const session = require('express-session');
 const User = require('./userModel.js');
 
 //middleware for protect when get users.  user needs to login before get users.  However, this middleware is local used in GET users route only.
+//in order to make it global, move this function to server.js. And pass it to the assigned route that want to protect.
+//server.use('/api/restricted', protected, whatever routes) 
 function protected(req, res, next) {
     if(req.session && req.session.username) {
         next();
@@ -15,7 +17,7 @@ function protected(req, res, next) {
 
 //start endpoints
 router
-    .route('/users')
+    .route('/restricted/users')  //add restricted to this route and pass prtected function to it.
     .get(protected, (req, res) => {
         User
             .find()
@@ -78,7 +80,7 @@ router
     .route('/logout')
     .get((req, res) => {
         if(req.session) {
-            req.session.destroy(error => {  //req.session.destroy is a method in session.
+            req.session.destroy(error => {  //req.session.destroy is a method in session. Session has been destroy.
                 if(error) {
                     res.send('Logging Out Error')
                 } else {
