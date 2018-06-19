@@ -6,6 +6,24 @@ const User = require('./userModel.js');
 
 //start endpoints
 router
+    .route('/users')
+    .get((req, res) => {
+        User
+            .find()
+            .then(user => {
+                if(user === null) {
+                    res.status(404).json('You shall NOT pass!')
+                } else {
+                    res.status(200).json(user)
+                }
+            })
+            .catch(error => {
+                res.status(500).json(erro)
+            })
+})
+
+
+router
     .route('/register')
     .post((req, res) => {
         User
@@ -17,6 +35,7 @@ router
                 res.status(500).json(error);
             });
 });
+
 
 // POST login 
 //grab credential
@@ -53,6 +72,7 @@ router
             })
 })
 
+
 router
     .route('/logout')
     .get((req, res) => {
@@ -66,5 +86,6 @@ router
             })
         }
 })
+
 
 module.exports = router;
