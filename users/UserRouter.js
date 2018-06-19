@@ -4,22 +4,23 @@ const session = require('express-session');
 
 const User = require('./userModel.js');
 
+//middleware for protect when get users.  user needs to login before get users.  However, this middleware is local used in GET users route only.
+function protected(req, res, next) {
+    if(req.session && req.session.username) {
+        next();
+    } else {
+        res.status(401).json({ message: 'You shall NOT pass!'})
+    }
+}
+
 //start endpoints
 router
     .route('/users')
-    .get((req, res) => {
+    .get(protected, (req, res) => {
         User
             .find()
-            .then(user => {
-                if(user === null) {
-                    res.status(404).json('You shall NOT pass!')
-                } else {
-                    res.status(200).json(user)
-                }
-            })
-            .catch(error => {
-                res.status(500).json(erro)
-            })
+            .then(user => res.status(200).json(user))
+            .catch(error => res.status(500).json(erro))
 })
 
 

@@ -21,6 +21,7 @@ const sessionOptions = {
     name: 'someone'
 };
 
+
 server.use(helmet());
 server.use(cors());
 server.use(express.json()); //this needs to be bofore route(line 15) becoz it needs to be json format before passing to the route.
