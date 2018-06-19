@@ -51,6 +51,39 @@ server.post( '/api/register', ( req, res ) =>
     
 } );
 
+server.post( '/api/login', ( req, res ) =>
+{
+    //grab credentials
+    const { username, password } = req.body;
+    //find the user to get to the store password
+    User.findOne( { username } )
+        .then( user =>
+        {
+        
+            if ( user )
+            {
+                bcrypt
+                    .compare( password, user.password )
+                    .then( passwordsMatch =>
+                    {
+                
+                    } )
+                    .catch( err =>
+                    {
+                        res.send( 'error comparing passwords' );
+                    } );
+                            
+            } else {
+                res.status( 404 ).send( 'user not found' );
+            }
+        } )
+        .catch( err =>
+        {
+        res.send(err)
+    })
+    
+} );
+
 server.listen( 5000, () =>
 {
     console.log( '/n*** API running on port 5000 ***/n' );
