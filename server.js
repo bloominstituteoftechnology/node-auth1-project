@@ -28,6 +28,15 @@ const sessionOptions = {
     name: "yadayadayada"
 }
 
+function restricted(req, res, next){
+    if(req.session && req.session.username){
+        next();
+    }
+    else{
+        res.status(401).json("You shall not pass!")
+    }
+}
+
 server.use(express.json());
 server.use(cors());
 server.use(session(sessionOptions)); //global middleware
@@ -42,7 +51,7 @@ server.get('/', (req, res) => {
         res.status(401).json({message: "Login to enter"})
     }});
 
-server.get('/api/users', (req, res) => {
+server.get('/api/users', restricted, (req, res) => {
     User.find()
         .then(user => {
             res.status(200).json(user);
