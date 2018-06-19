@@ -16,11 +16,11 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre('save', function(next) {
-    console.log('pre save hook');
+    //console.log('pre save hook');
 
     
-    bcrypt.hash(this.password, 12, (err, hash) => {
-        //means 2 ^12
+    bcrypt.hash(this.password, 10, (err, hash) => {
+        //means 2 ^10
         if (err) {
             return next(err);
         }
@@ -31,8 +31,8 @@ userSchema.pre('save', function(next) {
 
 userSchema.methods.validatePassword = function(passwordGuess) {
     return bcrypt.compare(passwordGuess, this.password)
-}
+};
 
-module.exports = mongoose.model('Person', userSchema)
+module.exports = mongoose.model('User', userSchema)
 
 
