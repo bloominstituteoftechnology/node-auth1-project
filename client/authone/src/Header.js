@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-// import axios from 'axios';
+import axios from 'axios';
+axios.defaults.withCredentials = true
 
 class Login extends Component {
     constructor(props){
@@ -12,21 +13,19 @@ class Login extends Component {
 
     //handleSubmit
     handleSubmit = (e) => {
-        e.preventDefault();
-
-        //is this done in front end?????
-        // const { username, password } = this.state
-        // let promise = axios.post("http://localhost:5000/api/login", { username, password })
-        //     promise
-                // .then(res => {
-                //     this.setState({
-                //         username: "", password: ""
-                //     });
-                //     console.log(this.state, "after post");
-                // })
-                // .catch(err => {
-                //     console.log(err.message);
-                // });
+        const { username, password } = this.state
+        let promise = axios.post("http://localhost:5000/api/login", { username, password })
+            promise
+                .then(res => {
+                    this.setState({
+                        username: "", password: ""
+                    });
+                    console.log(this.state, "after post");
+                    document.location.href=("http://localhost:3000/restricted/users");
+                })
+                .catch(err => {
+                    console.log(err.message);
+                });
     };
 
     //handleChange
@@ -65,7 +64,7 @@ class Login extends Component {
                         value={this.state.password} 
                         onChange={this.handleChange}/>
                </div>
-               <button disabled={!this.validateForm()} type="submit" onSubmit={this.handleSubmit}>Log-In</button>
+               <button disabled={!this.validateForm()} type="submit" onClick={this.handleSubmit}>Log-In</button>
             </div>
         );
     }

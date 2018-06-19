@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const session = require("express-session");
 
-const User = require("./UserModel");
 const restrictedRouter = require("./restrictedRouter");
 const unrestrictedRouter = require("./unrestrictedRouter");
 const server = express();
@@ -43,7 +42,7 @@ const restricted = (req, res, next) => {
 
 //global middleware
 server.use(express.json());
-server.use(cors());
+server.use(cors({origin: 'http://localhost:3000', credentials:true}));
 server.use(session(sessionOptions));
 server.use('/api/vip', restricted, restrictedRouter);
 server.use('/api', unrestrictedRouter)
