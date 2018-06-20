@@ -4,6 +4,7 @@ const server = express();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const session = require('express-session')
+const MongoStore = require('connect-mongo')(session);
 const User = require('./auth/UserModel');
 
 const vipRoutes = require('./vipRoutes')
@@ -22,8 +23,12 @@ const sessionConfig = {
     secure: false,
     resave: true,
     saveUninitialized: false,
-    name: 'noname'
-}
+    name: 'noname',
+    store: new MongoStore({
+        url: 'mongodb://localhost/sessions',
+        ttl: 60* 10,
+    }),
+};
 
 server.use(session(sessionConfig),
     (req, res, next) => {
