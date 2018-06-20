@@ -23,13 +23,14 @@ const sessionOptions = {
 
 
 server.use(helmet());
-server.use(cors());
+server.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 server.use(express.json()); //this needs to be bofore route(line 15) becoz it needs to be json format before passing to the route.
 server.use(session(sessionOptions));
 
 
 // add route here 
 const userRouter = require('./users/userRouter');
+
 
 server.use('/api', userRouter);
 
