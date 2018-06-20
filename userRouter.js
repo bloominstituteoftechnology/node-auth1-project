@@ -1,5 +1,6 @@
 const express = require('express')
 const bcrypt = require('bcrypt')
+const makeToken = require('./authFunction')
 
 const server = express()
 
@@ -39,21 +40,16 @@ router.post('/register', (req, res) => {
     })
 })
 
-router.post('/login', (req, res) => {
+router.put('/login', (req, res) => {
     const {username, password} = req.body
     User.findOne({username})
+    .populate()
     .then((user) => {
         const passCheck = bcrypt.compare(password, user.password)
         .then((passCheck) => {
             if(passCheck) {
-                console.log(req.session)
-                req.session.isLoggedIn = true
-                console.log('before', req.session.user)
-                req.session.user = user
-                req.session.somethingCompletelyIrrelevant = user.password
-                console.log('after', req.session.user)
-                console.log('after-after', req.session)
-                res.status(200).json({response:'login successful'})
+                const token = makeToken(user)
+                res.status(200).json({user, token})
             } else {
                 res.status(500).json({error: 'login unsuccessful'})
             }
