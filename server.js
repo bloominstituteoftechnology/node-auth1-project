@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const session = require("express-session");
+const MongoStore = require("connect-mongo")(session);
 
 const restrictedRouter = require("./restrictedRouter");
 const unrestrictedRouter = require("./unrestrictedRouter");
@@ -26,8 +27,12 @@ const sessionOptions = {
     secure: false,
     saveUninitialized: true,
     resave: true,
-    name: "yadayadayada"
-}
+    name: "yadayadayada",
+    store: new MongoStore ({ //stores info on session in session db so when you shut down server and restart it within the time limit it remembers your login info
+        url: 'mongodb://localhost/sessions',
+        ttl: 60 * 10, //time to live in seconds
+    }),
+};
 
 const restricted = (req, res, next) => {
     if(req.session && req.session.username){
