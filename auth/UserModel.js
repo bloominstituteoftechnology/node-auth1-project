@@ -16,16 +16,17 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function (next) {
     bcrypt.hash(this.password, 5, (err, hashed) => {
-        if(err) next(err);
+        if (err) next(err);
         this.password = hashed;
         next();
     })
 })
 
-userSchema.methods.validatePassword = function(plainTextPassword) {
-    return bcrypt.compare(plainTextPassword, this.password)
+userSchema.methods.validatePassword = function (passwordGuess) {
+    
+    return bcrypt.compare(passwordGuess, this.password)
 }
 
 

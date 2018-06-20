@@ -11,7 +11,7 @@ const vipRoutes = require('./vipRoutes')
 mongoose.connect('mongodb://localhost/cs10').then(() => {
     console.log('\n*** Connected to the database***\n')
 })
-
+// middleware
 
 const sessionConfig = {
     secret: 'text',
@@ -21,31 +21,41 @@ const sessionConfig = {
     httpOnly: true,
     secure: false,
     resave: true,
-    saveUninitialized: true,
-    name: 'NAME'
+    saveUninitialized: false,
+    name: 'noname'
 }
 
 server.use(session(sessionConfig),
-(req, res, next) => {
-    console.log('Session was created!', req.session);
-    next();
-}
+    (req, res, next) => {
+        console.log('Session was created!', req.session);
+        next();
+    }
 );
+
+
 
 server.use(express.json());
 
 server.get('/', (req, res) => {
-    res.status(200).json({ api: 'running...' })
+    if (req.sessions && req.session.username) {
+        res.status(200).json({ message: `welcome back ${req.session.username}` })
+    } else {
+        res.status(401).json({ message: 'speak friend and enter' })
+    }
 })
 
-const cookieMonster = (req, res, next) => {
+
+
+function cookieMonster(req, res, next) {
     if (req.session && req.session.username) {
         next()
     } else {
-        res.status(404).json('please log in');
+        res.status(401).json('please log in');
     }
     next();
 }
+
+
 server.use('/api/vip', cookieMonster, vipRoutes)
 
 server.post('/api/register', (req, res) => {
@@ -61,9 +71,9 @@ server.post('/api/register', (req, res) => {
 server.get('/api/users', cookieMonster, (req, res) => {
     User.find()
         .then(user => {
-            res.send(user);
+            res.json(user);
         }).catch(err => {
-            res.send(err)
+            res.json(err)
         })
 })
 
@@ -73,25 +83,40 @@ server.post('/api/login', (req, res) => {
         .then(user => {
             if (user) {
                 user.validatePassword(password)
-                    .then(result => {
-                        if (result) {
-                            req.session.username = user.username
-                            if (result) {
-                                res.status(200).json({ msg: Authenticated })
-                                result.validatePassword(password)
-                            } else {
-                                res.status(401).json({ err: "Please try again" })
-                            }
+                    .then(passwordsMatch => {
+                        if (passwordsMatch) {
+                            req.session.username = user.username;
+                            res.send('have a cookie');
+                        } else {
+                            res.send('invalid credentials');
                         }
                     })
-                    .catch((err) => {
-                        res.send({ innerErr: err })
+                    .catch(err => {
+                        res.status(401).send('error comparing passwords')
                     })
             }
+            else {
+                res.status(401).send('invalid credentials');
+            }
+        })
+        .catch(err => {
+            res.send(err);
         })
 
 })
 
+
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                res.send('error logging out');
+            } else {
+                res.send('goodbye')
+            }
+        })
+    }
+});
 // const vipRoutes = (req, res) => {
 //     res.status(200).json('Yipee we are VIP');
 // }
