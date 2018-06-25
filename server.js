@@ -1,6 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
+const connectMongo = require("connect-mongo");
+const MongoStore = connectMongo(session);
+//const MongoStore = require("connect-mongo")(session);
+//shorter way of doing the same thing
 
 const User = require("./auth/UserModel");
 //User aka the model/schema should generally be capitalized
@@ -23,7 +27,11 @@ const sessionOptions = {
   secure: false, //only use https
   resave: true,
   savedUninitialized: false,
-  name: "not telling you!" //changing name so it's not easy to crack
+  name: "not telling you!", //changing name so it's not easy to crack
+  store: new MongoStore({
+    url: "mongodb://localhost/sessions", // where the session data is stored
+    ttl: 60 * 10 //in seconds. aka cleans up sessions after 10 min
+  })
 };
 
 function protected(req, res, next) {
