@@ -5,6 +5,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 //const MongoStore = require('connect-mongo')(session);
 const jwt = require('jsonwebtoken');
+const utils = require('utils');
 
 const STATUS_USER_ERROR = 422;
 const BCRYPT_COST = 11;
@@ -112,6 +113,7 @@ server.post('/api/login', function(req, res, next) {
             const token = generateToken(user);
             // req.session.name = username;
             // res.status(200).json({success: true});
+            user = utils.getCleanUser;
             res.json({
               user,  
               token

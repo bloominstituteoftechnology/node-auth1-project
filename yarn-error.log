@@ -1,8 +1,8 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add bcrypt
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add utils
 
 PATH: 
-  C:\Users\hrehman000\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\hrehman000\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\Program Files\nodejs;C:\Program Files (x86)\Yarn\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit;C:\Users\hrehman000\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft VS Code\bin;C:\Users\hrehman000\AppData\Roaming\npm;C:\Users\hrehman000\AppData\Local\GitHubDesktop\bin;C:\Users\hrehman000\AppData\Local\Yarn\bin;C:\Program Files\MongoDB\Server\3.6\bin;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
+  C:\Users\hrehman000\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\hrehman000\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\Program Files\nodejs;C:\Program Files (x86)\Yarn\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit;C:\Users\hrehman000\AppData\Local\Microsoft\WindowsApps;C:\Users\hrehman000\AppData\Roaming\npm;C:\Users\hrehman000\AppData\Local\GitHubDesktop\bin;C:\Users\hrehman000\AppData\Local\Yarn\bin;C:\Program Files\MongoDB\Server\3.6\bin;C:\Program Files\Microsoft VS Code\bin;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
 
 Yarn version: 
   1.5.1
@@ -29,8 +29,11 @@ npm manifest:
       "body-parser": "^1.17.2",
       "chai": "^4.1.1",
       "chai-http": "^3.0.0",
+      "connect-mongo": "^2.0.1",
+      "cors": "^2.8.4",
       "express": "^4.15.4",
       "express-session": "^1.15.5",
+      "jsonwebtoken": "^8.2.1",
       "mocha": "^3.5.0",
       "mongoose": "^4.11.7"
     },
