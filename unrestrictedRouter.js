@@ -59,7 +59,7 @@ router
         .get(get);
 
 router
-    .route("/logout")
+    .route("/register")
         .post(postUser);
 
 module.exports = router;
