@@ -37,9 +37,11 @@ server.post("/api/login", function(req, res) {
     .first()
     .then(function(user) {
       if (user && bcrypt.compareSync(credentials.password, user.password)) {
+        loggedIn = true;
         res.send("welcome");
       } else {
         return res.status(401).json({ error: "Incorrect credentials" });
+        loggedIn = false;
       }
     })
     .catch(function(error) {
@@ -48,6 +50,17 @@ server.post("/api/login", function(req, res) {
 });
 
 // GET /api/users
+server.get("/api/users", (req, res) => {
+  if (loggedIn) {
+    db("users")
+      .then(users => {
+        res.status(200).json(users);
+      })
+      .catch(error => res.status(500).json(error.message));
+  } else {
+    res.status(401).json("You shall not pass!");
+  }
+});
 
 // run server
 const port = 8000;
