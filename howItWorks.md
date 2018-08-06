@@ -92,7 +92,7 @@ const knexConfig = require('../knexfile.js');
 module.exports = knex(knexConfig.development);
 ```
 
-7. Change `knexfile.js`
+7. Update the `knexfile.js`
 
 ```
   development: {
@@ -102,4 +102,41 @@ module.exports = knex(knexConfig.development);
     },
     useNullAsDefault: true,
   },
+```
+
+8. Add bcrypt to server.js and build out the POST /register method
+
+```
+const db = require('./auth/db');
+const bcrypt = require('bcryptjs');
+
+server.get('/users', (req, res) => {
+    db('users')
+        .then(users => {
+            res.status(200).json(users);
+        })
+        .catch(err => res.status(500).json(err));
+});
+
+server.post('/register', (req, res) => {
+
+// without this is before and with it is after!!
+	const user = req.body;
+	const hash = bcrypt.hashSync(user.password, 14);
+	user.password = hash;
+
+    db('users')
+        .insert(user)
+        .then(ids => {
+            db('users')
+                .where({ id: ids[0] })
+                .first()
+                .then(user => {
+                    res.status(201).json(user);
+                });
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        });
+});
 ```
