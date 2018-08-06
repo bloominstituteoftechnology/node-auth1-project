@@ -6,23 +6,26 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 
 /* 
-  REGISTER API
+  LOGIN API
 */
 
-// add a new user
+// login a user
 router.post('/', loginConstraints, async (req, res) => {
+  // req set in loginConstraints
   const { NAME, CLEARPASSWORD } = req;
 
   try {
-    const HASH = await usersDB.get(NAME);
-    if (HASH) {
-      const VALID = await bcrypt.compare(CLEARPASSWORD, HASH.password);
+    const USER = await usersDB.getByName(NAME);
+    if (USER) {
+      const VALID = await bcrypt.compare(CLEARPASSWORD, USER.password);
       if (VALID) {
+        req.session.userid = USER.id;
         res.status(200).send(`Logged in`);
       } else {
         res.status(500).send(`You shall not pass!`);
       }
     } else {
+      // error with the user, but don't let the hackers know!
       res.status(500).send(`You shall not pass!`);
     }
   } catch (err) {

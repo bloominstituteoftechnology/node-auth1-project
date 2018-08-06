@@ -1,8 +1,9 @@
 const express = require('express');
 const server = express();
+const session = require('express-session');
 
 const registerRoutes = require('./router/registerRouter');
-// const restrictedRoutes = require('./router/restrictedRouter');
+const restrictedRoutes = require('./router/restrictedRouter');
 const loginRoutes = require('./router/loginRouter');
 const usersRoutes = require('./router/usersRouter');
 
@@ -10,6 +11,14 @@ const errors = require('./middleware/errors');
 const {} = require('./middleware');
 
 server.use(express.json());
+server.use(
+  session({
+    secret: 'FiLQ39OotgLDn6A7ONNL0MjpMEpXodvArdzxzlvSYeSaC4sQQmt0pg34VOV5paJ',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  }),
+);
 const PORT = 3000;
 
 // base endpoints here
@@ -21,7 +30,7 @@ server.get('/', (req, res) => {
 server.use('/api/register', registerRoutes);
 server.use('/api/login', loginRoutes);
 server.use('/api/users', usersRoutes);
-// server.use('/api/restricted', restrictedRoutes);
+server.use('/api/restricted', restrictedRoutes);
 
 // error handling
 server.use(errors);
