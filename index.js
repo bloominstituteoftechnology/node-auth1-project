@@ -7,30 +7,33 @@ const session = require('express-session');
 const cors = require('cors');
 let isValid = null;
 
-const authenticate = async (req, res, next) => {
-  const credentials = req.body;
-  const foundUser = await db('users').where('username', credentials.username).first();
-  const userHash = foundUser.password;
-  isValid = bcrypt.compareSync(credentials.password, userHash);
-  next();
-};
-
 server.use(express.json());
 server.use(cors());
+server.use(session({
+  secret: "nfm0leyJQVuf6v/HDf4CbjFkRv3gGd+fOXULsdf/8rMtnZjgQdS5E006zoiFuVEAO4c="
+}));
 server.use((req, res, next) => {
-  console.log(req.originalUrl);
   if (req.originalUrl.includes('/api/restricted/')) {
-    if (isValid) {
+    if (req.session.validated) {
       next()
     } else {
       return res.status(401).send(`Status 401: Access Denied, please log in`);
     }
   }
   next();
-})
+});
+
+const authenticate = async (req, res, next) => {
+  const credentials = req.body;
+  const foundUser = await db('users').where('username', credentials.username).first();
+  const userHash = foundUser.password;
+  req.session.validated = bcrypt.compareSync(credentials.password, userHash);
+  next();
+};
 
 server.get('/api/users', (req, res) => {
-  if (isValid) {
+  console.log(req.session.validated);
+  if (req.session.validated) {
     const users = db('users').then(response => {
       res.status(200).json(response);
     }).catch(err => {
@@ -63,7 +66,7 @@ server.post('/api/register', async (req, res) => {
 })
 
 server.post('/api/login', authenticate, async (req, res) => {
-  if (isValid) {
+  if (req.session.validated) {
     res.status(200).json('Logged In')
   } else {
     res.status(401).json({
