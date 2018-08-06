@@ -1,7 +1,7 @@
 const server = require('express')()
 const db = require('../../data/dbConfig')
 const bcrypt = require('bcryptjs')
-
+// REGISTER
 function registerUser (req, res, next) {
   const credentials = req.body
 
@@ -37,9 +37,25 @@ function getUsers (req, res, next) {
     db('users').then((users) => res.status(200).json(users)).catch(next)
   }
 }
+// LOGIN
+function logIn (req, res, next) {
+  const credentials = req.body
+  db('users')
+    .where({ username: credentials.username })
+    .first()
+    .then((user) => {
+      if (!user || !bcrypt.compareSync(credentials.password, user.password)) {
+        return res.status(401).json({ error: 'Incorrect credentials' })
+      } else {
+        res.send('logged in')
+      }
+    })
+    .catch(next)
+}
 // Register
 server.post('/register', registerUser)
 // GET USERS
 server.get('/users', getUsers)
-
+// LOGIN
+server.post('/login', logIn)
 module.exports = server
