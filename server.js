@@ -2,7 +2,8 @@ const express = require('express');
 const server = express();
 
 const registerRoutes = require('./router/registerRouter');
-// const loginRoutes = require('./router/loginRouter');
+// const restrictedRoutes = require('./router/restrictedRouter');
+const loginRoutes = require('./router/loginRouter');
 const usersRoutes = require('./router/usersRouter');
 
 const errors = require('./middleware/errors');
@@ -18,7 +19,7 @@ server.get('/', (req, res) => {
 
 // register routes
 server.use('/api/register', registerRoutes);
-// server.use('/api/login', loginRoutes);
+server.use('/api/login', loginRoutes);
 server.use('/api/users', usersRoutes);
 // server.use('/api/restricted', restrictedRoutes);
 
