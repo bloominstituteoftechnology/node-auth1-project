@@ -3,7 +3,7 @@ exports.up = function(knex, Promise) {
         users.increments();
     
         users.string('username').notNullable();
-        users.string('password').notNullable();
+        users.string('password', 14).notNullable();
         users.boolean('completed').defaultTo(false);
       });
 };
