@@ -6,8 +6,22 @@ const bcrypt = require("bcrypt");
 
 server.use(express.json());
 
-server.get('/', (req, res) => {
-  res.send('up and running...');
+server.post('/api/register', (req, res) => {
+  const user = req.body;
+  const hash = bcrypt.hashSync(user.password, 11);
+  user.password = hash;
+  if (!user) {
+    res.status(400).json({ errorMessage: "Please provide a username and password." })
+    return;
+}
+  db('users')
+  .insert(user)
+  .then(id => {
+    return res.status(200).json({'message': 'User registered'})
+  })
+  .catch(err => {
+    res.status(500).json({'error': 'Could not register user'})
+  })
 });
 
 const port = 8080;
