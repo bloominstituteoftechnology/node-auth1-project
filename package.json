@@ -1,0 +1,31 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "- Authentication.\r - Express Middleware.\r - Password Hashing.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vcao2279/auth-i.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vcao2279/auth-i/issues"
+  },
+  "homepage": "https://github.com/vcao2279/auth-i#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "helmet": "^3.13.0",
+    "knex": "^0.15.2",
+    "npm": "^6.3.0",
+    "sqlite": "^2.9.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.3"
+  }
+}
