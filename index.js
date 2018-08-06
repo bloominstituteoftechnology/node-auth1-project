@@ -2,6 +2,7 @@
 const express = require("express");
 const db = require("./data/db");
 const server = express();
+const bcrypt = require("bcryptjs");
 
 // import routers
 
