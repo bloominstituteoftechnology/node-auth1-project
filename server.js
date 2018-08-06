@@ -1,7 +1,7 @@
 const codes = require('./data/statusCodes');
 
 const express = require('express');
-
+const session = require('express-session');
 const server = express();
 
 
@@ -11,6 +11,9 @@ const loginRoutes = require('./api/loginRouter');
 
 
 server.use(express.json());
+server.use(session({
+    secret: 'gahniNoh2Eeve8jiweerie9aequu5Tha8jahm8lie3iecha7La'
+}));
 server.use('/api/users', userRoutes);
 server.use('/api/register', registerRoutes);
 server.use('/api/login', loginRoutes);
