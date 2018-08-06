@@ -39,6 +39,29 @@ server.post('/api/register', (req, res) => {
 
     }
 })
+server.post('/api/login', (req, res) => {
+    const info = req.body;
+    
+  
+
+    if(info.userName && info.password) {
+        db('user')
+            .where({ userName: info.userName })
+            .first()
+            .then(user => {
+                if(!user || !bcrypt.compareSync(info.password, user.password)) {
+                    return res.status(401).json({ error: 'Incorect credentials '});
+                } else {
+                    res.send('welcome')
+                }
+            })
+            .catch(err => res.status(500).json(err))
+        
+        } else {
+            res.status(400).json({ message: 'Please provide both userName and password' })
+    
+        }
+})
 
 // const credentials = req.body;
 
