@@ -26,6 +26,7 @@ router.post('/login', (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(credentials.password, user.password)) {
+        req.session.userId = user.id;
         return res.status(200).json({'message':`${user.username} logged in.`});
       }
       return res.status(401).json({'error': 'You shall not pass!'});
@@ -36,7 +37,15 @@ router.post('/login', (req, res) => {
 });
 
 router.get('/users', (req, res) => {
-  res.status(200).json('users');
+  if (req.session.userId) {
+    db.select('id', 'username', 'created_at').from('users')
+    .then( users => {
+      return res.status(200).json(users);
+    })
+    .catch(err => res.status(500).json(err));
+  } else {
+    return res.status(401).json({'error': 'You shall not pass!'});
+  }
 });
 
 module.exports = router;
