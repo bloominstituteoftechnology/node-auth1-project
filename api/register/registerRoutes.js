@@ -1,13 +1,12 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const db = require('../../data/db');
+const { postCheck } = require('../../middleware/required');
 
 const router = express.Router();
 
-router.post('/', (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) return res.status(400).json({ errorMessage: "Please provide a username and password!" });
-    const user = { username, password }
+router.post('/', postCheck, (req, res) => {
+    const user = { username: req.username, password: req.password }
     const hash = bcrypt.hashSync(user.password, 14);
     user.password = hash;
     db('users')
