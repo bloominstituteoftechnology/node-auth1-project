@@ -3,10 +3,8 @@ const db = require('./data/db.js');
 const bcrypt = require('bcryptjs');
 
 const server = express();
-
 server.use(express.json());
 
-// Endpoints Here
 server.get('/users', (req, res) => {
   db('users')
     .then(users => res.status(200).json(users))
@@ -46,4 +44,4 @@ server.post('/login', (req, res) => {
     })
 })
 
-server.listen(3300, function () { console.log('API is running on 3300') });
+server.listen(3300, () => console.log('API is running on 3300'));
