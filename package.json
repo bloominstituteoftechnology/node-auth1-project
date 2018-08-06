@@ -12,6 +12,7 @@
     "cors": "^2.8.4",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
+    "knex": "^0.15.2",
     "session": "^0.1.0"
   },
   "devDependencies": {
