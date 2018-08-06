@@ -11,6 +11,7 @@ router.post('/', postCheck, (req, res) => {
         .where('username', credentials.username).first()
         .then(response => {
             if (!response || !bcrypt.compareSync(credentials.password, response.password)) return res.status(401).json({ error: 'You shall not pass!' });
+            req.session.userId = response.id;
             return res.send('Logged in');
         })
         .catch(err => res.status(500).json({ error: "Couldn't save the user to the database." }))
