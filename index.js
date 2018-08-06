@@ -5,7 +5,6 @@ const bcrypt  = require('bcryptjs');
 const db      = require('./data/dbConfig');
 let isValid   = null;
 
-server.use(express.json());
 const authenticate = async (req, res, next) => {
   const credentials = req.body;
   const foundUser = await db('users').where('username', credentials.username).first();
@@ -14,9 +13,18 @@ const authenticate = async (req, res, next) => {
   next();
 };
 
-server.get('/', (req, res) => {
-   res.status(200).send('HellO!');
- });
+server.use(express.json());
+server.use((req, res, next) => {
+  console.log(req.originalUrl);
+  if (req.originalUrl.includes('/api/restricted/')) {
+    if (isValid) {
+      next()
+    } else {
+        return res.status(401).send(`Status 401: Access Denied, please log in`);
+    }
+  }
+  next();
+})
 
  server.get('/api/users', (req, res) => {
    if (isValid) {
@@ -56,8 +64,12 @@ server.get('/', (req, res) => {
    }
  });
 
- server.get('/api/users', (req, res) => {
+ server.get('/api/restricted/something', (req, res) => {
+   res.status(200).send('Somethiiiiing!')
+ })
 
+ server.get('/api/restricted/', (req, res) => {
+   res.status(200).send('aaaaaaaaa!');
  })
 
 server.listen(PORT, () => console.log(`App is listening on ${PORT}`))
