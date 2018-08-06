@@ -7,6 +7,7 @@ const server = express();
 
 server.use(express.json());
 
+// Not fully implemented, only here to test that passwords have been hashed
 server.get('/api/users', (req, res) => {
   db('users')
     .then(response => {
