@@ -73,8 +73,8 @@ server.post('/api/login', (req, res) => {
     })
     .catch(err => {
       res
-        .status(500)
-        .json({ error: 'Operation could not be performed.' })
+        .status(401)
+        .json({ error: 'Please enter valid credentials' })
         .end()
     })
 })
