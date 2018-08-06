@@ -23,7 +23,7 @@ server.post('/register', (req, res) => {
   //Insert Password
   db('user').insert({username,password})
     .then(data =>{
-      res.status(200).json(data)
+      data.length > 1 ? res.status(200).json({msg:"user registered"}) : res.status(500).json({msg:"user NOT registered"})
     })
     .catch(err => res.status(500).json({err}))
 })
