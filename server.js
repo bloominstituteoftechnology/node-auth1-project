@@ -21,6 +21,26 @@ server.get('/', (req, res)=> {
 });
 
 
+server.get('/api/users', (req, res)=> {
+	
+	if(req.session.logged){
+		db('users')
+		.then(response =>{
+			res.status(200).json(response);
+		
+		})
+		
+		.catch(err => {
+			res.status(500).json(err);
+		});
+	
+	}
+
+	else res.status(401).send('You shall not pass');
+});
+
+
+
 
 server.post('/api/register', (req, res)=> {
 
@@ -58,11 +78,10 @@ server.post('/api/login', (req, res)=> {
 	.first()
 	.then(user =>{
 		if(user && bcrypt.compareSync(credentials.password, user.password)) {
-			const sessionData = req.session;
-			sessionData.logged = true;
-			sessionData.cookie.userId = user.id;
+			req.session.logged = true;
+			req.session.cookie.userId = user.id;
 
-			res.status(200).send(`Logged In with userId ${sessionData.cookie.userId}`);
+			res.status(200).send(`Logged In with userId ${req.session.cookie.userId}`);
 		}
 		else{
 			res.status(401).json({error: 'Incorrect credentials'});
