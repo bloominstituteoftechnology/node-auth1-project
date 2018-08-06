@@ -6,17 +6,9 @@ const server = express()
 
 server.use(express.json())
 
-/*
-server.use(function (req, res) {
-  if (req.method === 'POST') {
-    if (!req.body || !req.username || !req.password) {
-      res.status(400).send('please provide username and password')
-    }
-  }
-})
-*/
-
 server.post('/register', function (req, res, next) {
+   checkBodyCredentials(req, res)
+
    bcrypt.hash(req.body.password, 14, function (err, hash) {
    
     if (err) {
@@ -42,6 +34,8 @@ server.post('/register', function (req, res, next) {
 })
 
 server.post('/login', function (req, res, next) {
+  checkBodyCredentials(req, res)
+
   db('users')
     .where('username', '=', req.body.username)
     .first()
@@ -64,6 +58,12 @@ server.post('/login', function (req, res, next) {
     })
 })
 
+function checkBodyCredentials (req, res) {
+  if (!req.body || !req.username || !req.password) {
+    return res.status(400).send('please provide username and password')
+  }
+}
+
 server.use(function (err, req, res, next) {
   res.status(500).json(err)
 })
@@ -71,5 +71,3 @@ server.use(function (err, req, res, next) {
 server.listen(3456, function () {
   process.stdout.write('magic happening at :3456\n')
 })
-
-
