@@ -3,11 +3,11 @@ const mappers = require("../helpers/mappers");
 const tbl = 'users';
 
 module.exports = {
-    get: function (id) {
+    get: function (record) {
         let query = db(`${tbl} as t`);
 
-        if (id) {
-            query.where("t.id", id).first();
+        if (record) {
+            query.where("t.username", record.username).first();
 
             const promises = [query];
 
@@ -21,26 +21,5 @@ module.exports = {
         return query.then(records => {
             return records.map(record => mappers.recordToBody(record));
         });
-    },
-    getSubRecords: function (id) {
-        return db('recipes as r')
-            .where('r.dishes_id', id)
-            .then(records => records.map(record => mappers.recordToBody(record)));
-    },
-    add: function(record) {
-        return db(tbl)
-            .insert(record)
-            .then(([id]) => this.get(id));
-    },
-    edit: function(id, changes) {
-        return db(tbl)
-            .where('id', id)
-            .update(changes)
-            .then(count => (count > 0 ? this.get(id) : null));
-    },
-    drop: function(id) {
-        return db(tbl)
-            .where('id', id)
-            .del();
     }
 };

@@ -11,9 +11,9 @@ router.post('/', async (req, res) => {
         newRecord.password = hash;
         const record = await db.add(newRecord);
 
-        res.status(200).json(newRecord);
+        res.status(200).json({message: 'Register Successful'});
     } catch (err) {
-        res.status(500).json(err);
+        res.status(500).json({error: err});
     }
 });
 

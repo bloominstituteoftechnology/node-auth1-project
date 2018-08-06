@@ -1,16 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../data/helpers/loginDb');
+const db = require('../data/helpers/userDb');
+const bcrypt = require('bcryptjs');
 
 // login
 router.post('/', async (req, res) => {
     try {
         const newRecord = { ...req.body };
-        const record = await db.add(newRecord);
+        const record = await db.get(newRecord);
+        
+        if(record.username && bcrypt.compareSync(newRecord.password, record.password)) {
+            res.status(200).json({message: 'Login Successful'});
+        } else {
+            res.status(401).json({message: 'Incorrect Credentials'});
+        }
 
-        res.status(200).json(newRecord);
     } catch (err) {
-        res.status(500).json(err);
+        res.status(500).json({error: err});
     }
 });
 
