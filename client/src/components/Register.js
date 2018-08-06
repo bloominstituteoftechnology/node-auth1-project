@@ -16,7 +16,13 @@ class Register extends React.Component {
     }
 
     register = () => {
+        if (this.state.username === '' || this.state.password === '') {
+            alert('Please enter a username and password!');
+            return;
+        }
+
         const user = { username: this.state.username, password: this.state.password }
+        
         axios
             .post('http://localhost:8000/api/register', user)
             .then(response => this.props.history.push('/login'))

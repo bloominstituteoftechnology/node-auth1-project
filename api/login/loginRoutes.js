@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/', postCheck, (req, res) => {
     const credentials = { username: req.username, password: req.password }
     db('users')
-        .where('username', credentials.username).first()
+        .whereRaw('LOWER("username") = ?', credentials.username.toLowerCase()).first()
         .then(response => {
             if (!response || !bcrypt.compareSync(credentials.password, response.password)) return res.status(401).json({ error: 'You shall not pass!' });
             req.session.userId = response.id;
