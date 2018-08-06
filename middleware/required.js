@@ -6,4 +6,10 @@ function postCheck(req, res, next) {
     next();
 }
 
+function loginCheck(req, res, next) {
+    if (!req.session.userId) return res.status(401).json({ errorMessage: "You shall not pass!" });
+    next();
+}
+
 module.exports.postCheck = postCheck;
+module.exports.loginCheck = loginCheck;
