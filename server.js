@@ -16,7 +16,7 @@ server.use(
     secret: 'FiLQ39OotgLDn6A7ONNL0MjpMEpXodvArdzxzlvSYeSaC4sQQmt0pg34VOV5paJ',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false },
+    cookie: { secure: false }, // must be false, unless using HTTPS
   }),
 );
 const PORT = 3000;

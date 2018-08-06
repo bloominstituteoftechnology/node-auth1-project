@@ -26,6 +26,11 @@ router.post('/', loginConstraints, async (req, res) => {
       }
     } else {
       // error with the user, but don't let the hackers know!
+      // take the same amount of time as if legit checking
+      await bcrypt.compare(
+        CLEARPASSWORD,
+        '$2a$14$plRslh.07bHu/BWHztxq9.20YIJluMBo9JhdIOCJOQjvAZHmbPV6a',
+      );
       res.status(500).send(`You shall not pass!`);
     }
   } catch (err) {
