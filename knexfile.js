@@ -7,7 +7,7 @@ module.exports = {
     connection: {
       filename: './data/auth.db'
     },
-    userNullAsDefault: true
+    useNullAsDefault: true
   },
 
   staging: {
