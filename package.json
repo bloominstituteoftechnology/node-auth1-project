@@ -1,0 +1,18 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/ekm79/auth-i.git",
+  "author": "Erin Meredith <ekmeredith@att.net>",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.16.3",
+    "knex": "^0.15.2",
+    "nodemon": "^1.18.3",
+    "sqlite": "^2.9.2"
+  },
+  "scripts": {
+    "start": "nodemon index.js"
+  }
+}
