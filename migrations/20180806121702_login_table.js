@@ -6,7 +6,7 @@ exports.up = function(knex, Promise) {
       .unsigned()
       .notNullable()
       .references("username")
-      .inTable("register")
+      .inTable("users")
       .onUpdate("CASCADE")
       .onDelete("CASCADE");
     tbl
@@ -14,7 +14,7 @@ exports.up = function(knex, Promise) {
       .unsigned()
       .notNullable()
       .references("password")
-      .inTable("register")
+      .inTable("users")
       .onUpdate("CASCADE")
       .onDelete("CASCADE");
   });

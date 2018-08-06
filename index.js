@@ -10,7 +10,42 @@ server.get("/api", (req, res) => {
 
 server.post("/api/register", (req, res) => {
   const user = req.body;
+  const hash = bcrypt.hashSync(user.password, 14);
+  user.password = hash;
   console.log(user);
+  db("users")
+    .insert(user)
+    .then(ids => {
+      db("users")
+        .where({ id: ids[0] })
+        .first()
+        .then(user => {
+          res.status(201).json(user);
+        });
+    })
+    .catch(err => {
+      res.status(401).json({ err });
+    });
+});
+
+server.post("/api/login", (req, res) => {
+  const credentials = req.body;
+  // const hash = bcrypt.hashSync(users.password, 14);
+  // credentials.password = hash;
+  console.log(credentials);
+  db("users")
+    .where({ username: credentials.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(credentials.password, user.password)) {
+        res.send("Hello, Welcome");
+      } else {
+        return res.status(401).json({ error: "Incorrect credentials" });
+      }
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
 });
 
 const port = 9000;
