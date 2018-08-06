@@ -40,6 +40,24 @@ server.post('/register', (req, res) => {
         });
 });
 
+server.post('/login', (req, res) => {
+	const credentials = req.body;
+
+    db('users')
+        .where({email: credentials.email})
+        .first()
+        .then(user => {
+            if (user && bcrypt.compareSync(credentials.password, user.password)) {
+                res.send('Logged in')
+            } else {
+                res.status(401).json({ error: 'You shall not pass'})
+            }
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        });
+});
+
 const port = 8000;
 
 server.listen(port, function() {

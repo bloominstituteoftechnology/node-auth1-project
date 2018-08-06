@@ -140,3 +140,25 @@ server.post('/register', (req, res) => {
         });
 });
 ```
+
+9. Build out the POST /login method: (1) set `credentials = req.body`, (2) find user by email, (3) make sure `user.password` and `credentials.password` match using `compareSync`, (4) add the appropriate messages for success or error
+
+```
+server.post('/login', (req, res) => {
+	const credentials = req.body;
+
+    db('users')
+        .where({email: credentials.email})
+        .first()
+        .then(user => {
+            if (user && bcrypt.compareSync(credentials.password, user.password)) {
+                res.send('Logged in')
+            } else {
+                res.status(401).json({ error: 'You shall not pass'})
+            }
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        });
+});
+```
