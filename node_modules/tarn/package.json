@@ -1,0 +1,39 @@
+{
+  "name": "tarn",
+  "version": "1.1.4",
+  "description": "Simple and robust resource pool for node.js",
+  "main": "lib/tarn.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha --slow 10 --timeout 5000 --reporter spec tests.js",
+    "test-bail": "mocha --slow 10 --timeout 5000 --reporter spec --bail tests.js"
+  },
+  "author": {
+    "name": "Sami Koskimäki",
+    "email": "sami.koskimaki@vincit.com",
+    "url": "https://github.com/koskimas"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vincit/tarn.js.git"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "keywords": [
+    "pool",
+    "pooling",
+    "throttle"
+  ],
+  "files": [
+    "README.md",
+    "LICENSE",
+    "lib/*"
+  ],
+  "devDependencies": {
+    "bluebird": "^3.5.1",
+    "expect.js": "^0.3.1",
+    "mocha": "^4.1.0"
+  },
+  "dependencies": {}
+}
