@@ -1,20 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const bcrypt = require('bcrypt');
-const mongoose = require('mongoose');
-
-let User;
-mongoose.connect('mongodb://localhost/test');
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => {
-  console.log('connected');
-  const userSchema = new mongoose.Schema({
-    name: String,
-    hash: String,
-  });
-  User = mongoose.model('User', userSchema);
-});
+const knex = require('knex')(require('./knexfile').development);
 
 const server = express();
 server.use(morgan('dev'));
@@ -30,10 +17,14 @@ server.post('/api/register', (req, res) => {
   bcrypt
     .hash(password, 14)
     .then((hashedPW) => {
-      const newUser = new User({ name: username, hash: hashedPW });
-      newUser.save().then(() => {
-        res.status(200).json({ message: 'Registration successful.' });
-      });
+      knex('users')
+        .insert({ name: username, hash: hashedPW })
+        .then(() => {
+          res.status(200).json({ message: 'Registration successful.' });
+        })
+        .catch(() => {
+          res.status(500).json({ message: 'Registration did not succeed.' });
+        });
     })
     .catch((err) => {
       res.status(500).json({ message: 'Registration did not succeed.' });
@@ -45,9 +36,11 @@ server.post('/api/login', (req, res) => {
   if (!username || !password) {
     res.status(406).json({ message: 'Please provide a username and password.' });
   }
-  User.findOne({ name: username })
-    .then((user) => {
-      const storedPW = user.hash;
+  knex('users')
+    .select('hash')
+    .where('name', '=', username)
+    .first()
+    .then(({ hash: storedPW }) => {
       if (!storedPW) {
         res.status(400).json({
           message:
