@@ -7,15 +7,22 @@ module.exports = {
         const query = db('users');
 
         if (id) {
-            const result = query.where('id', id);
+            const result = query.where('id', id).first();
             return result;
         }
 
         return query;
     },
 
-    post: function(newUser) {
-        const query = db('users').insert(newUser);
-        return query;
+    post: async function(newUser) {
+        [id] = await db('users').insert(newUser);
+        return this.get(id);
+    },
+
+    login: function(username) {
+        const query = db('users').select('password').where('username', username);
+        return query.then(([pw]) => {
+            return pw.password
+        })
     }
 }
