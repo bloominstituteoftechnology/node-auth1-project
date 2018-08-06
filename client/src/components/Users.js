@@ -20,6 +20,13 @@ class Users extends React.Component {
             .catch(err => console.log(err));
     }
 
+    logout = () => {
+        axios
+            .get('http://localhost:8000/api/logout')
+            .then(() => window.location.reload())
+            .catch(err => console.log(err));
+    }
+
     render() {
         if (!this.state.loggedin) {
             return (
@@ -33,6 +40,8 @@ class Users extends React.Component {
 
         return (
             <div>
+                <h1>Users</h1>
+                <button onClick={this.logout}>Log Out</button>
                 {this.state.users.map(user => <User key={user.id} user={user} />)}
             </div >
         );
