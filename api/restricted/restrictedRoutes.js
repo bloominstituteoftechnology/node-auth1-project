@@ -5,6 +5,10 @@ const router = express.Router();
 
 router.use(loginCheck);
 
+router.get('/', (req, res) => {
+    res.send('Restricted');
+})
+
 router.get('/something', (req, res) => {
     res.send('Something');
 })
