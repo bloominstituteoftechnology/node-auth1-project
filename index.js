@@ -6,7 +6,7 @@ const server = express();
 const sessionOptions = {
   secret: 'nobody tosses a dwarf!',
   cookie: {
-    maxAge: 1000 * 60 * 60 // an hour
+    maxAge: 1000 * 60 * 60 
   },
   httpOnly: true,
   secure: false,
@@ -19,7 +19,6 @@ server.use(express.json());
 
 function protected(req, res, next) {
   //console.log(req.session)
-  console.log(req.session.username)
   if (req.session && req.session.username) {
     next();
   } else {
@@ -36,6 +35,7 @@ server.get('/api/users', protected, (req, res) => {
 })
 
 server.get('/', (req, res) => {
+  console.log(req.session.username)
   if (req.session && req.session.username) {
     res.status(200).json({ message: ` welcome back ${req.session.username}` })
   } else {
@@ -62,28 +62,18 @@ server.post('/api/login', (req, res) => {
   const { id } = req.params;
   db
     ('User')
-    .where({ id })
+    .where({ username })
     .then(user => {
-      console.log(id)
-      if (user) {
-        user
-          .validatePassword(password)
-          .then(passwordsMatch => {
-            // continue if password match
-            if (passwordsMatch) {
-              req.session.username = user.username;
-              res.send('You are logged in')
-            } else {
-              res.status(401).send('invalid password')
-            }
-          })  
-          .catch(err => {
-            res.send('error comparing passwords')
-          });
+      //console.log(user)
+      if (user[0].password === password) {
+        //console.log(user, password)
+
+        req.session.username = username;
+        res.send('You are logged in')
       } else {
-        res.status(401).send('invalid credentials')
+        res.status(401).send('invalid password')
       }
-    })
+    })  
     .catch(err => {
       res.send(err)
     })
