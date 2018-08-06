@@ -1,10 +1,9 @@
 const express = require('express');
 const server = express();
 
-const db = require('./data/db');
-
-const projectsRoutes = require('./router/projectsRouter');
-const actionsRoutes = require('./router/actionsRouter');
+const registerRoutes = require('./router/registerRouter');
+// const loginRoutes = require('./router/loginRouter');
+const usersRoutes = require('./router/usersRouter');
 
 const errors = require('./middleware/errors');
 const {} = require('./middleware');
@@ -18,9 +17,10 @@ server.get('/', (req, res) => {
 });
 
 // register routes
-server.use('/api/register', projectsRoutes);
-server.use('/api/login', actionsRoutes);
-server.use('/api/users', actionsRoutes);
+server.use('/api/register', registerRoutes);
+// server.use('/api/login', loginRoutes);
+server.use('/api/users', usersRoutes);
+// server.use('/api/restricted', restrictedRoutes);
 
 // error handling
 server.use(errors);

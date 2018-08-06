@@ -1,102 +1,35 @@
 const express = require('express');
-const actionsDB = require('../data/helpers/actionsDB');
+const registerDB = require('../data/helpers/registerDB');
 const { registerConstraints } = require('../middleware');
 const router = express.Router();
 
+const bcrypt = require('bcryptjs');
+
 /* 
-  ACTIONS API
+  REGISTER API
 */
 
-// get all actions
-router.get('/', async (req, res) => {
-  try {
-    const actions = await actionsDB.get();
-    if (actions.length === 0) {
-      res.status(200).json({ message: 'There are currently no actions' });
-    } else {
-      res.status(200).json(actions);
-    }
-  } catch (err) {
-    res.status(500).send(`${err}`);
-  }
-});
+// add a new user
+router.post('/', registerConstraints, async (req, res) => {
+  const { NAME, CLEARPASSWORD } = req;
 
-// get an action by id
-router.get('/:id', async (req, res) => {
-  const ID = req.params.id;
-
-  // make sure we have an action
   try {
-    const action = await actionsDB.get(ID);
-    if (typeof action === 'undefined') {
-      res.status(400).json({ message: `There is no action with id:${ID}` });
-    } else {
-      // we do, so get the contexts
-      try {
-        const contexts = await actionsDB.getContexts(ID);
-        let displayObj = { ...action };
-        let contextArr = [];
-        for (let i = 0; i < contexts.length; i++) {
-          contextArr.push(contexts[i].name);
-        }
-        if (contextArr.length > 0) {
-          displayObj['Contexts'] = contextArr;
-        } else {
-          displayObj['Contexts'] = 'none';
-        }
-        res.status(200).json(displayObj);
-      } catch (err) {
-        res.status(500).send(`${err}`);
+    // hash the password
+    const HASH = await bcrypt.hash(CLEARPASSWORD, 14);
+    const USER = { name: NAME, password: HASH };
+    try {
+      const response = await registerDB.insert(USER);
+      if (response) {
+        res
+          .status(200)
+          .json({ message: `User with id:${response.id} has been added.` });
+      } else {
+        res.status(400).json({
+          error: `Undetermined error adding project.`,
+        });
       }
-    }
-  } catch (err) {
-    res.status(500).send(`${err}`);
-  }
-});
-
-// update an action
-router.put('/:id', actionConstraints, async (req, res) => {
-  const ID = req.params.id;
-  const { NOTES, DESCRIPTION } = req;
-
-  const ACTION = { notes: NOTES, description: DESCRIPTION };
-
-  // make sure we have the project to update
-  try {
-    const action = await actionsDB.get(ID);
-    if (typeof action === 'undefined') {
-      res.status(400).json({ message: `There is no action with id:${ID}` });
-    } else {
-      // we do! try to update the action
-      try {
-        const action = await actionsDB.update(ID, ACTION);
-        res.status(200).json({ message: `action id:${ID} has been updated.` });
-      } catch (err) {
-        res.status(500).send(`${err}`);
-      }
-    }
-  } catch (err) {
-    res.status(500).send(`${err}`);
-  }
-});
-
-// delete a action
-router.delete('/:id', async (req, res) => {
-  const ID = req.params.id;
-
-  // make sure we have the action to delete
-  try {
-    const action = await actionsDB.get(ID);
-    if (typeof action === 'undefined') {
-      res.status(400).json({ message: `There is no action with id:${ID}` });
-    } else {
-      // we do! try to delete the action
-      try {
-        const action = await actionsDB.remove(ID);
-        res.status(200).json({ message: `Action id:${ID} has been deleted.` });
-      } catch (err) {
-        res.status(500).send(`${err}`);
-      }
+    } catch (err) {
+      res.status(500).send(`${err}`);
     }
   } catch (err) {
     res.status(500).send(`${err}`);
