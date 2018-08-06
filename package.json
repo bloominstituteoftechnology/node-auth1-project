@@ -1,0 +1,16 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/rushman7/auth-i.git",
+  "author": "<arthurpisakhov1@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+       "start": "nodemon server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.16.3",
+    "nodemon": "^1.18.3"
+  }
+}
