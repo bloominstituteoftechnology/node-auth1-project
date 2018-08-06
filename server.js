@@ -5,6 +5,7 @@ const session = require('express-session');
 const registerRoutes = require('./router/registerRouter');
 const restrictedRoutes = require('./router/restrictedRouter');
 const loginRoutes = require('./router/loginRouter');
+const logoutRoutes = require('./router/logoutRouter');
 const usersRoutes = require('./router/usersRouter');
 
 const errors = require('./middleware/errors');
@@ -29,6 +30,7 @@ server.get('/', (req, res) => {
 // register routes
 server.use('/api/register', registerRoutes);
 server.use('/api/login', loginRoutes);
+server.use('/api/logout', logoutRoutes);
 server.use('/api/users', usersRoutes);
 server.use('/api/restricted', restrictedRoutes);
 
