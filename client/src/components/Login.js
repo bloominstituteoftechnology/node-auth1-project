@@ -6,8 +6,8 @@ class Login extends React.Component {
         super();
 
         this.state = {
-            username: 'DirupT',
-            password: 'Test'
+            username: '',
+            password: ''
         }
     }
 
@@ -26,8 +26,9 @@ class Login extends React.Component {
     render() {
         return (
             <form onSubmit={event => event.preventDefault()}>
+                <h1>Login</h1>
                 <input type='text' placeholder='Username' name='username' value={this.state.username} onChange={this.handleInput} />
-                <input type='text' placeholder='Password' name='password' value={this.state.password} onChange={this.handleInput} />
+                <input type='password' placeholder='Password' name='password' value={this.state.password} onChange={this.handleInput} />
                 <button onClick={this.login}>Log In</button>
             </form>
         );

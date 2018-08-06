@@ -26,6 +26,7 @@ class Users extends React.Component {
                 <div>
                     <p>You need to be logged in to view this!</p>
                     <button onClick={() => this.props.history.push('/login')}>Login</button>
+                    <button onClick={() => this.props.history.push('/register')}>Register</button>
                 </div>
             );
         }
