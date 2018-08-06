@@ -39,10 +39,33 @@ server.post('/api/register', (req, res)=> {
 	})
 
 	.catch(err =>{
-		res.status(500).json(err.message);
+		if(err.message.includes('UNIQUE constraint failed: users.username')) res.status(500).json({errorMessage:"username already taken, use another username"});
+		else res.status(500).json(err);
 	});
 });
 
+
+server.post('/api/login', (req, res)=> {
+	
+	const credentials = req.body;
+
+	db('users')
+	.where({username: credentials.username})
+	.first()
+	.then(user =>{
+		if(user && bcrypt.compareSync(credentials.password, user.password)) {
+			res.status(200).send('Welcome');
+		}
+		else{
+			res.status(401).json({error: 'Incorrect credentials'});
+		}
+	})
+	
+	.catch(err => {
+		res.status(500).json(err);
+	});
+
+});
 
 
 server.use((req, res)=> {
