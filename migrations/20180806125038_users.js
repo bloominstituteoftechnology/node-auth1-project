@@ -1,16 +1,16 @@
 
 exports.up = function(knex, Promise) {
 	
-return knex.schema.createTable('users', function(user) {
-        user.increments('id').primary();
+return knex.schema.createTable('users', function(t) {
+        t.increments('id').primary();
 
-      user
+      t
       .text('username')
       .notNullable()
       .unique()
       .defaultTo('Not Provided');
 
-      user
+      t
       .text('password')
       .notNullable()
       .defaultTo('Not Provided');
