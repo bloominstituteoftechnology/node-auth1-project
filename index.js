@@ -5,12 +5,21 @@ const db = require('./data/db.js');
 const server = express();
 server.use(express.json());
 
+/*function checkLogIn(user) {
+    return function(req, res, next){
+    if(!user.isLoggedIn){
+        return res.status(403).json({error: 'You must be logged in to view.'})
+    }
+    next();
+}
+}*/
 
-server.get('/api/users', (req, res) => {
-    db('user')
+
+server.get('/api/restricted/users', (req, res) => {
+    db('users')
     .then(function(user) {
-        if(user.isLoggedIn===true) {
-            return res.status(200).json(user)
+        if(user.isLoggedIn) {
+            return res.status(200).json(db('users').select('username'))
         }
     })
     .catch(err => {
