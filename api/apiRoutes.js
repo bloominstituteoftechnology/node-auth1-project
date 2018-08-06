@@ -13,13 +13,26 @@ router.post('/register', (req, res) => {
     .then(id => {
       return res.status(200).json({'message':`${user.username} added!`});
     })
-    .catch(e => {
-      return res.status(500).json(e);
+    .catch(() => {
+      return res.status(500).json({'error': 'Could not add user.'});
     });
 });
 
 router.post('/login', (req, res) => {
-  res.status(200).json('login');
+  const credentials = {...req.body};
+
+  db('users')
+    .where({username: credentials.username})
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(credentials.password, user.password)) {
+        return res.status(200).json({'message':`${user.username} logged in.`});
+      }
+      return res.status(401).json({'error': 'You shall not pass!'});
+    })
+    .catch(e => {
+      return res.status(500).json(e);
+    });
 });
 
 router.get('/users', (req, res) => {
