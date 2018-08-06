@@ -13,7 +13,32 @@ server.get('/', (req, res) => {
     res.send('<h1>Home Page</h1>')
 })
 
+server.get('/user')
+
 // // ******  to hash a password *******
+
+server.post('/api/register', (req, res) => {
+    const info = req.body;
+    const hash = bcrypt.hashSync(info.password, 14);
+    info.password = hash;
+
+    if(info.userName && info.password) {
+        db('user')
+            .insert(info)
+            .then( ids => {
+                db('user')
+                .where({ id: ids[0]})
+                .first()
+                .then(user => {
+                    res.status(200).json(user)
+                })
+                .catch(err => res.status(500).json(err))
+            })
+    } else {
+        res.status(400).json({ message: 'Please provide both userName and password' })
+
+    }
+})
 
 // const credentials = req.body;
 
@@ -38,7 +63,7 @@ server.get('/', (req, res) => {
 // const hash = bcrypt.hashSync(user.password, 14);
 // user.password = hash
 
-// debug('users')
+// db('users')
 //     .insert(user)
 //     .then(function(ids) {
 //         db('users')
