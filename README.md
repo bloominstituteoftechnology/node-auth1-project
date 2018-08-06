@@ -1,93 +1,43 @@
-# Auth Lab
+# Authentication Project
 
-Topics:
+## Topics
 
-* Express Middleware
-* Sessions
-* Passwords
-* Authentication
+- Authentication.
+- Express Middleware.
+- Password Hashing.
 
-## Description
+## Assignment
 
-In the lecture, we presented three seemingly disparate concepts: middleware,
-sessions, and passwords. For this lab, your job will be to combine these
-concepts into one authentication system.
+**Part one, due Monday**: Use Node.js, Express and Knex to build an API that provides **Register** and **Login** functionality using SQLite to store _User_ information. Make sure the password is not stored as plain text.
 
-## Running the Project
-
-* Run `yarn` in the project directory to download the project's dependencies.
-* Keep `mongod` running in its own terminal. You can use either `mongod --dbpath data` with the project's "data" directory, or `mongod` to use the global "data" resource
-* Run `yarn test` to run the tests. If you'd like, you can run `yarn run watch`
-  to automatically re-reun the tests when you make modifications.
-* To test your application in your browser, or by using
-  [Postman](https://www.getpostman.com/), make sure you've installed `nodemon`
-  via `yarn global add nodemon` and then run `nodemon src/app.js`. `nodemon` will
-  keep the server running and automatically restart it if you change anything.
-  You can now make requests to `http://localhost:3000` in your browser or
-  Postman!
-* Make modifications to `src/user.js` and `src/server.js` to make the tests pass.
-* If you'd like, feel free to reference the tests in `tests/server.test.js` as
-  you're developing.
-* Once all tests have passed, you're done! Send us a pull request.
+**Part two, due Tuesday**: Use **sessions** and **cookies** to keep a record of logged in users across requests.
 
 ## Instructions
 
-### `src/user.js`
+You will build the solution from scratch, no starter code is provided. Feel free to structure your API anyway you want, but aim at making it easy to maintain in the future.
 
-First, write the schema for the user model in `src/user.js`. Each user has two
-properties: `username`, a String, and `passwordHash`, also a String. Both
-properties are required, and the username should be unique (use the option
-`unique: true`). This prevents two users from having the same username.
+### Download Project Files
 
-### `src/server.js`
+- **Fork** and **Clone** this repository.
+- **CD into the folder** where you cloned the repository.
+- Do your magic!
 
-Now start editing `src/server.js`. Note that we've provided you a helper
-function `sendUserError()` that can send down either an object error or a string
-error. You'll use this liberally in your routes.
+### Implement Requirements
 
-We've also gone ahead and initialized the express-session middleware so you can
-use the client-specific, persistent `req.session` object in your route handlers.
+- Take the steps necessary to create a `package.json` to keep a record of all dependencies.
+- Configure an _npm script_ named _"start"_ that will execute your code using _nodemon_ so that the server restarts on changes. Make _nodemon_ be a development time dependency only, it shouldn't be deployed to production.
+- Design and build a set of endpoints listed below.
+- **Use _Postman_ to test the API as you work through the exercises.**
 
-### `POST /users`
+#### Endpoints
 
-The `POST /users` route expects two parameters: `username` and `password`. When
-the client makes a `POST` request to `/users`, hash the given password and
-create a new user in MongoDB. Send the user object as a JSON response.
-
-Make sure to do proper validation and error checking. If there's any error,
-respond with an appropriate status and error message using the `sendUserError()`
-helper function.
-
-### `POST /log-in`
-
-The `POST /log-in` route expects two parameters: `username` and `password`. When
-the client makes a `POST` request to `/log-in`, check the given credentials and
-log in the appropriate user. Send the object `{ success: true }` as a JSON
-response if everything works out.
-
-You'll need to use a session to track who is logged in. Do **NOT** store the
-entire user object in the session; if the user in MongoDB gets updated or
-deleted, the session will not reflect the changes. Instead, store some
-information that will let you uniquely identify which user is logged in.
-
-Make sure to do proper validation and error checking. If there's any error, or
-if the credentials are invalid, respond with an appropriate status and error
-message using the `sendUserError()` helper function.
-
-### `GET /me`
-
-The `GET /me` route **should only be accessible by logged in users**. We've
-already implemented the route handler for you; your job is to add local
-middleware to ensure that only logged in users have access.
-
-Make sure to do proper validation and error checking. If there's any error, or
-if no user is logged in, respond with an appropriate status and error message
-using the `sendUserError()` helper function.
+| Method | Endpoint      | Description                                                                                                                                                                                                                                                                                 |
+| ------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| POST   | /api/register | Creates a `user` using the information sent inside the `body` of the request. **Hash the password** before saving the user to the database.                                                                                                                                                 |
+| POST   | /api/login    | Use the credentials sent inside the `body` to authenticate the user. On successful login, create a new session for the user and send back a 'Logged in' message and a cookie that contains the user id. If login fails, respond with the correct status code and the message: 'You shall not pass!' |
+| GET    | /api/users    | If the user is logged in, respond with an array of all the users contained in the database. If the user is not logged in repond with the correct status code and the message: 'You shall not pass!'. Use this endpoint to verify that the password is hashed before it is saved.            |
 
 ## Stretch Problem
 
-If you'd like to go a step further, write a piece of **global** middleware that
-ensures a user is logged in when accessing _any_ route prefixed by
-`/restricted/`. For instance, `/restricted/something`, `/restricted/other`, and
-`/restricted/a` should all be protected by the middleware; only logged in users
-should be able to access these routes.
+- Write a piece of **global** middleware that ensures a user is logged in when accessing _any_ route prefixed by `/api/restricted/`. For instance, `/api/restricted/something`, `/api/restricted/other`, and `/api/restricted/a` should all be protected by the middleware; only logged in users should be able to access these routes.
+- Build a React application that implements components to register, login and view a list of users. Gotta keep sharpening your React skills.
