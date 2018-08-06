@@ -1,0 +1,22 @@
+{
+  "name": "auth-i",
+  "description": "exploring simple authentication fundamentals in node",
+  "version": "0.0.0",
+  "repository": {
+    "url": "git://github.com/coetry/auth-i.git"
+  },
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^3.0.0",
+    "express": "^4.16.3",
+    "knex": "^0.15.2",
+    "sqlite3": "^4.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.3"
+  },
+  "author": "Allen Hai <allenhai03@gmail.com> (https://allenhai.now.sh)"
+}
