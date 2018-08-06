@@ -18,7 +18,7 @@ server.get('/users', (req, res) => {
 });
 
 //********CREATE REGISTER ENDPOINTS*********************
-server.post('/register', (req, res) => {
+server.post('/api/register', (req, res) => {
 	const user = req.body;
 	const hash = bcrypt.hashSync(user.password, 14);
 	user.password = hash;
@@ -28,6 +28,36 @@ server.post('/register', (req, res) => {
 		res.status(201).json({ id, ...user })
 	}).catch(err => res.status(500).json(err));
 });
+
+
+//********CREATE LOGIN ENDPOINTS*********************
+server.post('/api/login', (req, res) => {
+	const identity = req.body;
+
+	db('users')
+		.where({ name: identity.name})
+		.first()
+		.then(function(user){
+			const passwordsMatch = bcrypt.compareSync(
+			  	identity.password, user.password
+			);
+				if (user && passwordsMatch) {
+					res.send('Login Successful');
+				} else {
+					return res.status(401).json({ error: 'Login Unsuccessful, Please try again'});
+				}
+		})
+			.catch(function(error) {
+				res.send(500).json({ error });
+			})
+});
+
+
+
+
+
+
+
 
 const port = 3300;
 server.listen(port, function() {
