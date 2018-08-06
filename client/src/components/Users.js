@@ -6,7 +6,8 @@ class Users extends React.Component {
         super();
 
         this.state = {
-            users: []
+            users: [],
+            loggedin: null,
         }
     }
 
@@ -14,13 +15,25 @@ class Users extends React.Component {
         axios
             .get('http://localhost:8000/api/users')
             .then(response => this.setState({ users: response.data }))
-            .catch(err => console.log(err));
+            .catch(err => {
+                err.response.status === 401 ? this.setState({ loggedin: false }) : null;
+            });
     }
 
     render() {
-        console.log(this.state.users);
+        if (!this.state.loggedin) {
+            return (
+                <div>
+                    <p>You need to be logged in to view this!</p>
+                    <button>Login</button>
+                </div>
+            );
+        }
+
         return (
-            <div> Users</div >
+            <div>
+                {this.state.users}
+            </div >
         );
     }
 }
