@@ -5,10 +5,14 @@ exports.up = function(knex, Promise) {
 
       table.string('username')
       .notNullable()
-      .unique()
+      .unique();
 
       table.string('password')
+      .notNullable();
+
+      table.boolean('loggedIn')
       .notNullable()
+      .defaultTo(false);
   }) 
 };
 

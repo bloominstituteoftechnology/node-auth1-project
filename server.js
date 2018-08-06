@@ -45,8 +45,26 @@ server.post('/api/login', (req, res) => {
     db('users')
         .where({ username: credentials.username })
         .first()
+        // .update({ loggedIn: 1})
         .then(user => {
-            user && bcrypt.compareSync(credentials.password, user.password) ? res.send(`Welcome to the world, ${credentials.username}!`) : res.status(401).json({error: 'Incorrect credentials. Try again.'});
+            user && bcrypt.compareSync(credentials.password, user.password) 
+            ? res.status(200).json({message: `Welcome to the world, ${ credentials.username }!`, user }) 
+            : res.status(401).json({error: 'Incorrect credentials. Try again.'});
+        })
+        .catch(err => {
+            res.status(500).json({ err });
+        })
+});
+
+server.post('/api/logout', (req, res) => {
+    const { username } = req.body;
+    
+    db('users')
+        .where({ username })
+        .first()
+        // .update({ loggedIn: 0})
+        .then(user => {
+            res.status(200).json(`Okay, you've been successfully logged out! We'll see you next time, ${ username }!`)
         })
         .catch(err => {
             res.status(500).json({ err });
