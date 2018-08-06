@@ -6,7 +6,7 @@ const cors = require('cors');
 const server = express();
 
 server.use(express.json());
-server.use(cors());
+server.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 server.use(session({
     secret: 'Ceir7ohfeecaiphohmiebaingewahshaijuthohbeviefiebai',
     resave: false,
