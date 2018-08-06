@@ -2,6 +2,8 @@ const codes = require("../data/statusCodes");
 
 const express = require("express");
 const bcrypt = require("bcryptjs");
+const session = require('express-session');
+
 const db = require("../data/dbConfig");
 
 const router = express.Router();
@@ -21,6 +23,8 @@ router.post("/", (req, res, next) => {
             res.status(codes.BAD_REQUEST).json("You shall not pass! evildoer");
             return;
         }
+
+        req.session.isLoggedIn = true;
         res.status(codes.OK).json("Logged in")
     });
 });
