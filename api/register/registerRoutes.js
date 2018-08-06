@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/', (req, res) => {
     const { username, password } = req.body;
-    if (!username || !password) return res.status(400).json({ errorMessage: "Please provide a name and password!" });
+    if (!username || !password) return res.status(400).json({ errorMessage: "Please provide a username and password!" });
     const user = { username, password }
     const hash = bcrypt.hashSync(user.password, 14);
     user.password = hash;
