@@ -1,0 +1,29 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "Authentication Projects",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "helmet": "^3.13.0",
+    "knex": "^0.15.2",
+    "sqlite3": "^4.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tysonism/auth-i.git"
+  },
+  "author": "Tyson Gushiken",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tysonism/auth-i/issues"
+  },
+  "homepage": "https://github.com/tysonism/auth-i#readme"
+}
