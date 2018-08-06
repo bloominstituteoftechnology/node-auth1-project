@@ -5,7 +5,7 @@ const tbl = 'users';
 module.exports = {
     add: function(record) {
         return db(tbl)
-            .insert(record)
-            .then(([id]) => this.get(id));
+            .insert(record);
+            // .then(([id]) => this.get(id));
     }
 };
