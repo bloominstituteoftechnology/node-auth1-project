@@ -22,7 +22,7 @@ router.post('/', loginConstraints, async (req, res) => {
         req.session.userid = USER.id;
         res.status(200).send(`Logged in`);
       } else {
-        res.status(500).send(`You shall not pass!`);
+        res.status(401).send(`You shall not pass!`);
       }
     } else {
       // error with the user, but don't let the hackers know!
@@ -31,7 +31,7 @@ router.post('/', loginConstraints, async (req, res) => {
         CLEARPASSWORD,
         '$2a$14$plRslh.07bHu/BWHztxq9.20YIJluMBo9JhdIOCJOQjvAZHmbPV6a',
       );
-      res.status(500).send(`You shall not pass!`);
+      res.status(401).send(`You shall not pass!`);
     }
   } catch (err) {
     res.status(500).send(`${err}`);
