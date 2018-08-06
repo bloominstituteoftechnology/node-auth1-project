@@ -28,4 +28,22 @@ server.post('/register', (req, res) => {
     .catch(err => res.status(500).json({err}))
 })
 
+
+server.post('/login', (req, res) => {
+  let {username, password} = req.body
+  console.log(username)
+  console.log(password)
+
+  //Get existing password from db from username
+  db('user').where({username}).select('password')
+    .then(data => {
+      //If the passwords don't match:
+      if(!bcrypt.compareSync(password,data[0].password)) res.status(500).json({err: 'Credentials are not valid, please try again'})
+      else res.status(200).send('Welcome back!')
+    })
+    .catch(err => res.status(500).json(err))
+})
+
+
+
 server.listen(3000, () => {console.log('\n==== Server Running on port 3000! ====\n')})
