@@ -11,6 +11,7 @@ server.get('/', (req, res) => {
   res.status(200).send('Server Listens and Obeys')
 })
 
+server.post('/')
 server.listen(port, () => {
   console.log(`\n === SERVER ONLINE on port ${port} ===\n`)
 })
