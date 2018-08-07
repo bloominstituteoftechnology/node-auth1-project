@@ -17,13 +17,14 @@ const sessionOptions = {
 }
 server.use(session(sessionOptions));
 server.use(express.json());
+server.use(cors({origin: 'http://localhost:3000', credentials: true}));
 
 function protected(req, res, next) {
   if (req.session && req.session.username) {
     next();
   } else {
     res.status(401).json({
-      message: 'You are not authorized'
+      message: 'You are not authenticated'
     })
   }
 }
@@ -52,7 +53,7 @@ server.post('/api/register', (req, res) => {
     .insert(user)
     .into('User')
     .then(id => {
-      db('User')
+      db('User') 
         .then(user => res.status(201).json(user.pop()))
     })
     .catch(err => {
@@ -71,7 +72,7 @@ server.post('/api/login', (req, res) => {
         return res.status(401).json({ error: 'Incorrect credentials' });
       } else {
         req.session.username = credentials.username;
-        return res.send('You are logged in')
+        return res.status(200).json({ message: `You are logged in, ${credentials.username}` })
       }
     })  
     .catch(err => {
