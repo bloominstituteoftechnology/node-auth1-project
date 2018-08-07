@@ -4,6 +4,7 @@ const cors = require('cors');
 const session = require('express-session');
 const uuidv1 = require('uuid/v1');
 const apiRoutes = require('./api/apiRoutes');
+const restrictedRoutes = require('./restricted/restrictedRoutes');
 
 const server = express();
 const port = 8000;
@@ -23,6 +24,7 @@ server.use(cors());
 server.use(express.json());
 server.use(session(sessVals));
 server.use('/api', apiRoutes);
+server.use('/api/restricted', restrictedRoutes);
 
 server.get('/', (req, res) => {
   res.send('The auth server is running...')
