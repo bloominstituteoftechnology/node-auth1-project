@@ -5,7 +5,6 @@ const db = knex(knexConfig.development);
 module.exports = {
     get: function(id) {
         const query = db('users');
-
         if (id) {
             const result = query.where('id', id).first();
             return result;
