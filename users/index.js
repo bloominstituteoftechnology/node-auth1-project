@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
             res.status(401).json({message: 'No Records Found'});
         }
     } catch (err) {
-        res.status(500).json({error: err});
+        res.status(500).json({error: 'Server Error'});
     }
 });
 
