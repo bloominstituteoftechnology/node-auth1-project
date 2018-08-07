@@ -25,8 +25,8 @@ router.post("/", (req, res, next) => {
             res.status(codes.BAD_REQUEST).json("You shall not pass! evildoer");
         }
         else {
-        req.session.username = user.username;
-        res.status(codes.OK).json(`${req.session.username} has logged in`);
+        req.session.user = user;
+        res.status(codes.OK).json(`${req.session.user.username} has logged in`);
         }
     });
 });
