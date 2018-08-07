@@ -28,6 +28,7 @@ module.exports = {
         bcrypt.compare(password, user[0].password)
           .then(isPasswordValid => {
             if (isPasswordValid) {
+              req.session.username = req.body.username
               return res.status(200).json({ msg: 'login successful' })
             } else {
               return res.status(401).json({ msg: 'login failed' })
