@@ -8,6 +8,10 @@ exports.up = function(knex, Promise) {
     .unique();
     tbl.string('password')
     .notNullable();
+
+    tbl.string('role')
+    .notNullable()
+    .defaultTo('free');
   });
 };
 
