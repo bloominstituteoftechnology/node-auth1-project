@@ -6,15 +6,13 @@ const server = express()
 
 server.use(express.json())
 
-server.post('/register', function (req, res, next) {
-   checkBodyCredentials(req, res)
-
-   bcrypt.hash(req.body.password, 14, function (err, hash) {
-   
-    if (err) {
-      next(err)
-    }
+server.post('/register', async function (req, res, next) {
+  console.log('REQ:', req.body)
+  checkBodyCredentials(req, res)
   
+  const hash = await bcrypt.hash(req.body.password, 14)
+  console.log('HASH:', hash)
+   
     db('users')
       .insert({ 
         username: req.body.username, 
@@ -24,14 +22,14 @@ server.post('/register', function (req, res, next) {
         res.status(200).json({
           id: ids[0],
           username: req.body.username,
-        password: hash
+          password: hash
         })
       })
       .catch(function (err) {
         next(err)
       })
-  }) 
-})
+}) 
+
 
 server.post('/login', function (req, res, next) {
   checkBodyCredentials(req, res)
@@ -58,15 +56,16 @@ server.post('/login', function (req, res, next) {
     })
 })
 
-function checkBodyCredentials (req, res) {
-  if (!req.body || !req.username || !req.password) {
-    return res.status(400).send('please provide username and password')
-  }
-}
 
 server.use(function (err, req, res, next) {
   res.status(500).json(err)
 })
+
+function checkBodyCredentials (req, res) {
+  if (!req.body || !req.body.username || !req.body.password) {
+    res.status(400).send('please provide username and password')
+  }
+}
 
 server.listen(3456, function () {
   process.stdout.write('magic happening at :3456\n')
