@@ -17,14 +17,14 @@ class Users extends React.Component {
         axios
             .get('http://localhost:8000/api/users')
             .then(response => this.setState({ users: response.data, loggedin: true }))
-            .catch(err => console.log(err));
+            .catch(err => console.log(err.response));
     }
 
     logout = () => {
         axios
             .get('http://localhost:8000/api/logout')
             .then(() => window.location.reload())
-            .catch(err => console.log(err));
+            .catch(err => console.log(err.response));
     }
 
     render() {

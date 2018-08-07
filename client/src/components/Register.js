@@ -22,10 +22,11 @@ class Register extends React.Component {
         }
 
         const user = { username: this.state.username, password: this.state.password }
-
+        
+        axios.defaults.withCredentials = true
         axios
             .post('http://localhost:8000/api/register', user)
-            .then(response => this.props.history.push('/users'))
+            .then(() => this.props.history.push('/users'))
             .catch(err => console.log(err));
     }
 
