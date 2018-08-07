@@ -4,27 +4,55 @@ const server = express();
 const session = require('express-session');
 const bcrypt = require("bcrypt");
 
+function protected(req, res, next) {
+  if (req.session && req.session.username) {
+    next();
+  } else {
+    return res.status(401).json({ error: 'You shall not pass!' });
+  }
+}
+
+server.use(
+  session({
+    name: 'notsession',
+    secret: 'zelda',
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
+    httpOnly: true,
+    secure: false,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
 server.use(express.json());
 
-server.post('/api/register', (req, res) => {
+server.post('/api/register', function(req, res) {
   const user = req.body;
-  //const { username, password } = req;
+
+  // hash password
   const hash = bcrypt.hashSync(user.password, 11);
   user.password = hash;
-  //password = hash;
+
   if (!user) {
     res.status(400).json({ errorMessage: "Please provide a username and password." })
-    return;
 }
+
   db('users')
-  .insert(user)
-  .then(id => {
-    return res.status(200).json({'message': 'User registered'})
-  })
-  .catch(err => {
-    res.status(500).json({'error': 'Could not register user'})
-  })
+    .insert(user)
+    .then(function(ids) {
+      db('users')
+        .where({ id: ids[0] })
+        .first()
+        .then(user => {
+          req.session.username = user.username;
+          res.status(200).json({'message': 'User registered'})
+        });
+    })
+    .catch(function(error) {
+      res.status(500).json({ 'error': 'Could not register user' });
+    });
 });
+
 
 server.post('/api/login', (req, res) => {
   const credentials = req.body;
@@ -43,9 +71,14 @@ server.post('/api/login', (req, res) => {
   })
 });
 
-server.get('/api/users', (req, res) => {
-
-})
+server.get('/api/users', protected, (req, res) => {
+  db('users')
+    .then(users => {
+      res.status(200).json(users);
+    })
+    .catch(err => {
+      res.status(500).json({'error': 'Could not display users'})
+    })});
 
 const port = 8080;
 server.listen(port, function() {
