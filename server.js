@@ -34,6 +34,16 @@ server.use(session({
 }));
 
 
+function protected(req, res, next) {
+  if (req.session && req.session.loggedInFlag) //checking if a user is logged in using data stored in a session
+{    
+    next();
+  } else {
+    res.status(401).json({ message: 'you shall not pass!!' });
+  }
+}
+
+//session middleware without memcache
 /*server.use(session({ 
 	secret: 'j6AaYtaxQXUntF.sFownFMZ-YR',
 	httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
@@ -110,9 +120,9 @@ server.post('/api/login', (req, res)=> {
 });
 
 
-server.get('/api/users', (req, res)=> {
+server.get('/api/users', protected, (req, res)=> {
 
-        if(req.session.loggedInFlag === true) {      //checking if a user is logged in using data stored in a session
+        //if(req.session.loggedInFlag === true) {      //checking if a user is logged in using data stored in a session
                 db('users')
                 .then(response =>{
                         res.status(200).json(response);
@@ -123,9 +133,10 @@ server.get('/api/users', (req, res)=> {
                         res.status(500).json(err);
                 });
 
-        }
+        //}
 
-        else res.status(401).send('You shall not pass');
+        //else res.status(401).send('You shall not pass');
+
 });
 
 
