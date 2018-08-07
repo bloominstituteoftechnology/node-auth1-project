@@ -14,7 +14,13 @@ server.post('/api/register', (req, res) => {
     db.insert(credentials)
         .into('users')
         .then(ids => {
-            res.status(201).json(ids);
+            db('users')
+            .where({id: ids[0]})
+            .first()
+            .then(user => {
+                res.status(201).json(user);
+            })
+            
         })
         .catch(err => {
             res.status(500).json(err);
