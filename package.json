@@ -1,0 +1,23 @@
+{
+  "name": "auth-i",
+  "version": "3.3.3",
+  "description": "Adding Authentication to an API using Sessions and Cookies",
+  "main": "server.js",
+  "repository": "https://github.com/tlinehan/auth-i",
+  "author": "-tristan-",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.1"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.16.3",
+    "express-sesssion": "^1.15.5",
+    "knex": "^0.15.2",
+    "sqlite3": "^4.0.2"
+  }
+}
