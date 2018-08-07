@@ -19,14 +19,11 @@ server.post('/api/register', (req, res) => {
     .then((hashedPW) => {
       knex('users')
         .insert({ name: username, hash: hashedPW })
-        .then(() => {
-          res.status(200).json({ message: 'Registration successful.' });
-        })
-        .catch(() => {
-          res.status(500).json({ message: 'Registration did not succeed.' });
-        });
     })
-    .catch((err) => {
+    .then(() => {
+      res.status(200).json({ message: 'Registration successful.' });
+    })
+    .catch(() => {
       res.status(500).json({ message: 'Registration did not succeed.' });
     });
 });
