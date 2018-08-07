@@ -300,3 +300,94 @@ server.get('/logout', (req, res) => {
     }
   });
   ```
+
+# Stretch: 
+
+## 9. Create react app
+
+```
+$ create-react-app auth-ui
+
+$ cd auth-ui
+
+$ cd yarn start
+```
+
+## 10. Add dependencies
+
+```
+$ yarn add react-router-dom reactstrap axios
+```
+
+## 11. Create Login and Signup forms without functionality: (1) Import Reactstrap components, (2) Create boilerplate code and copy to both components
+
+```
+import React from 'react';
+import '../App.css';
+import { Form, FormGroup, Label, Input, Button } from 'reactstrap'
+
+class Login extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      username: '',
+      password: ''
+    }
+  }
+
+  render() {
+    return (
+      <div>
+          <h1>Log in</h1>
+            <Form>
+                <FormGroup>
+                    <Label>Username:</Label>
+                    <Input
+                        name="username"
+                        placeholder="Username"
+                        // onChange={}
+                        value={this.state.username}
+                    />
+                </FormGroup>
+                <FormGroup>
+                    <Label>Password:</Label>
+                    <Input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        // onChange={}
+                        value={this.state.password}
+                    />
+                </FormGroup>
+                <Button>Log in</Button>
+            </Form>
+      </div>
+    );
+  }
+}
+
+export default Login;
+```
+
+(3) Import into App.js and use routes for /login and /signup
+
+```
+import Login from './components/Login';
+
+import { Route } from 'react-router-dom';
+
+<Route path='/login' component={Login} />
+```
+
+## 4. Wrap <App /> on index.js with <Router>
+
+```
+import {BrowserRouter as Router} from 'react-router-dom'
+
+ReactDOM.render(
+    <Router>
+        <App />
+    </Router>
+        , document.getElementById('root'));
+registerServiceWorker();
+```
