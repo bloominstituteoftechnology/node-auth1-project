@@ -13,7 +13,7 @@ server.use(
         secret: "Are you suggesting coconuts migrate?",
         cookie: {
             maxAge: 1 * 24 * 60 * 60 * 1000,
-            secure: true
+            secure: false
         },
         httpOnly: true,
         resave: false,
@@ -21,27 +21,16 @@ server.use(
     })
 );
 
-/*function checkLogIn(user) {
-    return function(req, res, next){
-    if(!user.isLoggedIn){
-        return res.status(403).json({error: 'You must be logged in to view.'})
+function checkLogIn (req, res, next) {
+    if(req.session && req.session.userId){
+        next();
+    } else {
+        return res.status(401).json({error: 'Incorrect credentials'})
     }
-    next();
 }
-}*/
 
-server.get('/setname', (req, res) => {
-    req.session.name = 'erin';
-    res.send('session set')
-})
 
-server.get('/getname', (req, res) => {
-    const name = req.session.name;
-    res.send(`Hello ${req.session.name}`)
-})
-
-server.get('/api/restricted/users', (req, res) => {
-    const name = req.session.username;
+server.get('/api/restricted/users', checkLogIn, (req, res) => {
     db('users').select('username')
     .then(response => {
             res.status(200).json(response)
@@ -62,6 +51,7 @@ server.post('/api/register', (req, res) => {
         .where({id: ids[0]})
         .first()
         .then(user => {
+            req.session.userId = user.id;
             res.status(201).json(user);
         })
     })
@@ -83,6 +73,17 @@ server.post('/api/login', (req, res) => {
         return res.status(401).json('You shall not pass!')
     }
 })
+})
+
+server.get('api/logout', (req, res) => {
+    if(req.session) {
+        req.session.destroy(err => {
+            if(err){
+            res.json({error: "Error logging out"})}
+        })
+    } else {
+        res.send("Goodbye")
+    }
 })
 
 

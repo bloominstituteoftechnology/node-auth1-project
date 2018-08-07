@@ -11,7 +11,8 @@ class App extends Component {
         username: '',
         password: '',
         isLoggedIn: false
-      }
+      },
+      loops: 0,
       
     }
   }
@@ -38,6 +39,18 @@ class App extends Component {
     .then(response => {
       console.log(response);
       this.setState({user: {...this.state.user, isLoggedIn: true}})
+      this.getUsers();
+      this.setState({})
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+
+  logOut = () => {
+    axios.get('http://localhost:8000/api/logout')
+    .then(response => {
+      console.log(response);
     })
     .catch(err => {
       console.log(err)
@@ -48,10 +61,20 @@ class App extends Component {
     axios.get('http://localhost:8000/api/restricted/users')
     .then(response => {
       console.log(response);
+      this.setState({users: response.data})
     })
     .catch(err => {
       console.log(err)
     })
+  }
+
+  componentDidUpdate(prevState) {
+    if (this.state.user.isLoggedIn !== prevState.isLoggedIn) {
+      if(this.state.loops < 5) {
+      this.setState({user: {...this.state.user, isLoggedIn: true}})
+      this.setState({loops: this.state.loops +1})
+    }}
+    console.log(this.state.users);
   }
 
   render() {
@@ -70,10 +93,13 @@ class App extends Component {
             placeholder='Password'
             onChange={this.handleChange.bind(this, 'user')}
             />
-            <button onClick={this.logIn()}>Log in</button>
-            {this.state.user.isLoggedIn ? this.state.users.map(user => {
-              return <ul><li>{user.username}</li></ul>
-            }) : null}
+            <button onClick={() => this.logIn()}>Log in</button>
+            <button onClick={() => this.logOut()}>Log out</button>
+            {console.log(this.state.user.isLoggedIn)}
+            {this.state.user.isLoggedIn === true ? this.state.users.map(user => {
+      return <h4>{user.username}</h4>
+    }) : null}
+            
       <h3>Register</h3>
         <form>
           <input
