@@ -2,10 +2,10 @@ const express = require('express');
 const app = express();
 const bcrypt = require('bcryptjs');
 
+app.use(express.json());
+
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-
-app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
