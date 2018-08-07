@@ -1,14 +1,38 @@
 const express = require('express');
+const session = require('express-session');
 const bcrypt = require('bcryptjs');
 
 const db = require('./data/db');
 
 const server = express();
 
+server.use(
+  session({
+    name: 'notsession',
+    secret: 'shhh do not tell',
+    cookie: { maxAge: 1000 * 60 * 60 * 24 },
+    httpOnly: true,
+    secure: false,
+    resave: false,
+    saveUninitialized: true,
+  })
+)
+
 server.use(express.json());
 
+const protected = (req, res, next) => {
+  if(req.session && req.session.name) {
+    next();
+  } else {
+    res
+      .status(401)
+      .json({ error: 'You shall not pass!' })
+      .end();
+  }
+}
+
 // Not fully implemented, only here to test that passwords have been hashed
-server.get('/api/users', (req, res) => {
+server.get('/api/users', protected, (req, res) => {
   db('users')
     .then(response => {
       res
@@ -56,8 +80,9 @@ server.post('/api/login', (req, res) => {
   const username = credentials.username;
   db('users')
     .where({ username })
+    .first()
     .then(response => {
-      const password = response[0].password;
+      const password = response.password;
       const passwordMatch = bcrypt.compareSync(credentials.password, password);
       if (!passwordMatch) {
         res
@@ -65,6 +90,7 @@ server.post('/api/login', (req, res) => {
           .json({ error: 'Please enter valid credentials' })
           .end()
       } else {
+        req.session.name = response.username;
         res
           .status(200)
           .json({ success: true })
