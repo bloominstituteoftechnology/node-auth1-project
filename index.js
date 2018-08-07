@@ -1,10 +1,11 @@
 const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
+const bcrypt = require('bcryptjs');
 const db = require('./data/db');
 const server = express();
 const sessionOptions = {
-  secret: 'nobody tosses a dwarf!',
+  secret: 'arrrrrr',
   cookie: {
     maxAge: 1000 * 60 * 60 
   },
@@ -18,7 +19,7 @@ server.use(session(sessionOptions));
 server.use(express.json());
 
 function protected(req, res, next) {
-  //console.log(req.session)
+  console.log(req.session.username)
   if (req.session && req.session.username) {
     next();
   } else {
@@ -45,9 +46,11 @@ server.get('/', (req, res) => {
 
 server.post('/api/register', (req, res) => {
   // save the user to the database
-  console.log(req.body)
+  const user = req.body;
+  const hash = bcrypt.hashSync(user.password, 14);
+  user.password = hash;
   db    
-    .insert(req.body)
+    .insert(user)
     .into('User')
     .then(user => {
       res.status(201).json(user)
@@ -58,20 +61,17 @@ server.post('/api/register', (req, res) => {
 })
 
 server.post('/api/login', (req, res) => {
-  const { username, password } = req.body;
-  const { id } = req.params;
+  const credentials = req.body;
   db
     ('User')
-    .where({ username })
+    .where({ username: credentials.username })
+    .first()
     .then(user => {
-      //console.log(user)
-      if (user[0].password === password) {
-        //console.log(user, password)
-
-        req.session.username = username;
-        res.send('You are logged in')
+      if (!user || !bcrypt.compareSync(credentials.password, user.password)) {
+        return res.status(401).json({ error: 'Incorrect credentials' });
       } else {
-        res.status(401).send('invalid password')
+        req.session.username = credentials.username;
+        return res.send('You are logged in')
       }
     })  
     .catch(err => {
@@ -80,13 +80,13 @@ server.post('/api/login', (req, res) => {
 });
 
 server.get('/api/logout', (req, res) => {
-  if(req.session) {
+  if (req.session) {
     req.session.destroy(err => {
-        if(err){
-            res.status(500).json(`Unable to log out`);
-        } else {
-            res.status(200).json(`You are logged out`)
-        }
+      if (err) {
+        res.status(500).json(`Unable to log out`);
+      } else {
+        res.status(200).json(`You are logged out`)
+      }
     });
   }
 });
