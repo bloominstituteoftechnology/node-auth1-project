@@ -1,18 +1,24 @@
 # Introduction to Authentication
 
-Objectives
+## Objectives
 
 _**Part one, due Monday:**_ Use `Node.js`, `Express` and `Knex` to build an API that provides `Register` and `Login` functionality using `SQLite` to store `User` information. Make sure the password is not stored as plain text.
 
-_**Part two, due Tuesday**_ Use `sessions` and `cookies` to keep a record of logged in users across requests.
-
-1. Inititialize yarn
+## 1. Inititialize yarn to create package.json
 
 ```
-yarn init
+$ yarn init
 ```
 
-2. Make the package.json look like so
+## 2. Update the package.json by adding dependencies and a start script
+
+```
+$ yarn add bcryptjs express knex nodemon sqlite3
+
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+```
 
 ```
 {
@@ -25,6 +31,7 @@ yarn init
     "start": "nodemon server.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.16.3",
     "knex": "^0.15.2",
     "nodemon": "^1.18.3",
@@ -33,13 +40,7 @@ yarn init
 }
 ```
 
-3. Add bcrypt.js
-
-```
-yarn add bcryptjs
-```
-
-4. Create a basic server.js file
+## 3. Create a basic server.js file and make sure the server is up and running
 
 ```
 const express = require('express');
@@ -59,7 +60,7 @@ server.listen(port, function() {
 })
 ```
 
-5. Initialize knex and create a user table
+## 4. Start using knex: (a) initialize it, (b) create a user table with migrations, (c) update /migrations/[TIME_STAMP]_create_users_table
 
 ```
 $ knex init
@@ -82,9 +83,13 @@ exports.down = function(knex, Promise) {
 
 ```
 
-6. Create `/auth/db.js`
+## 5. Create `/auth` folder: (a) fill it with `auth-1.sqlite3` (created on db browser) and (b) `db.js`
+
+![create users table](https://ibin.co/4BN3kHMivHJW.png "Users table on db browser")
 
 ```
+// db.js
+
 const knex = require('knex');
 
 const knexConfig = require('../knexfile.js');
@@ -92,24 +97,48 @@ const knexConfig = require('../knexfile.js');
 module.exports = knex(knexConfig.development);
 ```
 
-7. Update the `knexfile.js`
+## 6. Update the `knexfile.js` with the appropriate `filename` and `useNullAsDefault`
 
 ```
   development: {
     client: 'sqlite3',
     connection: {
-      filename: './auth/auth.sqlite3'
+      filename: './auth/auth-1.sqlite3'
     },
     useNullAsDefault: true,
   },
 ```
 
-8. Add bcrypt to server.js and build out the POST /register method
+## 7. Add `const db = require('./auth/db');` and `const bcrypt = require('bcryptjs');` to server.js
+
+## 8. Build out the POST /register method with bcryptjs: (a) define the `/register` route, (b) hash the password, (c) save the user
 
 ```
-const db = require('./auth/db');
-const bcrypt = require('bcryptjs');
+server.post('/register', (req, res) => {
 
+	const user = req.body;
+	const hash = bcrypt.hashSync(user.password, 14); // Auto-gen a salt and hash
+	user.password = hash; // store hash in  password DB
+
+    db('users') // go into users
+        .insert(user) // insert new users
+        .then(ids => {
+            db('users')
+                .where({ id: ids[0] }) // find the appropriate user
+                .first() // the first one
+                .then(user => {
+                    res.status(201).json(user); // return new user
+                });
+        })
+        .catch(err => {
+            res.status(500).json(err); // throw err if it fails
+        });
+});
+```
+
+## 9. Build out a simple GET /users method
+
+```
 server.get('/users', (req, res) => {
     db('users')
         .then(users => {
@@ -117,31 +146,9 @@ server.get('/users', (req, res) => {
         })
         .catch(err => res.status(500).json(err));
 });
-
-server.post('/register', (req, res) => {
-
-// without this is before and with it is after!!
-	const user = req.body;
-	const hash = bcrypt.hashSync(user.password, 14);
-	user.password = hash;
-
-    db('users')
-        .insert(user)
-        .then(ids => {
-            db('users')
-                .where({ id: ids[0] })
-                .first()
-                .then(user => {
-                    res.status(201).json(user);
-                });
-        })
-        .catch(err => {
-            res.status(500).json(err);
-        });
-});
 ```
 
-9. Build out the POST /login method: (1) set `credentials = req.body`, (2) find user by email, (3) make sure `user.password` and `credentials.password` match using `compareSync`, (4) add the appropriate messages for success or error
+## 10. Build out the POST /login method: (a) set login information as `credentials = req.body`, (b) find user by email, (c) make sure `user.password` and `credentials.password` match using `compareSync`, (d) add the appropriate messages for success or error
 
 ```
 server.post('/login', (req, res) => {
@@ -162,3 +169,5 @@ server.post('/login', (req, res) => {
         });
 });
 ```
+
+_**Part two, due Tuesday**_ Use `sessions` and `cookies` to keep a record of logged in users across requests.
