@@ -18,7 +18,9 @@
   "homepage": "https://github.com/RandyCalderon/auth-i#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "create-react-app": "^1.5.2",
     "express": "^4.16.3",
+    "express-session": "^1.15.6",
     "knex": "^0.15.2",
     "sqlite3": "^4.0.2"
   },
