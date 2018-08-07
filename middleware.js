@@ -7,7 +7,7 @@ const helmet = require('helmet')
 const session = require('express-session')
 const KnexSessionStore = require('connect-session-knex')(session)
 
-const db = './data/db.sqlite3'
+// const db = './data/db.sqlite3'
 const store = new KnexSessionStore({
   knex: knex({
     client: 'sqlite3',
@@ -25,6 +25,8 @@ module.exports = (server) => {
   server.use(session({
     secret: process.env.SECRET,
     store: store,
+    resave: false,
+    saveUninitialized: false,
     cookie: {
       maxAge: 10 * 60 * 1000,
       secure: true
