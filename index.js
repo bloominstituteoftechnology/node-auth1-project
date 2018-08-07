@@ -49,6 +49,17 @@ server.post('/api/login', (req, res) => {
 
 })
 
+server.get('/api/users', (req,res) => {
+    db.select()
+        .from('users')
+        .then(users => {
+            res.status(201).json(users);
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        })
+})
+
 const port = 8000;
 server.listen(port, function () {
     console.log(`\n=== Web API Listening on http://localhost:${port} ===\n`);
