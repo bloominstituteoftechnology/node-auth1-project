@@ -1,10 +1,42 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const db = require('./data/db');
 
-
 const server = express();
+
+function protected(req, res, next) {
+    if (req.session && req.session.username === 'user') {
+      next();
+    } else {
+      return res.status(401).json({ error: 'Incorrect credentials' });
+    }
+}
+
+function roles(req, res, next) {
+    return function(roles) {
+      if (req.session && req.session.username === 'user') {
+        next();
+      } else {
+        return res.status(401).json({ error: 'Incorrect credentials' });
+      }
+    };
+}
+
+server.use(
+    session({
+      name: 'notsession', 
+      secret: 'nobody tosses a dwarf!',
+      cookie: {
+        maxAge: 1 * 24 * 60 * 60 * 1000,
+        secure: false, 
+      }, 
+      httpOnly: true, 
+      resave: false,
+      saveUninitialized: true,
+    })
+);
 
 server.use(express.json());
 
@@ -23,14 +55,14 @@ server.get('/users', (req, res) => {
 })
 
 server.post('/register', (req, res) => {
-    const userInfo = req.body;
-    const hash = bcrypt.hashSync(userInfo.password, 11);
-    userInfo.password = hash;
-    if(!(userInfo.user || userInfo.password)) {
+    const credentials = req.body;
+    const hash = bcrypt.hashSync(credentials.password, 14);
+    credentials.password = hash;
+    if(!(credentials.user || credentials.password)) {
         res.status(400).json({ error: 'Enter username and password.' })
     } else {
         db('users')
-            .insert(userInfo)
+            .insert(credentials)
             .then(response => {
                 res.status(200).json(response)
             })
@@ -40,24 +72,36 @@ server.post('/register', (req, res) => {
     }
 })
 
-server.post('/login', (req, res) => {
-    const userInfo = req.body;
-    const username = userInfo.username;
+server.post('/login', function(req, res) {
+    const credentials = req.body;
+
     db('users')
-        .where({ username })
-        .then(response => {
-            const password = response[0].password;
-            const passwordMatch = bcrypt.compareSync(msCredentials.password, password);
-            if (!passwordMatch) {
-                res.status(400).json({ error: 'Please enter valid user information.' })
+        .where({ username: credentials.username })
+        .first()
+        .then(function(user) {
+            if (user && bcrypt.compareSync(credentials.password, user.password)) {
+              req.session.username = user.username;
+              res.send(`welcome ${user.username}`);
             } else {
-                res.status(200).json({ success: true })
+              return res.status(401).json({ error: 'Incorrect credentials' });
             }
         })
-        .catch(err => {
-            res.status(500).json({ error: 'Error.' })
-        })
-})
+        .catch(function(error) {
+            res.status(500).json({ error });
+    });
+});
+
+server.get('/logout', (req, res) => {
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.send('error logging out');
+        } else {
+          res.send('good bye');
+        }
+      });
+    }
+});
 
 const port = 8000;
 server.listen(port, () => console.log(`\n=== API running on ${port} ===\n`)); 
