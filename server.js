@@ -35,7 +35,7 @@ server.get('/getname', (req, res) => {
 });
 
 
-server.post('/register', (req, res, next) => {
+server.post('/api/register', (req, res, next) => {
     const user = req.body;
     //hash pw
     const hash = bcrypt.hashSync(user.password, 14);
@@ -56,7 +56,7 @@ server.post('/register', (req, res, next) => {
 
 
 
-server.post('/login', (req, res, next) => {
+server.post('/api/login', (req, res, next) => {
     //get credentials from req
     const credentials = req.body;
     //query db
@@ -69,7 +69,11 @@ server.post('/login', (req, res, next) => {
             if (user && bcrypt.compareSync(credentials.password, user.password)) {
             req.session.userId = user.id;
             req.session.username = user.username;
-            res.send(`Welcome, ${user.username}`)
+            if (req.session.username != 'admin'){
+            res.redirect('/users')
+            }else {
+                res.redirect('./restricted/edit_users')
+            }
 
             } else return res.status(401).json({
                 error: 'Forbidden: Incorrect login information'
@@ -83,7 +87,8 @@ server.post('/login', (req, res, next) => {
         })
 })
 
-server.get('/users', (req, res, next) => {
+//this route sends back just the list of usernames.
+server.get('/api/users', (req, res, next) => {
     db('users')
         .then(response => {
             let userArray = [];
@@ -96,7 +101,8 @@ server.get('/users', (req, res, next) => {
         })
 })
 
-server.get('/restricted/edit_users', (req, res, next) => {
+//restricted route sends back all user information to 'admin'
+server.get('/api/restricted/edit_users', (req, res, next) => {
     if (req.session && req.session.username === 'admin') {
         db('users')
             .then(response => {
@@ -104,7 +110,7 @@ server.get('/restricted/edit_users', (req, res, next) => {
             })
     } else {
         res.status(403).json({
-            error: 'Access Denied'
+            error: 'Access Denied, wrong permissions'
         })
     }
 })
