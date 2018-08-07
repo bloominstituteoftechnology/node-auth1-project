@@ -8,15 +8,7 @@ const session = require('express-session')
 const KnexSessionStore = require('connect-session-knex')(session)
 
 // const db = './data/db.sqlite3'
-const store = new KnexSessionStore({
-  knex: knex({
-    client: 'sqlite3',
-    connection: {
-      filename: './connect-session-knex.sqlite'
-    },
-    useNullAsDefault: true
-  })
-})
+const store = new KnexSessionStore()
 
 module.exports = (server) => {
   server.use(express.json())
