@@ -6,12 +6,24 @@ const db = require('./data/db.js');
 const server = express();
 
 function protected(req, res, next) {
-  if (req.session && req.session.username === 'Jameson13B') {
+  if (req.session && req.session.username) {
     next();
   } else {
     return res.status(401).json({ error: 'Incorrect credentials' });
   }
 }
+
+// function protected(req, res, next) {
+//   db('users')
+//     .then(users => {
+//       if (req.session && req.session.username === users.username) {
+//         next();
+//       } else {
+//         return res.status(401).json({ error: 'Incorrect credentials' });
+//       }
+//     })
+//     .catch(err => res.send(err));
+// }
 
 server.use(
   session({
