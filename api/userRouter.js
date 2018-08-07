@@ -6,11 +6,17 @@ const session = require('express-session');
 const db = require("../data/dbConfig");
 
 const router = express.Router();
-
-router.get("/", (req, res, next) => {
-  if(!req.session.isLoggedIn) {
-    res.status(codes.BAD_REQUEST).json('You shall not pass!');
+function restricted (req, res, next) {
+  console.log(req.session)
+  
+  if(req.session && req.session.username) {
+    next();
+  } else {
+    return res.status(codes.BAD_REQUEST).json({ error: 'Incorrect credentials '})
   }
+}
+router.get("/", restricted, (req, res, next) => {
+  
   db("users")
     .then(response => {
       res.status(codes.OK).json(response);
