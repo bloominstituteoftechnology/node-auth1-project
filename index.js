@@ -92,6 +92,10 @@ server.get('/api/logout', (req, res) => {
   }
 });
 
+server.get('/api/restricted', protected, (req, res) => {
+  res.status(500).json({'message': 'Welcome to the restricted area'})
+})
+
 
 const port = 8080;
 server.listen(port, function() {
