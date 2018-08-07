@@ -1,7 +1,7 @@
 const express = require('express');
-const db = require('./data/db.js');
 const bcrypt = require('bcryptjs');
-
+const db = require('./data/db.js');
+ 
 const server = express();
 server.use(express.json());
 
@@ -18,12 +18,13 @@ server.post('/register', (req, res) => {
   db('users')
     .insert(user)
     .then(function(ids) {
-      db('users')
-        .where({ id: ids[0] })
-        .first()
-        .then(user => {
-          res.status(201).json(user);
-        })
+      // db('users')
+      //   .where({ id: ids[0] })
+      //   .first()
+      //   .then(user => {
+      //     res.status(201).json(user);
+      //   })
+      res.status(201).json({message: 'Register Successful'});
     })
     .catch(err => {
       res.status(500).json({ error });
