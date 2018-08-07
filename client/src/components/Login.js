@@ -23,6 +23,7 @@ class Login extends React.Component {
     axios.post('http://localhost:8000/api/login', {username, password}).then(response => {
       console.log(response.data);
       sessionStorage.setItem('fakeCookie', response.data.cook);
+      document.cookie = 'something else=s%3AnFF0emWBhyufQzVy3D7XFvxhVmQqGS4D.gDFXPX3k8tZD0m9xbkqW6O%2FnnCYNDv209qZWiq1PkVI';
       window.location.reload();
     }).catch(err => {
       console.log(err);
