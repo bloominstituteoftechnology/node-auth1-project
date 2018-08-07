@@ -1,29 +1,28 @@
 const express = require("express");
 const db = require("./data/db.js");
 const bcrypt = require("bcryptjs");
-const session = require('express-session');
+const session = require("express-session");
 const server = express();
 
 function protected(req, res, next) {
-  if (req.session && req.session.username === 'John123') {
-    next();
-  } else {
-    return res.status(401).json({ error: 'Incorrect credentials' });
-  }
+    if (req.session && req.session.username) {
+      next();
+    } else {
+      return res.status(401).json({ error: "Please Log in to continue" });
+    }
 }
-
 
 server.use(
   session({
-    name: 'notsession', // default is connect.sid
-    secret: 'nobody tosses a dwarf!',
+    name: "notsession", // default is connect.sid
+    secret: "nobody tosses a dwarf!",
     cookie: {
       maxAge: 1 * 24 * 60 * 60 * 1000,
-      secure: false, // only set cookies over https. Server will not send back a cookie over http.
+      secure: false // only set cookies over https. Server will not send back a cookie over http.
     }, // 1 day in milliseconds
     httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: true
   })
 );
 
@@ -69,7 +68,7 @@ server.post("/api/login", (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(credentials.password, user.password)) {
-        req.session.username = user.username
+        req.session.username = user.username;
         res.send(`Welcome ${user.username}!`);
       } else {
         return res.status(401).json({ message: "You shall not pass!" });
@@ -80,19 +79,17 @@ server.post("/api/login", (req, res) => {
     });
 });
 
-
-server.get('/logout', (req, res) => {
+server.get("/logout", (req, res) => {
   if (req.session) {
     req.session.destroy(err => {
       if (err) {
-        res.send('error logging out');
+        res.send("error logging out, please try again");
       } else {
-        res.send('good bye');
+        res.send("Thanks for stopping by!");
       }
     });
   }
 });
-
 
 const port = 3300;
 server.listen(port, function() {
