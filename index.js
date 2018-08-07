@@ -6,9 +6,12 @@ const server = express();
 
 function protected(req, res, next) {
   if (req.session && req.session.username === "billybob") {
+    //if(req.session && req.session.username)
     next();
   } else {
-    return res.status(401).json({ error: "Incorrect credentials" });
+    return res
+      .status(401)
+      .json({ error: "Incorrect credentials, You Shall not Pass!" });
   }
 }
 
@@ -79,7 +82,9 @@ server.post("/api/login", (req, res) => {
         req.session.username = user.username;
         res.send(`Hello, ${user.username}`);
       } else {
-        return res.status(401).json({ error: "Incorrect credentials" });
+        return res
+          .status(401)
+          .json({ error: "Incorrect credentials, You Shall not pass!" });
       }
     })
     .catch(err => {
