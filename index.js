@@ -10,7 +10,9 @@ let isValid = null;
 server.use(express.json());
 server.use(cors());
 server.use(session({
-  secret: "nfm0leyJQVuf6v/HDf4CbjFkRv3gGd+fOXULsdf/8rMtnZjgQdS5E006zoiFuVEAO4c="
+  name:'something else',
+  secret: "nfm0leyJQVuf6v/HDf4CbjFkRv3gGd+fOXULsdf/8rMtnZjgQdS5E006zoiFuVEAO4c=",
+  cookie: {maxAge: 1000 * 300}
 }));
 server.use((req, res, next) => {
   if (req.originalUrl.includes('/api/restricted/')) {
@@ -33,8 +35,8 @@ const authenticate = async (req, res, next) => {
 };
 
 server.get('/api/users', (req, res) => {
-  console.log(req.session.validated);
-  if (req.session.validated) {
+  if (req.sessionID = req.session.sessionId) {
+    console.log(req.sessionID);
     const users = db('users').then(response => {
       res.status(200).json(response);
     }).catch(err => {
@@ -68,13 +70,25 @@ server.post('/api/register', async (req, res) => {
 
 server.post('/api/login', authenticate, async (req, res) => {
   if (req.session.validated) {
-    console.log('resssss', res);
-    res.status(200).json('Logged In')
+    req.session.sessionId = req.sessionID;
+    res.status(200).json({message:"Logged In", cook:req.sessionID});
   } else {
     res.status(401).json({
       status: 401,
       message: 'You shall not pass!'
     })
+  }
+});
+
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('error logging out')
+      } else {
+        res.send('Logged Out');
+      }
+    });
   }
 });
 

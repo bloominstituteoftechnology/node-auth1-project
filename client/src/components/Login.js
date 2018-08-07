@@ -16,16 +16,18 @@ class Login extends React.Component {
   }
 
   handleLogin = e => {
-    console.log('Login Handled');
+    e.preventDefault();
     const username = this.state.username;
     const password = this.state.password;
     console.log(username, password);
     axios.post('http://localhost:8000/api/login', {username, password}).then(response => {
       console.log(response.data);
+      sessionStorage.setItem('fakeCookie', response.data.cook);
+      window.location.reload();
     }).catch(err => {
       console.log(err);
     })
-    window.location.reload();
+
   }
 
   render() {

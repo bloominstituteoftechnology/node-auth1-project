@@ -10,7 +10,7 @@ const Authentication = App =>
       }
     }
     componentDidMount() {
-      if (!localStorage.getItem('user')) {
+      if (!sessionStorage.getItem('fakeCookie')) {
         this.setState({loggedIn: false});
       } else {
         this.setState({loggedIn: true});
