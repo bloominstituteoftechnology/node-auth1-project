@@ -9,10 +9,8 @@ router.post('/', (req, res) => {
     user.userPassword = hash;
 
     db('users').insert(user).then(id => {
-        db('users').where({id: ids[0]}).first().then(user => {
             res.status(201).json(user);
         })
-    })
 })
 
 module.exports = router;
