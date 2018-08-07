@@ -1,16 +1,23 @@
 const express = require('express');
 const db = require('./data/db');
 const server = express();
+const cors = require('cors');
 const session = require('express-session');
 const bcrypt = require("bcrypt");
 
 function protected(req, res, next) {
-  if (req.session && req.session.username) {
-    next();
-  } else {
-    return res.status(401).json({ error: 'You shall not pass!' });
+   if (req.path.includes('restricted')) {
+     if (req.session && req.session.username) {
+      next();
+    } else {
+      return res.status(401).json({ error: 'You shall not pass!' });
+    }
   }
 }
+
+server.use(cors());
+
+server.use(protected);
 
 server.use(
   session({
@@ -91,11 +98,6 @@ server.get('/api/logout', (req, res) => {
     res.status(400).json({'error': 'You are not logged in'})
   }
 });
-
-server.get('/api/restricted', protected, (req, res) => {
-  res.status(500).json({'message': 'Welcome to the restricted area'})
-})
-
 
 const port = 8080;
 server.listen(port, function() {
