@@ -43,6 +43,7 @@ server.post('/api/register', (req, res) => {
 	db.insert(user).into('users')
 	.then(ids => {
 		const id = ids[0];
+		req.session.name = user.name;
 		res.status(201).json({ id, ...user })
 	}).catch(err => res.status(500).json(err));
 });
