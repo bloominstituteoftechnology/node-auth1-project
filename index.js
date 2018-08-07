@@ -1,9 +1,25 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const db = require('./data/db.js');
+const cors = require('cors');
+const session = require('express-session');
 
 const server = express();
 server.use(express.json());
+server.use(cors());
+server.use(
+    session({
+        name: "holyhandgrenade",
+        secret: "Are you suggesting coconuts migrate?",
+        cookie: {
+            maxAge: 1 * 24 * 60 * 60 * 1000,
+            secure: true
+        },
+        httpOnly: true,
+        resave: false,
+        savUninitialized: false
+    })
+);
 
 /*function checkLogIn(user) {
     return function(req, res, next){
@@ -14,13 +30,21 @@ server.use(express.json());
 }
 }*/
 
+server.get('/setname', (req, res) => {
+    req.session.name = 'erin';
+    res.send('session set')
+})
+
+server.get('/getname', (req, res) => {
+    const name = req.session.name;
+    res.send(`Hello ${req.session.name}`)
+})
 
 server.get('/api/restricted/users', (req, res) => {
-    db('users')
-    .then(function(user) {
-        if(user.isLoggedIn) {
-            return res.status(200).json(db('users').select('username'))
-        }
+    const name = req.session.username;
+    db('users').select('username')
+    .then(response => {
+            res.status(200).json(response)
     })
     .catch(err => {
         res.status(500).json('You shall not pass!')
@@ -51,12 +75,12 @@ server.post('/api/login', (req, res) => {
     db('users')
     .where({username: credentials.username}).first()
     .then(function(user) {
-    if(!user || !bcrypt.compareSync(credentials.password, user.password)) {
-        return res.status(401).json('You shall not pass!')
+    if(user || bcrypt.compareSync(credentials.password, user.password)) {
+        req.session.userId = user.id;
+        return res.status(200).json('Logged in.')
     }
     else {
-        credentials.isLoggedIn = true;
-        return res.status(200).json(user)
+        return res.status(401).json('You shall not pass!')
     }
 })
 })

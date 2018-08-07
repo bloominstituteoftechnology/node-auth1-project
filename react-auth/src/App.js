@@ -37,7 +37,7 @@ class App extends Component {
     axios.post('http://localhost:8000/api/login', user)
     .then(response => {
       console.log(response);
-      this.setState({isLoggedIn: !this.state.isLoggedIn})
+      this.setState({user: {...this.state.user, isLoggedIn: true}})
     })
     .catch(err => {
       console.log(err)
