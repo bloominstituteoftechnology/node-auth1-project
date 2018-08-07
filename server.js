@@ -2,12 +2,28 @@ const express = require('express');
 const cors = require('cors');
 
 const db = require('../data/db');
+const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const port = 3300;
 const server = express();
 
 server.use(express.json());
 server.use(cors());
+
+server.use(
+    session({
+        name: "this is a session name",
+        secret: "this is a secret",
+        cookie: {
+            maxAge: 1 * 24 * 60 * 60 * 1000,
+            secure: true
+        },
+        httpOnly: true,
+        resave: false,
+        saveUninitialized: false
+    })
+);
 
 server.get('/', (req, res) => {
     res.send('Hello!')
