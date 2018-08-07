@@ -1,15 +1,17 @@
 const express = require('express');
 const db = require('./data/db');
 const server = express();
-
+const session = require('express-session');
 const bcrypt = require("bcrypt");
 
 server.use(express.json());
 
 server.post('/api/register', (req, res) => {
   const user = req.body;
+  //const { username, password } = req;
   const hash = bcrypt.hashSync(user.password, 11);
   user.password = hash;
+  //password = hash;
   if (!user) {
     res.status(400).json({ errorMessage: "Please provide a username and password." })
     return;
@@ -26,7 +28,7 @@ server.post('/api/register', (req, res) => {
 
 server.post('/api/login', (req, res) => {
   const credentials = req.body;
-
+  //const { username, password } = req;
   db('users')
   .where({ username: credentials.username })
   .first()
@@ -41,6 +43,9 @@ server.post('/api/login', (req, res) => {
   })
 });
 
+server.get('/api/users', (req, res) => {
+
+})
 
 const port = 8080;
 server.listen(port, function() {
