@@ -13,7 +13,7 @@ server.use (express.json());
 
 server.get('/', (req, res) => {
 
-  res.send('<h1>Authentication: working on MVP</h1>  <br>  <p>Part one, due Monday: <br><br>  Use Node.js, Express and Knex to build an API that provides Register and Login functionality using SQLite to store User information. <br><br>  Make sure the password is not stored as plain text.</p>');
+  res.send('<h1>Authentication: working on </h1>  <br>  <p>Part two, due Tuesday');
 });
 
 server.get('/api/users', (req, res) => {
@@ -32,7 +32,6 @@ const user = req.body;
 const hash = bcrypt.hashSync(user.password, 14);
 user.password = hash;
 
-//post to db
 db('users').insert(user).then(response=> {
     res.status(200).json({Message:'Registration was successfully executed!'})
 })
@@ -41,6 +40,21 @@ db('users').insert(user).then(response=> {
 })
 })
 
+server.post('/api/login', (req, res) => {
+  const credentials = req.body;
+  db('users')
+  .where({ username: credentials.username })
+  .first()
+  .then(user => {
+    if (user && bcrypt.compareSync(credentials.password, user.password)) {
+      return res.status(200).json({'message': 'You are now logged in.'})
+    }
+    return res.status(401).json({'errorMessage': 'wrong userID or password: You shall not pass!'})
+  })
+  .catch(err => {
+    res.status(500).json({'error': 'wrong userID or password'})
+  })
+});
 
 
 
