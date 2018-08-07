@@ -29,7 +29,6 @@ server.use(express.json());
 server.post('/api/register', function(req, res) {
   const user = req.body;
 
-  // hash password
   const hash = bcrypt.hashSync(user.password, 11);
   user.password = hash;
 
@@ -53,10 +52,8 @@ server.post('/api/register', function(req, res) {
     });
 });
 
-
 server.post('/api/login', (req, res) => {
   const credentials = req.body;
-  //const { username, password } = req;
   db('users')
   .where({ username: credentials.username })
   .first()
@@ -78,7 +75,23 @@ server.get('/api/users', protected, (req, res) => {
     })
     .catch(err => {
       res.status(500).json({'error': 'Could not display users'})
-    })});
+    });
+  });
+
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.status(500).json({'error': 'Could not log out'})
+      } else {
+        res.status(200).send('You are now logged out');
+      }
+    });
+  } else {
+    res.status(400).json({'error': 'You are not logged in'})
+  }
+});
+
 
 const port = 8080;
 server.listen(port, function() {
