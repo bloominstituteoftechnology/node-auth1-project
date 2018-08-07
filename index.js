@@ -5,6 +5,7 @@ const session = require('express-session');
 
 // routers
 const loginRouter = require('./login/index');
+const logoutRouter = require('./logout/index');
 const registerRouter = require('./register/index');
 const userRouter = require('./users/index');
 
@@ -30,6 +31,7 @@ server.use(session(sess));
 
 // mount routers
 server.use('/api/login', loginRouter);
+server.use('/api/logout', logoutRouter);
 server.use('/api/register', registerRouter);
 server.use('/api/users', userRouter);
 
