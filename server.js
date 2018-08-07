@@ -1,10 +1,28 @@
 const express = require('express');
-const db = require('./data/db');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
+
+const db = require('./data/db');
+
 const server = express();
 
 server.use(express.json());
 
+
+// configure express-session middleware
+server.use(
+  session({
+    name: 'thisnotsession', // default is connect.sid
+    secret: 'Be wery wery quiet...im hunting wabbit!',
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      secure: false, // only set cookies over https. Server will not send back a cookie over http.
+    }, // 1 day in milliseconds
+    httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 server.get('/', (req, res) => {
   res.send('Hello World');
@@ -42,9 +60,9 @@ server.post('/api/login', (req, res) => {
 			  	identity.password, user.password
 			);
 				if (user && passwordsMatch) {
-					res.send('Login Successful');
+					res.send('You are successfully logged In');
 				} else {
-					return res.status(401).json({ error: 'Login Unsuccessful, Please try again'});
+					return res.status(401).json({ error: 'Opps..Login unsuccessful, Please try again'});
 				}
 		})
 			.catch(function(error) {
