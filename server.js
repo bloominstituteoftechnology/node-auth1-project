@@ -13,16 +13,31 @@ server.get('/', (req, res) => {
     res.send('<h1>Home Page</h1>')
 })
 
-server.get('/user')
+const session = require('express-session');
+
+// configure express-session middleware
+server.use(
+  session({
+    name: 'notsession', // default is connect.sid
+    secret: 'nobody tosses a dwarf!',
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000, secure: false }, // 1 day in milliseconds
+    httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
+    secure: true, // only set cookies over https. Server will not send back a cookie over http.
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+
 
 // // ******  to hash a password *******
 
 server.post('/api/register', (req, res) => {
     const info = req.body;
-    const hash = bcrypt.hashSync(info.password, 14);
+    const hash = bcrypt.hashSync(info.password, 10);
     info.password = hash;
 
-    if(info.userName && info.password) {
+    
         db('user')
             .insert(info)
             .then( ids => {
@@ -30,87 +45,60 @@ server.post('/api/register', (req, res) => {
                 .where({ id: ids[0]})
                 .first()
                 .then(user => {
-                    res.status(200).json(user)
+                    req.session.userName = user.userName;
+                    res.status(201).json(user)
                 })
                 .catch(err => res.status(500).json(err))
             })
-    } else {
-        res.status(400).json({ message: 'Please provide both userName and password' })
-
-    }
 })
+
 server.post('/api/login', (req, res) => {
     const info = req.body;
     
-  
-
-    if(info.userName && info.password) {
         db('user')
             .where({ userName: info.userName })
             .first()
             .then(user => {
-                if(!user || !bcrypt.compareSync(info.password, user.password)) {
-                    return res.status(401).json({ error: 'Incorect credentials '});
+                if(user || bcrypt.compareSync(info.password, user.password)) {
+                    req.session.userName = user.userName;
+                    res.send(`welcome ${info.userName}`)
                 } else {
-                    res.send('welcome')
+                    return res.status(401).json({ error: 'Incorect credentials '});
                 }
             })
             .catch(err => res.status(500).json(err))
-        
-        } else {
-            res.status(400).json({ message: 'Please provide both userName and password' })
-    
-        }
 })
 
-// const credentials = req.body;
-
-// const hash = bcrypt.hashSync(credentials.password, 14);
-
-// credentials.password = hash;
-
-// // move on to save the user.
-
-// // ******  to hash a password *******
-// const credentials = req.body;
-
-// // find the user in the database by it's username then
-// if (!user || !bcrypt.compareSync(credentials.password, user.password)) {
-//   return res.status(401).json({ error: 'Incorrect credentials' });
-// }
-
-// // the user is valid, continue on
-
-
-// //hash password
-// const hash = bcrypt.hashSync(user.password, 14);
-// user.password = hash
-
-// db('users')
-//     .insert(user)
-//     .then(function(ids) {
+server.get('/api/users', (req, res) => {
+    db('user')
+      .then(users => {
+        res.json(users);
+      })
+      .catch(err => res.send(err));
+});
+// server.get('api/users', (req, res) => {
+//     if(req.session && req.session.username === 'merry') {
 //         db('users')
-//         .where({ id: ids[0] })
-//         .first()
-//         .then(user => {
-//             res.status(201).json(user);
-//         });
-//     })
-//     .catch(function(err) {
-//         res.status(500).json({ err });
-//     })
+//         .then(u => {
+//             res.status(200).json(u);
+//         })
+//         .catch(err => {
+//             res.status(500).json(err)
+//         })
 
+//     } else {
+//         return res.
+//     }
+// })
 
-//     // login 
-
-//     server.post('/login', function(req, res) {
-//         const credentials = req.body;
-
-
-//     })
-//     db('users')
-//     .where({ username: user.username}).first()
-//     .then(function(user) {
-
-//         if()
-//     })
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.send('error logging out');
+        } else {
+          res.send('good bye');
+        }
+      });
+    }
+  });
