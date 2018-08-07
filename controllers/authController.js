@@ -6,7 +6,7 @@ module.exports = {
     db('users')
       .insert(req.body)
       .then(user => res.status(201).json({ msg: 'Registration Successful!' }))
-      .catch(err => res.status(500).json(err))
+      .catch(next)
   },
 
   loginUser: (req, res, next) => {
@@ -16,12 +16,12 @@ module.exports = {
         bcrypt.compare(password, user[0].password)
           .then(isPasswordValid => {
             if (isPasswordValid) {
-              return res.status(200).json({ msg: 'Login Successful!' })
+              return res.status(200).json({ msg: 'login successful' })
             } else {
-              return res.status(403).json({ msg: 'Login Failed!' })
+              return res.status(401).json({ msg: 'login failed' })
             }
           })
       })
-      .catch(err => res.status(501).json(err))
+      .catch(next)
   }
 }
