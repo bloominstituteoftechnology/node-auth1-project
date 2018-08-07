@@ -109,7 +109,7 @@ server.post('/api/login', (req, res)=> {
 			res.status(200).send(`Logged In, Welcome`);
 		}
 		else{
-			res.status(401).json({error: 'Incorrect credentials'});
+			res.status(401).json({message: 'Incorrect credentials'});
 		}
 	})
 	
@@ -122,7 +122,6 @@ server.post('/api/login', (req, res)=> {
 
 server.get('/api/users', protected, (req, res)=> {
 
-        //if(req.session.loggedInFlag === true) {      //checking if a user is logged in using data stored in a session
                 db('users')
                 .then(response =>{
                         res.status(200).json(response);
@@ -132,10 +131,6 @@ server.get('/api/users', protected, (req, res)=> {
                 .catch(err => {
                         res.status(500).json(err);
                 });
-
-        //}
-
-        //else res.status(401).send('You shall not pass');
 
 });
 
@@ -157,10 +152,10 @@ server.get('/api/logout', (req, res) => {
 
 
 
-server.get('/api/restricted/something', (req, res) => {
+server.get('/api/restricted/', protected, (req, res) => {
 	
-	if(req.session.logged) res.status(200).send("Logged in"); //cehcking if a user is logged in using 
-	else res.status(500).send('You shall not pass');
+
+	res.status(200).send("Welcome, You're Logged in");  
 
 });
 
