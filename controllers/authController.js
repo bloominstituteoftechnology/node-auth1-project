@@ -10,7 +10,15 @@ module.exports = {
   },
 
   loginUser: (req, res, next) => {
-    let { username, password } = req.body
+    const { username, password } = req.body
+    //* Hash password
+    bcrypt
+      .hash(password, 14)
+      .then(hash => {
+        req.body.password = hash
+      })
+      .catch(next)
+
     db('users').where({ username })
       .then(user => {
         bcrypt.compare(password, user[0].password)
