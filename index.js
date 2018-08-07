@@ -7,10 +7,10 @@ const server = express();
 const sessionOptions = {
   secret: 'arrrrrr',
   cookie: {
-    maxAge: 1000 * 60 * 60 
+    maxAge: 1000 * 60 * 60,
+    secure: false 
   },
   httpOnly: true,
-  secure: false,
   resave: true,
   saveUninitialized: false,
   name: 'noname',
@@ -24,7 +24,7 @@ function protected(req, res, next) {
     next();
   } else {
     res.status(401).json({
-      message: 'You are not authenticated'
+      message: 'Please Log In'
     })
   }
 }
@@ -38,9 +38,9 @@ server.get('/api/users', protected, (req, res) => {
 server.get('/', (req, res) => {
   console.log(req.session.username)
   if (req.session && req.session.username) {
-    res.status(200).json({ message: ` welcome back ${req.session.username}` })
+    res.status(200).json({ message: ` welcome back, ${req.session.username}` })
   } else {
-    res.status(401).json({message: ''})
+    res.status(401).json({message: 'Please Log In'})
   }
 })
 
@@ -86,7 +86,7 @@ server.get('/api/logout', (req, res) => {
       if (err) {
         res.status(500).json(`Unable to log out`);
       } else {
-        res.status(200).json(`You are logged out`)
+        res.status(200).json(`You are logged out`);
       }
     });
   }
