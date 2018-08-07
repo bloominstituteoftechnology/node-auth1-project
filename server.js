@@ -77,7 +77,7 @@ server.get('/api/users', (req, res) => {
       })
       .catch(err => res.send(err));
     } else {
-        return res.status(401).json({ error: 'Incorrect credentials'})
+        return res.status(401).json({ error: 'Please login first to see this content'})
     }
 });
 
