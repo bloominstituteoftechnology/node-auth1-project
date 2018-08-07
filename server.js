@@ -28,6 +28,16 @@ server.get('/', (req, res) => {
   res.send('Hello World');
 });
 
+server.get('/setname', (req, res) => {
+  req.session.name = '';
+  res.send('User Info retrieved');
+});
+
+server.get('/getname', (req, res) => {
+  const name = req.session.name;
+  res.send(`hello ${req.session.name}`);
+});
+
 //********GET USERS ENDPOINT*********************
 server.get('/users', (req, res) => {
 	db('users').then(users=> {
@@ -73,6 +83,17 @@ server.post('/api/login', (req, res) => {
 });
 
 
+server.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('Logout Session Unsuccessful');
+      } else {
+        res.send('You are successfully logged out');
+      }
+    });
+  }
+});
 
 
 
