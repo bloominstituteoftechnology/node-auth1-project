@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../data/db');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
@@ -8,10 +9,16 @@ router.post('/register', async (req, res) => {
     const credentials = req.body;
     const hash = bcrypt.hashSync(credentials.password, 14);
     credentials.password = hash;
-    await db('users').insert(credentials);
-    res.status(201).json(credentials);
+    const newUserId = await db('users').insert(credentials);
+    try {
+      const user = await db('users').where({ id: newUserId[0] }).first();
+      req.session.username = user.username;
+      return res.status(201).json(user);
+    } catch (error) {
+      return res.status(404).json({ message: "User does not exist.", error: error.message });
+    }
   } catch (error) {
-    res.status(500).json({ message: "User could not be registered." });
+    return res.status(500).json({ message: "User could not be registered." });
   }
 });
 
@@ -20,12 +27,25 @@ router.post('/login', async (req, res) => {
     const credentials = req.body;
     const user = await db('users').where({ username: credentials.username }).first();
     if (user && bcrypt.compareSync(credentials.password, user.password)) {
-      res.status(201).json({ message: "Logged in." });
+      req.session.username = user.username;
+      return res.status(200).json({ message: `${user.username} is logged in.` });
     } else {
-      res.status(404).json({ message: "You shall not pass!" });
+      return res.status(404).json({ message: "You shall not pass!" });
     }
   } catch (error) {
-    res.status(500).json({ message: "An error occurred during login." });
+    return res.status(500).json({ message: "An error occurred during login." });
+  }
+});
+
+router.get('/users', async (req, res) => {
+  if (!req.session.username) {
+    return res.status(400).json({ message: "You shall not pass!" });
+  }
+  try {
+    const allUsers = await db('users');
+    return res.status(200).json(allUsers);
+  } catch (error) {
+    return res.status(500).json({ message: "Users could not be fetched." });
   }
 });
 
