@@ -94,6 +94,10 @@ server.get("/api/logout", (req, res) => {
   }
 });
 
+server.get("/api/restricted/", protected, (req, res) => {
+  res.send("You are viewing restricted content");
+});
+
 server.listen(8000, () => {
   console.log(`\n=== Web API Listening on http://localhost:8000 === \n`);
 });
