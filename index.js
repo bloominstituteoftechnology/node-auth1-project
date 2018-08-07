@@ -17,7 +17,7 @@ const sessionOptions = {
 }
 server.use(session(sessionOptions));
 server.use(express.json());
-server.use(cors({origin: 'http://localhost:3000', credentials: true}));
+server.use(cors());
 
 function protected(req, res, next) {
   if (req.session && req.session.username) {
@@ -36,7 +36,7 @@ server.get('/api/users', protected, (req, res) => {
 })
 
 server.get('/', (req, res) => {
-  console.log(req.session.username)
+  console.log('req.session.username', req.session.username)
   if (req.session && req.session.username) {
     res.status(200).json({ message: ` welcome back, ${req.session.username}` })
   } else {
@@ -71,7 +71,7 @@ server.post('/api/login', (req, res) => {
       if (!user || !bcrypt.compareSync(credentials.password, user.password)) {
         return res.status(401).json({ error: 'Incorrect credentials' });
       } else {
-        req.session.username = credentials.username;
+        req.session.username = user.username;
         return res.status(200).json({ message: `You are logged in, ${credentials.username}` })
       }
     })  

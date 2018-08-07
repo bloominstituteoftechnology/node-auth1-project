@@ -56,7 +56,7 @@ export default class Login extends Component {
         </Link>
           <button type='button' onClick={this.handleLogout} className="btn btn-danger mr-2">Logout</button>
       </header>
-      <div className="form-group container">
+      <div className="form-group container w-50">
         <h3 className="header mt-2">Login</h3>
         <input
           name='username'
