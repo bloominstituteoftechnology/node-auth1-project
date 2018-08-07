@@ -70,12 +70,17 @@ server.post('/api/login', (req, res) => {
 })
 
 server.get('/api/users', (req, res) => {
+    if(req.session && req.session.userName) {
     db('user')
       .then(users => {
         res.json(users);
       })
       .catch(err => res.send(err));
+    } else {
+        return res.status(401).json({ error: 'Incorrect credentials'})
+    }
 });
+
 // server.get('api/users', (req, res) => {
 //     if(req.session && req.session.username === 'merry') {
 //         db('users')
