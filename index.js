@@ -19,7 +19,6 @@ server.use(session(sessionOptions));
 server.use(express.json());
 
 function protected(req, res, next) {
-  console.log(req.session.username)
   if (req.session && req.session.username) {
     next();
   } else {
@@ -52,8 +51,9 @@ server.post('/api/register', (req, res) => {
   db    
     .insert(user)
     .into('User')
-    .then(user => {
-      res.status(201).json(user)
+    .then(id => {
+      db('User')
+        .then(user => res.status(201).json(user.pop()))
     })
     .catch(err => {
       res.status(500).json(err);
@@ -75,9 +75,9 @@ server.post('/api/login', (req, res) => {
       }
     })  
     .catch(err => {
-      res.send(err)
-    })
-});
+      res.status(500).json({ error });
+    });
+})
 
 server.get('/api/logout', (req, res) => {
   if (req.session) {
@@ -89,9 +89,9 @@ server.get('/api/logout', (req, res) => {
       }
     });
   }
-});
+})
 
 server.listen(8000, () => {
   console.log('API running on port 8000')
-})
+});
 
