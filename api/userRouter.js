@@ -15,6 +15,7 @@ function restricted(role) {
     };
     const userRole = req.session.user.role;
     const hasAccess = accessCodes[userRole] >= accessCodes[role] ? true : false;
+    console.log(hasAccess,userRole);
     if (req.session && hasAccess) {
       next();
     } else {
@@ -24,7 +25,7 @@ function restricted(role) {
     }
   };
 }
-router.get("/", restricted('normal'), (req, res, next) => {
+router.get("/", restricted('free'), (req, res, next) => {
   db("users")
     .then(response => {
       res.status(codes.OK).json(response);
