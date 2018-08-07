@@ -13,19 +13,23 @@ router.post("/", (req, res, next) => {
     if(!user.username) {
         throw { code: codes.BAD_REQUEST, message: "Username has not been entered please enter one"}
     }
-
+    if(!user.password) {
+        throw { code: codes.BAD_REQUEST, message: "Password has not been entered please enter one"}
+    }
     db("users")
     .where("users.username", "=", req.body.username)
     .first()
     .then(response => {
         const rightPassword = bcrypt.compareSync(user.password, response.password)
-        if(!rightPassword) {
+        if(!response || !rightPassword) {
             res.status(codes.BAD_REQUEST).json("You shall not pass! evildoer");
-            return;
         }
-
-        req.session.isLoggedIn = true;
-        res.status(codes.OK).json("Logged in")
+        else {
+        req.session.username = user.username;
+        res.status(codes.OK).json(`${req.session.username} has logged in`);
+        }
     });
 });
 module.exports = router;
+
+//sqlizer
