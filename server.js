@@ -37,32 +37,38 @@ server.post('/api/register', (req, res) => {
         })
 });
 
-// POST | Login -- See that your login is either successful or unsuccessful
+// PUT | Login -- See that your login is either successful or unsuccessful
 
-server.post('/api/login', (req, res) => {
+server.put('/api/login', (req, res) => {
     const credentials = req.body;
     
     db('users')
         .where({ username: credentials.username })
-        .first()
-        // .update({ loggedIn: 1})
         .then(user => {
-            user && bcrypt.compareSync(credentials.password, user.password) 
-            ? res.status(200).json({message: `Welcome to the world, ${ credentials.username }!`, user }) 
+            console.log(user);
+            user[0] && bcrypt.compareSync(credentials.password, user[0].password) 
+            ? db('users')
+                .where({ username: credentials.username })
+                .update({loggedIn: 1})
+                .then(success => {
+                    res.status(200).json({message: `Welcome to the world, ${ credentials.username }!`, user }) 
+                })
             : res.status(401).json({error: 'Incorrect credentials. Try again.'});
         })
         .catch(err => {
-            res.status(500).json({ err });
+            res.status(500).json( err.message );
         })
 });
 
-server.post('/api/logout', (req, res) => {
+// PUT | Logout -- See that your login is either successful or unsuccessful
+
+server.put('/api/logout', (req, res) => {
     const { username } = req.body;
-    
+
     db('users')
         .where({ username })
         .first()
-        // .update({ loggedIn: 0})
+        .update({ loggedIn: 0})
         .then(user => {
             res.status(200).json(`Okay, you've been successfully logged out! We'll see you next time, ${ username }!`)
         })
