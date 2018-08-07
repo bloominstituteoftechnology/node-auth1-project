@@ -3,6 +3,13 @@ import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
+  constructor(props){
+    super(props);
+    this.state={
+      'isLoggedIn': false,
+      'user': null,
+    }
+  }
   render() {
     return (
       <div className="App">
@@ -11,8 +18,13 @@ class App extends Component {
           <h1 className="App-title">Welcome to React</h1>
         </header>
         <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
+          Login Below to Continue.
         </p>
+        <form action="" method='POST'>
+        <input placeholder='username' type="text"/>
+        <input placeholder='password' type="text"/>
+        <button>submit</button>
+        </form>
       </div>
     );
   }
