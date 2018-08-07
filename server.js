@@ -18,5 +18,5 @@ server.get('/', (req, res) => {
 })
 
 server.listen(port, () => {
-  console.log(`\n 🦄   === SERVER ONLINE on port ${port} === 🦄 \n`)
+  console.log(`\n 💩  === SERVER ONLINE on port ${port} === 🦄 \n`)
 })

@@ -1,5 +1,4 @@
 const router = require('express').Router()
-const { getUsers } = require('../../../controllers/userController')
 
 //* Local Middleware
 const validateUser = (req, res, next) => {
@@ -9,6 +8,8 @@ const validateUser = (req, res, next) => {
   next()
 }
 
-router.get('/', validateUser, getUsers)
+router.get('/', validateUser, (req, res, next) => {
+  res.status(200).json({ msg: 'let us party 🎉 ' })
+})
 
 module.exports = router
