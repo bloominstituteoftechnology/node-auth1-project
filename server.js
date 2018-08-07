@@ -34,14 +34,6 @@ server.use(session({
 }));
 
 
-function protected(req, res, next) {
-  if (req.session && req.session.loggedInFlag) //checking if a user is logged in using data stored in a session
-{    
-    next();
-  } else {
-    res.status(401).json({ message: 'you shall not pass!!' });
-  }
-}
 
 //session middleware without memcache
 /*server.use(session({ 
@@ -53,6 +45,39 @@ function protected(req, res, next) {
 	cookie: { maxAge: 60000 }
 }));*/
 
+
+function protected(req, res, next) {
+  if (req.session && req.session.loggedInFlag) //checking if a user is logged in using data stored in a session
+{
+    next();
+  } else {
+    res.status(401).json({ message: 'you shall not pass!!' });
+  }
+}
+
+
+function roles(req, res, next){
+
+	db('users')
+	.where('id', req.session.userId)
+	.then(user => {
+	console.log(user);
+
+	if(req.session.loggedInFlag === true && user[0].role ==='admin')
+	{
+		next();
+	}
+
+	else {
+		res.status(401).json({ message: 'you shall not pass, since you are not an admin!!' });
+	}
+	})
+
+	.catch(err => {
+		res.status(500).json(err);
+	
+	});
+}
 
 
 server.get('/', (req, res)=> {
@@ -102,6 +127,7 @@ server.post('/api/login', (req, res)=> {
 			//req.session.logged = true;
 			//req.session.cookie.userId = user.id;
 			req.session.loggedInFlag = true;
+			req.session.userId = user.id;
 
 			//console.log(req.session.key);
 			console.log(req.session.loggedInFlag);
@@ -120,7 +146,7 @@ server.post('/api/login', (req, res)=> {
 });
 
 
-server.get('/api/users', protected, (req, res)=> {
+server.get('/api/users', roles, (req, res)=> {
 
                 db('users')
                 .then(response =>{
