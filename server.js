@@ -93,7 +93,6 @@ server.post('/users/login', async (req, res, next) => {
         const match = bcrypt.compareSync(String(req.body.password), response);
         if (match) {
             const loggedinSession = req.session;
-            console.log(loggedinSession);
             loggedinSession.authenticated = true;
             loggedinSession.username = req.body.username;
             res.status(200).send('Login successfully')
@@ -116,7 +115,6 @@ server.post('/users/logout', (req, res, next) => {
             }
         })
     }
-    console.log(req.session);
 });
 
 server.use((error, req, res, next) => {

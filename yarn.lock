@@ -561,6 +561,12 @@ configstore@^3.0.0:
     write-file-atomic "^2.0.0"
     xdg-basedir "^3.0.0"
 
+connect-memcache@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/connect-memcache/-/connect-memcache-0.0.5.tgz#395fbd313d45980b5793fe77d8b91f4314e170bc"
+  dependencies:
+    memcache "~0.3.0"
+
 console-control-strings@^1.0.0, console-control-strings@^1.1.0, console-control-strings@~1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/console-control-strings/-/console-control-strings-1.1.0.tgz#3d7cf4464db6446ea644bf4b39507f9851008e8e"
@@ -576,6 +582,13 @@ content-security-policy-builder@2.0.0:
 content-type@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/content-type/-/content-type-1.0.4.tgz#e138cc75e040c727b1966fe5e5f8c9aee256fe3b"
+
+cookie-parser@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/cookie-parser/-/cookie-parser-1.4.3.tgz#0fe31fa19d000b95f4aadf1f53fdc2b8a203baa5"
+  dependencies:
+    cookie "0.3.1"
+    cookie-signature "1.0.6"
 
 cookie-signature@1.0.6:
   version "1.0.6"
@@ -2033,6 +2046,10 @@ mem@^1.1.0:
   resolved "https://registry.yarnpkg.com/mem/-/mem-1.1.0.tgz#5edd52b485ca1d900fe64895505399a0dfa45f76"
   dependencies:
     mimic-fn "^1.0.0"
+
+memcache@~0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/memcache/-/memcache-0.3.0.tgz#bdbb978ea4bee0fdd3166997b1883d297e0859dc"
 
 merge-descriptors@1.0.1:
   version "1.0.1"
