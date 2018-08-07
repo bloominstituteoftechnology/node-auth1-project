@@ -9,8 +9,13 @@ const server = express();
 const port = 8000;
 const sessVals = { 
   genid: () => uuidv1(),
-  secret: 'lambda', 
-  cookie: { maxAge: 60000 }
+  name: 'notsession',
+  secret: 'lambda cs11 2018', 
+  cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
+  httpOnly: true,
+  secure: false,
+  resave: false,
+  saveUninitialized: true
 };
 
 server.use(helmet());
