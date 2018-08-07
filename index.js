@@ -25,6 +25,7 @@ server.use((req, res, next) => {
 
 const authenticate = async (req, res, next) => {
   const credentials = req.body;
+  console.log(credentials);
   const foundUser = await db('users').where('username', credentials.username).first();
   const userHash = foundUser.password;
   req.session.validated = bcrypt.compareSync(credentials.password, userHash);
@@ -67,6 +68,7 @@ server.post('/api/register', async (req, res) => {
 
 server.post('/api/login', authenticate, async (req, res) => {
   if (req.session.validated) {
+    console.log('resssss', res);
     res.status(200).json('Logged In')
   } else {
     res.status(401).json({

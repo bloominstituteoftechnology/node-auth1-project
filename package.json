@@ -27,7 +27,7 @@
     "react-router-dom": "^4.3.1",
     "sqlite3": "^4.0.2"
   },
-  "devDependecies": {
+  "devDependencies": {
     "nodemon": "^1.18.3"
   }
 }

@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import {Route} from 'react-router-dom';
 import axios from 'axios';
+import Authentication from './components/Authentication';
 
 class App extends Component {
   constructor(props) {
@@ -37,4 +38,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default Authentication(App);
