@@ -1,5 +1,6 @@
 const express = require('express')
 const bcrypt = require('bcryptjs')
+const session = require('express-session')
 
 const db = require('./data/db')
 
@@ -38,16 +39,25 @@ server.post('/api/register', (req, res) => {
 
 server.post('/api/login', (req, res) => {
     const credentials = req.body
-
+    console.log("Credentials", credentials)
     const user = db('users')
-                        .where({userName: credentials.userName})
-                        .then(user => {
-                            console.log(user)
-                        })
-                        .catch( err => res.status(500).json(err.message))
-
-    if(!user || !bcrypt.compareSync(credentials.password, credentials.userName)){
+    //                     .where({userName: credentials.userName})
+    //                     .then(user => {
+    //                         console.log("User", user)
+    //                     })
+    //                     .catch( err => res.status(500).json("Testing123"))
+    console.log(user.password)
+    console.log(credentials.password)
+    if(!user || !bcrypt.compareSync(credentials.password, user.password)){
         return res.status(401).json({error: "Incorrect Credentials"})
+    }else{
+        // const session = req.session
+        // if(!session.logins){
+        //     session.logins = 0
+        // }
+        // session.logins++;
+
+        res.status(200).json({ logins: session.logins })
     }
     const hash = bcrypt.hachSync(credentials.password, 14)
 })
