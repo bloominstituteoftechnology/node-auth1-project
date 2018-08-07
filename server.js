@@ -28,7 +28,7 @@ async function filterForLoggedIn(req, res, next) {
   res.status(400).json({ message: 'Could not authenticate user.' });
 }
 
-server.use()
+// server.use('/restricted/', fi)
 
 server.post('/api/register', (req, res) => {
   const { username, password } = req.body;
