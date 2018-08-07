@@ -31,3 +31,57 @@
   border: 1px solid black;
   margin: 10px;
 }
+
+.nav-container {
+  display: flex;
+  justify-content: center;
+  border: 1px solid black;
+}
+
+.nav-container a {
+  margin: 5px 30px;
+  text-decoration: none;
+  color: black;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 173px;
+}
+
+.login-form input {
+  margin: 5px 0;
+}
+
+.login-form button {
+  width: 100%;
+  margin: 5px 0;
+}
+
+.register-container {
+  display: flex;
+  justify-content: center;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 173px;
+}
+
+.register-form input {
+  margin: 5px 0;
+}
+
+.register-form button {
+  width: 100%;
+  margin: 5px 0;
+}

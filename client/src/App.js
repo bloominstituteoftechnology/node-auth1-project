@@ -5,6 +5,7 @@ import { Route } from 'react-router-dom';
 import Users from './components/Users';
 import Register from './components/Register';
 import Login from './components/Login';
+import Nav from './components/Nav';
 
 class App extends Component {
   render() {
@@ -14,10 +15,11 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
+        <Route path='/' component={Nav} />
         <Route path='/users' component={Users} />
         <Route path='/login' component={Login} />
         <Route path='/register' component={Register} />
-      </div>
+      </div >
     );
   }
 }

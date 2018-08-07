@@ -38,14 +38,18 @@ class Login extends React.Component {
 
     render() {
         return (
-            <form onSubmit={event => event.preventDefault()}>
-                <h1>Login</h1>
-                <input type='text' placeholder='Username' name='username' value={this.state.username} onChange={this.handleInput} />
-                <input type='password' placeholder='Password' name='password' value={this.state.password} onChange={this.handleInput} />
-                <button onClick={this.login}>Log In</button>
-                <button onClick={() => this.props.history.push('/register')}>Register</button>
-                {this.state.invalid ? <p>Invalid Credentials!</p> : null}
-            </form>
+            <div className='login-container'>
+                <form className='login-form' onSubmit={event => event.preventDefault()}>
+
+                    <h1>Login</h1>
+                    <input type='text' placeholder='Username' name='username' value={this.state.username} onChange={this.handleInput} />
+                    <input type='password' placeholder='Password' name='password' value={this.state.password} onChange={this.handleInput} />
+                    <button onClick={this.login}>Log In</button>
+                    <button onClick={() => this.props.history.push('/register')}>Register</button>
+                    {this.state.invalid ? <p>Invalid Credentials!</p> : null}
+
+                </form>
+            </div>
         );
     }
 }

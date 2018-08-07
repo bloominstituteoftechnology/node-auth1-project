@@ -7,7 +7,8 @@ class Register extends React.Component {
 
         this.state = {
             username: '',
-            password: ''
+            password: '',
+            userExists: false
         }
     }
 
@@ -22,22 +23,30 @@ class Register extends React.Component {
         }
 
         const user = { username: this.state.username, password: this.state.password }
-        
+
         axios.defaults.withCredentials = true
         axios
             .post('http://localhost:8000/api/register', user)
             .then(() => this.props.history.push('/users'))
-            .catch(err => console.log(err));
+            .catch(err => {
+                if (!err) return;
+                if (err.response.status === 400) {
+                    this.setState({ userExists: true })
+                }
+            });
     }
 
     render() {
         return (
-            <form onSubmit={event => event.preventDefault()}>
-                <h1>Register</h1>
-                <input type='text' placeholder='Username' name='username' value={this.state.username} onChange={this.handleInput} />
-                <input type='password' placeholder='Password' name='password' value={this.state.password} onChange={this.handleInput} />
-                <button onClick={this.register}>Sign Up</button>
-            </form>
+            <div className='register-container'>
+                <form className='register-form' onSubmit={event => event.preventDefault()}>
+                    <h1>Register</h1>
+                    <input type='text' placeholder='Username' name='username' value={this.state.username} onChange={this.handleInput} />
+                    <input type='password' placeholder='Password' name='password' value={this.state.password} onChange={this.handleInput} />
+                    <button onClick={this.register}>Sign Up</button>
+                    {this.state.userExists ? <p>User with that name already exists!</p> : null}
+                </form>
+            </div>
         );
     }
 }
