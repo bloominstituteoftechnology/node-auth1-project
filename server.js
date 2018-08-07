@@ -60,6 +60,7 @@ server.post('/api/login', (req, res) => {
 			  	identity.password, user.password
 			);
 				if (user && passwordsMatch) {
+					req.session.identity = user.identity;
 					res.send('You are successfully logged In');
 				} else {
 					return res.status(401).json({ error: 'Opps..Login unsuccessful, Please try again'});
