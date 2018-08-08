@@ -13,7 +13,7 @@ module.exports = {
       .insert(req.body)
       .then(user => {
         req.session.username = req.body.username
-        res.status(201).json({ msg: 'Registration Successful!' })
+        res.status(201).json({ msg: 'Registration Successful!', ...req.session })
       })
       .catch(next)
   },
@@ -28,6 +28,7 @@ module.exports = {
         bcrypt.compare(password, user[0].password)
           .then(isPasswordValid => {
             if (isPasswordValid) {
+              console.log('session', req.session)
               req.session.username = req.body.username
               return res.status(200).json({ msg: 'login successful' })
             } else {
