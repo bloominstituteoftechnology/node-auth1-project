@@ -2,7 +2,11 @@ const express = require('express');
 const db = require('../data/db');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const restrictedRoutes = require('./restrictedRoutes');
+
 const router = express.Router();
+
+router.use('/restricted', restrictedRoutes);
 
 router.post('/register', async (req, res) => {
   try {
