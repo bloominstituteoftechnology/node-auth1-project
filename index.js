@@ -25,7 +25,8 @@ server.use(
 );
 
 function protected(req, res, next) {
-  if (req.session && (req.session.username === "frodo" || req.session.username === "gandalf")) {
+  console.log("session: ", req.session);
+  if (req.session) {
     console.log("session name", req.session.username);
     next();
   } else {
