@@ -29,10 +29,10 @@ function sendError(code, message, error) {
 }
 
 function protected (req, res, next) {
-    if (req.session && req.session.username == 'adminUser') {
+    if (req.session && req.session.username) {
         next();
     } else {
-        next(sendError(401, 'Failed to proceed', 'You are not admin.'));
+        next(sendError(401, 'Failed to proceed', 'Please login.'));
     }
 }
 
@@ -41,18 +41,26 @@ server.get('/', (req, res) => {
     res.status(200).send('Welcome!')
 });
 
-server.get('/users', async (req, res, next) => {
-    try {   
-        const response = await (db.get());
-        res.status(200).json(response);
-    } catch (error) {
-        next(sendError(500, 'Failed to retrieve users information.', error.message))
-    }
-})
+// server.get('/users', async (req, res, next) => {
+//     try {   
+//         const id = await db.getId(req.session.username);
+//         response = req.session.username === 'adminUser'
+//         ? await (db.get()) 
+//         : await (db.get(id));
+//         res.status(200).json(response);
+//     } catch (error) {
+//         next(sendError(500, 'Failed to retrieve users information.', error.message))
+//     }
+// })
 
 server.get('/api/restricted/users', protected, async (req, res, next) => {
     try {   
-        const response = await (db.get());
+        const id = await db.getId(req.session.username);
+        console.log(id);
+        response = req.session.username === 'adminUser'
+        ? await (db.get()) 
+        : await (db.get(id));
+        console.log(response);
         res.status(200).json(response);
     } catch (error) {
         next(sendError(500, 'Failed to retrieve users information.', error.message))

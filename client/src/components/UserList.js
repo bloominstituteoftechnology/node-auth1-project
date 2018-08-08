@@ -57,10 +57,14 @@ class UserList extends React.Component {
     render() {
         const userTable = (
             <Table>
-                <tr>
-                    <Th>User</Th>
-                </tr>
-                {this.state.users.map(user=><tr><Td>{user.username}</Td></tr>)}
+                <thead>
+                    <tr>
+                        <Th>User</Th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {this.state.users.map((user, index)=><tr key={index}><Td>{user.username}</Td></tr>)}
+                </tbody>
             </Table>
         );
 

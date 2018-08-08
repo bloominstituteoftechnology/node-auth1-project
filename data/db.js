@@ -6,7 +6,7 @@ module.exports = {
     get: function(id) {
         const query = db('users');
         if (id) {
-            const result = query.where('id', id).first();
+            const result = query.where('id', id);
             return result;
         }
 
@@ -25,5 +25,10 @@ module.exports = {
             ? null
             : pw[0].password;
         })
+    },
+
+    getId: function(username) {
+        const query = db('users').select('id').where('username', username);
+        return query.then(res => res[0].id)
     }
 }
