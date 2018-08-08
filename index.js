@@ -28,7 +28,7 @@ server.use(
 );
 
 function protected(req, res, next) {
-    if (req.session) {
+    if (req.session.username) {
         next();
     } else {
         return res.status(401).json({ error: 'Incorrect credentials' });
@@ -36,7 +36,7 @@ function protected(req, res, next) {
 }
 
 server.get('/api/users', protected, (req, res) => {
-    if (req.session) {
+    if (req.session.username) {
         db("users")
             .then(users => {
                 return res.status(200).json(users);
@@ -76,7 +76,7 @@ server.post('/api/login', (req, res) => {
         .then(user => {
             if (user && bcrypt.compareSync(credentials.password, user.password)) {
                 req.session.username = credentials.username;
-                return res.send(`Hello ${credentials.username}! you are logged in`);
+                return res.send(`Hello ${credentials.username}! You are logged in`);
             } else {
                 return res.status(501).json({ message: "Bad credentials" });
             }
