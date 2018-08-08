@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import spinner from '../spinner.gif'
 
+
 const LoadingHOC = (WrappedState) =>{
   return(
     class LoadingHOC extends Component{

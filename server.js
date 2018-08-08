@@ -17,7 +17,6 @@ server.use(cors({
 }));
 
 
-
 server.get('/', (req, res) => {
 
   res.send('<h1>Authentication: </h1>  <br>  working on frontend client</h1> <h3>Sam Khaled</h3>');
