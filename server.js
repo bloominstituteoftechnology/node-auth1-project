@@ -29,10 +29,11 @@ server.get('/api/users', (req, res) => {
 server.post('/api/register', (req, res, next) => {
 const user = req.body;
 //hash pw
-const hash = bcrypt.hashSync(user.password, 14);
+const hash = bcrypt.hashSync(user.password, 10);
 user.password = hash;
 
 db('users').insert(user).then(response=> {
+
     res.status(200).json({Message:'Registration was successfully executed!'})
 })
 .catch(err=>{
