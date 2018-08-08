@@ -42,6 +42,13 @@ const Input = styled.input`
     border-bottom: 1px solid rgba(45,45,45,0.2);
 `
 
+const Warning = styled.p`
+    font-size: 16px;
+    color: red;
+    margin: auto;
+    transition-delay: 0.5s;
+`
+
 class Login extends React.Component {
     constructor(props) {
         super(props);
@@ -49,8 +56,8 @@ class Login extends React.Component {
             user: {
                 username: "",
                 password: ""
-            } 
-            
+            }, 
+            wrongCredentials: false
          }
     }
 
@@ -66,33 +73,37 @@ class Login extends React.Component {
             const response = await axios.post('http://localhost:8000/users/login', user);
             this.props.history.push('/users');
         } catch (error) {
-            console.log(error.error);
+            this.setState({ wrongCredentials: true });
         }
     }
 
     render() { 
+        const warning = <Warning>Invalid credentials. Please try again.</Warning>;
         return ( 
-            <Form className="login-form" onSubmit={(e) => this.submitHandler(e, this.state.user)}>
-                <Input 
-                name="username" 
-                type="text" 
-                placeholder="Username" 
-                value={this.state.username} 
-                required
-                onChange={this.changeHandler}
-                />
-
-                <Input 
-                name="password" 
-                type="text" 
-                placeholder="Password" 
-                value={this.state.password} 
-                required
-                onChange={this.changeHandler}
-                />
-
-                <Button type="submit">Login</Button>
-            </Form>
+            <div>
+                <Form className="login-form" onSubmit={(e) => this.submitHandler(e, this.state.user)}>
+                    <Input 
+                    name="username" 
+                    type="text" 
+                    placeholder="Username" 
+                    value={this.state.username} 
+                    required
+                    onChange={this.changeHandler}
+                    />
+    
+                    <Input 
+                    name="password" 
+                    type="text" 
+                    placeholder="Password" 
+                    value={this.state.password} 
+                    required
+                    onChange={this.changeHandler}
+                    />
+    
+                    <Button type="submit">Login</Button>
+                </Form>
+                {this.state.wrongCredentials ? warning : null}
+            </div>
          );
     }
 }
