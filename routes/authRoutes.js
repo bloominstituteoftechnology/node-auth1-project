@@ -1,4 +1,5 @@
 const router = require('express')();
+const session = require('express-session');
 const db = require('../data/db');
 const bcrypt = require('bcryptjs');
 
@@ -13,6 +14,8 @@ router.post('/login', async (req, res) => {
     if (!user || !bcrypt.compareSync(credentials.password, user.password)) {
       res.status(401).json({ message: 'Incorrect Credentials' });
     } else {
+      req.session.username = user.username;
+      console.log('logging request session', req.session);
       res.status(200).json({ user: user.username });
     }
   } catch (e) {
