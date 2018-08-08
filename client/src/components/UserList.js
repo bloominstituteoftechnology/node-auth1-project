@@ -43,13 +43,11 @@ class UserList extends React.Component {
     fetchUsers = async () => {
         try {
             const response = await axios.get('http://localhost:8000/api/restricted/users/');
-            console.log(response);
             this.setState({
                 users: response.data,
                 isAuthenticated: true
             });
         } catch (error) {
-            console.log(error);
             this.setState({ isAuthenticated: false });
         }
     }

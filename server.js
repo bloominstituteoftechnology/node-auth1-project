@@ -56,11 +56,9 @@ server.get('/', (req, res) => {
 server.get('/api/restricted/users', protected, async (req, res, next) => {
     try {   
         const id = await db.getId(req.session.username);
-        console.log(id);
         response = req.session.username === 'adminUser'
         ? await (db.get()) 
         : await (db.get(id));
-        console.log(response);
         res.status(200).json(response);
     } catch (error) {
         next(sendError(500, 'Failed to retrieve users information.', error.message))
