@@ -20,8 +20,10 @@ module.exports = {
 
     login: function(username) {
         const query = db('users').select('password').where('username', username);
-        return query.then(([pw]) => {
-            return pw.password
+        return query.then(pw => {
+            return pw.length === 0 
+            ? null
+            : pw[0].password;
         })
     }
 }

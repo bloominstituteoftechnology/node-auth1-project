@@ -2,11 +2,14 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const db = require('./data/db');
-
+const cors = require('cors');
+const helmet = require('helmet');
 const server = express();
 
 //middleware
 server.use(express.json());
+server.use(cors({ origin: 'http://localhost:3000', credentials: true}));
+server.use(helmet());
 server.use(session({
     name: 'lambdaSession',
     secret: 'this-is-a-secret-token',
@@ -56,10 +59,10 @@ server.get('/api/restricted/users', protected, async (req, res, next) => {
     }
 })
 
-server.get('/users/:id', async (req, res, next) => {
-    const id = Number(req.params.id);
-
+server.get('/users/:id(\\d+)/', async (req, res, next) => {
+    const id = req.params.id;
     try {
+        
         const response = await (db.get(id));
         res.status(200).json(response);
     } catch (error) {
@@ -69,7 +72,7 @@ server.get('/users/:id', async (req, res, next) => {
 
 server.post('/users/register', async (req, res, next) => {
     if (!req.body.username && !req.body.password) {
-        return next(sendError(401, 'Failed to save user login to database.', 'Please provide username and password.'))
+        return next(sendError(400, 'Failed to save user login to database.', 'Please provide username and password.'))
     }
     const hash = bcrypt.hashSync(req.body.password, 14);
     const newUser = {
@@ -86,10 +89,13 @@ server.post('/users/register', async (req, res, next) => {
 
 server.post('/users/login', async (req, res, next) => {
     if (!req.body.username && !req.body.password) {
-        return next(sendError(401, 'Failed to login.', 'Please provide username and password.'))
+        return next(sendError(400, 'Failed to login.', 'Please provide username and password.'))
     }
     try {
         const response = await (db.login(req.body.username));
+        if (response == null) {
+            return next(sendError(400, 'Failed to login.', 'Incorect credentials.'));
+        }
         const match = bcrypt.compareSync(String(req.body.password), response);
         if (match) {
             const loggedinSession = req.session;
@@ -97,7 +103,7 @@ server.post('/users/login', async (req, res, next) => {
             loggedinSession.username = req.body.username;
             res.status(200).send('Login successfully')
         } else {
-            next(sendError(401, 'Failed to login.', 'Incorect credentials.'));
+            next(sendError(400, 'Failed to login.', 'Incorect credentials.'));
         }
 
     } catch (error) {
@@ -118,8 +124,12 @@ server.post('/users/logout', (req, res, next) => {
 });
 
 server.use((error, req, res, next) => {
-    res.status(error.code).send({ message: error.message, error: error.errMsg })
+    res.status(error.code).json({ message: error.message, error: error.errMsg })
 })
+
+server.use(function (req, res, next) {
+    res.status(404).send("Sorry this page does not exist.")
+  })
 
 const port = 8000;
 server.listen(port, console.log(`=== Web API listening at port ${port} ===`));
