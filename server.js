@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const knex = require('knex');
 const db = require('./database/db');
 
+const cors = require('cors');
 const bcrypt = require('bcryptjs');
 
 const port = 8000;
@@ -10,10 +11,16 @@ const server = express();
 
 server.use (express.json());
 
+server.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
+
+
 
 server.get('/', (req, res) => {
 
-  res.send('<h1>Authentication: working on </h1>  <br>  <p>Part two, due Tuesday');
+  res.send('<h1>Authentication: </h1>  <br>  working on frontend client</h1> <h3>Sam Khaled</h3>');
 });
 
 server.get('/api/users', (req, res) => {
