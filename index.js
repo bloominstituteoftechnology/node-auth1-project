@@ -2,9 +2,11 @@ const express = require("express");
 const db = require("./data/db.js");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
+const cors = require("cors");
 
 const server = express();
 server.use(express.json());
+server.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 // configure express-session middleware
 server.use(
@@ -24,8 +26,10 @@ server.use(
 
 function protected(req, res, next) {
   if (req.session && (req.session.username === "frodo" || req.session.username === "gandalf")) {
+    console.log("session name", req.session.username);
     next();
   } else {
+    console.log("session name", req.session.username);
     return res.status(401).json({ error: "Incorrect credentials." });
   }
 }
@@ -71,7 +75,7 @@ server.post("/api/login", async (req, res) => {
       .where({ user })
       .first();
     console.log("getUser is: ", getUser);
-    if (getUser || bcrypt.compareSync(credentials.password, getUser.password)) {
+    if (getUser && bcrypt.compareSync(credentials.password, getUser.password)) {
       req.session.username = user;
       res.send(`Logged In, Welcome ${user}`);
     } else {
