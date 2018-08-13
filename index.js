@@ -20,6 +20,20 @@ server.get("/register", (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
+//* POST register
+
+server.post("/register", (req, res) => {
+  const user = req.body;
+
+  db("users")
+    .insert(user)
+    .then(ids => {
+      const id = ids[0];
+      res.status(201).json({ id, ...user });
+    })
+    .catch(err => res.status(500).json(err));
+});
+
 const port = 3300;
 server.listen(port, function() {
   console.log(`\n=== Web API Listening on http://localhost:${port} ===\n`);
