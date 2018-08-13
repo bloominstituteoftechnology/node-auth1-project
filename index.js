@@ -38,6 +38,26 @@ server.post('/register', (req, res) => {
     });
 });
 
+server.post('/login', (req, res) => {
+  const credentials = req.body;
+
+  db('users').where({username: credentials.username}).first()
+  .then(user => {
+    const passwordsMatch = bcrypt.compareSync(
+      credentials.password,
+      user.password
+    );
+    if (user && passwordsMatch) {
+      res.send('welcome');
+    } else {
+      return res.status(401).json({error: 'Incorrect credentials'});
+    }
+  })
+  .catch(error => {
+    res.status(500).json({error})
+  });
+});
+
 server.listen(PORT, () => {
   console.log(`UP and RUNNING on ${PORT}`)
 });
