@@ -7,8 +7,12 @@
   "author": "Sulaiman Sanusi <sulaiman.sanusi@icloud.com>",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "start": "nodemon index.js"
+  },
   "dependencies": {
     "express": "^4.16.3",
+    "helmet": "^3.13.0",
     "knex": "^0.15.2",
     "morgan": "^1.9.0",
     "sqlite3": "^4.0.2"
