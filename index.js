@@ -1,4 +1,5 @@
 const express = require('express');
+const bcrypt = require('bcryptjs');
 
 const db = require('./database/dbConfig.js');
 
@@ -20,10 +21,9 @@ server.get('/users', (req, res) => {
 
 server.post('./register', function(req, res) {
     const user = req.body;
-    
-    const credentials = req.body;
-    const hash = bcrypt.hashSync(credentials.password, 14);
-    credentials.password = hash;
+
+    const hash = bcrypt.hashSync(user.password, 14);
+    user.password = hash;
 
     db('users')
     .insert(user)
@@ -38,6 +38,23 @@ server.post('./register', function(req, res) {
     .catch(function(error) {
         res.status(500).json({ error });
     });
+});
+
+server.post('/login', function(req, res) {
+    const credentials = req.body;
+
+    db('users')
+    .where({ username: credentials.username })
+    .first()
+    .then(function(user) {
+        const passwordsMatch = bcrypt.compareSync(credentials.password, user.password);
+        if (!user || !bcrypt.compareSync(credentials.password, user.password)) {
+            return res.status(401).json({ error: 'Incorrect credentials' });
+          }
+    })
+    .catch((function(error) {
+        res.status(500).json({ error });
+    }));
 });
 
 server.listen(3300, () => console.log('\n running on port 3300 \n'));
