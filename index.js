@@ -1,5 +1,5 @@
 const express = require('express');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 
 const db = require('./data/db');
 
@@ -34,7 +34,7 @@ server.post('/register', function(req, res) {
         .where({id: ids[0]})
         .first()
         .then(user => {
-            res.status(201).json(user);
+            res.send(`Welcome ${user.username}`)
         });
     })
     .catch(function(error) {
@@ -42,7 +42,7 @@ server.post('/register', function(req, res) {
     })
 })
 
-server.post('/login', function (req,res) {
+server.post('/login', function(req,res) {
     const credentials = req.body;
 
     db('users')
@@ -50,7 +50,7 @@ server.post('/login', function (req,res) {
     .first()
     .then(function(user) {
         if (user && bcrypt.compareSync(credentials.password, user.password) ) {
-            res.send('welcome');
+            res.send(`Welcome ${user.username}`);
 
         } else {
             return res.status(401).json({error: 'Incorrect credentials'});

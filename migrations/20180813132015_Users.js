@@ -6,15 +6,15 @@ exports.up = function(knex, Promise) {
       user
       .string('username')
       .notNullable()
-      .unique()
+      
 
       user
       .string('password')
       .notNullable()
-      .unique()
+      
   })
 };
 
 exports.down = function(knex, Promise) {
-  
+  return knex.schema.dropTable('users');
 };
