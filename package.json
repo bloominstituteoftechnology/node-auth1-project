@@ -12,5 +12,8 @@
     "knex": "^0.15.2",
     "nodemon": "^1.18.3",
     "sqlite3": "^4.0.2"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3"
   }
 }
