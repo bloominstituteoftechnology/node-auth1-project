@@ -38,6 +38,24 @@ server.post("/register", (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
+//* Authenticate user
+
+server.post("/login", (req, res) => {
+  const credentials = req.body;
+
+  db("users")
+    .where({ username: credentials.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(credentials.password, user.password)) {
+        res.send(`Welcome ${user.username}`);
+      } else {
+        return res.status(401).json({ error: "Incorrect credentials" });
+      }
+    })
+    .catch(err => res.status(500).json(err));
+});
+
 const port = 3300;
 server.listen(port, function() {
   console.log(`\n=== Web API Listening on http://localhost:${port} ===\n`);
