@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const logger = require('morgan');
 const helmet = require('helmet')
+const bcrypt = require('bcryptjs')
 
 
 app.use(express.json())
