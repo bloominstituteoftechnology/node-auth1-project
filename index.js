@@ -1,11 +1,24 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const db = require('./data/db');
+const session = require('express-session');
 
 const server = express();
 server.use(express.json());
 
 const PORT = 8000;
+
+server.use(
+  session({
+    name: 'seshun',
+    secret: 'whatintheactualfuck',
+    cookie: {maxAge: 1 * 24 * 60 * 60 * 1000},
+    httpOnly: true,
+    secure: true,
+    resave: false,
+    saveUnintialized: false,
+  })
+);
 
 server.get('/', (req, res) => {
   res.send('Sanity Check');
@@ -60,4 +73,4 @@ server.post('/login', (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`UP and RUNNING on ${PORT}`)
-});
+}); 
