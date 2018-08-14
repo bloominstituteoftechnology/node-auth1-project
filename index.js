@@ -1,11 +1,24 @@
 const express = require('express');
 const db = require('./data/db');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 const port = 3333;
 
 const server = express();
 
 server.use(express.json());
+
+server.use(
+  session({
+    name: 'notsession', // default is connect.sid
+    secret: 'nobody tosses a dwarf!',
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 }, // 1 day in milliseconds
+    httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
+    secure: true, // only set cookies over https. Server will not send back a cookie over http.
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 server.get('/', (req, res) => {
   res.send('The server is up and running.')
