@@ -3,8 +3,10 @@
     "bcrypt": "^3.0.0",
     "bcryptjs": "^2.4.3",
     "express": "^4.16.3",
+    "express-session": "^1.15.6",
     "knex": "^0.15.2",
     "nodemon": "^1.18.3",
+    "session": "^0.1.0",
     "sqlite3": "^4.0.2"
   },
   "scripts": {

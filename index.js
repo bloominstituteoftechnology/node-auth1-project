@@ -2,14 +2,39 @@ const express = require('express');
 const bcrypt = require('bcryptjs')
 
 const db = require('./data/db');
-
+const session = require('express-session');
 const server = express();
+
+server.use(
+
+    session({
+        name: 'notsession',
+        secret: 'nobody tosses a dwarf',
+        cookie: {maxAge: 1 * 24 * 60 * 60 * 1000,
+            secure: true},
+        httpOnly: true, 
+        
+        resave: false,
+        saveUnitialized: true,
+    })
+);
+
 server.use(express.json());
 const PORT = 3300
 
 server.get('/', (req, res) => {
     res.send('Active');
 });
+
+server.get('/setname', (req, res) => {
+    req.session.name = 'Frodo';
+    res.send('got it');
+})
+
+server.get('/getname', (req, res) => {
+    const name = req.session.name;
+    res.send(`hello ${req.session.name}`)
+})
 
 
 server.get('/users', (req, res) => {
