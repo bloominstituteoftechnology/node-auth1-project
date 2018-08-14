@@ -49,8 +49,8 @@ app.post('/api/login', (req, res) => {
     db.getUser(user.username).first()
         .then( response =>{
             if(response && bcrypt.compareSync(user.password,response.password)){
-                
-                res.status(400).send("login Sucessful")
+                req.session.username = user.username
+                res.status(400).send(`welcome ${user.usersname}`)
             }
             res.status(401).send("incorrect login credentials")
         })
@@ -60,13 +60,33 @@ app.post('/api/login', (req, res) => {
 });
 
 app.get('/api/users', (req, res) => {
-    db.getUsers()
+    if(req.session && req.session.username === 'ssanusi'){
+        db.getUsers()
         .then(response =>{
             res.status(200).json(response)
         })
         .catch( err => {
             res.status(500).json({error : err})
         })   
+    }
+    else{
+        res.send('you are not login')
+    }
+    
+});
+
+app.get('/api/logout', (req, res) => {
+    if(req.session){
+        req.session.destroy(err =>{
+            if(err){
+                res.send('error logging out')
+            }
+            else{
+                res.send('good bye')
+            }
+        })
+    }
+    
 });
 
 app.listen(3000, () => {
