@@ -4,6 +4,8 @@ const session = require('express-session');
 
 const db = require('./database/dbConfig.js');
 
+const port = 3300;
+
 const server = express();
 
 function protected (req, res, next) {
@@ -119,4 +121,4 @@ server.get('/logout', (req, res) => {
     }
 });
 
-server.listen(3300, () => console.log('\n running on port 3300 \n'));
+server.listen(port, () => console.log(`\n running on port ${port} \n`));
