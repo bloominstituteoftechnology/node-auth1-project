@@ -24,6 +24,16 @@ server.get("/", (req, res) => {
   res.send("up and running...");
 });
 
+server.get("/setname", (req, res) => {
+  req.session.name = "Frodo";
+  res.send("got it");
+});
+
+server.get("/getname", (req, res) => {
+  const name = req.session.name;
+  res.send(`hello ${req.session.name}`);
+});
+
 //* GET authentications
 
 server.get("/register", (req, res) => {
@@ -68,6 +78,15 @@ server.post("/login", (req, res) => {
       }
     })
     .catch(err => res.status(500).json(err));
+});
+
+//* GET users
+server.get("/users", (req, res) => {
+  db("users")
+    .then(users => {
+      res.json(users);
+    })
+    .catch(err => res.send(err));
 });
 
 const port = 3300;
