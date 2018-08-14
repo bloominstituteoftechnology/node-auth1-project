@@ -5,6 +5,7 @@ const db = require('./data/db.js');
 const server = express();
 
 
+server.use(express.json());
 server.use(
     session({
         name: 'notsession',
@@ -21,14 +22,6 @@ server.use(
 
 
 // ==== USER REQUESTS ====
-
-server.get('/users', (req, res) => {
-    db('users')
-        .then(users => {
-            res.status(200).json(users)
-        })
-        .catch( err => res.status(500).json(err) )
-})
 
 server.post('/register', (req, res) => {
     const user = req.body;
@@ -51,6 +44,7 @@ server.post('/register', (req, res) => {
 
 server.post('/login', (req, res) => {
     const credentials = req.body;
+    console.log('credentials:' + credentials);
 
     db('users')
         .where({ name: credentials.name })
@@ -58,11 +52,23 @@ server.post('/login', (req, res) => {
         .then(user => {
             if (user && bcrypt.compareSync(credentials.password, user.password)) {
                 req.session.userId = user.id;
-                res.status(200).json(`Success: ${user.name} are logged in!`)
+                res.status(200).json(`Success: ${user.name} is logged in!`)
             } else {
                 return res.status(401).json({ error: 'you shall not pass!'})
             }
         })
+})
+
+server.get('/users', (req, res) => {
+    if (req.session && req.session.userId === 1) {
+        db('users')
+            .then(users => {
+                res.status(200).json(users)
+            })
+            .catch( err => res.status(500).json(err) )
+    } else {
+        return res.status(401).json({ errorMessage: 'invalid credentials'})
+    }
 })
 
 
