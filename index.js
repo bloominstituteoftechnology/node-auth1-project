@@ -5,13 +5,21 @@ const db = require('./data/db');
 const session = require('express-session');
 const server = express();
 
+function protected(req, res, next) {
+    if (req.session && req.session.username === 'nucked') {
+        next();
+    } else {
+        return res.status(401).json({error: 'Incorrect credentials'})
+    }
+}
+
 server.use(
 
     session({
-        name: 'notsession',
-        secret: 'nobody tosses a dwarf',
+        name: 'itmenick',
+        secret: 'i like mhw',
         cookie: {maxAge: 1 * 24 * 60 * 60 * 1000,
-            secure: true},
+            secure: false},
         httpOnly: true, 
         
         resave: false,
@@ -27,17 +35,17 @@ server.get('/', (req, res) => {
 });
 
 server.get('/setname', (req, res) => {
-    req.session.name = 'Frodo';
-    res.send('got it');
+    req.session.username = 'nucked';
+    res.send(`got it ${req.session.username}`);
 })
 
 server.get('/getname', (req, res) => {
-    const name = req.session.name;
-    res.send(`hello ${req.session.name}`)
+    const name = req.session.username;
+    res.send(`hello ${req.session.username}`)
 })
 
 
-server.get('/users', (req, res) => {
+server.get('/users', protected, (req, res) => {
 db('users')
 .then(response => {
     res.json(response);
