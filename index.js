@@ -6,6 +6,14 @@ const db = require('./database/dbConfig.js');
 
 const server = express();
 
+function protected (req, res, next) {
+    if (req.session && req.session.username) {
+      next();
+    } else {
+      res.status(401).json({ message: 'you shall not pass!!' });
+    }
+  };
+
 server.use(express.json());
 
 // configure express-session middleware
@@ -23,11 +31,8 @@ server.use(
      resave: false,
     saveUninitialized: true,
     //saveUninitialized: false,
-    
   })
 );
-
-
 
 server.get('/', (req, res) => {
     res.send('We have liftoff!');
@@ -43,13 +48,7 @@ server.get('/getname', (req, res) => {
     res.send('hello ${req.session.name}');
 });
 
-function protected(req, res, next) {
-    if (req.session && req.session.userId) {
-      next();
-    } else {
-      res.status(401).json({ message: 'you shall not pass!!' });
-    }
-  }
+
 
 server.get('/users', (req, res) => {
     db('users')
@@ -59,9 +58,11 @@ server.get('/users', (req, res) => {
     .catch(err => res.send(err));
 });
 
-server.get('/api/users', protected, (req, res) => {
+server.get('/users', protected, (req, res) => {
     db('users')
-      .then(users => res.json(users))
+      .then(users => {
+          res.json(users)
+      })
       .catch(err => res.json(err));
   });
 
@@ -78,6 +79,7 @@ server.post('./register', function(req, res) {
         .where({ id: ids[0] })
         .first()
         .then(user => {
+            req.session.username = user.username;
             res.status(201).json(user);
         });
     })
@@ -92,9 +94,9 @@ server.post('/login', function(req, res) {
     db('users')
     .where({ username: credentials.username })
     .first()
-    .then(function(user) {
+    .then(function(users) {
         if (user && bcrypt.compareSync(credentials.password, user.password)) {
-          req.session.userId = user.id;
+          req.session.username = user.username;
             res.send('welcome ${user.username}');
         } else {
             return res.status(401).json({ error: 'Incorrect credentials' });
@@ -109,9 +111,9 @@ server.get('/logout', (req, res) => {
     if(req.session) {
         req.session.destroy(err => {
             if (err) {
-                res.send('error logging out');
+                res.send('error logging out, please try again');
             } else {
-                res.send('goodbye')
+                res.send('goodbye, see you next time!')
             }
         });
     }
