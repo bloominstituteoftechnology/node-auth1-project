@@ -8,6 +8,14 @@ server.use(express.json());
 
 const PORT = 8000;
 
+const protected = (req, res, next) => {
+  if (req.session && req.username === 'Yo Mama') {
+    next();
+  } else {
+    return res.status(401).json({error: 'Incorrect credentials'})
+  }
+}
+
 server.use(
   session({
     name: 'seshun',
@@ -24,7 +32,7 @@ server.get('/', (req, res) => {
   res.send('Sanity Check');
 });
 
-server.get('/users', (req, res) => {
+server.get('/users', protected, (req, res) => {
   db('users')
    .then(response => {
      res.json(users);
