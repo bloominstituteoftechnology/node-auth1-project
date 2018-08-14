@@ -1,9 +1,23 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 const db = require('./data/db.js');
 const server = express();
 
-server.use(express.json());
+
+server.use(
+    session({
+        name: 'notsession',
+        secret: 'whatevs',
+        cookie: {
+            maxAge: 1 * 24 * 60 * 60 * 1000,
+            secure: false,
+        },
+        httpOnly: true,
+        resave: false,
+        saveUninitialized: true,
+    })
+);
 
 
 // ==== USER REQUESTS ====
@@ -39,11 +53,12 @@ server.post('/login', (req, res) => {
     const credentials = req.body;
 
     db('users')
-        .where({ name: credentials.name})
+        .where({ name: credentials.name })
         .first()
         .then(user => {
             if (user && bcrypt.compareSync(credentials.password, user.password)) {
-                return res.status(200).json('Success: you are logged in!')
+                req.session.userId = user.id;
+                res.status(200).json(`Success: ${user.name} are logged in!`)
             } else {
                 return res.status(401).json({ error: 'you shall not pass!'})
             }
