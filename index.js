@@ -47,10 +47,11 @@ server.post('/login', function(req, res) {
     .where({ username: credentials.username })
     .first()
     .then(function(user) {
-        const passwordsMatch = bcrypt.compareSync(credentials.password, user.password);
-        if (!user || !bcrypt.compareSync(credentials.password, user.password)) {
+        if (user && bcrypt.compareSync(credentials.password, user.password)) {
+            res.send('welcome');
+        } else {
             return res.status(401).json({ error: 'Incorrect credentials' });
-          }
+        }
     })
     .catch((function(error) {
         res.status(500).json({ error });
