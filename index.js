@@ -35,7 +35,7 @@ server.post('/register', (req, res) => {
         .catch(err => res.status(500).json(err))
 })
 
-server.post('login', (req, res) => {
+server.post('/login', (req, res) => {
     const credentials = req.body;
 
     db('users')
@@ -44,8 +44,9 @@ server.post('login', (req, res) => {
         .then(user => {
             if (user && bcrypt.compareSync(credentials.password, user.password)) {
                 return res.status(200).json('Success: you are logged in!')
+            } else {
+                return res.status(401).json({ error: 'you shall not pass!'})
             }
-            return res.status(401).json({ error: 'you shall not pass!'})
         })
 })
 
