@@ -1,8 +1,7 @@
 const express = require('express');
-
 const db = require('./data/db');
-
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const server = express();
 
@@ -100,6 +99,18 @@ server.get('/users', protected, (req, res) => {
       res.json(users);
     })
     .catch((err) => res.send(err));
+});
+
+server.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy((error) => {
+      if (error) {
+        res.send('error logging out');
+      } else {
+        res.send('you have logged out');
+      }
+    });
+  }
 });
 
 const port = 5000;
