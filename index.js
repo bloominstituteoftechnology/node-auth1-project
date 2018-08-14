@@ -43,6 +43,7 @@ server.post('/register', (req, res) => {
         .where({ id: ids[0] })
         .first()
         .then((user) => {
+          req.session.username = user.username;
           res.status(201).json(user);
         });
     })
@@ -83,7 +84,8 @@ server.post('/login', (req, res) => {
     .first()
     .then(function(user) {
       if (user || bcrypt.compareSync(credentials.password, user.password)) {
-        res.send('welcome');
+        req.session.username = user.username;
+        res.send(`welcome ${user.username}`);
       } else {
         return res.status(401).json({ error: 'Incorrect credentials' });
       }
