@@ -10,11 +10,13 @@ server.use(
   session({
     name: "notsession", // default is connect.sid
     secret: "nobody tosses a dwarf!",
-    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 }, // 1 day in milliseconds
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      secure: false // only set cookies over https. Server will not send back a cookie over http.
+    }, // 1 day in milliseconds
     httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
-    secure: true, // only set cookies over https. Server will not send back a cookie over http.
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: true
   })
 );
 
@@ -72,6 +74,7 @@ server.post("/login", (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(credentials.password, user.password)) {
+        req.session.username = user.username;
         res.send(`Welcome ${user.username}`);
       } else {
         return res.status(401).json({ error: "Incorrect credentials" });
@@ -82,11 +85,17 @@ server.post("/login", (req, res) => {
 
 //* GET users
 server.get("/users", (req, res) => {
-  db("users")
-    .then(users => {
-      res.json(users);
-    })
-    .catch(err => res.send(err));
+  const users = req.body;
+
+  if (req.session && req.session.username === users.username) {
+    db("users")
+      .then(users => {
+        res.json(users);
+      })
+      .catch(err => res.send(err));
+  } else {
+    return res.status(401).json({ error: "Incorrect credentials" });
+  }
 });
 
 const port = 3300;
