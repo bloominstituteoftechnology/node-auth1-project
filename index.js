@@ -4,6 +4,18 @@ const logger = require('morgan');
 const helmet = require('helmet')
 const bcrypt = require('bcryptjs')
 const db = require('./data/db')
+const session = require('express-session')
+
+
+app.use(session({
+    name : 'catton',
+    secret : 'this is a secret code',
+    cookie : { maxAge : 1 * 24 * 60 * 60 * 1000, save : false  },
+    httpOnly : true,
+    resave : false,
+    saveUninitialized : false
+
+}));
 
 
 app.use(express.json())
@@ -37,12 +49,13 @@ app.post('/api/login', (req, res) => {
     db.getUser(user.username).first()
         .then( response =>{
             if(response && bcrypt.compareSync(user.password,response.password)){
+                
                 res.status(400).send("login Sucessful")
             }
             res.status(401).send("incorrect login credentials")
         })
         .catch(err => {
-            res.status(500).json({error : err })
+            res.status(500).send("incorrect login credentials")
         })
 });
 
