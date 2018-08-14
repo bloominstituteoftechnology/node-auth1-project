@@ -35,5 +35,19 @@ server.post('/register', (req, res) => {
         .catch(err => res.status(500).json(err))
 })
 
+server.post('login', (req, res) => {
+    const credentials = req.body;
+
+    db('users')
+        .where({ name: credentials.name})
+        .first()
+        .then(user => {
+            if (user && bcrypt.compareSync(credentials.password, user.password)) {
+                return res.status(200).json('Success: you are logged in!')
+            }
+            return res.status(401).json({ error: 'you shall not pass!'})
+        })
+})
+
 
 server.listen(3300, () => console.log('\n==== API is running... ====\n'))
