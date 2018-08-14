@@ -6,6 +6,28 @@ const bcrypt = require('bcryptjs');
 
 const server = express();
 
+function protected(req, res, next) {
+  if (req.session && req.session.username === 'sumi') {
+    next();
+  } else {
+    return res.status(401).json({ error: 'Incorrect credentials' });
+  }
+}
+
+server.use(
+  session({
+    name: 'notsession', // default is connect.sid
+    secret: 'nobody tosses a dwarf!',
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      secure: false // only set cookies over https. Server will not send back a cookie over http.
+    }, // 1 day in milliseconds
+    httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
+    resave: false,
+    saveUninitialized: true
+  })
+);
+
 server.use(express.json());
 
 server.post('/register', (req, res) => {
@@ -70,6 +92,14 @@ server.post('/login', (req, res) => {
     .catch((err) => {
       res.status(500).json(err);
     });
+});
+
+server.get('/users', protected, (req, res) => {
+  db('users')
+    .then((users) => {
+      res.json(users);
+    })
+    .catch((err) => res.send(err));
 });
 
 const port = 5000;
