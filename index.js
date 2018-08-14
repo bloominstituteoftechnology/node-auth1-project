@@ -79,6 +79,18 @@ server.post('/login', (req, res) => {
   });
 });
 
+server.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('error logging out');
+      } else {
+        res.send('good bye');
+      }
+    })
+  }
+})
+
 server.listen(PORT, () => {
   console.log(`UP and RUNNING on ${PORT}`)
 }); 
