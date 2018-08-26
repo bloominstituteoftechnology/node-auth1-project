@@ -80,30 +80,7 @@ server.get('/getname', (req,res) => {
 
 // Creates a user using the information sent inside the body of the request. Hash the password before saving the user to the database.
 server.post('/api/register', (req,res) => {
-    // //OPTION 1
-    // const user = req.body;
-    // // to hash a password
-    // const credentials = req.body;
-    // const hash = bcrypt.hashSync(credentials.password, 14);
-    // credentials.password = hash;
 
-    //OR
-
-    // //OPTION 2
-    // const {user, credentials} = req.body;
-    // const hash = bcrypt.hashSync(credentials.password, 14);
-    // credentials.password = hash;
-
-    // db.insert(user)
-    //     .into('register')
-    //     .then(ids => {
-    //         res.status(201).json(ids[0]);
-    //     })
-    //     .catch(err => {
-    //         res.status(500).json(err);
-    //     })
-
-    //OPTION 3 (from lecture 2)
     const user = req.body; 
 
     //hash password
@@ -123,6 +100,9 @@ server.post('/api/register', (req,res) => {
         .catch(err => res.status(500).json({err}));
 })
 
+
+
+
 // POST	    /api/login	    Use the credentials sent inside the body to authenticate the user. 
 //                          On successful login, create a new session for the user and send back 
 //                          a 'Logged in' message and a cookie that contains the user id. If login fails, 
@@ -137,7 +117,7 @@ server.post('/api/login', (req,res) => {
         .first()
         .then(function(user) {
             if (user && bcrypt.compareSync(credentials.password, user.password)) {
-                req.session.userId = user.id;
+                req.session.username = user.username;
                 res.send(`welcome ${user.username}`);
             } else {
                 return res.status(401).json({error: 'Incorrect credentials'});
@@ -162,6 +142,7 @@ server.post('/api/login', (req,res) => {
 // GET	    /api/users	    If the user is logged in, respond with an array of all the users contained in the database. If the user is not logged in repond with the correct status code and the message: 'You shall not pass!'. Use this endpoint to verify that the password is hashed before it is saved.
 
 server.get('/api/users', (req, res) => {
+    if (req.session && req.session.username)
     db('users')
         .then(users => {
             res.json(users);
