@@ -5,7 +5,8 @@ module.exports = {
   development: {
     client: 'sqlite3', // tells knex that we're using the SQLite3 driver we installed via npm
     connection: {
-      filename: './dev.sqlite3' // location of your database file
+      // filename: './dev.sqlite3' // location of your database file
+      filename: './data/cs11AddingAuthenticationDb' // location of your database file
     },
     useNullAsDefault: true, // new configuration for SQLite
   }
