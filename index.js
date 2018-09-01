@@ -19,7 +19,7 @@ server.use(express.json());
 
 // This middleware verifies that we have a session and that the userId is set. We could use username or any other value we can use to verify access to a resource.
 function protected(req, res, next) {
-    if (req.session && req.session.username === 'bleep') {
+    if (req.session && req.session.username === 'Adrian26') {
       next();
     } else {
       res.status(401).json({ message: 'Incorrect credentials' });
@@ -28,7 +28,7 @@ function protected(req, res, next) {
 
   function roles(req,res,next) {
       return function(roles) {
-          if (req.session && req.session.username == 'bleep') {
+          if (req.session && req.session.username == 'Adrian26') {
               // "find the user in the db by the user id in the cookie"
               // "check that the user has one of the roles allowed"
               next();
