@@ -27,4 +27,23 @@ router.get("/", (req, res) => {
 		.catch(err => res.status(500).send(err));
 });
 
+router.post("/login", (req, res) => {
+	const credentials = req.body;
+
+	db("users")
+		.where({ username: credentials.username })
+		.first()
+		.then(user => {
+			if (
+				user &&
+				bcrypt.compareSync(credentials.password, user.password)
+			) {
+				res.status(200).send("Welcome");
+			} else {
+				res.status(401).json({ message: "Not authenticated" });
+			}
+		})
+		.catch(err => res.status(500).send(err));
+});
+
 module.exports = router;
