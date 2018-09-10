@@ -38,7 +38,7 @@ server.post('/api/login', (req, res) => {
             if (user && bcrypt.compareSync(creds.password, user.password)) {
                 res.status(200).send(`Welcome, ${user.username}`);
             } else {
-                res.status(401).json({errorMessage: 'You are not authorized.'});
+                res.status(401).json({errorMessage: 'You shall not pass!'});
             }
         })
         .catch(err => res.status(500).json(err));
