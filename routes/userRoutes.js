@@ -44,6 +44,7 @@ router.post("/login", middlewareFunctions.reqBodyCheck, (req, res, next) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
+        // document.cookie = "authenticated=true;";
         res.status(200).send("working");
       } else {
         res.status(401).json({ message: "You shall not pass!" });
