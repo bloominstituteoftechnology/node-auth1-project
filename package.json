@@ -18,6 +18,7 @@
 	},
 	"homepage": "https://github.com/trevorfehrman/auth-i#readme",
 	"dependencies": {
+		"bcryptjs": "^2.4.3",
 		"express": "^4.16.3",
 		"helmet": "^3.13.0",
 		"knex": "^0.15.2",
