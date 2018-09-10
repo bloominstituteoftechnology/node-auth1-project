@@ -6,12 +6,12 @@
   "scripts": {
     "start": "nodemon"
   },
-
   "dependencies": {
+    "bcrypt": "^3.0.0",
     "express": "^4.16.3",
     "helmet": "^3.13.0",
     "knex": "^0.15.2",
-    "sqlite3": "^4.0.2",
-    "nodemon": "^1.18.4"
+    "nodemon": "^1.18.4",
+    "sqlite3": "^4.0.2"
   }
 }
