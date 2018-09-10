@@ -18,4 +18,13 @@ router.post("/register", (req, res) => {
 		.catch(err => res.status(500).send(err));
 });
 
+router.get("/", (req, res) => {
+	db("users")
+		.select("id", "username")
+		.then(users => {
+			res.json(users);
+		})
+		.catch(err => res.status(500).send(err));
+});
+
 module.exports = router;
