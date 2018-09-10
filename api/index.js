@@ -10,11 +10,23 @@ router.post('/register', (req, res) => {
   pass = bcrypt.hashSync(pass, 10);
   db('users').insert({ name, pass })
     .then(id => res.status(201).json({ id: id[0], message: 'User has been created.' }))
-    .catch(err => res.status(500).json(err));
+    .catch(err => res.status(500).json({ error: 'Something went wrong when registering.' }));
 });
 
 router.post('/login', (req, res) => {
-  // authenticate user ? 'Logged in' : 'You shall not pass!'
+  let { name, pass } = req.body;
+  if (!name || !pass) {
+    res.status(404).json({ message: 'You need to provide a username and password!' }).end();
+  }
+  db('users').where({ name })
+    .then(user => {
+      if (!user[0] || !bcrypt.compareSync(pass, user[0].pass)) {
+        res.status(401).json({ message: 'You shall not pass!' });
+      } else {
+        res.status(303).json({ message: 'Logged in', id: user[0].id });
+      }
+    })
+    .catch(err => res.status(500).json({ error: 'Something went wrong when logging in.' }));
 });
 
 router.get('/users', (req, res) => {
