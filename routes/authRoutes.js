@@ -18,15 +18,6 @@ router.post("/register", (req, res) => {
 		.catch(err => res.status(500).send(err));
 });
 
-router.get("/", (req, res) => {
-	db("users")
-		.select("id", "username")
-		.then(users => {
-			res.json(users);
-		})
-		.catch(err => res.status(500).send(err));
-});
-
 router.post("/login", (req, res) => {
 	const credentials = req.body;
 
@@ -38,7 +29,8 @@ router.post("/login", (req, res) => {
 				user &&
 				bcrypt.compareSync(credentials.password, user.password)
 			) {
-				res.status(200).send("Welcome");
+				req.session.name = credentials.username;
+				res.status(200).send(`Welcome ${req.session.name}`);
 			} else {
 				res.status(401).json({ message: "Not authenticated" });
 			}
