@@ -36,7 +36,7 @@ server.post('/api/login', (req, res) => {
         .first()
         .then(user => {
             if (user && bcrypt.compareSync(creds.password, user.password)) {
-                res.status(200).send(`Welcome, ${user.username}`);
+                res.status(200).send(`Welcome, ${user.username}!`);
             } else {
                 res.status(401).json({errorMessage: 'You shall not pass!'});
             }
