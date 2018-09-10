@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "knex": "^0.15.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  }
+}
