@@ -4,7 +4,7 @@
   "description": "- Authentication.\r - Express Middleware.\r - Password Hashing.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon"
   },
   "repository": {
     "type": "git",
@@ -17,7 +17,12 @@
   },
   "homepage": "https://github.com/MichaelBoegner/auth-i#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.4",
     "express": "^4.16.3",
-    "nodemon": "^1.18.4"
+    "helmet": "^3.13.0",
+    "knex": "^0.15.2",
+    "nodemon": "^1.18.4",
+    "sqlite3": "^4.0.2"
   }
 }
