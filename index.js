@@ -79,8 +79,12 @@ app.post('/api/login', function(req, res, next) {
 });
 
 app.get('/api/users', isLoggedIn, function(req, res, next) {
-  if (!req.session || !req.session.user) return res.status(403);
-  res.json({ message: `Hello ${req.session.user}` });
+  db('users').then(users => {
+    res.json({
+      message: `Hello ${req.session.user}`,
+      users: users.map(user => ({ id: user.id, username: user.username })),
+    });
+  });
 });
 
 app.use(function(err, _, res, _) {
