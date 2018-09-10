@@ -1,13 +1,19 @@
 const express = require('express');
-const cors = require('cors');
+const helmet = require('helmet');
+const knex = require('knex');
 const bcrypt = require('bcryptjs');
 
-const db = require('./database/dbConfig.js');
+const dbConfig = require('./knexfile');
+
+const db = knex(dbConfig.development);
 
 const server = express();
 
 server.use(express.json());
-server.use(cors());
+
+server.get('/', (req, res) => {
+  res.send('Its Alive!');
+});
 
 server.post('/api/register', (req, res) => {
   const creds = req.body;
@@ -23,9 +29,9 @@ server.post('/api/register', (req, res) => {
 
 server.post('/api/login', (req, res) => {
   const creds = req.body;
-  db('users').where({ username: creds.username}).first().then(user => {
+  db('users').where({ name: creds.name}).first().then(user => {
     if (user && bcrypt.compareSync(creds.password, user.password)) {
-      res.send(200).send('Welcome! You\'ve made it!');
+      res.status(200).json({message: 'Welcome! You\'ve made it!'});
     }
     else {
       res.status(401).send('You shall not passsss!');
