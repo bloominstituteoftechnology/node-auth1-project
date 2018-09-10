@@ -37,27 +37,12 @@ router.post('/login', (req, res) => {
         .catch(err => res.status(500).send(err))
 });
 
+router.get('/users', (req, res) => {
+    db('usernames').select('id', 'username')
+        .then(users => {
+        res.status(200).json(users)
+        })
+        .catch(err => console.log(err));
+});
+
 module.exports = router;
-
-// router.post('/login', (req, res) => {
-//     const project = req.body;
-
-//     db.insert(project)
-//         .into('projects')
-//         .then(id => {
-//         res.status(201).json(id);
-//         })
-//         .catch(err => res.status(500).json({ errorMessage: 'There was an error while saving the project to the database. Maybe that record already exists.' }));
-// });
-
-// server.get('/users', (req, res) => {
-//     db.find()
-//     .then(posts => {
-//         res.status(200).json(posts);
-//     })
-//     .catch(err => {
-//         console.error('error', err);
-
-//         res.status(500).json({ error: 'The users information could not be retrieved.' });
-//     });
-// });
