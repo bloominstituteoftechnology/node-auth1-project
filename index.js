@@ -28,4 +28,25 @@ server.post('/api/register', (req, res) => {
     }).catch(err => res.status(500).send(err));
 });
 
+server.post('/api/login', (req, res) => {
+    const credentials = req.body;
+
+    db('users').where({username: credentials.username}).first().then(user => {
+        if(user && bcrypt.compareSync(credentials.password, user.password)){
+            res.status(200).send('Welcome');
+        } else {
+            res.status(401).json({message: 'You shall not pass!'});
+        }
+    }).catch(err => res.status(500).send(err));
+});
+
+server.get('/api/users', (req, res) => {
+    db('users')
+        .then(user => {
+            res.status(200).json(user);
+        })
+        .catch(err => res.status(500).send(err));
+});
+
+
 server.listen(8000);
