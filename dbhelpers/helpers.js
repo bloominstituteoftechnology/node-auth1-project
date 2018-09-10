@@ -9,5 +9,14 @@ module.exports = {
   findUser: (body) => {
     return db("users")
     .where({user_name: body.user_name})
+  },
+  getUsers: () => {
+    return db("users").select('user_name') 
+    .then(rows => {
+      console.log(rows);
+      return rows;
+    }) .catch(function(error) {
+      console.error(error);
+    });
   }
 };
