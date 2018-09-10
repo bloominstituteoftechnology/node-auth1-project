@@ -43,10 +43,10 @@ server.post('/api/login', (req,res) => {
     .where({username: creds.username})
     .first()
     .then(user => {
-        if (user && bcrypt.compardSync(creds.password, user.password)){
-            res.status(401).send('Welcome');
+        if (user && bcrypt.compareSync(creds.password, user.password)){
+            res.status(401).send('Welcome, You may now access your account');
         }else{
-            res.status(401).json({message: 'You shall not pass!'});
+            res.status(401).json({message: 'Your credentials were not entered correctly'});
         }
     })
     .catch(err => res.status(500).send(err));
