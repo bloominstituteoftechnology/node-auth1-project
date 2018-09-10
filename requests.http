@@ -6,3 +6,12 @@ content-type: application/json
   "password": "password"
 }
 ###
+
+POST http://localhost:5000/api/login HTTP/1.1
+content-type: application/json
+
+{
+  "username": "ash",
+  "password": "hashword"
+}
+###
