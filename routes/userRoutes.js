@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const db = require("../database/dbConfig.js");
+const middlewareFunctions = require("../middleware/middlewareFunctions.js");
 // GET/users NEEDS TO BE FINISHED TOMORROW(2-day project) AFTER LEARNING COOKIES
 // get start
 router.get("/users", (req, res, next) => {
@@ -19,7 +20,7 @@ router.get("/users", (req, res, next) => {
 
 // post start
 // register stores the username and pass in the db
-router.post("/register", (req, res, next) => {
+router.post("/register", middlewareFunctions.reqBodyCheck, (req, res, next) => {
   const creds = req.body;
   const hash = bcrypt.hashSync(creds.password, 10);
   creds.password = hash;
@@ -36,7 +37,7 @@ router.post("/register", (req, res, next) => {
 });
 
 // login checks to make sure the correct pass has been applied
-router.post("/login", (req, res, next) => {
+router.post("/login", middlewareFunctions.reqBodyCheck, (req, res, next) => {
   const creds = req.body;
   db("users")
     .where({ username: creds.username })

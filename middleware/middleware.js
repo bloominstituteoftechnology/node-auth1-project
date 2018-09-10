@@ -14,6 +14,10 @@ const errorHandler = (err, req, res, next) => {
       res.status(404).json({
         message: "The requested user does not exist.",
       });
+    case 406:
+      res.status(406).json({
+        message: "Please provide a username and password.",
+      });
       break;
     default:
       res.status(500).json({
