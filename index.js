@@ -21,6 +21,7 @@ server.get("/api/users", (req, res) => {
 });
 
 // post start
+// register stores the username and pass in the db
 server.post("/api/register", (req, res) => {
   const creds = req.body;
   const hash = bcrypt.hashSync(creds.password, 10);
@@ -30,6 +31,22 @@ server.post("/api/register", (req, res) => {
     .then(ids => {
       const id = ids[0];
       res.status(201).json(id);
+    })
+    .catch(err => res.status(500).send(err));
+});
+
+// login checks to make sure the correct pass has been applied
+server.post("/api/login", (req, res) => {
+  const creds = req.body;
+  db("users")
+    .where({ username: creds.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        res.status(200).send("working");
+      } else {
+        res.status(401).json({ message: "You shall not pass!" });
+      }
     })
     .catch(err => res.status(500).send(err));
 });
