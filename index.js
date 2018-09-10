@@ -29,6 +29,7 @@ app.use(
     httpOnly: true,
   }),
 );
+app.use('/api/restricted', isLoggedIn);
 
 app.post('/api/register', function(req, res, next) {
   let { username, password } = req.body;
@@ -85,6 +86,10 @@ app.get('/api/users', isLoggedIn, function(req, res, next) {
       users: users.map(user => ({ id: user.id, username: user.username })),
     });
   });
+});
+
+app.get('/api/restricted/topsecret', function(req, res) {
+  res.status(200).json({ message: 'keep it a secret ' });
 });
 
 app.use(function(err, _, res, _) {
