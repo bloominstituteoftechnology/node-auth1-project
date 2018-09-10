@@ -8,9 +8,14 @@ const server = express();
 //Middleware
 server.use(helmet());
 server.use(morgan("short"));
+server.use(express.json());
 server.use(cors());
 
 //Middleware^
+
+server.get('/', (req, res) => {
+  res.send("Server started")
+})
 
 PORT = 9000;
 
