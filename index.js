@@ -1,5 +1,6 @@
 const express = require('express');
 const knex = require('knex');
+const bcrypt = require('bcryptjs');
 
 const dbConfig = require('./knexfile');
 
