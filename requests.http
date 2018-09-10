@@ -12,6 +12,9 @@ content-type: application/json
 
 {
   "username": "ash",
-  "password": "hashword"
+  "password": "password"
 }
+###
+
+GET http://localhost:5000/api/users HTTP/1.1
 ###

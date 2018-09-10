@@ -1,12 +1,34 @@
 const express = require('express');
 const db = require('knex')(require('./knexfile').development);
 const bcrypt = require('bcryptjs');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 
 const app = express();
 
 const SALT_ROUNDS = process.env.SALT_ROUNDS || 12;
+const SECRET = process.env.SECRET || 'a nasty tale told by 64 year old hermit';
+
+function isLoggedIn(req, res, next) {
+  if (req.session && req.session.user) {
+    return next();
+  }
+  res.status(403).json({ message: 'you need to be logged in to do that' });
+}
 
 app.use(express.json());
+app.use(cookieParser());
+app.use(
+  session({
+    secret: SECRET,
+    cookie: {
+      maxAge: 12 * 60 * 60 * 1000,
+    },
+    resave: false,
+    saveUninitialized: false,
+    httpOnly: true,
+  }),
+);
 
 app.post('/api/register', function(req, res, next) {
   let { username, password } = req.body;
@@ -20,9 +42,10 @@ app.post('/api/register', function(req, res, next) {
 
   db('users')
     .insert({ username, password })
-    .then(([id]) =>
-      res.status(201).json({ message: 'Account created successfully', id }),
-    )
+    .then(([id]) => {
+      req.session.user = username;
+      res.status(201).json({ message: 'Account created successfully', id });
+    })
     .catch(next);
 });
 
@@ -48,9 +71,16 @@ app.post('/api/login', function(req, res, next) {
           .status(400)
           .json({ message: 'Username or password is invalid ' });
 
+      req.session.user = username;
+
       res.status(200).json({ message: 'Login successful' });
     })
     .catch(next);
+});
+
+app.get('/api/users', isLoggedIn, function(req, res, next) {
+  if (!req.session || !req.session.user) return res.status(403);
+  res.json({ message: `Hello ${req.session.user}` });
 });
 
 app.use(function(err, _, res, _) {
