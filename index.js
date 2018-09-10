@@ -9,11 +9,7 @@ const userRoutes = require('./routes/userRoutes');
 
 server.use('/api/', userRoutes);
 
-server.get('/', (req, res) => {
-    res.send('API running ...')
-})
-
-const port = 3500;
+const port = 3600;
 server.listen(port, function() {
   console.log(`\n=== Web API Listening on http://localhost:${port} ===\n`);
 });
