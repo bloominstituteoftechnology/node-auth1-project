@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const cors = require('cors');
 const helmet = require('helmet');
 const bcrypt = require('bcryptjs');
@@ -9,6 +10,27 @@ const server = express();
 server.use(express.json());
 server.use(cors({}));
 server.use(helmet());
+
+// session setup
+server.use(
+  session({
+    secret: 'nobody tosses a dwarf!',
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
+    httpOnly: true,
+    secure: false,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+//middleware
+function protected(req, res, next) {
+  if (req.session && req.session.name) {
+    next();
+  }else{
+    res.status(401).json({ message: 'You shall not pass!' });
+  }
+}
 
 //ENDPOINTS
 
@@ -46,6 +68,7 @@ server.post('/api/login', (req, res) => {
     .first()
     .then(user => {
       if(user && bcrypt.compareSync(password, user.password)){
+        req.session.name = user.username;
         res.status(200).json({ message: 'Logged In' });
       }else if(!user){
         res.status(404).json({ message: 'Invalid Username' });
@@ -58,10 +81,23 @@ server.post('/api/login', (req, res) => {
 
 //if the user is logged in, send user array, if not send the shall not pass message
 //verify hashing
-server.get('/api/users', (req, res) => {
+server.get('/api/users', protected, (req, res) => {
   db('users')
     .then(users => res.status(200).json(users))
     .catch(err => res.status(500).json(err));
+});
+
+//logout current user
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if(err) {
+        res.send('error logging out');
+      }else{
+        res.status(200).json({ message: 'logged out' });
+      }
+    });
+  }
 });
 
 const PORT = 8000;
