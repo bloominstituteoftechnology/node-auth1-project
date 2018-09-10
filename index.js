@@ -13,4 +13,4 @@ server.get("/", (req, res) => {
 });
 
 
-server.listen(3001, () => console.log("\nrunning on port 3300\n"));
+server.listen(3001, () => console.log("\nrunning on port 3001\n"));
