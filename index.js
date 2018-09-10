@@ -14,4 +14,18 @@ server.get('/', (req, res) => {
     res.send('API Running...');
 });
 
+server.post('/api/register', (req, res) => {
+    const credentials = req.body;
+
+    const hash = bcrypt.hashSync(credentials.password, 3);
+
+    credentials.password = hash;
+
+    db('users').insert(credentials).then(ids => {
+        const id = ids[0];
+
+        res.status(200).json(id);
+    }).catch(err => res.status(500).send(err));
+});
+
 server.listen(8000);
