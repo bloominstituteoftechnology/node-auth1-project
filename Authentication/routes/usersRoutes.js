@@ -6,7 +6,7 @@ const userRouter = express.Router()
 
 userRouter.get("/", (req, res) => {
   db('users')
-    .select('id', 'username')
+    .select('id', 'username', 'signedIn')
     .then(users => {
       if(users){
         res.status(200).json(users)
