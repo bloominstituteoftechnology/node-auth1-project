@@ -7,7 +7,7 @@ const morgan = require("morgan");
 // routes
 const userRoutes = require("../routes/userRoutes.js");
 
-function errorHandler(err, req, res, next) {
+const errorHandler = (err, req, res, next) => {
   console.log(err);
   switch (err.code) {
     case 404:
@@ -21,7 +21,7 @@ function errorHandler(err, req, res, next) {
       });
       break;
   }
-}
+};
 
 module.exports = server => {
   // server.use(cors({ credentials: true, origin: "http://localhost:3000" }));

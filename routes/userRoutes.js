@@ -15,8 +15,6 @@ router.get("/users", (req, res, next) => {
       err.code = 500;
       next(err);
     });
-
-  // res.send(err));
 });
 
 // post start
@@ -35,7 +33,6 @@ router.post("/register", (req, res, next) => {
       err.code = 500;
       next(err);
     });
-  // .catch(err => res.status(500).send(err));
 });
 
 // login checks to make sure the correct pass has been applied
@@ -55,7 +52,6 @@ router.post("/login", (req, res, next) => {
       err.code = 500;
       next(err);
     });
-  // .catch(err => res.status(500).send(err));
 });
 
 module.exports = router;
