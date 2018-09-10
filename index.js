@@ -17,7 +17,7 @@ const LOGIN = "/api/login";
 const REGISTER = "/api/register";
 const USERS = "/api/users";
 
-//server.use(LOGIN, loginRouter);
+server.use(LOGIN, loginRouter);
 server.use(REGISTER, registerRouter);
 //server.use(USERS, userRouter);
 //Routers^

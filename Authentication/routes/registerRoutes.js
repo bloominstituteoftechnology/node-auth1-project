@@ -5,7 +5,7 @@ const registerRouter = express.Router();
 
 const db = require("../../db/dbConfig.js");
 
-registerRouter.post('/api/register', (req, res) => {
+registerRouter.post('/', (req, res) => {
   const creds = req.body; 
   const hash = bcrypt.hashSync(creds.password, 14);
 
