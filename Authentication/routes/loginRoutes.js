@@ -45,7 +45,7 @@ loginRouter.post("/", (req, res) => {
       }
     })
     .catch(error => {
-      res.status(500).json({error, errorMessage: error.message});
+      res.status(500).json({error});
     });
 });
 

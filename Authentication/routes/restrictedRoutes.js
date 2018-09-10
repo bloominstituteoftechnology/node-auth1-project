@@ -1,14 +1,14 @@
-const express = require('express')
-const bcrypt = require('bcryptjs')
-const db = require("../../db/dbConfig.js")
+// const express = require('express')
+// const bcrypt = require('bcryptjs')
+// const db = require("../../db/dbConfig.js")
 
-const restrictedRouter = express.Router()
+// const restrictedRouter = express.Router()
 
-restrictedRouter.get("/:id", (req,res) =>{
+// restrictedRouter.get("/:id", (req,res) =>{
   
-})
+// })
 
 
 
 
-module.exports = restrictedRouter;
+// module.exports = restrictedRouter;

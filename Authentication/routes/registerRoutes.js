@@ -17,7 +17,7 @@ registerRouter.post("/", (req, res) => {
       res.status(201).json(id);
     })
     .catch(error => {
-      res.status(500).json({ error, errorMessage: error.message });
+      res.status(500).json({ error });
     });
 });
 

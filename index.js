@@ -6,6 +6,7 @@ const loginRouter = require("./Authentication/routes/loginRoutes");
 const registerRouter = require("./Authentication/routes/registerRoutes");
 const userRouter = require("./Authentication/routes/usersRoutes");
 const restrictedRouter = require("./Authentication/routes/restrictedRoutes")
+const signedInOrNot = require("./middleware/signedInOrNot")
 const server = express();
 
 //Middleware
@@ -21,7 +22,7 @@ const RESTRICTED = "/api/restricted"
 server.use(LOGIN, loginRouter);
 server.use(REGISTER, registerRouter);
 server.use(USERS, userRouter);
-//server.use(RESTRICTED, restrictedRouter)
+server.use(RESTRICTED, signedInOrNot)
 //Routers^
 //Middleware^
 
