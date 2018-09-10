@@ -3,22 +3,33 @@
 const express = require("express");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const cors = require('cors')
 const db = require("./database/dbConfig");
 const bcrypt = require("bcrypt");
+const { convertUsernameToLowecase } = require('./middleware')
 
 const server = new express();
 const PORT = 9000;
-const saltRounds = 15;
 
+server.use(cors({
+  credentials: true
+}))
 server.use(helmet());
 server.use(express.json());
-server.use(morgan("dev"));
+server.use(morgan("dev", {
+  immediate: true
+}));
 
 server.get("/", (req, res) => res.send("Running"));
 
-server.post("/api/register", async (req, res, next) => {
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+server.post("/api/register", convertUsernameToLowecase,  async (req, res, next) => {
   try {
-    const hash = await bcrypt.hash(req.body.password, saltRounds);
+    const salt = getRandomArbitrary(10, 50)
+    const hash = await bcrypt.hash(req.body.password, salt);
     res.status(200).json(
       await db(`users`).insert({
         username: req.body.username,
@@ -38,7 +49,7 @@ server.get("/api/users", async (req, res, next) => {
   }
 });
 
-server.post("/api/login", async (req, res, next) => {
+server.post("/api/login", convertUsernameToLowecase, async (req, res, next) => {
   try {
     const hashPass = await db(`users`)
       .where({ username: req.body.username })
