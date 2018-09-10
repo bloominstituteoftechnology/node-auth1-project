@@ -23,6 +23,23 @@ server.post("/api/register", async (req, res) => {
   }
 });
 
+server.post("/api/login", async (req, res) => {
+  if (!req.body.user_name ) {
+    res.status(400).json({ errorMessage: "Invalid body" });
+  }
+  try{
+    const results = await dbhelpers.findUser(req.body);
+    console.log(results)
+    if (results.length === 0 || await !bcrypt.compareSync(req.body.password, results[0].password)) {
+      return res.status(401).json({ error: 'Incorrect credentials' });
+    }
+    else{
+      return res.status(200).json({ status: 'Logged In' });
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
 server.use("/", (req, res) =>
   res
