@@ -19,7 +19,7 @@ const USERS = "/api/users";
 
 server.use(LOGIN, loginRouter);
 server.use(REGISTER, registerRouter);
-//server.use(USERS, userRouter);
+server.use(USERS, userRouter);
 //Routers^
 //Middleware^
 
