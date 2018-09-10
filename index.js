@@ -48,15 +48,15 @@ server.post('/api/login', async ( req, res ) => {
     };
 });
 
-// server.get('/api/users', async ( req, res ) => {
-//     try {
-//         const users = await db('users');
-//         res.status(200).json( users )
-//     }
-//     catch ( err ) {
-//         res.status(500).json( err.message );
-//     };
-// });
+server.get('/api/users', async ( req, res ) => {
+    try {
+        const users = await db('users').select('id', 'username', 'password');
+        res.status(200).json( users )
+    }
+    catch ( err ) {
+        res.status(500).json( err.message );
+    };
+});
 
 
 const port = 8000;
