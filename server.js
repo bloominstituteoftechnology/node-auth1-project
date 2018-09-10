@@ -1,6 +1,6 @@
 const express = require('express');
-var morgan = require('morgan');
-
+const morgan = require('morgan');
+const bcrypt = require('bcryptjs');
 const server = express();
 
 server.use(express.json());
