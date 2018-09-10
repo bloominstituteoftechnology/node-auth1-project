@@ -5,19 +5,21 @@ const registerRouter = express.Router();
 
 const db = require("../../db/dbConfig.js");
 
-registerRouter.post('/', (req, res) => {
-  const creds = req.body; 
+registerRouter.post("/", (req, res) => {
+  const creds = req.body;
   const hash = bcrypt.hashSync(creds.password, 14);
 
-  creds.password = hash 
-  db('users')
+  creds.password = hash;
+  db("users")
     .insert(creds)
     .then(ids => {
-      res.status(201).json(id)
+      const id = ids[0]
+      res.status(201).json(id);
     })
     .catch(error => {
-      res.status(500).json(error)
-    })
-})
+      res.status(500).json({ error, errorMessage: error.message });
+    });
+});
 
+//"react-router-dom, axios, and others will need to be added"
 module.exports = registerRouter;

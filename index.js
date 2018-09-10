@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const loginRouter = require("./Authentication/routes/loginRoutes");
 const registerRouter = require("./Authentication/routes/registerRoutes");
 const userRouter = require("./Authentication/routes/usersRoutes");
+const restrictedRouter = require("./Authentication/routes/restrictedRoutes")
 const server = express();
 
 //Middleware
@@ -16,10 +17,11 @@ server.use(cors());
 const LOGIN = "/api/login";
 const REGISTER = "/api/register";
 const USERS = "/api/users";
-
+const RESTRICTED = "/api/restricted"
 server.use(LOGIN, loginRouter);
 server.use(REGISTER, registerRouter);
 server.use(USERS, userRouter);
+//server.use(RESTRICTED, restrictedRouter)
 //Routers^
 //Middleware^
 
