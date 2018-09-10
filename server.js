@@ -1,6 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
-const bcrypt = require('bcryptjs');
+var cookieParser = require('cookie-parser');
 const session = require('express-session');
 const helpers = require('./data/helpers');
 
@@ -9,23 +9,24 @@ const db = require('./data/dbConfig');
 const mw = require('./middleware');
 
 server.use(express.json());
+server.use(cookieParser());
 server.use(morgan('dev'));
-// server.use(
-//   session({
-//     name: 'notsession', // default is connect.sid
-//     secret: 'nobody tosses a dwarf!',
-//     cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 }, // 1 day in milliseconds
-//     httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
-//     secure: true, // only set cookies over https. Server will not send back a cookie over http.
-//     resave: false,
-//     saveUninitialized: false,
-//   })
-// );
+
+server.use(
+  session({
+    secret: 'nobody tosses a dwarf!',
+    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 },
+    httpOnly: true,
+    secure: true,
+    resave: false,
+    saveUninitialized: false,
+  }),
+);
 
 server.use(mw.errorHandler);
 
 server.get('/', (req, res) => {
-  res.send('Sup fam');
+  res.send(req.session.name);
 });
 
 server.post('/api/register', (req, res, next) => {
@@ -36,19 +37,21 @@ server.post('/api/register', (req, res, next) => {
 });
 
 server.post('/api/login', (req, res, next) => {
+  let body = req.body;
   helpers
-    .login(req.body)
+    .login(body)
     .then(response => {
       if (response) {
-        res.status(200).json('Welcome');
+        req.session.name = body.username;
+        res.status(200).json(`Welcome ${req.session.name}`);
       } else next({ code: 400 });
     })
     .catch(next);
 });
 
-server.get('/api/users', (req, res) => {
+server.get('/api/users', mw.isLoggedIn, (req, res, next) => {
   db('users')
-    .then(users => res.json(users))
+    .then(users => res.status(200).json(users))
     .catch(next);
 });
 

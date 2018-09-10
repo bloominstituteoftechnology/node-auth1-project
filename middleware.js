@@ -10,6 +10,10 @@ function errorHandler(err, req, res, next) {
       res.status(400).json({
         message: 'There was an error regarding your input.',
       });
+    case 403:
+      res.status(403).json({
+        message: 'You are unathorized to view this content.',
+      });
     default:
       res.status(500).json({
         message: 'There was an error performing the required operation',
@@ -18,4 +22,12 @@ function errorHandler(err, req, res, next) {
   }
 }
 
-module.exports = { errorHandler };
+function isLoggedIn(req, res, next) {
+  if (req.session && req.session.name) {
+    next();
+  } else {
+    next({ code: 403 });
+  }
+}
+
+module.exports = { errorHandler, isLoggedIn };
