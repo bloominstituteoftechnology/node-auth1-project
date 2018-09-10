@@ -1,20 +1,41 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loggedIn: false,
+    };
+  }
+
+  handleLoginChange = event => {
+    this.setState({
+      username: event.target.value,
+    });
+  };
+
+  handleLogin = () => {
+    localStorage.setItem("username", this.state.username);
+  };
+
+  componentDidMount() {
+    let lsUsername = localStorage.getItem("username");
+    if (lsUsername === "Frank") {
+      this.setState({ loggedIn: true });
+    }
+  }
   render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
+    if (this.state.loggedIn === true) {
+      return <HomePage />;
+    } else {
+      return (
+        <Login
+          loginHandler={this.handleLogin}
+          loginChangeHandler={this.handleLoginChange}
+        />
+      );
+    }
   }
 }
 
