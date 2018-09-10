@@ -7,7 +7,7 @@ exports.up = function(knex, Promise) {
     table.string('password')
         .notNullable()
     table.timestamp('generated')
-        .defaultTo(knex.fn.fow())
+        .defaultTo(knex.fn.now())
   })
 };
 
