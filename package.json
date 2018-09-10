@@ -1,0 +1,30 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "## Topics",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kamalnrf/auth-i.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kamalnrf/auth-i/issues"
+  },
+  "homepage": "https://github.com/Kamalnrf/auth-i#readme",
+  "dependencies": {
+    "bcrypt": "^3.0.0",
+    "express": "^4.16.3",
+    "helmet": "^3.13.0",
+    "knex": "^0.15.2",
+    "morgan": "^1.9.0",
+    "nodemon": "^1.18.4",
+    "sqlite3": "^4.0.2"
+  }
+}
