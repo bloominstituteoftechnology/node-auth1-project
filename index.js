@@ -35,6 +35,25 @@ server.post("/api/register", (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
+server.post("/api/login", (req, res) => {
+  // grab creds
+  const creds = req.body;
+
+  // find the user
+  db("users")
+    .where({ username: creds.username })
+    .first()
+    .then(user => {
+      //check creds
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        res.status(200).send("Welcome to your account");
+      } else {
+        res.status(401).json({ message: "You shall not pass!" });
+      }
+    })
+    .catch(err => res.status(500).send(err));
+});
+
 // protect this route, only authenticated users should see it
 server.get("/api/users", (req, res) => {
   db("users")
