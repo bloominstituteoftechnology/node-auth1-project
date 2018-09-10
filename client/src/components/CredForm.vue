@@ -1,17 +1,20 @@
 <template>
-  <form class="form">
-
-    <input class="input" type="text" placeholder="Username" />
-    <input class="input" type="text" placeholder="Password" />
+  <form v-on:submit.prevent="$emit('register', username, password)" class="form">
+    <input v-model="username" class="input" type="text" placeholder="Username" />
+    <input v-model="password" class="input" type="password" placeholder="Password" />
     <button class="button">Submit</button>
-
   </form>
 </template>
 
 <script>
 export default {
   name: 'CredForm',
-
+  data: function() {
+    return {
+      username: '',
+      password: '',
+    }
+  }
 }
 </script>
 

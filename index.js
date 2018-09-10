@@ -3,6 +3,7 @@ const db = require('knex')(require('./knexfile').development);
 const bcrypt = require('bcryptjs');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const cors = require('cors');
 
 const app = express();
 
@@ -16,6 +17,7 @@ function isLoggedIn(req, res, next) {
   res.status(403).json({ message: 'you need to be logged in to do that' });
 }
 
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use(
