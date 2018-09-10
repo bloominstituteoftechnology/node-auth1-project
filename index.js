@@ -27,7 +27,7 @@ server.get('/api/users', (req, res) => {
 
 server.post('/api/register', (req, res) => {
     const creds = req.body; 
-    const hash = bcrypt.hashSync(creds.password, 3);
+    const hash = bcrypt.hashSync(creds.password, 10);//should be no lower than 12 generally speaking
     creds.password = hash; 
 
     db('users').insert(creds)
@@ -39,18 +39,23 @@ server.post('/api/register', (req, res) => {
 });
 
 
-server.post('/api/users', (req, res) => {
-    const user = req.body; 
-    
-    db
-        .insert(user)
-        .into('users')
-    .then(id => {
-        res.status(201).json(id); 
-    })
-    .catch(err => 
-        res.status(500).json({error: "The user could not be posted."}));
-  });
+server.post('/api/login', (req, res) => {
+    const creds = req.body;
+
+    db('users')
+        .where({username: creds.username})
+        .first()
+        .then(user => {
+            if(user && bcrypt.compareSync(creds.password, user.password)) {
+                res.status(200).send("Welcome!")
+            } else{
+                res.status(401).json({message: "No passing you thief!"})
+            }
+        })
+        .catch(err => {
+            res.status(500).send(err);
+        })
+});
 
 
 const port = 8800;
