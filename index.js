@@ -8,7 +8,7 @@ const db = knex(dbConfig.development);
 
 server.use(express.json());
 
-server.post('/api/register', async (req, res) => {
+server.post('/api/register', async ( req, res ) => {
     const credentials = req.body;
     const hash = bcrypt.hashSync( credentials.password, 5 )
     credentials.password = hash;
@@ -23,19 +23,40 @@ server.post('/api/register', async (req, res) => {
         }
         catch ( err ) {
             res.status(500).json( err.message );
-        }
+        };
     };  
 });
 
-server.get('/api/users', async (req, res) => {
+server.post('/api/login', async ( req, res ) => {
+    const credentials = req.body;
     try {
-        const users = await db('users');
-        res.status(200).json( users )
+            const user = await db('users')
+                                .where({ username: credentials.username })
+                                .first()
+            if ( bcrypt.compareSync( credentials.password, user.password ) ) {
+                res.status(200).json({
+                    message: "Logged in."  
+                });
+            } else {
+                res.status(400).json({
+                    message: "You shall not pass!"
+                });
+            }
     }
-    catch ( err ) {
+    catch (err) {
         res.status(500).json( err.message );
     };
 });
+
+// server.get('/api/users', async ( req, res ) => {
+//     try {
+//         const users = await db('users');
+//         res.status(200).json( users )
+//     }
+//     catch ( err ) {
+//         res.status(500).json( err.message );
+//     };
+// });
 
 
 const port = 8000;
