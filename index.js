@@ -1,7 +1,8 @@
 
 const express = require("express");
 const cors = require("cors");
-
+const bcrypt = require("bcrypt");
+const db = require("./database/dbConfig.js");
 
 const server = express();
 
