@@ -15,7 +15,6 @@ server.get("/", (req, res) => {
 server.post("/api/register", (req, res) => {
   const creds = req.body;
   const hash = bcrypt.hashSync(creds.password, 3);
-
   creds.password = hash;
 
   db("users")
@@ -35,11 +34,13 @@ server.post("/api/login", (req, res) => {
     .first()
     .then(users => {
       if (users && bcrypt.compareSync(creds.password, users.password)) {
+        // res.session.name = creds.username;
         res.status(200).send("Authenticated");
       } else {
         res.status(401).json({ message: "Access Denied" });
       }
-    });
+    })
+    .catch(err => res.status(500).send(err));
 });
 
 server.get("/api/users", (req, res) => {
