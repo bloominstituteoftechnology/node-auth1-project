@@ -1,5 +1,7 @@
 const express = require("express");
 const helmet = require("helmet");
+const dbhelpers = require("./dbhelpers/helpers");
+const bcrypt = require('bcrypt');
 
 const server = express();
 
@@ -7,6 +9,19 @@ const server = express();
 server.use(express.json());
 server.use(helmet());
 
+server.post("/api/register", async (req, res) => {
+  if (!req.body.user_name ||!req.body.password  ) {
+    res.status(400).json({ errorMessage: "Invalid body" });
+  }
+  try {
+    req.body.password = bcrypt.hashSync(req.body.password, 14);
+    
+    const results = await dbhelpers.addUser(req.body);
+    res.status(200).json({ results });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
 
 server.use("/", (req, res) =>
