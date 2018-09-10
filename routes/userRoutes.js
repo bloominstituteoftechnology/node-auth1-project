@@ -5,18 +5,23 @@ const bcrypt = require("bcryptjs");
 const db = require("../database/dbConfig.js");
 // GET/users NEEDS TO BE FINISHED TOMORROW(2-day project) AFTER LEARNING COOKIES
 // get start
-router.get("/users", (req, res) => {
+router.get("/users", (req, res, next) => {
   db("users")
     .select("id", "username", "password")
     .then(users => {
       res.json(users);
     })
-    .catch(err => res.send(err));
+    .catch(err => {
+      err.code = 500;
+      next(err);
+    });
+
+  // res.send(err));
 });
 
 // post start
 // register stores the username and pass in the db
-router.post("/register", (req, res) => {
+router.post("/register", (req, res, next) => {
   const creds = req.body;
   const hash = bcrypt.hashSync(creds.password, 10);
   creds.password = hash;
@@ -26,11 +31,15 @@ router.post("/register", (req, res) => {
       const id = ids[0];
       res.status(201).json(id);
     })
-    .catch(err => res.status(500).send(err));
+    .catch(err => {
+      err.code = 500;
+      next(err);
+    });
+  // .catch(err => res.status(500).send(err));
 });
 
 // login checks to make sure the correct pass has been applied
-router.post("/login", (req, res) => {
+router.post("/login", (req, res, next) => {
   const creds = req.body;
   db("users")
     .where({ username: creds.username })
@@ -42,7 +51,11 @@ router.post("/login", (req, res) => {
         res.status(401).json({ message: "You shall not pass!" });
       }
     })
-    .catch(err => res.status(500).send(err));
+    .catch(err => {
+      err.code = 500;
+      next(err);
+    });
+  // .catch(err => res.status(500).send(err));
 });
 
 module.exports = router;
