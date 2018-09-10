@@ -4,7 +4,7 @@
 
 - Authentication.
 - Express Middleware.
-- Password Hashing.
+- Password Hashing
 
 ## Assignment
 

@@ -1,0 +1,28 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "- Authentication.\r - Express Middleware.\r - Password Hashing.",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MKerbleski/auth-i.git"
+  },
+  "author": "Mike Kerbleski",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MKerbleski/auth-i/issues"
+  },
+  "homepage": "https://github.com/MKerbleski/auth-i#readme",
+  "dependencies": {
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "helmet": "^3.13.0",
+    "knex": "^0.15.2",
+    "morgan": "^1.9.0",
+    "nodemon": "^1.18.4",
+    "sqlite3": "^4.0.2"
+  }
+}
