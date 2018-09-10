@@ -92,6 +92,17 @@ app.get('/api/restricted/topsecret', function(req, res) {
   res.status(200).json({ message: 'keep it a secret ' });
 });
 
+app.get('/api/logout', function(req, res, next) {
+  if (req.session) {
+    return req.session.destroy(err => {
+      if (err) return next(err);
+
+      res.status(200).json({ message: 'logout successful' });
+    });
+  }
+  return res.status(500).json({ message: "Couldn't log out" });
+});
+
 app.use(function(err, _, res, _) {
   console.log(err);
   if (err.errno === 19)
