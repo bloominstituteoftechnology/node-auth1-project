@@ -74,8 +74,9 @@ server.post('/api/register', (req,res) => {
 });
 
 server.post('/api/login', (req,res) => {
+    //retrieve the user credentials
     const creds = req.body;
-
+    //find the specified user
     db('users')
     .where({username: creds.username})
     .first()
@@ -90,6 +91,19 @@ server.post('/api/login', (req,res) => {
         }
     })
     .catch(err => res.status(500).send(err));
+});
+
+//add a logout route to end the session
+server.get('/api/logout', (req,res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if(err) {
+                res.send('You are still logged in');
+            }else {
+                res.send('Thank-you, please visit again soon!')
+            }
+        });
+    }
 });
 
 //protect the route so that only authenticated users can see it
