@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const session = require("express-session");
 // routes
 const userRoutes = require("../routes/userRoutes.js");
 
