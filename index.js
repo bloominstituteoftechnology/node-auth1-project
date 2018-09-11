@@ -84,6 +84,7 @@ server.post('/api/login', async ( req, res ) => {
                                 .where({ username: credentials.username })
                                 .first()
             if ( bcrypt.compareSync( credentials.password, user.password ) ) {
+                req.session.username = user.username;
                 res.status(200).json({
                     message: "Logged in."  
                 });
@@ -98,7 +99,7 @@ server.post('/api/login', async ( req, res ) => {
     };
 });
 
-server.get('/api/users', async ( req, res ) => {
+server.get('/api/users', protected, async ( req, res ) => {
     try {
         const users = await db('users').select('id', 'username', 'password');
         res.status(200).json( users )
@@ -107,9 +108,6 @@ server.get('/api/users', async ( req, res ) => {
         res.status(500).json( err.message );
     };
 });
-
-
-
 
 const port = 8000;
 server.listen( port, () => console.log(`===Server is running on port ${port}===`))
