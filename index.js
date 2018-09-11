@@ -35,8 +35,27 @@ server.get("/api/register", (req, res) => {
     db('users').then(users => {
         res.status(200).json(users); 
     })
+}); 
+
+server.post("/api/login", (req, res) => {
+    const creds = req.body; 
+    db('users')
+        .where({username: creds.username})
+        .first()
+        .then(user => {
+        if(user && bcrypt.compareSync(creds.password, user.password)){
+            res.status(200).send("Welcome to the site");
+        }else {
+            res.status(401).json({message: "YOU SHALL NOT PASS! Please try again. Username or Password is incorrect"})
+        }
+    }).catch(err => res.send(err)); 
 })
 
+
+
+server.post("/api/login", (req, res) => {
+
+})
 server.listen(3400, () => {
     console.log("This server is listening on port 3400")
 }); 
