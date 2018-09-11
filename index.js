@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 
 const db = require('./database/index.js');
 
@@ -20,6 +21,13 @@ app.use(
     httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
     resave: false,
     saveUninitialized: false,
+  	store: new KnexSessionStore({
+	    tablename: 'sessions',
+	    sidfieldname: 'sid',
+	    knex: db,
+	    createtable: true,
+	    clearInterval: 1000 * 60 * 60,
+  	}),
   })
 );
 
