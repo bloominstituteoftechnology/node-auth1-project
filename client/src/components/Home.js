@@ -1,6 +1,6 @@
 import React from 'react';
-import Redirect from 'react-router-dom'; 
-
+import {Link, Redirect} from 'react-router-dom'; 
+import axios from 'axios'; 
 const fakeAuth = {
   isAuthenticated: false, 
   authenticate(cb) {
@@ -23,7 +23,15 @@ class Home extends React.Component{
       )  
     } else {
       return (
-        <div>Check it out</div>
+        <div>
+          <label>Username:</label>
+          <input type="text" placeholder="Enter Username:"/>
+          <br/>
+          <label>Password :</label>
+          <input type="text" placeholder="Enter Password:"/>
+          <br/>
+          <Link to="/register">Register</Link>
+        </div>
       )
        
     }
