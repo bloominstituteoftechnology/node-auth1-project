@@ -1,3 +1,5 @@
+// https://github.com/LambdaSchool/auth-i/pull/298
+
 const express = require('express');
 const session = require('express-session');
 const SessionStore = require('connect-session-knex')(session);
@@ -34,8 +36,6 @@ app.get('/',(req,res)=>{
 
 app.post('/api/register', (req,res)=>{
     const creds = req.body;
-    console.log(req.body);
-    // res.send(req.body);
     const hash = bcrypt.hashSync(creds.password, 10);
     creds.password = hash;
     db('users')
@@ -57,20 +57,18 @@ app.post('/api/login', (req, res) => {
         .then(user => {
             if(user && bcrypt.compareSync(creds.password, user.password)){
                 req.session.name = user.name;
-                console.log(req.session);
-                
                 res.status(201).json({message: `Come on in, ${req.session.name}`});
             } else {
                 res.status(401).json({message: 'You shall not pass....'});
             }
         })
         .catch(err => {
-            res.status(500).json(err);
+            console.log(`Error ${err}`);
+            res.status(500).json({message:`Somethin ain't right, here.`});
         })
 });
 
 app.get('/api/users', (req, res)=>{
-   
         db('users')
             .select('name', 'password')
             .then(users => {
