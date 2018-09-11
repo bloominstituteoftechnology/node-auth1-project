@@ -34,6 +34,7 @@ server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
 
+// protecting /api/users if not logged in
 function protected(req, res, next) {
     if (req.session && req.session.username) {
         next();
@@ -41,6 +42,15 @@ function protected(req, res, next) {
         res.status(401).json({errorMessage: 'You shall not pass!'});
     }
 }
+
+// global middleware for stretch
+server.use('/api/restricted', function(req, res, next) {
+    if (req.session && req.session.username) {
+        next();
+    } else {
+        res.status(401).json({errorMessage: 'You are not authorized to see this restricted content.'});
+    }
+})
 
 // endpoints
 
@@ -107,6 +117,14 @@ server.get('/api/users', protected, (req, res) => {
             res.json(users);
         })
         .catch(err => res.status(500).json(err));
+})
+
+server.get('/api/restricted', (req, res) => {
+    res.send('You got in.');
+})
+
+server.get('/api/restricted/other', (req, res) => {
+    res.send('You got in.');
 })
 
 server.listen(5000, console.log('\n-=- Server listening on port 5000 -=-\n'));
