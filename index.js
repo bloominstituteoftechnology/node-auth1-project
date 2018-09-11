@@ -42,7 +42,7 @@ function protected(req, res, next) {
   }
 }
 
-server.use('/api/restricted', protected)
+server.use("/api/restricted", protected);
 
 server.get("/", (req, res) => {
   res.send("This is working...");
@@ -80,7 +80,7 @@ server.post("/api/login", (req, res) => {
     .first()
     .then(user => {
       //check creds
-      if (user && bcrypt.compareSync(creds.password, user.password)) {
+      if (user && bcrypt.compareSync(creds.password, user.password) && !req.session.username) {
         req.session.username = user.username;
         res
           .status(200)
