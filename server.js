@@ -10,7 +10,7 @@ const server = express();
 const mw = require('./middleware');
 
 server.use(express.json());
-server.use(cors());
+server.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 server.use(morgan('dev'));
 
 server.use(

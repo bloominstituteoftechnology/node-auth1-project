@@ -6,6 +6,8 @@ export const SIGNUP_USER = 'SIGNUP_USER';
 export const SIGNUP_USER_SUCCESS = 'SIGNUP_USER_SUCCESS';
 export const GET_USERS = 'GET_USERS';
 export const GET_USERS_SUCCESS = 'GET_USERS_SUCCESS';
+export const LOGOUT_USER = 'LOGOUT_USER';
+export const LOGOUT_USER_SUCCESS = 'LOGOUT_USER_SUCCESS';
 
 const URL = 'http://localhost:7000/api';
 
@@ -19,6 +21,12 @@ export const LogInUser = user => dispatch => {
   });
 };
 
+export const LogOutUser = () => dispatch => {
+  dispatch({ type: LOGOUT_USER });
+  axios.get(`${URL}/logout`).then(response => {
+    dispatch({ type: LOGOUT_USER_SUCCESS });
+  });
+};
 export const SignUpUser = user => dispatch => {
   dispatch({ type: SIGNUP_USER });
   axios.post(`${URL}/register`, user).then(response => {
@@ -31,9 +39,7 @@ export const SignUpUser = user => dispatch => {
 
 export const getUsers = () => dispatch => {
   dispatch({ type: GET_USERS });
-  axios
-    .get(`${URL}/restricted/users`, { withCredentials: true })
-    .then(response => {
-      dispatch({ type: GET_USERS_SUCCESS, payload: response.data });
-    });
+  axios.get(`${URL}/restricted/users`).then(response => {
+    dispatch({ type: GET_USERS_SUCCESS, payload: response.data });
+  });
 };
