@@ -14,7 +14,7 @@ class Home extends Component {
         <button onClick={this.props.LogOutUser}>Log Out</button>
         <p>{`Welcome ${this.props.user}`}</p>
         {this.props.users.map(user => (
-          <p>{`${user.id}, ${user.username}`}</p>
+          <p key={user.id}>{`${user.id}, ${user.username}`}</p>
         ))}
       </div>
     );

@@ -5,12 +5,15 @@ import {
   GET_USERS_SUCCESS,
   LOGOUT_USER,
   LOGOUT_USER_SUCCESS,
+  SIGNUP_USER,
+  SIGNUP_USER_SUCCESS,
 } from '../actions';
 
 const initialState = {
   loggingIn: false,
   loggingOut: false,
   getUsers: false,
+  signingUp: false,
   loggedInUser: '',
   users: [],
 };
@@ -49,6 +52,17 @@ export default (state = initialState, action) => {
         ...state,
         loggingOut: false,
         loggedInUser: '',
+        users: [],
+      };
+    case SIGNUP_USER:
+      return {
+        ...state,
+        signingUp: true,
+      };
+    case SIGNUP_USER_SUCCESS:
+      return {
+        ...state,
+        signingUp: false,
       };
     default:
       return state;

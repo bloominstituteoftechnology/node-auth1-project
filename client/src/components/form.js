@@ -11,8 +11,8 @@ const StyledForm = styled.form`
 
 const Input = styled.input`
   padding-left: 8px;
+  border: ${props => (props.err ? '2px solid red' : '1px solid #efefef')};
   outline: none;
-  border: 1px solid #efefef;
   background-color: #fafafa;
   font-size: 12px;
   width: 100%;
@@ -40,7 +40,15 @@ const Button = styled.button`
   }
 `;
 
-const Form = ({ username, password, handleSubmit, handleChange }) => (
+const Form = ({
+  username,
+  password,
+  password2,
+  handleSubmit,
+  handleChange,
+  type,
+  error,
+}) => (
   <StyledForm onSubmit={handleSubmit}>
     <Input
       name="username"
@@ -48,14 +56,28 @@ const Form = ({ username, password, handleSubmit, handleChange }) => (
       placeholder="enter username"
       value={username}
       onChange={handleChange}
+      autoComplete="off"
     />
     <Input
+      err={error}
       name="password"
-      type="text"
+      type="password"
       placeholder="enter password"
       value={password}
       onChange={handleChange}
+      autoComplete="off"
     />
+    {type === 'signUp' && (
+      <Input
+        err={error}
+        name="password2"
+        type="password"
+        placeholder="re-enter password"
+        value={password2}
+        onChange={handleChange}
+        autoComplete="off"
+      />
+    )}
     <Button type="submit">Submit</Button>
   </StyledForm>
 );
