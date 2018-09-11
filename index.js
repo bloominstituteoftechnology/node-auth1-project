@@ -9,7 +9,7 @@ const restrictedRouter = require("./Authentication/routes/restrictedRoutes")
 const signedInOrNot = require("./middleware/signedInOrNot")
 const logoutRouter = require("./Authentication/routes/logoutRoutes");
 const session = require("express-session");
-const KnexSessionStore = require("connect-session-knex")
+const KnexSessionStore = require("connect-session-knex")(session)
 
 const db = require("./db/dbConfig.js");
 

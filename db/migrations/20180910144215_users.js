@@ -6,7 +6,7 @@ exports.up = function(knex, Promise) {
       .notNullable()
       .unique();
     tbl.string("password").notNullable();
-    tbl.boolean("signedIn").notNullable();
+    tbl.boolean("signedIn").defaultTo(false).notNullable();
   });
 };
 
