@@ -2,7 +2,8 @@ const express = require('express');
 const helmet = require('helmet');
 const knex = require('knex');
 const bcrypt = require('bcryptjs');
-const session = require('express-session')
+const session = require('express-session');
+const cors = require('cors');
 
 //import the knex store library
 const KnexSessionsStore = require('connect-session-knex')(session);
@@ -56,14 +57,15 @@ server.post('/api/register', (req,res) => {
     //retrieve credentials
     const creds = req.body;
 
-    //hash the password
+    //hash the password, 12 cycles of hashing
     const hash = bcrypt.hashSync(creds.password, 12)
 
     //replace user password with the hash
     creds.password = hash;
 
     //save the user
-    db('users').insert(creds)
+    db('users')
+    .insert(creds)
     .then(ids => {
         const id = ids[0];
         res.status(201).json(id);
@@ -78,8 +80,11 @@ server.post('/api/login', (req,res) => {
     .where({username: creds.username})
     .first()
     .then(user => {
+        //here we check the provided credentials against those in the database
         if (user && bcrypt.compareSync(creds.password, user.password)){
-            res.status(401).send('Welcome, You may now access your account');
+            //set the session username to provided username to store during the session
+            req.session.username = user.username;
+            res.status(401).send(`Welcome, ${req.session.username}, you may now access your account`);
         }else{
             res.status(401).json({message: 'Your credentials were not entered correctly'});
         }
