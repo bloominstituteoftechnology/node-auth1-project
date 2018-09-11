@@ -18,6 +18,30 @@ server.use(helmet());
 server.use(morgan("short"));
 server.use(express.json());
 server.use(cors());
+
+server.use(
+  session({
+    name: 'notsession',//default is connect.sid
+    secret: 'no whispering',
+    cookie : {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      secure: true, // only set cookies over https.
+      //Server will not send back a cookie over http.
+      httpOnly: true, // don't let JS code access cookies. 
+      //Browser extensions run JS code on your browser!
+      resave: false, 
+      saveUninitialized: false, 
+      store: new KnexSessionStore ({
+        tablename : "sessions", 
+        sidefieldname : 'sid', 
+        knex: db, 
+        createtable : true, 
+        clearInterval: 1000 * 60 * 60, 
+      })
+    }
+  })
+);
+
 //Routers
 const LOGIN = "/api/login";
 const LOGOUT = "/api/logout"; 
