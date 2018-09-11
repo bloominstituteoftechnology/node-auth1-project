@@ -30,6 +30,7 @@ server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
 
+// middleware that grants access only to logged in users
 function protected(req, res, next) {
     if (req.session && req.session.username) {
       next();
@@ -91,6 +92,19 @@ server.get('/api/users', protected, (req, res) => {
       res.json(users);
     })
     .catch(err => res.send(err));
+});
+
+// logout
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                res.send('error logging out');
+            } else {
+                res.send('beat it')
+            }
+        });
+    }
 });
 
 server.listen(3600, () => console.log('\nrunning on port 3600\n'));
