@@ -7,21 +7,22 @@ const KnexSessionStore=require('connect-session-knex')(session);
 const cors=require('cors');
 const server=express();
 const knex=require('knex');
-const knexConfig=require('knexfile.js');
+const knexConfig=require('./knexfile');
 const db=knex(knexConfig.development);
 
-server.use(express.json()).use(helmet()).use(morgan('dev')).use(bcrypt()).use(cors());
+server.use(express.json()).use(helmet()).use(morgan('dev')).use(cors());
 
-server.post('api/register',(req,res)=>{
+server.post('/api/register',(req,res)=>{
     const creds=req.body;
     const hash=bcrypt.hashSync(creds.password,3)
     creds.password=hash;
-    db('users')
+    db
         .insert(creds)
+        .into('users')
         .then(ids=>res.status(201).json(ids[0]))
         .catch(err=>res.status(500).send(err));
 })
-server.post('api/login',(req,res)=>{
+server.post('/api/login',(req,res)=>{
     const creds=req.body;
     db('users')
         .where({username:creds.username})
@@ -33,3 +34,5 @@ server.post('api/login',(req,res)=>{
         })
         .catch(err=>res.status(500).json(err));
 })
+const port=9000
+server.listen(port,()=>console.log('Engines firing server starting new horizons venturing.'));
