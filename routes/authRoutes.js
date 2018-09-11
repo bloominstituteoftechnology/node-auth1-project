@@ -34,7 +34,10 @@ router.post("/login", (req, res) => {
 				res.status(401).json({ message: "Not authenticated" });
 			}
 		})
-		.catch(err => res.status(500).send(err));
+		.catch(err => {
+			console.log(err);
+			res.status(500).send(err);
+		});
 });
 
 router.get("/logout", (req, res) => {
