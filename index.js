@@ -35,7 +35,9 @@ function protected(req, res, next){
 	}
 }
 
-app.get('/greet', (req, res) => {
+app.use('/api/restricted', protected);
+
+app.get('/api/restricted/greet', (req, res) => {
 	res.send(`Hello ${req.session.username}`);
 })
 
