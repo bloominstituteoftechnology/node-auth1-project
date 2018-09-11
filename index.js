@@ -12,6 +12,19 @@ const db=knex(knexConfig.development);
 
 server.use(express.json()).use(helmet()).use(morgan('dev')).use(cors());
 
+server.use(
+    session({
+        name:'middleEarth',
+        secret:'Many that live deserve death.',
+        cookie:{
+            maxAge:1*24*60*60*1000,
+            secure:true
+        },
+        httpOnly:true,
+        resave:false,
+        saveUninitialized: false,
+    })
+)
 server.post('/api/register',(req,res)=>{
     const creds=req.body;
     const hash=bcrypt.hashSync(creds.password,3)
