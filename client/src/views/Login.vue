@@ -8,6 +8,7 @@
 <script>
 import CredForm from '@/components/CredForm.vue';
 import axios from 'axios';
+import store from '@/store';
 
 export default {
   components: {
@@ -22,9 +23,11 @@ export default {
         })
         .then(data => {
           console.log(data);
+          store.setLoggedIn(true);
+          this.$router.push('/users');
         })
         .catch(error => {
-          console.log(data);
+          console.log(error);
         });
     },
   },

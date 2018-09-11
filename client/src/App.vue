@@ -3,14 +3,43 @@
     <div class="nav">
       <h2 class="nav__brand">Vue Auth</h2>
       <div>
-        <router-link class="nav__link" to="/">Sign Up</router-link>
-        <router-link class="nav__link" to="/login">Login</router-link>
-        <router-link class="nav__link" to="/Users">Users</router-link>
+        <div v-if="state.loggedIn">
+          <router-link class="nav__link" to="/Users">Users</router-link>
+          <a class="nav__link" v-on:click="logout"  href="#">Logout</a>
+        </div>
+        <div v-else>
+          <router-link class="nav__link" to="/">Sign Up</router-link>
+          <router-link class="nav__link" to="/login">Login</router-link>
+        </div>
       </div>
     </div>
-    <router-view/>
+    <router-view />
   </div>
 </template>
+
+<script>
+import store from '@/store';
+import axios from 'axios';
+
+export default {
+  name: "App",
+  data: function (){
+    return {
+      state: store.state
+    }
+  },
+  methods: {
+    logout: function() {
+      axios.get('http://localhost:5000/api/logout').then(response => {
+        console.log(response.data);
+        store.setLoggedIn(false);
+        this.$router.push('/');
+      }).catch(console.log);
+    }
+  }
+}
+</script>
+
 
 <style>
 * {

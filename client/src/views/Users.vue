@@ -16,6 +16,7 @@
 <script>
 import axios from 'axios';
 
+
 export default {
   mounted: function() {
     axios({
@@ -24,6 +25,7 @@ export default {
     })
       .then(response => {
         this.users = response.data.users;
+
       })
       .catch(error => {
         console.log(error);

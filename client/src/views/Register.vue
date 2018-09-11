@@ -9,6 +9,7 @@
 // @ is an alias to /src
 import CredForm from '@/components/CredForm.vue';
 import axios from 'axios';
+import store from '@/store';
 
 export default {
   name: 'register',
@@ -24,6 +25,8 @@ export default {
         })
         .then(response => {
           console.log(response);
+          store.setLoggedIn(true);
+          this.$router.push('/users');
         })
         .catch(error => {
           console.log(error);
