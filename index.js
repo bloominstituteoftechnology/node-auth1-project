@@ -1,21 +1,52 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
+const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 
-const db = require('./db/db.js')
+
+const db = require('./db/db.js');
 
 const server = express();
+
+const sessionConfig = {
+    name: 'dont call this session',
+    secret: 'keep this a secret',
+    cookie: {
+        maxAge: 1 * 24 * 60 * 60 * 1000, 
+        secure: false, 
+    },
+    httpOnly: true, 
+    resave: false, 
+    saveUninitalized: false, 
+    store: new KnexSessionStore({
+        tablename: 'sessions',
+        sidfieldname: 'sid',
+        knex: db, 
+        createtable: true,
+        clearInterval: 1000 * 60 * 60,
+    }),
+};
+server.use(session(sessionConfig));
 
 server.use(express.json());
 server.use(cors());
 server.use(helmet());
 
-server.get('/', (req,res) => {
+function protected(req, res, next) {
+    if (req.session && req.session.username){
+        next();
+    } else {
+        res.status(401).json({message: 'you are not authorized, please login'})
+    }
+}
+
+server.get('/', (req, res) => {
     res.status(200).json({message: "server is running"})
 })
 
-server.post('/new/', (req,res) => {
+server.post('/register/', (req,res) => {
     const creds = req.body;
     const hash = bcrypt.hashSync(creds.password, 3);
     creds.password = hash;
@@ -34,7 +65,10 @@ server.post('/login/', (req,res) => {
         .first()
         .then(user => {
             if(user && bcrypt.compareSync(creds.password, user.password)){
-                res.status(200).json({message: "welcome!"});
+
+                req.session.username = user.username;//this is the first place that the session is created? 
+
+                res.status(200).send(`welcome ${res.session.username}!`);
             } else {
                 res.status(401).json({message: "not authorized"})
             }
@@ -42,11 +76,28 @@ server.post('/login/', (req,res) => {
         }).catch(err => res.status(500).send(err))
 })
 
-server.get('/users/', (req,res) => {
-    db('users')
+server.get('/logout/', (req,res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+           if (err){
+            res.send('err logging out')
+           } else {
+            res.send('you are now logged out')
+        }
+        })
+    } 
+})
+
+server.get('/users/', protected, (req, res) => {
+        db('users')
         .then(users => {
             res.status(201).json(users);
         }).catch(err => res.status(500).send(err))
+
+})
+
+server.get('/cookie', (req, res) => {
+    res.status(200).send(req.session.username)
 })
 
 server.listen(4500, () => {console.log('\n === server running on 4500 === \n')})
