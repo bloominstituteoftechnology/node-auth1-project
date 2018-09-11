@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const db = require("../../db/dbConfig.js");
 const loginRouter = express.Router();
-
+//const protected = require("../../middleware/protected")
 loginRouter.post("/", (req, res) => {
   const creds = req.body;
   db("users")
@@ -11,7 +11,7 @@ loginRouter.post("/", (req, res) => {
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
         req.session.username = user.username; 
-        
+        req.session.userid = user.id; 
         res.status(200).send(`Welcome ${req.session.username}`);
       } else {
         res.status(401).json({ errorMessage: "UnAuthorized at 28" });

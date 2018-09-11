@@ -27,7 +27,7 @@ server.use(
     secret: 'no whispering in the library!',
     cookie : {
       maxAge: 1 * 24 * 60 * 60 * 1000,
-      secure: true, // only set cookies over https.
+      secure: false, // only set cookies over https.
       //Server will not send back a cookie over http.
       //false for development. 
       httpOnly: true, // don't let JS code access cookies. 
@@ -62,6 +62,19 @@ server.use(RESTRICTED, signedInOrNot)
 server.get("/", (req, res) => {
   res.send("Server started");
 });
+
+server.get("/setname", (req,res) => {
+  //req.session = {};
+  //^using this provides TypeError: req.session.touch 
+  // is not a function error message. 
+  req.session.name = "newestCurrentSession"
+  res.send('Set up')
+})
+
+server.get('/greet', (req,res) => {
+  const name = req.session.name; 
+  res.send(`hello ${name}`)
+})
 
 PORT = 9000;
 
