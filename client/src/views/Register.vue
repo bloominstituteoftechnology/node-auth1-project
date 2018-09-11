@@ -10,6 +10,7 @@
 import FormComp from "@/components/Form.vue";
 import LoadingModal from "@/components/LoadingModal.vue";
 import axios from "axios";
+import store from "@/store";
 
 export default {
 	name: "register",
@@ -33,6 +34,8 @@ export default {
 				.then(response => {
 					console.log(response);
 					this.loading = false;
+					store.setLoggedIn(true);
+					this.$router.push("/home");
 				})
 				.catch(error => {
 					console.log(error);

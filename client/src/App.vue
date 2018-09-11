@@ -1,13 +1,44 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Register</router-link> |
-      <router-link to="/login">Login</router-link>
-      <router-link to="/home">Home</router-link>
+      <div v-if='loggedIn'>
+        <router-link to="/home">Home</router-link> |
+        <a v-on:click='logout' href="#">Logout</a>
+      </div>
+      <div v-else>
+        <router-link to="/">Register</router-link> |
+        <router-link to="/login">Login</router-link> |
+      </div>
     </div>
     <router-view/>
   </div>
 </template>
+
+<script>
+import axios from "axios";
+import store from "@/store.js";
+
+export default {
+	data: function() {
+		return store.state;
+	},
+	name: "app",
+	methods: {
+		logout() {
+			axios
+				.get("http://localhost:8000/api/logout")
+				.then(response => {
+					console.log(response);
+					store.setLoggedIn(false);
+				})
+				.catch(error => {
+					console.log(error);
+				});
+		},
+	},
+};
+</script>
+
 
 <style>
 #app {
