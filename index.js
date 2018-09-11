@@ -25,6 +25,17 @@ const sessionConfig = {
 
 server.use(session(sessionConfig));
 
+//middleware
+function protected ( req, res, next) {
+    if (req.session && req.session.username) {
+        next();
+    } else {
+        res.status(401).json({
+            message: "You shall not pass!"
+        });
+    };
+};
+
 server.get('/setname', (req, res) => {
     req.session.name = 'Francis';
     res.send('Logged');
@@ -32,8 +43,19 @@ server.get('/setname', (req, res) => {
 
 server.get('/greet', (req, res) => {
     const { name } = req.session;
-    console.log(req.session);
     res.send(`Hello, ${name}`);
+});
+
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy( err => {
+            if ( err ) {
+                res.send('error logging out')
+            } else {
+                res.send('see you again!')
+            }
+        })
+    }
 });
 
 server.post('/api/register', async ( req, res ) => {
