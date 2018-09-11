@@ -16,7 +16,7 @@ server.use(
         secret: 'what up?',
         cookie: {
             maxAge: 1 * 24 * 60 * 60 * 1000,
-            secure: true,
+            secure: false,
         },
         httpOnly: true,
         resave: false,
@@ -24,13 +24,24 @@ server.use(
     })
 );
 
+// ####### Protected middleware ########
+function protected (req, res, next) {
+    if (req.session && req.session.username) {
+        next();
+    } else {
+        res.status(400).json({Message: 'Incorrect user credentials!'})
+    }
+};
+
+
+
 // ####### Checking if the server is running #######
 server.get('/', (req, res) => {
     res.send('API running....')
 });
 
 // ###### Getting all the users ########
-server.get('/users', (req, res) => {
+server.get('/users', protected, (req, res) => {
     db('users')
         .then(users => {
             res.status(200).json(users)
@@ -47,13 +58,19 @@ server.post('/register', (req, res) => {
     newUser.password = hash;
 
     db('users')
-        .insert(newUser)
-        .then(users => {
-            res.status(200).json(users)
-        })
-        .catch(error => {
-            res.status(500).json(error)
-        })
+    .insert(newUser)
+    .then(function(ids) {
+      db('users')
+        .where({ id: ids[0] })
+        .first()
+        .then(newUser => {
+          req.session.username = newUser.username;
+          res.status(201).json(newUser);
+        });
+    })
+    .catch(function(error) {
+      res.status(500).json({ error });
+    });
 })
 
 // ########## User login ############
@@ -65,7 +82,8 @@ server.post('/login', (req, res) => {
         .first()
         .then(user => {
             if (user && bcrypt.compareSync(creds.password, user.password)) {
-                res.status(200).json({Message: 'You are logged in!!!'})
+                req.session.username = user.username;
+                res.status(200).json(`Hello ${user.username}, you are logged in!!!`)
             } 
             else {
                 return res.status(400).json({Message: 'Wrong credentials'})
@@ -76,6 +94,7 @@ server.post('/login', (req, res) => {
         })
 })
 
+// ######## Logout end point ###########
 server.get('/logout', (req, res) => {
     if (req.session) {
       req.session.destroy(err => {
