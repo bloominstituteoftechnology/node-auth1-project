@@ -3,13 +3,13 @@
 const db = require("../database/dbConfig.js");
 const session = require("express-session");
 const KnexSessionStore = require("connect-session-knex")(session);
-// come up with way to do secret string (array of secrets seems to be the way)
-// const randomSecret = Math.random(1, 1000);
+// randomizes the secrets a little more
+const arrayOfSecrets = ["Dr. Pepper", "Mr. Pibb", "Penguins", "Avocados"];
 
 const sessionConfig = {
   name: "definitely not connect.sid", // default is connect.sid
-  secret: "nobody tosses a dwarf!",
-  // secret: randomSecret,
+  // secret: "nobody tosses a dwarf!",
+  secret: arrayOfSecrets,
   cookie: {
     maxAge: 1 * 24 * 60 * 60 * 1000, // a day
     secure: false, // only set cookies over https. Server will not send back a cookie over http.
