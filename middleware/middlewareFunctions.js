@@ -15,7 +15,12 @@ const protected = (req, res, next) => {
   if (req.session && req.session.username) {
     next();
   } else {
-    res.status(401).json({ message: "You shall not pass!!" });
+    try {
+      throw new Error();
+    } catch (err) {
+      err.code = 401;
+      next(err);
+    }
   }
 };
 module.exports = {
