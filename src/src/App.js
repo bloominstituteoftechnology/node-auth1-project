@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import styled from 'styled-components';
 import axios from 'axios';
@@ -10,18 +9,43 @@ class App extends Component {
     this.state = {
       loggedIn: false,
       username: '',
+      regusername: '',
       password: '',
+      regpassword: '',
     }
   }
   
-  register = (e) => {
-    e.preventDefault();
-    console.log('register')
-    axios.post('http://localhost:4500/new').then(
+  register = (event) => {
+    event.preventDefault();
+  
+    axios.post('http://localhost:4500/register/', {
+      "username": this.state.username, 
+      "password": this.state.password
+    }).then(res => {
+      if (res){
+        this.setState({
+          loggedIn: true, 
+        })
+      }
+    }
+    ).catch(err => console.log(err))
+
+    // this.login({
+    //   "username": this.state.username, 
+    //   "password": this.state.password
+    // })
+  }
+  
+  login = (event) => {
+    event.preventDefault();
+    axios.post('http://localhost:4500/login/', {
+      "username": this.state.username, 
+      "password": this.state.password
+    }).then(
       this.setState({
-        loggedIn: false, 
+        loggedIn: true, 
       })
-    )
+    ).catch(err => console.log(err))
   }
 
   inputHandler = (event) => {
@@ -34,14 +58,16 @@ class App extends Component {
     return (
       <div className="App">
         <AppDiv>
-          <div className="register">
-          <h4>Register</h4>
+        <div className="status">
+        <p>Status: {this.state.loggedIn ? 'Logged in' : 'Please login or register'}</p>
+        </div>
+          <div className="login">
+          <h4>Login</h4>
           
-          <form onSubmit={this.register}>
+          <form onSubmit={this.login}>
             <input
               required
               autoFocus
-
               onChange={this.inputHandler}
               name="username"
               value={this.state.username}
@@ -55,6 +81,32 @@ class App extends Component {
               onChange={this.inputHandler}
               name="password"
               value={this.state.password}
+              placeholder="Password"
+              type="password"></input>
+            <button>BUTTON</button>
+          </form>
+          </div>
+          
+          <div className="register">
+          <h4>Register</h4>
+          
+          <form onSubmit={this.register}>
+            <input
+              required
+              autoFocus
+              onChange={this.inputHandler}
+              name="regusername"
+              value={this.state.regusername}
+              // value={this.state.[this.name]}
+              // can I do something like the above?
+              placeholder="Name"
+              type="text"
+              >{this.value}</input>
+            <input
+              required
+              onChange={this.inputHandler}
+              name="regpassword"
+              value={this.state.regpassword}
               placeholder="Password"
               type="password"></input>
             <button>BUTTON</button>
@@ -75,7 +127,7 @@ const AppDiv = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  .register {
+  .register, .login {
     width: 350px;
     border: 1px solid blue;
     display: flex;
