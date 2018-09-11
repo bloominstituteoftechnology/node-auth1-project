@@ -28,6 +28,7 @@
     "sqlite3": "^4.0.2"
   },
   "dependencies": {
-    "bcryptjs": "^2.4.3"
+    "bcryptjs": "^2.4.3",
+    "express-session": "^1.15.6"
   }
 }
