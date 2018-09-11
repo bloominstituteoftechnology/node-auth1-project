@@ -1,6 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
 
 const db = require('./db/dbConfig');
 
@@ -8,6 +9,20 @@ const server = express();
 
 server.use(helmet());
 server.use(express.json());
+
+server.use(
+    session({
+        name: 'banana',
+        secret: 'what up?',
+        cookie: {
+            maxAge: 1 * 24 * 60 * 60 * 1000,
+            secure: true,
+        },
+        httpOnly: true,
+        resave: false,
+        saveUninitialized: false,
+    })
+);
 
 // ####### Checking if the server is running #######
 server.get('/', (req, res) => {
@@ -41,6 +56,7 @@ server.post('/register', (req, res) => {
         })
 })
 
+// ########## User login ############
 server.post('/login', (req, res) => {
     const creds = req.body;
 
@@ -59,6 +75,18 @@ server.post('/login', (req, res) => {
             res.status(500).json(error)
         })
 })
+
+server.get('/logout', (req, res) => {
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.send('Can not log out!!!!');
+        } else {
+          res.send('See you next time!!!');
+        }
+      });
+    }
+  });
 
 
 server.listen(5000);
