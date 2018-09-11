@@ -72,4 +72,16 @@ router.get('/users', protected, (req, res) => {  // implemented protected middle
         .catch(err => res.status(500).send(err));
 });
 
+router.get('/logout', (req, res) => {
+    if(req.session) {
+        req.session.destroy(err => {
+            if(err){
+                res.send('Error Logging Out')
+            } else {
+                res.send('Good bye');
+            }
+        });
+    }
+})
+
 module.exports = router;

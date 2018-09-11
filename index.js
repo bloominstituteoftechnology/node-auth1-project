@@ -1,12 +1,15 @@
 const express = require('express');
 const helmet = require('helmet');
 const server = express();
+const cors = require('cors');
+const morgan = require('morgan');
 
 server.use(express.json());
+server.use(cors());
 server.use(helmet());
+server.use(morgan());
 
-const userRoutes = require('./routes/userRoutes');
-
+const userRoutes = require('./routes/userRoutes'); //=== User Routes
 server.use('/api/', userRoutes);
 
 const port = 3600;
