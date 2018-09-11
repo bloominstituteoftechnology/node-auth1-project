@@ -1,11 +1,11 @@
 import axios from 'axios'
 axios.credentials = true;
 
-const URL = "localhost:9000/";
+const URL = "http://localhost:9000/api";
 
 const login = async userData => {
   try {
-    const res = await axios.post(`${URL}/login`);
+    const res = await axios.post(`${URL}/login`, userData);
     return res.data.status;
   } catch (err) {
     console.log(err);
@@ -16,7 +16,7 @@ const login = async userData => {
 const register = async userData => {
   try {
     console.log('HTTP')
-    const res = await axios.post(`${URL}/register`);
+    const res = await axios.post(`${URL}/register`, userData);
     return res.data.status;
   } catch (err) {
     console.log(err);
