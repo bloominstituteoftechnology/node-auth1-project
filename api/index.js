@@ -2,6 +2,14 @@ const router = require('express').Router();
 const db = require('knex')(require('../knexfile').development);
 const bcrypt = require('bcryptjs');
 
+const protect = (req, res, next) => {
+  if (req.session && req.session.userId) {
+    next();
+  } else {
+    res.status(403).json({ message: 'You shall not pass!' });
+  }
+};
+
 router.post('/register', (req, res) => {
   let { name, pass } = req.body;
   if (!name || !pass) {
@@ -24,7 +32,7 @@ router.post('/login', (req, res) => {
         res.status(401).json({ message: 'You shall not pass!' });
       } else {
         req.session.userId = user.id;
-        res.status(303).json({ message: 'Logged in', id: req.session.userId });
+        res.status(303).json({ message: 'Logged in', id: user.id });
       }
     })
     .catch(err => res.status(500).json({ error: 'Something went wrong when logging in.' }));
@@ -33,20 +41,24 @@ router.post('/login', (req, res) => {
 router.get('/logout', (req, res) => {
   if (req.session) {
     req.session.destroy(err => {
-      if (err) res.send('An error occured while logging out.');
-      else res.send('goodbye');
+      if (err) res.status(409).json({ message: 'An error occured while logging out.' });
+      else res.status(203).json({ message: 'Your logout was successful!' });
     });
   }
 });
 
-router.get('/users', (req, res) => {
-  if (req.session && req.session.userId) {
-    db('users')
-      .then(users => res.status(200).json(users))
-      .catch(err => res.status(500).json({ error: 'Something went wrong fetching the users.' }));
-  } else {
-    res.status(403).json({ message: 'You shall not pass!' });
-  }
+router.get('/users', protect, (req, res) => {
+  db('users')
+    .then(users => res.status(200).json(users))
+    .catch(err => res.status(500).json({ error: 'Something went wrong fetching the users.' }));
+});
+
+router.get('/restricted', protect, (req, res) => {
+  db('users').where({ id: req.session.userId }).first()
+    .then(user => {
+      res.status(200).json({ message: `You, ${user.name}, have access!` });
+    })
+    .catch(err => res.status(500).json({ error: err }));
 });
 
 module.exports = router;
