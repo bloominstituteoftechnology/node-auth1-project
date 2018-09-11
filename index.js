@@ -52,10 +52,6 @@ server.post("/api/login", (req, res) => {
 })
 
 
-
-server.post("/api/login", (req, res) => {
-
-})
 server.listen(3400, () => {
     console.log("This server is listening on port 3400")
 }); 
