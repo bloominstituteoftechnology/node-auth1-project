@@ -73,4 +73,26 @@ router.get("/logout", (req, res) => {
   }
 });
 
+// restricted routes
+router.get("/restricted", middlewareFunctions.protected, (req, res) => {
+  res.send("Restricted Area");
+});
+
+router.get(
+  "/restricted/something",
+  middlewareFunctions.protected,
+  (req, res) => {
+    res.send("Restricted Something Area");
+  },
+);
+
+router.get("/restricted/other", middlewareFunctions.protected, (req, res) => {
+  res.send("Restricted Other Area");
+});
+
+router.get("/restricted/a", middlewareFunctions.protected, (req, res) => {
+  res.send("Restricted A Area");
+});
+// end restricted routes
+
 module.exports = router;
