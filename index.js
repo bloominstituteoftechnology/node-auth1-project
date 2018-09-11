@@ -30,6 +30,14 @@ server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
 
+function protected(req, res, next) {
+    if (req.session && req.session.username) {
+      next();
+    } else {
+      res.status(401).json({ message: 'you shall not pass!!' });
+    }
+}
+
 // Endpoints 
 server.get('/', (req, res) => {
   res.send('Server online');
@@ -66,7 +74,8 @@ server.post('/api/login', (req, res) => {
         .then(user => {
             // check creds
             if (user && bcrypt.compareSync(creds.password, user.password)) {
-                res.status(200).send('Wilkommen');
+                req.session.username = user.username;
+                res.status(200).send(`Willkommen zu Ihrem Trainingstag ${req.session.username}` );
             } else {
                 res.status(401).json({ message: 'You shall not pass...' });
             }
@@ -75,7 +84,7 @@ server.post('/api/login', (req, res) => {
 });
 
 // protect this route, only authenticated users should see it
-server.get('/api/users', (req, res) => {
+server.get('/api/users', protected, (req, res) => {
   db('users')
     .select('id', 'username', 'password')
     .then(users => {
