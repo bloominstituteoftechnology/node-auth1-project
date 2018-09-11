@@ -3,6 +3,7 @@ const helmet = require("helmet");
 const dbhelpers = require("./dbhelpers/helpers");
 const bcrypt = require('bcrypt');
 const session = require('express-session');
+const authcheck = require('./middleware/authcheck')
 
 const server = express();
 
@@ -66,14 +67,9 @@ server.get('/api/logout', (req, res) => {
     });
   }
 });
-server.get('/api/users', async (req, res) => {
-  if(req.session.name){
+server.get('/api/users',authcheck, async (req, res) => {
     const results = await dbhelpers.getUsers();
-    return res.status(200).json({ status: results });
-  }
-  else{
-    return res.status(401).json({ error: 'You shall not pass!' });
-  }
+    return res.status(200).json(results);
 });
 server.use("/", (req, res) =>
   res
