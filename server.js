@@ -2,6 +2,10 @@ const express = require('express');
 const helmet = require('helmet');
 const knex = require('knex');
 const bcrypt = require('bcryptjs');
+const session = require('express-session')
+
+//import the knex store library
+const KnexSessionsStore = require('connect-session-knex')(session);
 
 const dbConfig = require('./knexfile');
 
