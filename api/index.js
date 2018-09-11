@@ -10,6 +10,8 @@ const protect = (req, res, next) => {
   }
 };
 
+router.use('/restricted', protect);
+
 router.post('/register', (req, res) => {
   let { name, pass } = req.body;
   if (!name || !pass) {
@@ -47,18 +49,18 @@ router.get('/logout', (req, res) => {
   }
 });
 
-router.get('/users', protect, (req, res) => {
-  db('users')
-    .then(users => res.status(200).json(users))
-    .catch(err => res.status(500).json({ error: 'Something went wrong fetching the users.' }));
-});
-
-router.get('/restricted', protect, (req, res) => {
+router.get('/restricted', (req, res) => {
   db('users').where({ id: req.session.userId }).first()
     .then(user => {
       res.status(200).json({ message: `You, ${user.name}, have access!` });
     })
     .catch(err => res.status(500).json({ error: err }));
+});
+
+router.get('/restricted/users', (req, res) => {
+  db('users')
+    .then(users => res.status(200).json(users))
+    .catch(err => res.status(500).json({ error: 'Something went wrong fetching the users.' }));
 });
 
 module.exports = router;
