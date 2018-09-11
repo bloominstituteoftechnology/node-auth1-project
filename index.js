@@ -22,7 +22,7 @@ server.use(
         resave: false,
         saveUninitialized: false,
     })
-);
+); 
 
 // ####### Protected middleware ########
 function protected (req, res, next) {
@@ -32,7 +32,7 @@ function protected (req, res, next) {
         res.status(400).json({Message: 'Incorrect user credentials!'})
     }
 };
-
+ 
 
 
 // ####### Checking if the server is running #######
