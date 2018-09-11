@@ -6,6 +6,7 @@
     "helmet": "^3.13.0",
     "knex": "^0.15.2",
     "nodemon": "^1.18.4",
+    "sessions": "^0.0.2-7",
     "sqlite3": "^4.0.2"
   },
   "name": "auth-i",

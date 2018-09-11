@@ -1997,6 +1997,10 @@ serve-static@1.13.2:
     parseurl "~1.3.2"
     send "0.16.2"
 
+sessions@^0.0.2-7:
+  version "0.0.2-7"
+  resolved "https://registry.yarnpkg.com/sessions/-/sessions-0.0.2-7.tgz#99bfb3485eab88751059f52de89e2c8d1ffbe7e2"
+
 set-blocking@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/set-blocking/-/set-blocking-2.0.0.tgz#045f9782d011ae9a6803ddd382b24392b3d890f7"
