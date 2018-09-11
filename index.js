@@ -2,7 +2,9 @@ const helmet=require('helmet');
 const bcrypt=require('bcryptjs');
 const morgan=require('morgan');
 const express=require('express');
-
+const session=require('express-session');
+const KnexSessionStore=require('connect-session-knex')(session);
+const cors=require('cors');
 const server=express();
 const knex=require('knex');
 const knexConfig=require('knexfile.js');
