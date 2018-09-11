@@ -1,18 +1,18 @@
 import React, { Component, Fragment } from "react";
-import HomePage from "./components/homepage/HomePage.js";
+import { HomePage } from "./components/homepage/HomePage.js";
 
-import axios from "axios";
+// import axios from "axios";
 
 import "./App.css";
 
 // users api url
-const usersURL = "http://localhost:7000/api/users";
+// const usersURL = "http://localhost:7000/api/users";
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       users: [],
-      loaded: false,
+      loaded: true,
     };
   }
 

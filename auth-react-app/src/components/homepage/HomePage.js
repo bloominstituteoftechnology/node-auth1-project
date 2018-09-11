@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import Login from "../login/Login.js";
+import { Login } from "../login/Login.js";
 
 export const HomePage = props => {
   return (
