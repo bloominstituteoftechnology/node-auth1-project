@@ -76,7 +76,7 @@ app.post('/api/login', async (req, res) => {
 	}
 });
 
-app.get('/api/logout', (req, res) => {
+app.post('/api/logout', (req, res) => {
   if (req.session) {
     req.session.destroy(err => {
       if (err) {
