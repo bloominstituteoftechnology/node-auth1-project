@@ -41,9 +41,12 @@ server.post('/api/login',(req,res)=>{
         .where({username:creds.username})
         .first()
         .then(user=>{
-            user && bcrypt.compareSync(creds.password,user.password)? 
-                res.status(200).send('Hello there!'):
+            if (user && bcrypt.compareSync(creds.password,user.password)){
+                req.session.cookie.user_id=user.username;
+                res.status(200).send(`Hello there ${req.session.cookie.user_id}!`)
+            } else {
                 res.status(401).send('You shall not pass')
+            }
         })
         .catch(err=>res.status(500).json(err));
 })
