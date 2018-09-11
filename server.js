@@ -13,8 +13,39 @@ const db = knex(dbConfig.development);
 
 const server = express();
 
+const sessionConfig = {
+    name: 'session_name',
+    secret: 'this is a secret',
+    cookie: {
+        maxAge: 1*24*60*60*1000, //milliseconds in a day
+        secure: false,
+    },
+    httpOnly: true, //restrict the type of code that can access this, no javascript
+    resave: false,
+    saveUninitialized: false,
+    store: new KnexSessionsStore({
+        tablename: 'sessions',
+        sidfieldname: 'sid',
+        knex: db,
+        createtable: true,
+        clearInterval: 1000*60*60,
+    }),
+};
+
+server.use(session(sessionConfig));
+
 server.use(helmet());
 server.use(express.json()); // don't forget this
+server.use(cors());
+
+//Here we create some custom middleware to use locally to control access to certain resources based on user login status
+function protected(req,res,next){
+    if(req.session && req.session.username){
+        next();
+    }else{
+        res.status(401).json({message: "You do not have clearence"});
+    }
+}
 
 //start server
 server.get('/', (req, res) => {
@@ -26,7 +57,7 @@ server.post('/api/register', (req,res) => {
     const creds = req.body;
 
     //hash the password
-    const hash = bcrypt.hashSync(creds.password, 3)
+    const hash = bcrypt.hashSync(creds.password, 12)
 
     //replace user password with the hash
     creds.password = hash;
