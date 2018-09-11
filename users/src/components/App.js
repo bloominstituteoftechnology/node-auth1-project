@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import UsersList from './usersList';
 
 const Application = styled.div`
   
@@ -11,8 +12,7 @@ class App extends Component {
   render() {
     return (
       <Application>
-        app is running
-        
+        <UsersList />
       </Application>
     );
   }

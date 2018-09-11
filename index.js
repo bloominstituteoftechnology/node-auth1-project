@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
+const cors = require('cors');
 
 const db = require('./db/dbConfig');
 
@@ -9,6 +10,7 @@ const server = express();
 
 server.use(helmet());
 server.use(express.json());
+server.use(cors());
 
 server.use(
     session({
@@ -41,7 +43,7 @@ server.get('/', (req, res) => {
 });
 
 // ###### Getting all the users ########
-server.get('/users', protected, (req, res) => {
+server.get('/users', (req, res) => {
     db('users')
         .then(users => {
             res.status(200).json(users)
