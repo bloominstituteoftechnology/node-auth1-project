@@ -4,22 +4,23 @@ const db = require("../../db/dbConfig.js");
 const loginRouter = express.Router();
 
 
-loginRouter.put("/:username", (req,res) => {
-  const { username } = req.params; 
-  db("users")
-    .update({signedIn: false})
-    .where({ username })
-    .then(count => {
-      if(count){
-        res.status(200).json({message: `${username} signed out successfully`})
-      }else {
-        res.status(404).json({message: "Unable to update/ sign out"})
-      }
-    })
-    .catch(error => {
-      res.status(500).json({error})
-    })
-})
+// loginRouter.put("/:username", (req,res) => {
+//   const { username } = req.params; 
+//   db("users")
+//     .update({signedIn: false})
+//     .where({ username })
+//     .then(count => {
+//       if(count){
+//         res.status(200).json({message: `${username} signed out successfully`})
+//       }else {
+//         res.status(404).json({message: "Unable to update/ sign out"})
+//       }
+//     })
+//     .catch(error => {
+//       res.status(500).json({error})
+//     })
+// })
+
 
 loginRouter.post("/", (req, res) => {
   const creds = req.body;
