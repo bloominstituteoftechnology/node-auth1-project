@@ -32,8 +32,8 @@ server.post("/api/login", (req, res) => {
   db("users")
     .where({ username: creds.username })
     .first()
-    .then(users => {
-      if (users && bcrypt.compareSync(creds.password, users.password)) {
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
         // res.session.name = creds.username;
         res.status(200).send("Authenticated");
       } else {
@@ -47,7 +47,7 @@ server.get("/api/users", (req, res) => {
   db("users")
     .select("id", "username", "password")
     .then(users => {
-      res.join(users);
+      res.status(200).json(users);
     })
     .catch(err => res.status(500).send(err));
 });
