@@ -27,6 +27,14 @@ app.use(express.json());
 app.use(helmet());
 app.use(cors());
 
+function protected(req, res, next){
+	if (req.session && req.session.username){
+		next();
+	} else {
+		res.status(401).json({ message: 'Please login.' });
+	}
+}
+
 app.get('/greet', (req, res) => {
 	res.send(`Hello ${req.session.username}`);
 })
@@ -70,7 +78,7 @@ app.get('/api/logout', (req, res) => {
   }
 });
 
-app.get('/api/users', async (req, res) => {
+app.get('/api/users', protected, async (req, res) => {
 	try {
 		const users = await db('users').select('id', 'username');
 		res.status(200).json(users)
