@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "connect-session-knex": "^1.4.0",
     "express-session": "^1.15.6"
   }
 }

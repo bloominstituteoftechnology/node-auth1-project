@@ -1,24 +1,31 @@
 const express = require('express');
 const session = require('express-session');
-const knex = require('knex'); 
+const SessionStore = require('connect-session-knex')(session);
 const cors = require('cors'); 
-const sqlite3 = require('sqlite3'); 
 const bcrypt = require('bcryptjs');
 const db = require('./dbConfig.js');
 const app = express();
 const PORT = 8080;
 
 app.use(cors());
+app.use(express.json());
 app.use(session({
-    name:'ijusdunno',
-    secret:'dunno isnt all bad',
+    name:'session',
+    secret:'big secret',
     cookie: {
         maxAge: 1000 * 60 * 60,
         secure: false
     },
     httpOnly: true,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: new SessionStore({
+        tableName: 'users',
+        sidfieldname: 'sid',
+        knex: db,
+        createtable: true,
+        clearInterval: 1000 * 60 * 60,
+    })
 }));
 
 app.get('/',(req,res)=>{
@@ -27,6 +34,8 @@ app.get('/',(req,res)=>{
 
 app.post('/api/register', (req,res)=>{
     const creds = req.body;
+    console.log(req.body);
+    // res.send(req.body);
     const hash = bcrypt.hashSync(creds.password, 10);
     creds.password = hash;
     db('users')
@@ -47,8 +56,10 @@ app.post('/api/login', (req, res) => {
         .first()
         .then(user => {
             if(user && bcrypt.compareSync(creds.password, user.password)){
-                res.session.name = user.name;
-                res.status(201).json(`Come on in, ${res.session.name}`);
+                req.session.name = user.name;
+                console.log(req.session);
+                
+                res.status(201).json({message: `Come on in, ${req.session.name}`});
             } else {
                 res.status(401).json({message: 'You shall not pass....'});
             }
@@ -56,6 +67,18 @@ app.post('/api/login', (req, res) => {
         .catch(err => {
             res.status(500).json(err);
         })
-})
+});
+
+app.get('/api/users', (req, res)=>{
+   
+        db('users')
+            .select('name', 'password')
+            .then(users => {
+                res.status(200).json(users)
+            })
+            .catch(err => {
+                req.status(500).json(`There's been a problem retrieving users`)
+            })
+});
 
 app.listen(PORT, ()=>{console.log(`Running server on ${PORT}`);});
