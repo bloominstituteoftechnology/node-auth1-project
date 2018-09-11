@@ -23,6 +23,7 @@ const protected = (req, res, next) => {
     }
   }
 };
+
 module.exports = {
   reqBodyCheck,
   protected,

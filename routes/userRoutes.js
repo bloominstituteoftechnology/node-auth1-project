@@ -4,8 +4,8 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const db = require("../database/dbConfig.js");
 const middlewareFunctions = require("../middleware/middlewareFunctions.js");
-// GET/users NEEDS TO BE FINISHED TOMORROW(2-day project) AFTER LEARNING COOKIES
-// get start
+
+// gets users if logged in
 router.get("/users", middlewareFunctions.protected, (req, res, next) => {
   db("users")
     .select("id", "username", "password")
@@ -18,7 +18,6 @@ router.get("/users", middlewareFunctions.protected, (req, res, next) => {
     });
 });
 
-// post start
 // register stores the username and pass in the db
 router.post("/register", middlewareFunctions.reqBodyCheck, (req, res, next) => {
   const creds = req.body;
