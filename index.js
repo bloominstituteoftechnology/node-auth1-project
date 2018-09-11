@@ -19,7 +19,6 @@ server.post('/new/', (req,res) => {
     const creds = req.body;
     const hash = bcrypt.hashSync(creds.password, 3);
     creds.password = hash;
-
     db('users')
         .insert(creds)
         .then(ids => {
@@ -30,7 +29,6 @@ server.post('/new/', (req,res) => {
 
 server.post('/login/', (req,res) => {
     const creds = req.body;
-
     db('users')
         .where({username: creds.username})
         .first()
@@ -40,14 +38,13 @@ server.post('/login/', (req,res) => {
             } else {
                 res.status(401).json({message: "not authorized"})
             }
-            const id = ids[0];//cause it return a single array?
+            // const id = ids[0];//cause it return a single array?
         }).catch(err => res.status(500).send(err))
 })
 
 server.get('/users/', (req,res) => {
     db('users')
         .then(users => {
-        
             res.status(201).json(users);
         }).catch(err => res.status(500).send(err))
 })
