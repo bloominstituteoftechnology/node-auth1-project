@@ -17,7 +17,7 @@ router.post('/login', (req, res, next) => {
       if (response) {
         req.session.name = body.username;
         res.status(200).json(req.session.name);
-      } else next({ code: 400 });
+      } else res.json(null);
     })
     .catch(next);
 });

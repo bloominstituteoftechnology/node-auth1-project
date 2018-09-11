@@ -13,12 +13,15 @@ const URL = 'http://localhost:7000/api';
 
 export const LogInUser = user => dispatch => {
   dispatch({ type: LOGIN_USER });
-  axios.post(`${URL}/login`, user).then(response => {
-    dispatch({
-      type: LOGIN_USER_SUCCESS,
-      payload: response.data,
-    });
-  });
+  axios
+    .post(`${URL}/login`, user)
+    .then(response => {
+      dispatch({
+        type: LOGIN_USER_SUCCESS,
+        payload: response.data,
+      });
+    })
+    .catch(err => console.log(err));
 };
 
 export const LogOutUser = () => dispatch => {

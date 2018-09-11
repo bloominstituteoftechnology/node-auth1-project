@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const StyledForm = styled.form`
   width: 80%;
-  ${'' /* height: 80%; */} display: flex;
+  display: flex;
   justify-content: space-between;
   align-items: center;
   flex-direction: column;
@@ -11,7 +11,7 @@ const StyledForm = styled.form`
 
 const Input = styled.input`
   padding-left: 8px;
-  border: ${props => (props.err ? '2px solid red' : '1px solid #efefef')};
+  border: ${props => (props.match ? '1px solid green' : '1px solid #efefef')};
   outline: none;
   background-color: #fafafa;
   font-size: 12px;
@@ -47,7 +47,7 @@ const Form = ({
   handleSubmit,
   handleChange,
   type,
-  error,
+  match,
 }) => (
   <StyledForm onSubmit={handleSubmit}>
     <Input
@@ -59,7 +59,7 @@ const Form = ({
       autoComplete="off"
     />
     <Input
-      err={error}
+      match={match}
       name="password"
       type="password"
       placeholder="enter password"
@@ -69,7 +69,7 @@ const Form = ({
     />
     {type === 'signUp' && (
       <Input
-        err={error}
+        match={match}
         name="password2"
         type="password"
         placeholder="re-enter password"
@@ -78,7 +78,9 @@ const Form = ({
         autoComplete="off"
       />
     )}
-    <Button type="submit">Submit</Button>
+    <Button disabled={!(username && password)} type="submit">
+      Submit
+    </Button>
   </StyledForm>
 );
 

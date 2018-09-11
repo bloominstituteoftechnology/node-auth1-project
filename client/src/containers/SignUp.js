@@ -33,7 +33,7 @@ class SignUp extends Component {
     error: false,
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (this.props.signingUp !== prevProps.signingUp && !this.props.signingUp) {
       this.props.history.push('/login');
     }
@@ -59,7 +59,9 @@ class SignUp extends Component {
     return (
       <Wrapper>
         <Form
-          error={this.state.error}
+          match={
+            this.state.password === this.state.password2 && this.state.password
+          }
           type={'signUp'}
           username={this.state.username}
           password={this.state.password}

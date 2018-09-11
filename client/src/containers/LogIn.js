@@ -29,12 +29,23 @@ class LogIn extends Component {
   state = {
     username: '',
     password: '',
+    error: false,
   };
 
   handleSubmit = e => {
     e.preventDefault();
     this.props.LogInUser(this.state);
   };
+
+  componentDidUpdate(prevProps) {
+    if (
+      this.props.loggingIn !== prevProps.loggingIn &&
+      !this.props.loggingIn &&
+      !this.props.user
+    ) {
+      this.setState({ error: true });
+    }
+  }
 
   render() {
     if (this.props.user) {
@@ -45,9 +56,14 @@ class LogIn extends Component {
         <Form
           username={this.state.username}
           password={this.state.password}
-          handleChange={e => this.setState({ [e.target.name]: e.target.value })}
+          handleChange={e =>
+            this.setState({ [e.target.name]: e.target.value, error: false })
+          }
           handleSubmit={this.handleSubmit}
         />
+        {this.state.error && (
+          <p style={{ color: 'red' }}>Invalid username or password.</p>
+        )}
         <SignUpBox>
           <p>Don't have an account?</p>
           <Link to="/signup">Sign Up</Link>
@@ -59,6 +75,7 @@ class LogIn extends Component {
 
 const mapStateToProps = state => ({
   user: state.loggedInUser,
+  loggingIn: state.loggingIn,
 });
 
 export default withRouter(
