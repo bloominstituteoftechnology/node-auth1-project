@@ -39,8 +39,9 @@ class SignUp extends Component {
           password={this.state.password}
           handleChange={e => this.setState({ [e.target.name]: e.target.value })}
           handleSubmit={e => {
-            e.preventDefault;
+            e.preventDefault();
             this.props.SignUpUser(this.state);
+            this.props.history.push('/login');
           }}
         />
         <SignUpBox>
