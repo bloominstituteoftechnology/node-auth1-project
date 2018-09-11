@@ -5,6 +5,7 @@ const db = knex(dbConfig.development);
 const bcrypt = require("bcryptjs");
 const Joi = require("joi");
 const session = require("express-session");
+const cors = require("cors"); 
 
 const server = express();
 server.use(express.json());
@@ -21,6 +22,8 @@ server.use(
     saveUninitialized: true
   })
 );
+
+server.use(cors()); 
 
 //Middleware function that guarentees access only when logged in 
 
