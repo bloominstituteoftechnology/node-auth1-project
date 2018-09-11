@@ -5,6 +5,7 @@ const session = require('express-session');
 const KnexSessionStore = require('connect-session-knex')(session);
 
 const db = require('../db/dbConfig');
+const protected = require('../middlewares/middleware');
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ const sessionConfig = { //new
     httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
     resave: false,
     saveUninitialized: false,
-    store: new KnexSessionStore({
+    store: new KnexSessionStore({  // Store configurations to make loggin persistent
         tablename: 'sessions',
         sidfieldname: 'sid',
         knex: db,
@@ -62,16 +63,13 @@ router.post('/login', (req, res) => {
         .catch(err => res.status(500).send(err))
 });
 
-router.get('/users', (req, res) => {  //new
-    if(req.session && req.session.username) {
-        db('usernames').select('id', 'username', 'password')
+router.get('/users', protected, (req, res) => {  // implemented protected middleware
+    db('usernames')
+        .select('id', 'username', 'password')
         .then(users => {
         res.status(200).send(users)
         })
-        .catch(err => console.log(err));
-    } else {
-        res.status(401).json({ message: 'You are not logged in.' }) 
-    } 
+        .catch(err => res.status(500).send(err));
 });
 
 module.exports = router;
