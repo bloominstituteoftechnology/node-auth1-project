@@ -1,13 +1,35 @@
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const db = require('./database/dbConfig.js');
 
 const server = express();
+const sessionConfig = {
+    name: 'notsession', // default is connect.sid
+    secret: 'nobody tosses a dwarf!',
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      secure: false, // only set cookies over https. Server will not send back a cookie over http.
+    }, // 1 day in milliseconds
+    httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
+    resave: false,
+    saveUninitialized: false,
+  };
 
+server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
+
+//middleware
+function protected(req, res, next) {
+    if (req.session && req.session.username) {
+      next();
+    } else {
+      res.status(401).json({ message: 'you shall not pass!!' });
+    }
+  };
 
 server.get('/', (req, res) => {
     res.send('Server running...');
@@ -33,7 +55,8 @@ server.post('/api/login', (req, res) => {
     .first()
     .then(user => {
         if (user && bcrypt.compareSync(creds.password, user.password)) {
-            res.status(200).send('Login Successful');
+            req.session.username = user.username;
+            res.status(200).send(`Welcome ${req.session.username}`);
         } else {
             res.status(401).json({ message: 'You are not authorized.' });
         }
@@ -41,7 +64,19 @@ server.post('/api/login', (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-server.get('/api/users', (req, res) => {
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.send('error logging out');
+        } else {
+          res.send('good bye');
+        }
+      });
+    }
+  });
+
+server.get('/api/users', protected, (req, res) => {
     db('users')
     .select('id', 'username', 'password')
     .then(users => {
@@ -49,5 +84,6 @@ server.get('/api/users', (req, res) => {
     })
     .catch(err => res.send(err));
 });
+
 
 server.listen(8000, () => console.log('\nrunning on port 8000\n'));
