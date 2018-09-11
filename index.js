@@ -34,6 +34,16 @@ server.use(
 server.use(express.json());
 server.use(cors());
 
+function protected(req, res, next) {
+  if (req.session && req.session.username) {
+    next();
+  } else {
+    res.status(401).json({ message: "You shall not pass!!" });
+  }
+}
+
+server.use('/api/restricted', protected)
+
 server.get("/", (req, res) => {
   res.send("This is working...");
 });
@@ -82,7 +92,7 @@ server.post("/api/login", (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-server.get("/api/logout", (req, res) => {
+server.get("/api/restricted/logout", (req, res) => {
   if (req.session) {
     req.session.destroy(err => {
       if (err) {
@@ -95,7 +105,7 @@ server.get("/api/logout", (req, res) => {
 });
 
 // protect this route, only authenticated users should see it
-server.get("/api/users", (req, res) => {
+server.get("/api/users", protected, (req, res) => {
   db("users")
     .select("id", "username")
     .then(users => {
