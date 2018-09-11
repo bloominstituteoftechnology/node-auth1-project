@@ -11,6 +11,8 @@ const logoutRouter = require("./Authentication/routes/logoutRoutes");
 const session = require("express-session");
 const KnexSessionStore = require("connect-session-knex")
 
+const db = require("./db/dbConfig.js");
+
 const server = express();
 
 //Middleware
