@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const db = require("../../db/dbConfig.js");
 const loginRouter = express.Router();
-//const protected = require("../../middleware/protected")
+
 loginRouter.post("/", (req, res) => {
   const creds = req.body;
   db("users")
