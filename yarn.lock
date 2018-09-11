@@ -566,6 +566,10 @@ expand-tilde@^2.0.0, expand-tilde@^2.0.2:
   dependencies:
     homedir-polyfill "^1.0.1"
 
+express-router@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/express-router/-/express-router-0.0.1.tgz#9351704deb2e7cadd765a6692d5c09936d790b25"
+
 express@^4.16.3:
   version "4.16.3"
   resolved "http://registry.npmjs.org/express/-/express-4.16.3.tgz#6af8a502350db3246ecc4becf6b5a34d22f7ed53"
