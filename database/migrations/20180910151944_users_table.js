@@ -6,6 +6,8 @@ exports.up = function(knex, Promise) {
       users.string('username', 128).notNullable().unique();
 
       users.string('password', 128).notNullable();
+
+      users.string('role', 128).defaultTo('user');
   });
 };
 

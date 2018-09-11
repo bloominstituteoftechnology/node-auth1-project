@@ -49,19 +49,24 @@ server.post('/api/register', (req, res) => {
 });
 
 server.post('/api/login', (req, res) => {
-    const creds = req.body;
-    db('users')
-    .where({ username: creds.username })
-    .first()
-    .then(user => {
-        if (user && bcrypt.compareSync(creds.password, user.password)) {
-            req.session.username = user.username;
-            res.status(200).send(`Welcome ${req.session.username}`);
-        } else {
-            res.status(401).json({ message: 'You are not authorized.' });
-        }
-    })
-    .catch(err => res.status(500).send(err));
+    if (req.session.username) {
+        res.status(400).json({ message: 'Please log out of open accounts before logging in a new user' });
+    } else {
+        const creds = req.body;
+        db('users')
+        .where({ username: creds.username })
+        .first()
+        .then(user => {
+            if (user && bcrypt.compareSync(creds.password, user.password)) {
+                req.session.username = user.username;
+                req.session.role = user.role;
+                res.status(200).send(`Welcome ${req.session.username}`);
+            } else {
+                res.status(401).json({ message: 'You are not authorized.' });
+            }
+        })
+        .catch(err => res.status(500).send(err));
+    }
 });
 
 server.get('/api/logout', (req, res) => {
@@ -77,13 +82,28 @@ server.get('/api/logout', (req, res) => {
   });
 
 server.get('/api/users', protected, (req, res) => {
+    const {username} = req.session;
     db('users')
-    .select('id', 'username', 'password')
-    .then(users => {
-        res.json(users);
+    .where({username: username})
+    .select('id', 'username', 'role')
+    .then(user => {
+        res.json(user);
     })
     .catch(err => res.send(err));
 });
+
+server.get('/api/admins', protected, (req, res) => {
+    if (req.session.role === 'admin') {
+      db('users')
+        .select('id', 'username', 'password', 'role')
+        .then(users => {
+          res.json(users);
+        })
+        .catch(err => res.send(err));
+    } else {
+      res.status(403).json({ message: 'You do not have access to this resource' });
+    }
+  });
 
 
 server.listen(8000, () => console.log('\nrunning on port 8000\n'));
