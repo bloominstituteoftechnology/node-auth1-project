@@ -10,6 +10,7 @@ router.get("/users", middlewareFunctions.protected, (req, res, next) => {
   db("users")
     .select("id", "username", "password")
     .then(users => {
+      console.log("REQ.Session", req.session);
       res.json(users);
     })
     .catch(err => {

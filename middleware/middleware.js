@@ -8,6 +8,8 @@ const session = require("express-session");
 // setting store, db required
 const db = require("../database/dbConfig.js");
 const KnexSessionStore = require("connect-session-knex")(session);
+// secret for store
+const randomSecret = Math.random(1, 1000);
 // routes
 const userRoutes = require("../routes/userRoutes.js");
 
@@ -33,8 +35,9 @@ const errorHandler = (err, req, res, next) => {
 
 // start sessionConfig
 const sessionConfig = {
-  name: "monkey", // default is connect.sid
-  secret: "nobody tosses a dwarf!",
+  name: "definitely not connect.sid", // default is connect.sid
+  // secret: "nobody tosses a dwarf!",
+  secret: randomSecret,
   cookie: {
     maxAge: 1 * 24 * 60 * 60 * 1000, // a day
     secure: false, // only set cookies over https. Server will not send back a cookie over http.
