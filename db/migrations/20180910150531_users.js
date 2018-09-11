@@ -7,5 +7,5 @@ exports.up = (knex, Promise) => {
 };
 
 exports.down = (knex, Promise) => {
-  return knex.scehma.dropTable('users');
+  return knex.schema.dropTable('users');
 };
