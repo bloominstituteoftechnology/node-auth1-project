@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 
 const authRoutes = require('./routes/authRoutes');
 const restrictedRoutes = require('./routes/restrictedRoutes');
@@ -9,6 +10,7 @@ const server = express();
 const mw = require('./middleware');
 
 server.use(express.json());
+server.use(cors());
 server.use(morgan('dev'));
 
 server.use(
