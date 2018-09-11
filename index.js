@@ -31,6 +31,14 @@ server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
 
+function protected(req, res, next){
+    if(req.session && req.session.username){
+        next();
+    }else{
+        res.status(401).json({ message: "you cannot come in"}); 
+    }
+}
+
 server.get("/", (req, res) => {
   res.send("Its Alive!");
 });
@@ -63,13 +71,25 @@ server.post("/api/login", (req, res)=>{
     .catch(err => res.status(500).send(err)); 
 })
 
-server.get("/api/users", (req, res) => {
+server.get("/api/users", protected,  (req, res) => {
     db("users")
-      .select("id", "username")
+      .select("id", "username", "password")
       .then(users => {
         res.json(users);
       })
       .catch(err => res.send(err));
+  });
+
+  server.get('/api/logout', (req, res) => {
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.send('error logging out');
+        } else {
+          res.send('good bye');
+        }
+      });
+    }
   });
 
 server.listen(3001, () => console.log("\nrunning on port 3001\n"));
