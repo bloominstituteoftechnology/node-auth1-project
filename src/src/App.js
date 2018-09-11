@@ -17,8 +17,22 @@ class App extends Component {
   
   register = (event) => {
     event.preventDefault();
-  
     axios.post('http://localhost:4500/register/', {
+      "username": this.state.regusername, 
+      "password": this.state.regpassword
+    }).then(res => {
+      if (res){
+        this.setState({
+          loggedIn: true, 
+        })
+      }
+    }
+    ).catch(err => console.log(err))
+  }
+  
+  login = (event) => {
+    event.preventDefault();
+    axios.post('http://localhost:4500/login/', {
       "username": this.state.username, 
       "password": this.state.password
     }).then(res => {
@@ -28,23 +42,6 @@ class App extends Component {
         })
       }
     }
-    ).catch(err => console.log(err))
-
-    // this.login({
-    //   "username": this.state.username, 
-    //   "password": this.state.password
-    // })
-  }
-  
-  login = (event) => {
-    event.preventDefault();
-    axios.post('http://localhost:4500/login/', {
-      "username": this.state.username, 
-      "password": this.state.password
-    }).then(
-      this.setState({
-        loggedIn: true, 
-      })
     ).catch(err => console.log(err))
   }
 
@@ -58,33 +55,34 @@ class App extends Component {
     return (
       <div className="App">
         <AppDiv>
+
         <div className="status">
-        <p>Status: {this.state.loggedIn ? 'Logged in' : 'Please login or register'}</p>
+          <p>Status: {this.state.loggedIn ? 'Logged in' : 'Please login or register'}</p>
         </div>
+         
           <div className="login">
-          <h4>Login</h4>
-          
-          <form onSubmit={this.login}>
-            <input
-              required
-              autoFocus
-              onChange={this.inputHandler}
-              name="username"
-              value={this.state.username}
-              // value={this.state.[this.name]}
-              // can I do something like the above?
-              placeholder="Name"
-              type="text"
-              >{this.value}</input>
-            <input
-              required
-              onChange={this.inputHandler}
-              name="password"
-              value={this.state.password}
-              placeholder="Password"
-              type="password"></input>
-            <button>BUTTON</button>
-          </form>
+            <h4>Login</h4>
+            <form onSubmit={this.login}>
+              <input
+                required
+                autoFocus
+                onChange={this.inputHandler}
+                name="username"
+                value={this.state.username}
+                // value={this.state.[this.name]}
+                // can I do something like the above?
+                placeholder="Name"
+                type="text"
+                >{this.value}</input>
+              <input
+                required
+                onChange={this.inputHandler}
+                name="password"
+                value={this.state.password}
+                placeholder="Password"
+                type="password"></input>
+              <button>BUTTON</button>
+            </form>
           </div>
           
           <div className="register">

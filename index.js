@@ -36,7 +36,9 @@ const sessionConfig = {
 server.use(session(sessionConfig));
 
 server.use(express.json());
+
 server.use(cors());
+
 server.use(helmet());
 
 function protected(req, res, next) {
@@ -85,7 +87,7 @@ server.post('/login/', (req,res) => {
 
                 req.session.username = user.username;//this is the first place that the session is created? 
 
-                res.status(200).send(`welcome ${res.session.username}!`);
+                res.status(200).send(`welcome ${req.session.username}!`);
             } else {
                 res.status(401).json({message: "not authorized"})
             }
