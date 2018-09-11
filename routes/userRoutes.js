@@ -6,7 +6,7 @@ const db = require("../database/dbConfig.js");
 const middlewareFunctions = require("../middleware/middlewareFunctions.js");
 // GET/users NEEDS TO BE FINISHED TOMORROW(2-day project) AFTER LEARNING COOKIES
 // get start
-router.get("/users", (req, res, next) => {
+router.get("/users", middlewareFunctions.protected, (req, res, next) => {
   db("users")
     .select("id", "username", "password")
     .then(users => {
@@ -44,7 +44,8 @@ router.post("/login", middlewareFunctions.reqBodyCheck, (req, res, next) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
-        res.status(200).send("working");
+        req.session.username = user.username;
+        res.status(200).send(`Hello, ${req.session.username}`);
       } else {
         res.status(401).json({ message: "You shall not pass!" });
       }
@@ -53,6 +54,19 @@ router.post("/login", middlewareFunctions.reqBodyCheck, (req, res, next) => {
       err.code = 500;
       next(err);
     });
+});
+
+// logout to delete session storage
+router.get("/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send("error logging out");
+      } else {
+        res.send("Successfully logged out.");
+      }
+    });
+  }
 });
 
 module.exports = router;
