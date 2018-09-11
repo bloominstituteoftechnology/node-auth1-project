@@ -5,6 +5,7 @@ const db = require("../../db/dbConfig.js");
 const userRouter = express.Router()
 
 userRouter.get("/", (req, res) => {
+  if(req.session && req.session.username){
   db('users')
     .select('id', 'username', 'signedIn')
     .then(users => {
@@ -17,6 +18,9 @@ userRouter.get("/", (req, res) => {
     .catch(error => {
       res.status(500).send(error)
     })
+  } else {
+    res.status(401).json({message: "You shall not pass!!"})
+  }
 })
 
 module.exports = userRouter; 

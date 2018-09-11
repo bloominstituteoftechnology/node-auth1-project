@@ -23,12 +23,13 @@ server.use(cors());
 
 server.use(
   session({
-    name: 'notsession',//default is connect.sid
-    secret: 'no whispering',
+    name: 'Lion',//default is connect.sid
+    secret: 'no whispering in the library!',
     cookie : {
       maxAge: 1 * 24 * 60 * 60 * 1000,
       secure: true, // only set cookies over https.
       //Server will not send back a cookie over http.
+      //false for development. 
       httpOnly: true, // don't let JS code access cookies. 
       //Browser extensions run JS code on your browser!
       resave: false, 
