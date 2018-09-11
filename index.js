@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
+// require the store library
+const KnexSessionStore = require("connect-session-knex")(session);
 
 const db = require("./data/dbConfig.js");
 
@@ -11,12 +13,21 @@ const server = express();
 server.use(
   session({
     name: "zipedeedodah", // default is connect.sid
-    secret: "nobody tosses a dwarf!",
-    cookie: { maxAge: 1 * 24 * 60 * 60 * 1000 }, // 1 day in milliseconds
+    secret: "my what a wonderful feelin'",
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day in milliseconds
+      secure: false // only set cookies over https. Server will not send back a cookie over http.
+    },
     httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
-    secure: false, // only set cookies over https. Server will not send back a cookie over http.
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: new KnexSessionStore({
+      tablename: "sessions",
+      sidfieldname: "sid",
+      knex: db,
+      createtable: true,
+      clearInterval: 1000 * 60 * 60
+    })
   })
 );
 
@@ -71,18 +82,26 @@ server.post("/api/login", (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
+server.get("/api/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send("Error logging out");
+      } else {
+        res.send("Goodbye...");
+      }
+    });
+  }
+});
+
 // protect this route, only authenticated users should see it
 server.get("/api/users", (req, res) => {
-  if (req.session && req.session.username) {
-    db("users")
-      .select("id", "username")
-      .then(users => {
-        res.json(users);
-      })
-      .catch(err => res.send(err));
-  } else {
-    res.status(401).json({ message: "You shall not pass!" });
-  }
+  db("users")
+    .select("id", "username")
+    .then(users => {
+      res.json(users);
+    })
+    .catch(err => res.send(err));
 });
 
 server.listen(4000, () => console.log("\nrunning on port 4000\n"));
