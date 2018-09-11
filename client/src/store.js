@@ -3,6 +3,6 @@ export default {
 		loggedIn: false,
 	},
 	setLoggedIn(value) {
-		this.loggedIn = value;
+		this.state.loggedIn = value;
 	},
 };

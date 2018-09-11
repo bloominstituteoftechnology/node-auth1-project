@@ -30,6 +30,7 @@ export default {
 				.then(response => {
 					console.log(response);
 					store.setLoggedIn(false);
+					this.$router.push("/");
 				})
 				.catch(error => {
 					console.log(error);
