@@ -20,7 +20,6 @@ router.post("/register", (req, res) => {
 
 router.post("/login", (req, res) => {
 	const credentials = req.body;
-
 	db("users")
 		.where({ username: credentials.username })
 		.first()
@@ -36,6 +35,18 @@ router.post("/login", (req, res) => {
 			}
 		})
 		.catch(err => res.status(500).send(err));
+});
+
+router.get("/logout", (req, res) => {
+	if (req.session) {
+		req.session.destroy(err => {
+			if (err) {
+				res.status(500).json({ message: "This be an error jerk face" });
+			} else {
+				res.send("goodbye");
+			}
+		});
+	}
 });
 
 module.exports = router;
