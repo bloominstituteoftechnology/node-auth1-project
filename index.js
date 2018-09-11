@@ -27,6 +27,16 @@ server.use(session(sessionConfig))
 
 server.use(express.json())
 
+// simplifed middleware to check client logged in or not
+const isLoggedinOrNot = (req, res, next) => {
+  // if session and username are in session
+  if (req.session && req.session.username) {
+    next()
+  } else {
+    res.status(500).json({ message: 'You have not logged in yet' })
+  }
+}
+
 server.get('/', (req, res) => {
   res.send('server is up and running')
 })
@@ -73,33 +83,25 @@ server.post('/api/login', (req, res) => {
 })
 
 // mocked api for logging out
-server.get('/api/logout', (req, res) => {
-  // if client has a session
-  if (req.session) {
-    // clear session
-    req.session.destroy(error => {
-      if (error) {
-        res.status(500).json({ message: 'Logout unsuccessfully' })
-      } else {
-        res.status(201).json({ message: 'Logout successfully' })
-      }
-    })  
-  }
+server.get('/api/logout', isLoggedinOrNot, (req, res) => {
+  // clear session
+  req.session.destroy(error => {
+    if (error) {
+      res.status(500).json({ message: error })
+    } else {
+      res.status(201).json({ message: 'Logout successfully' })
+    }
+  })  
 })
 
 // mocked api for accessing db by logged-in user
-server.get('/api/users', (req, res) => {
-  // if session and username are in session
-  if (req.session && req.session.username) {
-    db('login')
-      .select()
-      .then(users => {
-        res.status(201).json(users)
-      })
-      .catch(error => res.status(500).json(error))
-  } else {
-    res.status(500).json({ message: 'no access' })
-  }
+server.get('/api/users', isLoggedinOrNot, (req, res) => {
+  db('login')
+    .select()
+    .then(users => {
+      res.status(201).json(users)
+    })
+    .catch(error => res.status(500).json(error))
 })
 
 const port = 3300
