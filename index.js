@@ -17,7 +17,7 @@ function isLoggedIn(req, res, next) {
   res.status(403).json({ message: 'you need to be logged in to do that' });
 }
 
-app.use(cors());
+app.use(cors({ credentials: true, origin: 'http://localhost:8080' }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(
