@@ -106,8 +106,10 @@ server.get('/api/logout', (req,res) => {
     }
 });
 
+
+
 //protect the route so that only authenticated users can see it
-server.get('/api/users', (req,res) => {
+server.get('/api/users', protected, (req,res) => {
     db('users')
     .select('id', 'username','password')
     .then(users => {
