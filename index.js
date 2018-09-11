@@ -1,3 +1,6 @@
+//Questions when is the cookie created? 
+//how could I create another cookie? 
+
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -14,20 +17,22 @@ const sessionConfig = {
     name: 'dont call this session',
     secret: 'keep this a secret',
     cookie: {
-        maxAge: 1 * 24 * 60 * 60 * 1000, 
+        maxAge: 10 * 1000, 
         secure: false, 
     },
     httpOnly: true, 
     resave: false, 
     saveUninitalized: false, 
+    // the store allows the session to be saved on the database instead of in the memory on the server. so if the server restarts it still keeps track of the session. 
     store: new KnexSessionStore({
         tablename: 'sessions',
         sidfieldname: 'sid',
-        knex: db, 
+        knex: db,
         createtable: true,
-        clearInterval: 1000 * 60 * 60,
+        clearInterval: 1000 * 10,
     }),
 };
+
 server.use(session(sessionConfig));
 
 server.use(express.json());
@@ -42,6 +47,18 @@ function protected(req, res, next) {
     }
 }
 
+server.use('/use/restricted', protected, (req, res) => {
+    if (req.session.username){
+        next();
+    } else {
+        res.status(401).json({message: 'no!'})
+    }
+})
+
+server.get('/use/restricted/other', (req, res) => {
+    res.status(200).json({messge: " this is restricted"})
+})
+
 server.get('/', (req, res) => {
     res.status(200).json({message: "server is running"})
 })
@@ -53,7 +70,7 @@ server.post('/register/', (req,res) => {
     db('users')
         .insert(creds)
         .then(ids => {
-            const id = ids[0];//cause it return a single array?
+            const id = ids[0]; //cause it return a single array?
             res.status(201).json(id);
         }).catch(err => res.status(500).send(err))
 })
@@ -93,8 +110,18 @@ server.get('/users/', protected, (req, res) => {
         .then(users => {
             res.status(201).json(users);
         }).catch(err => res.status(500).send(err))
-
 })
+
+server.get('/setname', (req, res) => {
+    req.session.name = 'Frodo';
+    res.send('got it');
+  });
+  
+  server.get('/greet', (req, res) => {
+    const name = req.session.username;
+    res.send(`hello ${name}`);
+  });
+  
 
 server.get('/cookie', (req, res) => {
     res.status(200).send(req.session.username)
