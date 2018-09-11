@@ -2,12 +2,34 @@ const express = require('express');
 const helmet = require('helmet');
 const knex = require('knex');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const dbConfig = require('./knexfile');
 
 const db = knex(dbConfig.development);
 
 const server = express();
+
+const sessionConfig = {
+  name: 'monkey', // default is connect.sid
+  secret: 'nobody tosses a dwarf!',
+  cookie: {
+    maxAge: 1 * 24 * 60 * 60 * 1000, // a day
+    secure: false, // only set cookies over https. Server will not send back a cookie over http.
+  }, // 1 day in milliseconds
+  httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
+  resave: false,
+  saveUninitialized: false,
+  store: new KnexSessionStore({
+    tablename: 'sessions',
+    sidfieldname: 'sid',
+    knex: db,
+    createtable: true,
+    clearInterval: 1000 * 60 * 60,
+  }),
+};
+
+server.use(session(sessionConfig));
 
 server.use(express.json());
 
@@ -29,9 +51,11 @@ server.post('/api/register', (req, res) => {
 
 server.post('/api/login', (req, res) => {
   const creds = req.body;
+
   db('users').where({ name: creds.name}).first().then(user => {
     if (user && bcrypt.compareSync(creds.password, user.password)) {
       res.status(200).json({message: 'Welcome! You\'ve made it!'});
+      req.session.name = creds.name;
     }
     else {
       res.status(401).send('You shall not passsss!');
@@ -40,5 +64,18 @@ server.post('/api/login', (req, res) => {
     res.status(500).send(err);
   })
 });
+
+server.get('/api/users', (req, res) => {
+  if (req.session && req.session.name) {
+    db('users').select('id', 'name').then(users => {
+      res.status(200).json(users);
+    }).catch(err => {
+      res.status(500).json(err);
+    })
+  }
+  else {
+    res.status(401).json({ message: 'You shall not pass!'})
+  }
+})
 
 server.listen(5000);
