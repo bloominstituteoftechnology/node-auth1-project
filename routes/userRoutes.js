@@ -2,6 +2,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 
 const db = require('../db/dbConfig');
 
@@ -17,6 +18,13 @@ const sessionConfig = { //new
     httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
     resave: false,
     saveUninitialized: false,
+    store: new KnexSessionStore({
+        tablename: 'sessions',
+        sidfieldname: 'sid',
+        knex: db,
+        createTable: true,
+        clearInterval: 1000 * 60 * 60,
+    })
 };
 
 router.use(session(sessionConfig)); // new 
@@ -58,7 +66,7 @@ router.get('/users', (req, res) => {  //new
     if(req.session && req.session.username) {
         db('usernames').select('id', 'username', 'password')
         .then(users => {
-        res.status(200).json(users)
+        res.status(200).send(users)
         })
         .catch(err => console.log(err));
     } else {
