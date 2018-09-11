@@ -47,7 +47,12 @@ router.post("/login", middlewareFunctions.reqBodyCheck, (req, res, next) => {
         req.session.username = user.username;
         res.status(200).send(`Hello, ${req.session.username}`);
       } else {
-        res.status(401).json({ message: "You shall not pass!" });
+        try {
+          throw new Error();
+        } catch (err) {
+          err.code = 401;
+          next(err);
+        }
       }
     })
     .catch(err => {
