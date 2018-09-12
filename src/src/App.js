@@ -30,12 +30,35 @@ class App extends Component {
     ).catch(err => console.log(err))
   }
   
+  logout = (event) => {
+    event.preventDefault();
+    axios.get('http://localhost:4500/logout/').then(res => {
+      if (res) {
+        this.setState({
+          loggedIn: false,
+        })
+      }
+    })
+  }
+
+  getUsers = (event) => {
+    event.preventDefault();
+    console.log('getusers')
+    axios.get('http://localhost:4500/users/').then(res => {
+      console.log('got users')  
+      this.setState({
+        users: res.data,
+      })
+    }).catch(err => {console.log(err)})
+  }
+
   login = (event) => {
     event.preventDefault();
     axios.post('http://localhost:4500/login/', {
       "username": this.state.username, 
       "password": this.state.password
     }).then(res => {
+      console.log(res)
       if (res){
         this.setState({
           loggedIn: true, 
@@ -110,6 +133,13 @@ class App extends Component {
             <button>BUTTON</button>
           </form>
           </div>
+          
+          {this.state.loggedIn ? ( 
+            <div>
+              <button onClick={this.logout}>Logout</button>
+              <button onClick={this.getUsers}>ShowUsers</button>
+            </div>
+            ) : null}
           
         </AppDiv>
       </div>
