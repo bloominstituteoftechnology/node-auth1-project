@@ -37,12 +37,10 @@ server.use(express.json());
 
 server.use(cors({
     credentials: true, 
-    orgin: 'http://localhost:3000'
+    origin: 'http://localhost:3000'
  }));
 
-
 server.use(session(sessionConfig));
-
 
 server.use(helmet());
 
@@ -52,15 +50,14 @@ server.use(helmet());
 //     next();
 // });
 
-
 function protected(req, res, next){
     console.log(req.session)
     if (req.session && req.session.username){ 
-        // rew.session.username is def the problem 
+        // req.session.username is def the problem 
         //idk how to verify the username
         next();
     } else {
-        res.status(401).json({message: 'you are not authorized, please login'})
+        res.status(401).json({message: 'you are not authorized, please login'});
     }
 }
 
@@ -80,8 +77,10 @@ server.post('/login/', (req,res) => {
             console.log(user.username)
             if(user && bcrypt.compareSync(creds.password, user.password)){
                 
-                req.session.username = user.username;//this is the first place that the session is created 
-                console.log(req.session.username)
+                req.session.username = user.username;
+                //this is the first place that the session is created 
+                //cookie does note presisit, probably problem with db?
+                console.log(req.session.username)//this works
                 res.status(200).send(`welcome ${req.session.username}!`);
             } else {
                 res.status(401).json({message: "not authorized"})
@@ -99,7 +98,7 @@ server.use('/use/restricted', protected, (req, res) => {
 })
 
 server.get('/use/restricted/other', (req, res) => {
-    res.status(200).json({messge: " this is restricted"})
+    res.status(200).json({messge: "this is restricted"})
 })
 
 server.get('/', (req, res) => {
@@ -130,8 +129,6 @@ server.get('/logout/', (req,res) => {
         })
     }
 })
-
-
 
 server.get('/setname', (req, res) => {
     req.session.name = 'Frodo';
