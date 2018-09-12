@@ -3,7 +3,6 @@ const bcrypt=require('bcryptjs');
 const morgan=require('morgan');
 const express=require('express');
 const session=require('express-session');
-const KnexSessionStore=require('connect-session-knex')(session);
 const cors=require('cors');
 const server=express();
 const knex=require('knex');
@@ -19,17 +18,9 @@ const sessionConfig={
     },
     httpOnly:true,
     resave:false,
-    saveUninitialized: false,
-    store:new KnexSessionStore({
-        tablename:'sessions',
-        sidfieldname:'sid',
-        knex:db,
-        createtable:true,
-        clearInterval:1000*60*60
-    })
+    saveUninitialized: false
 }
 server.use(express.json()).use(helmet()).use(morgan('dev')).use(cors()).use(session(sessionConfig));
-
 
 server.post('/api/register',(req,res)=>{
     const creds=req.body;
@@ -62,7 +53,7 @@ server.get('/api/users',(req,res)=>{
         db('users')
             .then(users=>res.status(200).json(users))
             .catch(err=>res.status(500).json(err)):
-        res.status(401).send('You shall not pass.')
+        res.status(403).send('You shall not pass.')
     })
 const port=9000
 server.listen(port,()=>console.log('Engines firing server starting new horizons venturing.'));
