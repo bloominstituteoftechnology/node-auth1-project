@@ -80,7 +80,7 @@ server.post('/login/', (req,res) => {
             console.log(user.username)
             if(user && bcrypt.compareSync(creds.password, user.password)){
                 
-                req.session.username = user.username;//this is the first place that the session is created? 
+                req.session.username = user.username;//this is the first place that the session is created 
                 console.log(req.session.username)
                 res.status(200).send(`welcome ${req.session.username}!`);
             } else {
