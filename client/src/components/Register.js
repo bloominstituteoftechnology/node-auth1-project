@@ -132,7 +132,6 @@ class Register extends React.Component {
   };
 
   render() {
-    console.log(this.props, "props")
     const years = this.state.years.slice();
     const days = this.state.days.slice();
     const months = [

@@ -1,42 +1,41 @@
 import React from 'react';
-import {Link, Redirect} from 'react-router-dom'; 
+import {Link, Redirect} from 'react-router-dom';
+import {withRouter} from 'react-router';  
 import axios from 'axios'; 
-const fakeAuth = {
-  isAuthenticated: false, 
-  authenticate(cb) {
-    this.isAuthenticated = true
-    setTimeout(cb, 100) //async
-  },
-  signout(cb){
-    this.isAuthenticated = false 
-    setTimeout(cb, 100)
-  }
-}
+import Login from './Login';
+
 class Home extends React.Component{
   state = {
-    username : null
+    username : null,
+    users : []
+  }
+
+  componentWillUpdate() {
+    const promise = axios.get('http://localhost:9000/api/users')
+    promise
+      .then(response => {
+        console.log(response)
+        this.setState({users: response.data, username: "someone"})
+      })
+      .catch(error => {
+        console.error(error)
+      })
   }
   render(){
-    if (this.state.username){
-      return (
-        <div>Home Testing</div>
-      )  
-    } else {
+    console.log(this.props)
+    if (this.state.users.length){
+      const users = this.state.users.slice()
       return (
         <div>
-          <label>Username:</label>
-          <input type="text" placeholder="Enter Username:"/>
-          <br/>
-          <label>Password :</label>
-          <input type="text" placeholder="Enter Password:"/>
-          <br/>
-          <Link to="/register">Register</Link>
+          {users.map((user, i) => {
+            <div key = {i}>{user}</div>
+          })}
         </div>
-      )
-       
+      )  
+    } else {
+      return <Login /> 
     }
-    
   }
 }
 
-export default Home; 
+export default withRouter(Home); 
