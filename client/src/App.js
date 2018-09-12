@@ -24,7 +24,7 @@ class App extends Component {
             exact
             path="/"
             render={props =>
-              this.props.user ? (
+              !this.props.getUserFailure ? (
                 <Home />
               ) : (
                 <Redirect
@@ -33,6 +33,7 @@ class App extends Component {
               )
             }
           />
+          <Route exact path="/" component={Home} />
           <Route path="/login" component={LogIn} />
           <Route path="/signup" component={SignUp} />
         </Switch>
@@ -43,6 +44,7 @@ class App extends Component {
 
 const mapStateToProps = state => ({
   user: state.loggedInUser,
+  getUserFailure: state.getUserFailure,
 });
 
 export default withRouter(connect(mapStateToProps)(App));

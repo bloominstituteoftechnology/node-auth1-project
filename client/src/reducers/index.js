@@ -7,6 +7,7 @@ import {
   LOGOUT_USER_SUCCESS,
   SIGNUP_USER,
   SIGNUP_USER_SUCCESS,
+  GET_USERS_ERROR,
 } from '../actions';
 
 const initialState = {
@@ -14,6 +15,7 @@ const initialState = {
   loggingOut: false,
   getUsers: false,
   signingUp: false,
+  getUserFailure: false,
   loggedInUser: '',
   users: [],
 };
@@ -24,6 +26,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loggingIn: true,
+        getUserFailure: false,
       };
     case LOGIN_USER_SUCCESS:
       return {
@@ -63,6 +66,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         signingUp: false,
+      };
+    case GET_USERS_ERROR:
+      return {
+        ...state,
+        getUserFailure: true,
       };
     default:
       return state;

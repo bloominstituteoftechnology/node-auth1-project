@@ -8,6 +8,7 @@ export const GET_USERS = 'GET_USERS';
 export const GET_USERS_SUCCESS = 'GET_USERS_SUCCESS';
 export const LOGOUT_USER = 'LOGOUT_USER';
 export const LOGOUT_USER_SUCCESS = 'LOGOUT_USER_SUCCESS';
+export const GET_USERS_ERROR = 'GET_USERS_ERROR';
 
 const URL = 'http://localhost:7000/api';
 
@@ -42,7 +43,12 @@ export const SignUpUser = user => dispatch => {
 
 export const getUsers = () => dispatch => {
   dispatch({ type: GET_USERS });
-  axios.get(`${URL}/restricted/users`).then(response => {
-    dispatch({ type: GET_USERS_SUCCESS, payload: response.data });
-  });
+  axios
+    .get(`${URL}/restricted/users`)
+    .then(response => {
+      dispatch({ type: GET_USERS_SUCCESS, payload: response.data });
+    })
+    .catch(err => {
+      dispatch({ type: GET_USERS_ERROR, payload: err });
+    });
 };

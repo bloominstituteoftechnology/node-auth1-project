@@ -10,10 +10,12 @@ function errorHandler(err, req, res, next) {
       res.status(400).json({
         message: 'There was an error regarding your input.',
       });
+      break;
     case 403:
       res.status(403).json({
         message: 'You are unathorized to view this content.',
       });
+      break;
     default:
       res.status(500).json({
         message: 'There was an error performing the required operation',

@@ -24,6 +24,11 @@ class Home extends Component {
   componentDidMount() {
     this.props.getUsers();
   }
+
+  handleLogout = () => {
+    this.props.LogOutUser();
+    this.props.history.push('/login');
+  };
   render() {
     return (
       <div>
@@ -46,7 +51,7 @@ class Home extends Component {
             ))}
           </tbody>
         </Table>
-        <Button onClick={this.props.LogOutUser}>Log Out</Button>
+        <Button handleClick={this.handleLogout}>Log Out</Button>
       </div>
     );
   }

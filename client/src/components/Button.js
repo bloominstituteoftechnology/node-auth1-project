@@ -21,8 +21,8 @@ const StyledButton = styled.button`
   }
 `;
 
-const Button = ({ disabled, type, children }) => (
-  <StyledButton disabled={disabled} type={type}>
+const Button = ({ disabled, type, children, handleClick }) => (
+  <StyledButton disabled={disabled} type={type} onClick={handleClick}>
     {children}
   </StyledButton>
 );
