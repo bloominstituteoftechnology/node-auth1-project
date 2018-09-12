@@ -4,6 +4,7 @@ const knex = require('knex');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
 
+const KnexSessionStore = require('connect-session-knex')(session);
 const dbConfig = require('./knexfile');
 
 const db = knex(dbConfig.development);
@@ -54,8 +55,8 @@ server.post('/api/login', (req, res) => {
 
   db('users').where({ name: creds.name}).first().then(user => {
     if (user && bcrypt.compareSync(creds.password, user.password)) {
-      res.status(200).json({message: 'Welcome! You\'ve made it!'});
       req.session.name = creds.name;
+      res.status(200).json({message: 'Welcome! You\'ve made it!'});
     }
     else {
       res.status(401).send('You shall not passsss!');
