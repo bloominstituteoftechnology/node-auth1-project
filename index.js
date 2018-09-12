@@ -10,21 +10,27 @@ const knex=require('knex');
 const knexConfig=require('./knexfile');
 const db=knex(knexConfig.development);
 
-server.use(express.json()).use(helmet()).use(morgan('dev')).use(cors());
-
-server.use(
-    session({
-        name:'middleEarth',
-        secret:'Many that live deserve death.',
-        cookie:{
-            maxAge:1*24*60*60*1000,
-            secure:true
-        },
-        httpOnly:true,
-        resave:false,
-        saveUninitialized: false,
+const sessionConfig={
+    name:'middleEarth',
+    secret:'Many that live deserve death.',
+    cookie:{
+        maxAge:1*24*60*60*1000,
+        secure:false
+    },
+    httpOnly:true,
+    resave:false,
+    saveUninitialized: false,
+    store:new KnexSessionStore({
+        tablename:'sessions',
+        sidfieldname:'sid',
+        knex:db,
+        createtable:true,
+        clearInterval:1000*60*60
     })
-)
+}
+server.use(express.json()).use(helmet()).use(morgan('dev')).use(cors()).use(session(sessionConfig));
+
+
 server.post('/api/register',(req,res)=>{
     const creds=req.body;
     const hash=bcrypt.hashSync(creds.password,3)
@@ -42,13 +48,21 @@ server.post('/api/login',(req,res)=>{
         .first()
         .then(user=>{
             if (user && bcrypt.compareSync(creds.password,user.password)){
-                req.session.cookie.user_id=user.username;
-                res.status(200).send(`Hello there ${req.session.cookie.user_id}!`)
+                req.session.user_id=user.username;
+                res.status(200).send(`Hello there ${req.session.user_id}!`)
             } else {
                 res.status(401).send('You shall not pass')
             }
         })
         .catch(err=>res.status(500).json(err));
 })
+server.get('/api/users',(req,res)=>{
+    const name=req.session.user_id
+    name!==undefined?
+        db('users')
+            .then(users=>res.status(200).json(users))
+            .catch(err=>res.status(500).json(err)):
+        res.status(401).send('You shall not pass.')
+    })
 const port=9000
 server.listen(port,()=>console.log('Engines firing server starting new horizons venturing.'));
