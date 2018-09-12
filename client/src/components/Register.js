@@ -37,7 +37,8 @@ class Register extends React.Component {
     promise
       .then(id => {
         if (id) {
-          return <Redirect to="login" />;
+          return this.props.history.push('/login')
+          //, {some: 'state'} if needed in future. 
         } else {
           const errorHeader = "Issues with registering";
           this.setState({ errorHeader });
@@ -131,6 +132,7 @@ class Register extends React.Component {
   };
 
   render() {
+    console.log(this.props, "props")
     const years = this.state.years.slice();
     const days = this.state.days.slice();
     const months = [
