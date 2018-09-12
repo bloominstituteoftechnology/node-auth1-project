@@ -49,6 +49,7 @@ class App extends Component {
       this.setState({
         users: res.data,
       })
+      console.log(this.state)
     }).catch(err => {console.log(err)})
   }
 
@@ -140,7 +141,14 @@ class App extends Component {
               <button onClick={this.getUsers}>ShowUsers</button>
             </div>
             ) : null}
-          
+          <div className="users">
+
+            {(this.state.users) ? 
+              (this.state.users.map(user => {
+              return <p>Username: {user.username}</p>
+            })) 
+            : (<h1>no!</h1>)}
+          </div>
         </AppDiv>
       </div>
     );
@@ -167,5 +175,10 @@ const AppDiv = styled.div`
       display: flex;
       flex-direction: column;
     }
+  .users {
+    border: 1px solid green;
+    width: 400px;
+    height: 400px;
+  }
   }
 `;

@@ -19,6 +19,7 @@ const sessionConfig = {
     cookie: {
         maxAge: 1 * 24 * 60 * 60 * 10 * 1000, 
         secure: false, 
+        hi: 'mike'
     },
     httpOnly: true, 
     resave: false, 
@@ -51,10 +52,8 @@ server.use(helmet());
 // });
 
 function protected(req, res, next){
-    console.log(req.session)
+    // console.log(req.session)
     if (req.session && req.session.username){ 
-        // req.session.username is def the problem 
-        //idk how to verify the username
         next();
     } else {
         res.status(401).json({message: 'you are not authorized, please login'});
@@ -74,13 +73,13 @@ server.post('/login/', (req,res) => {
         .where({username: creds.username})
         .first()
         .then(user => {
-            console.log(user.username)
+            // console.log(user.username)
             if(user && bcrypt.compareSync(creds.password, user.password)){
                 
                 req.session.username = user.username;
-                //this is the first place that the session is created 
-                //cookie does note presisit, probably problem with db?
-                console.log(req.session.username)//this works
+                //this is the first place that the session.username is created 
+                req.session.cookie.newField = 'test'
+                // console.log(req.session.cookie)
                 res.status(200).send(`welcome ${req.session.username}!`);
             } else {
                 res.status(401).json({message: "not authorized"})
