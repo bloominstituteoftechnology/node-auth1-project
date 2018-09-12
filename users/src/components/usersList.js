@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import axios from 'axios';
+import UsersTable from './usersTable';
 import User from './user';
 
 const url = 'http://localhost:5000/users';
@@ -29,9 +30,10 @@ class UsersList extends Component {
     render() { 
         return ( 
             <div>
-                {this.state.users.map(user => (
+                <UsersTable />
+                    {this.state.users.map(user => (
                     
-                        <User
+                        <User 
                             key={user.id}
                             id={user.id}
                             name={user.username}

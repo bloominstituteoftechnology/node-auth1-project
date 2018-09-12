@@ -12,6 +12,7 @@ class App extends Component {
   render() {
     return (
       <Application>
+      <h1>Users Database List</h1>
         <UsersList />
       </Application>
     );
