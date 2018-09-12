@@ -74,7 +74,7 @@ server.post("/api/login", (req, res) => {
 
 server.get("/api/logout", (req, res) => {
   if (req.session) {
-    req.session.destory(err => {
+    req.session.destroy(err => {
       if (err) {
         res.send("error logging out");
       } else {
