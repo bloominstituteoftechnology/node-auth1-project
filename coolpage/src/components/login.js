@@ -11,6 +11,16 @@ import {Link} from 'react-router-dom';
       }
     }
 
+    componentDidMount() {
+        axios.get("http://localhost:3000/logout")
+        .then(res => {
+          console.log(res);
+        })
+        .catch(error => {
+          console.error("Server Error", error);
+        });
+    }
+
 handleInputChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
@@ -36,9 +46,11 @@ login = () => {
     render() {
       return (
         <div>
+            <form>
         <input onChange={this.handleInputChange} name="username" placeholder="username"/>
         <input onChange={this.handleInputChange} name="password" placeholder="password"/>
-        <Link to="/users"><button onClick={this.login} type="submit"/></Link>
+        <Link to="/users"><button onClick={this.login}/></Link>
+        </form>
       </div>
       );
     }
