@@ -33,7 +33,7 @@ class SignUp extends Component {
     error: false,
   };
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (this.props.signingUp !== prevProps.signingUp && !this.props.signingUp) {
       this.props.history.push('/login');
     }

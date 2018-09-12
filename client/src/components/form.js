@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import Button from './Button';
 
 const StyledForm = styled.form`
   width: 80%;
@@ -19,25 +20,6 @@ const Input = styled.input`
   height: 38px;
   margin: 3px 0;
   color: black;
-`;
-
-const Button = styled.button`
-  outline: none;
-  font-size: 14px;
-  background-color: rgb(56, 151, 240);
-  border-radius: 3px;
-  padding: 0 12px;
-  color: #fff;
-  font-weight: bold;
-  width: 100%;
-  line-height: 26px;
-
-  &:disabled {
-    opacity: 0.3;
-  }
-  &:focus {
-    outline: none;
-  }
 `;
 
 const Form = ({

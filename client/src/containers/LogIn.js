@@ -34,7 +34,10 @@ class LogIn extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    this.props.LogInUser(this.state);
+    this.props.LogInUser({
+      username: this.state.username,
+      password: this.state.password,
+    });
   };
 
   componentDidUpdate(prevProps) {
