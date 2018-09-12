@@ -2,6 +2,7 @@ const express = require("express");
 const session = require('express-session');
 const bcrypt = require("bcryptjs");
 const db = require("./dbconfig.js");
+const cors = require('cors')
 const server = express();
 const KnexSessionStore = require('connect-session-knex')(session);
 const sessionConfig = {
@@ -25,6 +26,7 @@ const sessionConfig = {
   
 server.use(express.json());
 server.use(session(sessionConfig));
+server.use(cors({ credentials: true, origin: 'http://localhost:3001' }));
 
 function protected(req, res, next) {
     if (req.session && req.session.username) {
