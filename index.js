@@ -69,6 +69,18 @@ server.post("/api/login", (req, res)=>{
   })
   .catch(err => res.status(500).send(err)); 
 })
+
+server.get('/setname', (req, res) => {
+  req.session.name = 'Frodo';
+  res.send('got it');
+});
+
+server.get('/greet', (req, res) => {
+  const name = req.session.username;
+  res.send(`hello ${name}`);
+});
+
+
 server.get("/api/users", protected, (req, res) => {
   db("users")
     .select("id", "username", "password")
@@ -77,6 +89,19 @@ server.get("/api/users", protected, (req, res) => {
     })
     .catch(err => res.send(err));
 });
+
+server.get("/api/admins", protected, (req, res)=>{
+  if(req.session && req.session.role === "admin"){
+      db('users')
+          .select('id', 'username', 'password')
+          .then(users => {
+              res.json(users);
+          })
+          .catch(err => res.send(err));
+  }else(
+      res.status(403).json({message: "You have no access to this information"})
+  )
+})
 
 server.get('/api/logout', (req, res) => {
   if (req.session) {
