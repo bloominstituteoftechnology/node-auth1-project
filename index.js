@@ -1,13 +1,16 @@
 const express = require("express");
-const cors = require("cors");
+// const cors = require("cors");
 const bcrypt = require("bcryptjs");
 
 const db = require("./database/dbConfig.js");
 
+//const knexConfig = require("./knexfile");
+//const db = knex(knexConfig.development);
+
 const server = express();
 
 server.use(express.json());
-server.use(cors());
+// server.use(cors());
 
 //============GET ENDPOINT============//
 server.get("/api/users", (req, res) => {
@@ -62,3 +65,5 @@ server.post("/api/login", (req, res) => {
     });
 });
 //============POST LOGIN ENDPOINT============//
+
+server.listen(2500, () => console.log("\n===Running on Port: 2500===\n"));
