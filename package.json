@@ -7,7 +7,7 @@
     "nodemon": "^1.18.4",
     "sqlite3": "^4.0.2"
   },
-  "name": "1 auth-i",
+  "name": "1-auth-i",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -15,8 +15,5 @@
   },
   "repository": "https://github.com/fron12/auth-i.git",
   "author": "Fred <sohnf90@yahoo.com>",
-  "license": "MIT",
-  "devDependencies": {
-    "nodemon":"1.18.4"
-  }
+  "license": "MIT"
 }
