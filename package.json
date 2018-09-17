@@ -6,5 +6,25 @@
     "helmet": "^3.13.0",
     "knex": "^0.15.2",
     "sqlite": "^3.0.0"
-  }
+  },
+  "name": "auth-i",
+  "description": "## Topics",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": { "nodemon": "^1.18.4"},
+  "scripts": {
+    "start":"nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RachelDiCesare93/auth-i.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RachelDiCesare93/auth-i/issues"
+  },
+  "homepage": "https://github.com/RachelDiCesare93/auth-i#readme"
 }
