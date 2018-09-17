@@ -43,8 +43,8 @@ server.get("/api/users", (req, res) => {
 
       //the user is logged in, respond with an array of all the users contained in the database
       if (user|| bcrypt.compareSync(credentials.password, user.password)){
-        return res.send(db.username);
-});
+        return res.send({array: db.username});
+}});
 
 const port = process.env.PORT || 8000;
 server.listen(port, () => console.log(`Listening on port ${port}`));
