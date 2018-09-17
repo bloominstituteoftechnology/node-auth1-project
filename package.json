@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Kaikaine/auth-i#readme",
   "dependencies": {
+    "bcrypt": "^3.0.0",
     "express": "^4.16.3",
     "helmet": "^3.13.0",
     "knex": "^0.15.2",
