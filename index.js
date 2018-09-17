@@ -29,7 +29,11 @@ server.post('/api/register', (req, res) => {
 
         res.status(201).json(id);
     })
-    .catch(err => res.status(500).send(err))
+    // .catch(err => res.status(500).send(err))
+    .catch(err => {
+        console.log('/api/register POST ERROR:', err);
+        res.status(500).send(err);   
+    })
 });
 
 server.post('/api/login', (req ,res) => {
