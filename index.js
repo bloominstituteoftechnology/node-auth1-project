@@ -3,7 +3,8 @@ const cors = require("cors");
 const knex = require("knex");
 const knexConfig = require("./knexfile.js");
 const bcrypt = require("bcryptjs");
-const db = require(knexConfig.development);
+const db = knex(knexConfig.development);
+const server = express();
 server.use(express.json());
 server.use(cors());
 
@@ -24,13 +25,13 @@ server.post("/api/register", (req, res) => {
 server.post("/api/login", (req, res) => {
   const creds = req.body;
   db("users")
-    .whcer({ username: creds.username })
+    .where({ username: creds.username })
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
-        res, status(200).send("Logged in");
+        res.status(200).send("Logged in");
       } else {
-        res.status(401).jsopn({ message: "Username or password is incorrect" });
+        res.status(401).json({ message: "Username or password is incorrect" });
       }
     });
 });
