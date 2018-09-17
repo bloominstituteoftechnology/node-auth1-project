@@ -30,4 +30,22 @@ server.post('/api/register', (req, res) => {
         res.status(201).json(id);
     })
     .catch(err => res.status(500).send(err))
-})
+});
+
+server.post('/api/login', (req ,res) => {
+    const creds = req.body;
+
+    db('users')
+    .where({username: creds.username})
+    .first()
+    .then(user => {
+        if (user && bcrypt.compareSync(creds.password, user.password)) {
+            res.send(200).send('Welcome');
+        } else {
+            res.status(401).json({ message: 'incorrect credentials'});
+        }
+    })
+    .catch(err => res.status(500).send(err))
+
+});
+
