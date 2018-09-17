@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "express": "^4.16.3",
+    "helmet": "^3.13.0",
+    "knex": "^0.15.2",
+    "sqlite3": "^4.0.2"
+  },
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon"
+  },
+  "repository": "https://github.com/keegn/auth-i.git",
+  "author": "keegn <keegan.t.burkett@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  }
+}
