@@ -9,6 +9,6 @@ module.exports = {
   hashUser: function(action) {
     let query = db("users");
 
-    return query.insert(action).then(([id]) => this.get(id));
+    return query.insert(action).then((id) => this.get(id));
   }
 };

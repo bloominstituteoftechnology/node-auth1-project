@@ -20,11 +20,11 @@ server.post("/api/register", (req, res) => {
 
   const hash = bcrypt.hashSync(creds.password, 10);
   creds.password = hash;
-  console.log(creds.password);
+  console.log(creds);
 
   db.hashUser(creds)
     .then(id => {
-      res.status(200).json(id);
+      res.status(201).json(id);
     })
     .catch(err => res.status(500).send("error creating user"));
 });
