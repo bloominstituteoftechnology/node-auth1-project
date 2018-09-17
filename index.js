@@ -1,11 +1,23 @@
 const express = require('express');
-const helmet = require('helmet');
-const knex = require('knex');
+const sessionConfig = {
+    name: 'notsession', // default connect.sid
+    secret: `I can't tell you that`,
+    cookie: {
+        maxAge: 1 * 24 * 60 * 60 * 1000, // a day
+        secure: true, // only set cookies over https. Server will not send back a cookie over http
+    },
+    httpOnly: true, // don't let 35 code access cookies. Browser extensions run 35 code on your browser
+    resave: false,
+    saveUninitialized: false,
+};
+
+const bcrypt = require('bcryptjs');
 const server = express()
 const db = require('./db/helpers')
 
 server.use(express.json)
-server.use(helmet())
+server.use(helmet());
+server.use(session(sessionConfig))
 
 server.get('/', (req, res) => {
     res.send('working')
@@ -30,6 +42,16 @@ server.post('/api/login', (req, res) => {
             }
         })
         .catch(err => res.status(500).send(err));
+})
+
+server.get('/setname', (req, res) => {
+    req.session.name = 'Some User';
+    res.send('got it');
+});
+
+server.get('/greet', (req, res) => {
+    const name = req.session.name;
+    res.send('hello ${req.session.name}');
 })
 
 server.get('/api/users', (req, res) => {
