@@ -54,7 +54,7 @@ server.post("/api/login", (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
-        res.status(200).send("Welcome");
+        res.status(200).send("Welcome To FSW12 Lamda School");
       } else {
         res.status(401).json({ Error: "Cannot Authorize" });
       }
