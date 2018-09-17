@@ -10,7 +10,7 @@ server.use(express.json());
 server.use(cors());
 
 server.get('/', (req, res) => {
-  res.send('Its Alive!');
+  res.send('Server is humming along nicely.');
 });
 
 // protect this route, only authenticated users should see it
