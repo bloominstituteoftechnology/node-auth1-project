@@ -1,0 +1,28 @@
+{
+  "name": "package",
+  "version": "1.0.0",
+  "description": "stop",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tulf/auth-i.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tulf/auth-i/issues"
+  },
+  "homepage": "https://github.com/Tulf/auth-i#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "helmet": "^3.13.0",
+    "knex": "^0.15.2",
+    "sqlite3": "^4.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  }
+}
