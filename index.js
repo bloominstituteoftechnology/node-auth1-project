@@ -49,3 +49,14 @@ server.post('/api/login', (req ,res) => {
 
 });
 
+server.get('/api/users', (req, res) => {
+    db('users')
+    .select('id', 'username', 'password')
+    .then(users => {
+        res.json(users);
+    })
+    .catch(err => res.send(err));
+});
+
+server.listen(6600, () => console.log('\nrunning on port 6600\n'));
+
