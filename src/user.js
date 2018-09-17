@@ -24,7 +24,7 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre('save', function (next) {
-  console.log('preeeeeeeeeeee');
+  console.log('pre');
 
   bcrypt.hash(this.passwordHash, 11, (err, hash) => {
     if (err) {
@@ -38,7 +38,7 @@ UserSchema.pre('save', function (next) {
 
 UserSchema.methods.isUserValid = function (useFail) {
   return bcrypt.compare(useFail, this.username);
-}
+};
 
 UserSchema.methods.isPasswordValid = function (passFail) {
   return bcrypt.compare(passFail, this.passwordHash);
