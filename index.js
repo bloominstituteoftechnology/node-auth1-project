@@ -18,14 +18,11 @@ server.get("/", (req, res) => {
 server.post("/api/register", (req, res) => {
   const creds = req.body;
 
-  const hash = bcrypt.hashSync(creds.password, 10);
+  const hash = bcrypt.hashSync(creds.password, 14);
   creds.password = hash;
-  console.log(creds);
 
   db.hashUser(creds)
-    .then(id => {
-      res.status(201).json(id);
-    })
+    .then(id => res.status(201).send("Successful"))
     .catch(err => res.status(500).send("error creating user"));
 });
 
