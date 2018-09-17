@@ -4,7 +4,7 @@
   "description": "- Authentication.\r - Express Middleware.\r - Password Hashing.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "express": "^4.16.3",
+    "express-sessions": "^1.0.6",
     "knex": "^0.15.2",
     "sqlite3": "^4.0.2"
   }
