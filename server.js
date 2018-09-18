@@ -19,7 +19,7 @@ const sessionConfig = {
     secret: 'nobody tosses a dwarf!',
     cookie: {
       maxAge: 1 * 24 * 60 * 60 * 1000,
-      secure: false, // only set cookies over https. Server will not send back a cookie over http.
+        secure: false, // only set cookies over https. Server will not send back a cookie over http.
     }, // 1 day in milliseconds
     httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
     resave: false,
@@ -31,12 +31,20 @@ const sessionConfig = {
         createtable: true,
         clearInterval: 1000 * 60 * 60,
     })
-  };
+};
 
 
 server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
+
+function protected(req, res, next) {
+    if (req.session && req.session.username) {
+        next();
+    } else {
+        res.status(401).json({ message: 'you shall not pass!!' });
+    }
+}
 
 // Endpoints
 // server.get('/', (req, res) => {
@@ -87,10 +95,21 @@ server.post('/api/login', (req, res) => {
     }).catch(err => {
         console.log('/api/login Post error:', err);
         res.status(500).send(err, "Everything failed")});
-})
+});
 
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                res.send('error logging out');
+            } else {
+                res.send('good bye');
+            }
+        });
+    }
+});
 
-server.get('/api/users', (req, res) => {
+server.get('/api/users', protected, (req, res) => {
     
     if(req.session && req.session.username){
 
@@ -110,7 +129,7 @@ server.get('/api/users', (req, res) => {
     
 });
 
-server.get('/api/admins', (req, res) => {
+server.get('/api/admins', protected, (req, res) => {
     // grab the logged in userid from the session
     if(req.session && req.session.userId){
     const userId = req.ession.userId;
