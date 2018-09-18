@@ -7,6 +7,11 @@ exports.up = function(knex, Promise) {
       .notNullable()
       .unique();
     users.string("password", 128).notNullable();
+    users
+      .boolean("admin")
+      .defaultsTo(false);
+//      .references("isAdmin")
+//      .inTable("admins");
   });
 };
 
