@@ -1,17 +1,41 @@
 const express = require("express");
 const cors = require("cors");
-const bcrypt = require("bcryptjs");
 const session = require("express-session");
 const db = require("./database/dbConfig.js");
 const KnexSessionStore = require("connect-session-knex")(session);
+
+const path = require("path");
+
+const server = express();
+
+const login = require("./Login/login.js");
+const configMiddleware = require("./config/middleware.js");
+
+//configure middleware for the server
+configMiddleware(server);
+
+server.get("/download", (req, res, next) => {
+  const filePath = path.join(__dirname, "index.html");
+  res.sendFile(filePath, (err) => {
+    // if there is an error the callback function will get an error as it's first argument
+    if (err) {
+      // we could handle the error here or pass it down to error-handling middleware like so:
+      next(err); // call the next error-handling middleware in the queue
+    } else {
+      console.log("File sent successfully");
+    }
+  });
+});
+
+server.use("/api", login);
+
+server.use(errorHandler);
 
 //--------------------------------------//
 // Optional Way for configuration //
 //const knexConfig = require("./knexfile");
 //const db = knex(knexConfig.development);
 //-------------------------------------//
-
-const server = express();
 
 //======session configuration====//
 const sessionsConfig = {
@@ -37,89 +61,28 @@ const sessionsConfig = {
 server.use(session(sessionsConfig));
 server.use(express.json());
 server.use(cors());
+server.use()
 
 //========middleware==========//
-function auth(req, res, next) {
-  if (req.session && req.session.username) {
-    next();
-  } else {
-    res.status(401).json({ Error: "You shall not pass!!" });
+function errorHandler(err, req, res, next) {
+  console.error(err);
+
+  switch (err.statusCode) {
+    case 404:
+      res.status(404).json({
+        message: "There was an error performing the required operation"
+      });
+
+      break;
+
+    default:
+      res.status(500).json({
+        message: "There was an error performing the required operation"
+      });
+
+      break;
   }
 }
 //========middleware==========//
-
-//============GET ENDPOINT============//
-server.get("/api/users", auth, (req, res) => {
-  db("users")
-    .select("id", "username")
-    .then(users => {
-      res.status(200).json(users);
-    })
-    .catch(err => {
-      console.log("Error: ", err);
-      res.status(500).json({ Error: "Could not get users" });
-    });
-});
-//============GET ENDPOINT============//
-
-//============GET LOGOUT============//
-server.get("/api/logout", (req, res) => {
-  if (req.session) {
-    req.session.destroy(err => {
-      if (err) {
-        res.send("Error logging out");
-      } else {
-        res.send("Good Bye");
-      }
-    });
-  }
-});
-//============GET LOGOUT============//
-
-//============POST REGISTER ENDPOINT============//
-server.post("/api/register", (req, res) => {
-  const creds = req.body;
-  const hash = bcrypt.hashSync(creds.password, 3);
-  creds.password = hash;
-
-  db("users")
-    .insert(creds)
-    .then(ids => {
-      const id = ids[0];
-      res.status(200).json(id);
-    })
-    .catch(err => {
-      console.log("Error: ", err);
-      res.status(500).json({ Error: "Couldn't post register" });
-    });
-});
-//============POST REGISTER ENDPOINT============//
-
-//============POST LOGIN ENDPOINT============//
-server.post("/api/login", (req, res) => {
-  const creds = req.body;
-
-  db("users")
-    .where({ username: creds.username })
-    .first()
-    .then(user => {
-      if (user && bcrypt.compareSync(creds.password, user.password)) {
-        // grab roles from user
-        // req.session.roles = roles
-        req.session.username = user.username;
-
-        res
-          .status(200)
-          .send(`Welcome ${req.session.username} To FSW12 Lamda School`);
-      } else {
-        res.status(401).json({ Error: "Cannot Authorize" });
-      }
-    })
-    .catch(err => {
-      console.log("Error: ", err);
-      res.status(500).json({ Error: "Login Failed" });
-    });
-});
-//============POST LOGIN ENDPOINT============//
 
 server.listen(2500, () => console.log("\n===Running on Port: 2500===\n"));
