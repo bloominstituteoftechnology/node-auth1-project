@@ -57,6 +57,19 @@ server.post("/api/register", (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.send('error logging out');
+        } else {
+          res.send('good bye');
+        }
+      });
+    }
+  });
+  
+
 server.post("/api/login", (req, res) => {
   const creds = req.body;
   db("users")
@@ -81,7 +94,7 @@ server.get("/api/users", auth, (req, res) => {
     .then(users => {
       res.json(users);
     })
-    .catch(err => res.send(err));
+    .catch(err => res.json({message:"Please login to access information"}));
 });
 
 server.listen(8000, () => console.log("========API running on 8000======="));
