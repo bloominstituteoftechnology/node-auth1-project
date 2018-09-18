@@ -1,6 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs')
+const session = require('express-session')
+// require your store library
+const KnexSessionStore = require('connect-session-knex')(session);
 
 const db = require('./database/dbConfig.js');
 
@@ -9,6 +12,40 @@ const server = express();
 server.use(express.json());
 server.use(cors());
 
+// configure express-session middleware
+const sessionConfig = {
+      name: 'notsession', // default is connect.sid
+      secret: 'nobody tosses a dwarf!',
+      cookie: {
+        maxAge: 1 * 24 * 60 * 60 * 1000,
+        secure: false, // only set cookies over https. Server will not send back a cookie over http.
+      }, // 1 day in milliseconds
+      httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
+      resave: false,
+      saveUninitialized: false,
+      store: new KnexSessionStore({
+        tablename: 'sessions',
+        sidfieldname: 'sid',
+        knex: db,
+        createtable: true,
+        clearInterval: 1000 * 60 * 60,
+      }),
+    }
+
+server.use(session(sessionConfig));
+
+// testing cookies
+server.get('/setname', (req, res) => {
+    req.session.name = 'Frodo';
+    res.send('got it');
+  });
+  
+server.get('/greet', (req, res) => {
+    const name = req.session.name;
+    res.send(`hello ${req.session.name}`);
+  });
+// close cookie test
+
 server.get('/', (req, res) => {
   res.send('Server is humming along nicely.');
 });
@@ -16,7 +53,7 @@ server.get('/', (req, res) => {
 // protect this route, only authenticated users should see it
 server.get('/api/users', (req, res) => {
   db('users')
-    .select('id', 'username')
+    .select('id', 'username', 'password')
     .then(users => {
       res.json(users);
     })
@@ -31,9 +68,10 @@ server.post('/api/login', (req, res) => {
     db('users').where({username: creds.username}).first().then(user => {
     // check creds
     if (user && bcrypt.compareSync(creds.password, user.password)) {
-        res.status(200).send('Welcome')
+        req.session.username = user.username;
+        res.status(200).send(`Welcome ${req.session.username}`);
     } else {
-        res.status(401).json({ message: 'You shall not pass!'})
+        res.status(401).json({ message: 'You shall not pass!'});
     }
     }).catch(err => res.status(500).send(err))
 
