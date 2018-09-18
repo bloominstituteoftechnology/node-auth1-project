@@ -16,13 +16,13 @@ const server = express();
 
 
 const sessionConfig = {
-  name: 'kitty', // default is connect.sid
+  name: 'kitty', 
   secret: 'kitties are cool',
   cookie: {
-    maxAge: 1 * 24 * 60 * 60 * 1000, // a day
-    secure: false, // only set cookies over https. Server will not send back a cookie over http.
-  }, // 1 day in milliseconds
-  httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
+    maxAge: 1 * 24 * 60 * 60 * 1000, 
+    secure: false, 
+  }, 
+  httpOnly: true, 
   resave: false,
   saveUninitialized: false,
   store: new KnexSessionStore({
@@ -34,11 +34,15 @@ const sessionConfig = {
    }),
 };
 
+
 server.use(session(sessionConfig));
+
 
 server.use(express.json());
 server.use(cors());
 server.use(helmet());
+
+
 
 function protected(req, res, next) {
   if (req.session && req.session.username) {
@@ -52,6 +56,7 @@ function protected(req, res, next) {
 server.get('/', (req, res) => {
   res.send('Hello!');
 });
+
 
 
 
@@ -122,6 +127,7 @@ server.get('/api/users', protected, (req, res) => {
   })
   .catch(err => res.status(500).json({message: 'error has occured'}))
 })
+
 
 
 
