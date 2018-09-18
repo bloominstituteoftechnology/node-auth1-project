@@ -1,7 +1,21 @@
 const express = require("express");
+const session = require('express-session');
 
 const server = express();
 server.use(express.json());
+//configure express-session middleware
+const sessionConfig = {
+  name: "notsession",
+  secret: "this is a secret",
+  cookie: {
+    maxAge: 1 * 24 * 60 * 60 * 1000,
+    secure: false
+  },
+  httpOnly: true,
+  resave: false,
+  saveUninitialized: false
+};
+server.use(session(sessionConfig));
 
 const knex = require("knex");
 const knexConfig = require("./knexfile");
@@ -39,7 +53,9 @@ server.post("/api/login", (req, res) => {
   .then(user => {
     // check credentials
     if (username && bcrypt.compareSync(credentials.password, user.password)){
-        return res.status(200).send('Logged In')
+      // create new session for user and cookie containing user id
+       req.session.userId = user.id
+       res.status(200).send(`${user.username} is logged in`)
     } else {
       res.status(401).json({ error: "You shall not pass!" })
     }
@@ -51,8 +67,13 @@ server.post("/api/login", (req, res) => {
   
 
 server.get("/api/users", (req, res) => {
-    //the user is not valid
-    
+    db('users')
+      .then(users => {
+        res.json(users)
+      })
+      .catch(err => {
+        res.status(500).send(err)
+    })
 });
 
 const port = process.env.PORT || 8000;
