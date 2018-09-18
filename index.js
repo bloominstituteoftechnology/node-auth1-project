@@ -32,6 +32,7 @@ const sessionsConfig = {
     clearInterval: 1000 * 60 * 60
   })
 };
+// session configuration
 
 server.use(session(sessionsConfig));
 server.use(express.json());
@@ -88,6 +89,10 @@ server.post("/api/login", (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
+        // grab roles from user
+        // req.session.roles = roles
+        req.session.username = user.username;
+
         res.status(200).send("Welcome To FSW12 Lamda School");
       } else {
         res.status(401).json({ Error: "Cannot Authorize" });
