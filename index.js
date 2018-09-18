@@ -3,13 +3,42 @@ const cors = require("cors");
 const knex = require("knex");
 const knexConfig = require("./knexfile.js");
 const bcrypt = require("bcryptjs");
-//const session = require("session");
+const session = require("express-session");
+const KnexSessionStore = require("connect-session-knex")(session);
 const db = knex(knexConfig.development);
 const server = express();
 server.use(express.json());
 server.use(cors());
+const sessionConfig = {
+  name: "login",
+  secret: "I eat whales",
+  cookie: {
+    loggedIn: true,
+    secure: false
+  },
+  httpOnly: true,
+  resave: false,
+  saveUninitialized: false,
+  store: new KnexSessionStore({
+    tablename: "sessions",
+    sidfieldname: "sid",
+    knex: db,
+    createtable: true,
+    clearInterval: 1000 * 60 * 60
+  })
+};
 
-server.get("/api/users", (req, res) => {
+server.use(session(sessionConfig));
+
+function protected(req, res, next) {
+  if (req.session && req.session.username) {
+    next();
+  } else {
+    res.status(401).json({ message: "Unauthorized" });
+  }
+}
+
+server.get("/api/users", protected, (req, res) => {
   db("users")
     .select()
     .then(users => {
@@ -39,11 +68,24 @@ server.post("/api/login", (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
-        res.status(200).send("Logged in");
+        req.session.username = user.username;
+        res.status(200).send(`Welcome, ${req.session.username}`);
       } else {
         res.status(401).json({ message: "Username or password is incorrect" });
       }
     });
+});
+
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('error logging out');
+      } else {
+        res.send('good bye');
+      }
+    });
+  }
 });
 
 //Admins
@@ -56,4 +98,5 @@ server.get("/api/admins", (req, res) => {
     })
     .catch(err => res.status(500).json(err));
 });
+
 server.listen(3300, () => console.log("\nrunning on port 3300\n"));
