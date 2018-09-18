@@ -30,9 +30,6 @@ server.use(express.json());
 server.use(helmet());
 server.use(cors());
 
-server.get("/", (req, res) => {
-  res.send("You made it!");
-});
 
 server.post("/api/register", (req, res) => {
   const creds = req.body;
