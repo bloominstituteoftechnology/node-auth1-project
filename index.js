@@ -51,7 +51,7 @@ server.post('/api/register', (req, res) => {
     // save the user
     db('users').insert(creds).then(ids => {
         const id = ids[0];
-
+        
         res.status(201).json(id)
     }).catch(err => res.status(500).send(err))
     // return 201
