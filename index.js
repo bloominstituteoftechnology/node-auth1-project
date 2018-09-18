@@ -19,7 +19,6 @@ const sessionConfig = {
     secure: false // only set cookies over https. Server will not send back a cookie over http.
   },
   store: store,
-
   httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
   resave: false,
   saveUninitialized: false
