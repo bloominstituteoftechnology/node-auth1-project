@@ -31,8 +31,19 @@ const sessionConfig = {
         clearInterval: 1000 * 60 * 60,
       }),
     }
+// end sessionConfig middleware
 
 server.use(session(sessionConfig));
+
+// global middleware to restrict routes to logged in users only
+function protected(req, res, next) {
+    if (req.session && req.session.username) {
+      next();
+    } else {
+      res.status(401).json({ message: 'you shall not pass!!' });
+    }
+  }
+// end protection middleware
 
 // testing cookies
 server.get('/setname', (req, res) => {
@@ -41,10 +52,10 @@ server.get('/setname', (req, res) => {
   });
   
 server.get('/greet', (req, res) => {
-    const name = req.session.name;
-    res.send(`hello ${req.session.name}`);
+    const name = req.session.username;
+    res.send(`hello ${name}`);
   });
-// close cookie test
+// end cookie test
 
 server.get('/', (req, res) => {
   res.send('Server is humming along nicely.');
@@ -59,6 +70,7 @@ server.get('/api/users', (req, res) => {
     })
     .catch(err => res.send(err));
 });
+
 
 // login
 server.post('/api/login', (req, res) => {
@@ -75,8 +87,8 @@ server.post('/api/login', (req, res) => {
     }
     }).catch(err => res.status(500).send(err))
 
-    // check creds
 })
+// end login
 
 // register
 server.post('/api/register', (req, res) => {
@@ -92,7 +104,7 @@ server.post('/api/register', (req, res) => {
         
         res.status(201).json(id)
     }).catch(err => res.status(500).send(err))
-    // return 201
 })
+// end register
 
 server.listen(3300, () => console.log('\nrunning on port 3300\n'));
