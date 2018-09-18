@@ -5,17 +5,18 @@ const dbConfig = require('./knexfile');
 const session = require('express-session');
 const helmet = require('helmet');
 const knexSessionStore = require('connect-session-knex')(session);
+const store = new knexSessionStore()
 const sessionConfig = {
     name: 'notsession', // default connect.sid
     secret: `I can't tell you that`,
     cookie: {
         maxAge: 1 * 24 * 60 * 60 * 1000, // a day
-        secure: true, // only set cookies over https. Server will not send back a cookie over http
+        secure: false, // only set cookies over https. Server will not send back a cookie over http
     },
     httpOnly: true, // don't let 35 code access cookies. Browser extensions run 35 code on your browser
     resave: false,
     saveUninitialized: false,
-    store: new knexSessionStore()
+    store
 };
 
 const db = require('./db/helpers');
@@ -32,7 +33,7 @@ server.get('/', (req, res) => {
 
 server.get('/greet', (req, res) => {
     const name = req.session.name;
-    res.send(`hello ${req.session.name}`)
+    res.send(`hello ${name}`)
 })
 
 server.post('/api/register', (req, res) => {
@@ -52,7 +53,7 @@ server.post('/api/login', (req, res) => {
     db.loginUser(creds)
         .then((user) => {
             if (user && bcrypt.compareSync(creds.password, user.password)) {
-                req.session.username = creds.username;
+                req.session.name = creds.username;
                 res.status(200).json({ message: `welcome ${creds.username}` });
             } else {
                 res.status(401).json({ message: 'Your username and/or password is invalid' });
