@@ -17,7 +17,7 @@ server.get('/', (req, res) => {
 
 //endpoints
 server.post('/api/register', (req, res) => {
-  const cred = req.body;
+  const creds = req.body;
   const hash = bcrypt.hashSync(creds.password, 8);
   creds.password = hash;
 
@@ -32,8 +32,32 @@ server.post('/api/register', (req, res) => {
 
 
 
+server.post('/api/login', (req ,res) => {
+  const creds = req.body;
+
+   db('users')
+  .where({username: creds.username})
+  .first()
+  .then(user => {
+   if (user && bcrypt.compareSync(creds.password, user.password)) {
+    res.send(200).json({ message: 'login successful'});
+      } else {
+        res.status(401).json({ message: 'incorrect login' });
+      }
+  })
+  .catch(err => res.status(500).json(err))
+});
 
 
+server.get('/api/users', (req, res) => {
+
+  db('users')
+  .select('id', 'username', 'password')
+  .then(users => {
+    res.status(200).json(users)
+  })
+  .catch(err => res.status(500).json({message: 'error has occured'}))
+})
 
 
 
