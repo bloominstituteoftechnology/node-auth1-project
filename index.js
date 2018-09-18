@@ -72,7 +72,7 @@ server.get("/api/greet", (req, res) => {
 server.get("/api/users", (req, res) => {
   if (req.session && req.session.username) {
     db("users")
-      .select("id", "username", "password")
+      .select("id", "username")
       .then(users => {
         res.json(users);
       })
