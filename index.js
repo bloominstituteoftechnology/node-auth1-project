@@ -18,9 +18,28 @@ server.get('/', (req, res) => {
 //endpoints
 server.post('/api/register', (req, res) => {
   const cred = req.body;
-  const hash = bcrypt.hashSync(creds.password, 16);
-  
+  const hash = bcrypt.hashSync(creds.password, 8);
+  creds.password = hash;
+
+  db('users')
+  .insert(creds)
+  .then(ids => {
+    const id = ids[0];
+    res.status(201).json(id);
 })
+.catch(err => res.status(500).send(err))
+});
+
+
+
+
+
+
+
+
+
+
+
 
 
 const port = 3300;
