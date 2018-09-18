@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const db = require('./db/dbConfig.js');
 
@@ -49,9 +50,9 @@ server.post('/api/login', (req, res) => {
 
 server.get('/api/users', (req, res) => {
     db('users')
-        .select('id', 'username', 'password')
+        .select('id', 'username')
         .then(users => {
-            res.json(users);
+            res.status(200).json(users);
         })
         .catch(err => res.send(err));
 });
