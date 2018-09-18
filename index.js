@@ -12,6 +12,11 @@ const server = express();
 server.use(express.json());
 // server.use(cors());
 
+function auth(req, res, next) {
+    
+    next();
+}
+
 //============GET ENDPOINT============//
 server.get("/api/users", (req, res) => {
   db("users")
