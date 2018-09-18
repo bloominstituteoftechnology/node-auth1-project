@@ -82,4 +82,20 @@ server.get("/api/users", (req, res) => {
   }
 });
 
+server.get("/api/admins", (req, res) => {
+  // only send the list of users if the client is logged in
+  //user = {username: 'foo', role:'admin'}
+
+  if (req.session && req.session.role === "admin") {
+    db("users")
+      .select("id", "username", "password")
+      .then(users => {
+        res.json(users);
+      })
+      .catch(err => res.send(err));
+  } else {
+    res.status(403).json({ message: "you are forbidden" });
+  }
+});
+
 server.listen(3300, () => console.log("\nrunning on port 3300\n"));
