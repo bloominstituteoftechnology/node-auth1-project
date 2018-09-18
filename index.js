@@ -10,8 +10,8 @@ const db = knex(dbConfig.development);
 
 const server = express();
 
-server.use(helmet());
 server.use(express.json());
+server.use(helmet());
 
 server.get("/", (req, res) => {
   res.send("Its Alive!");
@@ -23,10 +23,11 @@ server.post("/api/register", (req, res) => {
   const hash = bcrypt.hashSync(credentials.password, 3);
 
   credentials.password = hash;
-
-  db("users_table")
+  console.log(credentials);
+  db("users")
     .insert(credentials)
     .then(ids => {
+      console.log(id);
       const id = ids[0];
 
       res.status(201).json(id);
@@ -35,8 +36,8 @@ server.post("/api/register", (req, res) => {
 });
 
 server.get("/api/users", (req, res) => {
-  db("users_table")
-    .select("id", "username", "password")
+  db("users")
+    .select("id", "user", "password")
     .then(users => {
       res.join(users);
     })
