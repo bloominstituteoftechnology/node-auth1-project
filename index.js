@@ -11,14 +11,23 @@ const db = knex(knexConfig.development);
 const bcrypt = require("bcryptjs");
 
 server.post("/api/register", (req, res) => {
-  const user = req.body;
   const credentials = req.body;
 
   const hash = bcrypt.hashSync(credentials.password, 14);
 
   credentials.password = hash;
+  console.log(credentials)
   // move on to save the user.
-
+    db('users')
+        .insert(credentials)
+        .then(ids => {
+      const id = ids[0];
+      // return 201
+      res.status(201).json(id);
+    })
+    .catch(err => {
+      res.status(500).send(err);
+    });
 });
 
 server.post("/api/login", (req, res) => {
@@ -37,14 +46,8 @@ server.post("/api/login", (req, res) => {
 
 server.get("/api/users", (req, res) => {
     //the user is not valid
-    if (!user || !bcrypt.compareSync(credentials.password, user.password)) {
-        return res.status(401).json({ error: "You shall not pass!" });
-      }
-
-      //the user is logged in, respond with an array of all the users contained in the database
-      if (user|| bcrypt.compareSync(credentials.password, user.password)){
-        return res.send({array: db.username});
-}});
+    
+});
 
 const port = process.env.PORT || 8000;
 server.listen(port, () => console.log(`Listening on port ${port}`));
