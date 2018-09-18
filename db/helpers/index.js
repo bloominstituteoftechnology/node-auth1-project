@@ -9,6 +9,15 @@ module.exports = {
   hashUser: function(action) {
     let query = db("users");
 
-    return query.insert(action).then((id) => id);
+    return query.insert(action).then(id => id);
+  },
+
+  verifyUser: function(creds) {
+    let query = db("users");
+
+    return query
+      .where({ username: creds.username })
+        .first()
+      .then(user => user);
   }
 };

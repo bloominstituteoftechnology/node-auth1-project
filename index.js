@@ -26,6 +26,21 @@ server.post("/api/register", (req, res) => {
     .catch(err => res.status(500).send("error creating user"));
 });
 
+server.post("/api/login", (req, res) => {
+  const creds = req.body;
+
+  db.verifyUser(creds)
+  
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        res.status(201).send("Successful");
+      } else {
+        return res.status(401).json({ error: "Incorrect credentials" });
+      }
+    })
+    .catch(err => res.status(500).send("There was an issue with the server"));
+});
+
 const port = 9000;
 server.listen(
   port,
