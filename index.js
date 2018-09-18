@@ -30,54 +30,29 @@ server.get('/', (req, res) => {
     res.send('Api Online')
 })
 
-server.get('/api/user', (req, res) => {
-    // only send the list of users if the client is logged in
-    req.session && req.session.username ?
-
-        db('auth')
-            .select('id', 'username', 'password')
-            .then(user => {
-                res.status(200).json(user)
-            })
-            .catch(err => res.status(500).json(err))
-        :
-        res.status(401).json({ msg: 'Not authorized for this action' })
-})
-
-server.get('/api/admins', (req, res) => {
-    //  if (req.session && req.session.userId) {
-    //     let userId = req.session.userId
-    // db('roles as r').join('user_roles as ur', 'ur.role_id', '=', 'r.id')
-    //     .select('r.role_name')
-    //     .where('ur.user_id', userId)
-    //     .then(roles => {
-    //         if (roles.includes('admin')) {
-    //             // have access
-    //         } else {
-    //             // bounced
-    //         }
-            
-            
-    //     })
-    // }
-    // role can have many permissions
-    // a user can have many roles
-    // a user can have many permissions
-    //query the db and get the roles for the user
 
 
-    // only send the list of users if the client is logged in
-    req.session && req.session.role === 'admin' ?
-        db('auth')
-            .select('id', 'username', 'password')
-            .then(user => {
-                res.status(200).json(user)
-            })
-            .catch(err => res.status(500).json(err))
-        :
-        res.status(403).json({ msg: 'Not authorized for this action' })
+server.post('/api/register', (req, res) => {
+    // grab credentials
+    const creds = req.body
+    // hash the password
+    const hash = bcrypt.hashSync(creds.password, 5)
+    //replace user password with hash
+    creds.password = hash;
+    // save the user
+    db('auth').insert(creds).then(ids => {
+        // const id = ids[0]
+        // return 201
+        res.status(201).json(ids)
+    })
+        .catch(err => {
+            console.log('post error', err)
+            res.status(500).json(err)
+        })
 
 })
+
+
 
 server.post('/api/login', (req, res) => {
     const credentials = req.body;
@@ -101,35 +76,58 @@ server.post('/api/login', (req, res) => {
         })
 })
 
-server.get('/', (req, res) => {
-    req.session.name = 'Frodo';
-    res.send('got it');
-});
-
 server.get('/api/greet', (req, res) => {
     const name = req.session.username;
     res.send(`hello ${name}`);
 });
 
-server.post('/api/register', (req, res) => {
-    // grab credentials
-    const creds = req.body
-    // hash the password
-    const hash = bcrypt.hashSync(creds.password, 5)
-    //replace user password with hash
-    creds.password = hash;
-    // save the user
-    db('auth').insert(creds).then(ids => {
-        // const id = ids[0]
-        // return 201
-        res.status(201).json(ids)
-    })
-        .catch(err => {
-            console.log('post error', err)
-            res.status(500).json(err)
-        })
+server.get('/api/user', (req, res) => {
+    // only send the list of users if the client is logged in
+    req.session && req.session.username ?
+
+        db('auth')
+            .select('id', 'username', 'password')
+            .then(user => {
+                res.status(200).json(user)
+            })
+            .catch(err => res.status(500).json(err))
+        :
+        res.status(401).json({ msg: 'Not authorized for this action' })
+})
+
+
+
+server.get('/api/admins', (req, res) => {
+    //  if (req.session && req.session.userId) {
+    //     let userId = req.session.userId
+    // db('roles as r').join('user_roles as ur', 'ur.role_id', '=', 'r.id')
+    //     .select('r.role_name')
+    //     .where('ur.user_id', userId)
+    //     .then(roles => {
+    //         if (roles.includes('admin')) {
+    //             // have access
+    //         } else {
+    //             // bounced
+    //         }
+            
+            
+    //     })
+    // }
+
+    // only send the list of users if the client is logged in
+    req.session && req.session.role === 'admin' ?
+        db('auth')
+            .select('id', 'username', 'password')
+            .then(user => {
+                res.status(200).json(user)
+            })
+            .catch(err => res.status(500).json(err))
+        :
+        res.status(403).json({ msg: 'Not authorized for this action' })
 
 })
+
+
 
 server.put('/api/user/:id', (req, res) => {
     const { id } = req.params
@@ -141,6 +139,8 @@ server.put('/api/user/:id', (req, res) => {
         })
         .catch(err => res.status(500).json(err))
 })
+
+
 
 server.delete('/api/user/id', (req, res) => {
     const { id } = req.params;
