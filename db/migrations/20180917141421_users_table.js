@@ -12,6 +12,7 @@ exports.up = function(knex, Promise) {
     tbl
     .string('password', 128)
     .notNullable()
+    .unique();
 
 
   })
