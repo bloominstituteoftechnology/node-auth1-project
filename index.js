@@ -13,7 +13,7 @@ const KnexSessionStore = require("connect-session-knex")(session);
 
 const server = express();
 
-// session configuration
+//======session configuration====//
 const sessionsConfig = {
   name: "monkey", // default is connect.sid
   secret: "nobody tosses a dwarf!",
@@ -32,13 +32,13 @@ const sessionsConfig = {
     clearInterval: 1000 * 60 * 60
   })
 };
-// session configuration
+//======session configuration====//
 
 server.use(session(sessionsConfig));
 server.use(express.json());
 server.use(cors());
 
-// middleware
+//========middleware==========//
 function auth(req, res, next) {
   if (req.session && req.session.username) {
     next();
@@ -46,6 +46,7 @@ function auth(req, res, next) {
     res.status(401).json({ Error: "You shall not pass!!" });
   }
 }
+//========middleware==========//
 
 //============GET ENDPOINT============//
 server.get("/api/users", auth, (req, res) => {
@@ -60,6 +61,21 @@ server.get("/api/users", auth, (req, res) => {
     });
 });
 //============GET ENDPOINT============//
+
+//============GET LOGOUT============//
+server.get("/api/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send("Error logging out");
+      } else {
+        req.session.username = user.username;
+        res.send(`Good Bye ${req.session.username}`);
+      }
+    });
+  }
+});
+//============GET LOGOUT============//
 
 //============POST REGISTER ENDPOINT============//
 server.post("/api/register", (req, res) => {
@@ -93,7 +109,9 @@ server.post("/api/login", (req, res) => {
         // req.session.roles = roles
         req.session.username = user.username;
 
-        res.status(200).send("Welcome To FSW12 Lamda School");
+        res
+          .status(200)
+          .send(`Welcome ${req.session.username} To FSW12 Lamda School`);
       } else {
         res.status(401).json({ Error: "Cannot Authorize" });
       }
