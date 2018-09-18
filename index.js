@@ -1,11 +1,23 @@
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
-
+const session = require("express-session");
 const db = require("./db/dbConfig.js");
 
 const server = express();
 
+const sessionConfig = {
+  name: "macadamian",
+  secret: "horde FTW!",
+  cookie: {
+    maxAge: 1 * 24 * 60 * 60 * 1000,
+    secure: false
+  },
+  httpOnly: true,
+  resave: false,
+  saveUninitialized: false
+};
+server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
 
@@ -14,58 +26,32 @@ server.get("/", (req, res) => {
 });
 
 server.post("/api/register", (req, res) => {
-  //grab credentials
   const creds = req.body;
 
-  //hash password the second argument is how many times its going to be hashed that number power on 2
   const hash = bcrypt.hashSync(creds.password, 10);
 
-  //replace user password with hash
   creds.password = hash;
 
-  //save user
   db("users")
     .insert(creds)
     .then(ids => {
       const id = ids[0];
 
-      //return 201
       res.status(201).json(id);
     })
     .catch(err => res.status(500).send(err));
 });
 
 server.post("/api/login", (req, res) => {
-  //grab creds
   const creds = req.body;
 
-  //find user
   db("users")
     .where({ username: creds.username })
     .first()
     .then(user => {
-      //check creds
       if (user && bcrypt.compareSync(creds.password, user.password)) {
-        res.status(200).send("welcome");
-      } else {
-        res.status(401).json({ message: "you shall not pass!" });
-      }
-    })
-    .catch(err => res.status(500).send(err));
-  //check creds
-});
-
-server.post("/api/login", (req, res) => {
-  //grab creds
-  const creds = req.body;
-  //find user
-  db("users")
-    .where({ username: creds.username })
-    .first()
-    .then(user => {
-      //check creds
-      if (user && bcrypt.compareSync(creds.password, user.password)) {
-        res.status(200).send(welcome);
+        req.session.username = user.username;
+        res.status(200).send(`welcome ${req.session.username}`);
       } else {
         res.status(401).json({ message: "you shall not pass!" });
       }
@@ -73,14 +59,27 @@ server.post("/api/login", (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-// protect this route, only authenticated users should see it
+server.get("/api/setname", (req, res) => {
+  req.session.name = "Frodo";
+  res.send(`acquired name as ${req.session.name}`);
+});
+
+server.get("/api/greet", (req, res) => {
+  const name = req.session.username;
+  res.send(`hello ${name}`);
+});
+
 server.get("/api/users", (req, res) => {
-  db("users")
-    .select("id", "username")
-    .then(users => {
-      res.json(users);
-    })
-    .catch(err => res.send(err));
+  if (req.session && req.session.username) {
+    db("users")
+      .select("id", "username", "password")
+      .then(users => {
+        res.json(users);
+      })
+      .catch(err => res.send(err));
+  } else {
+    res.status(401).json({ message: "youre not authorized!" });
+  }
 });
 
 server.listen(3300, () => console.log("\nrunning on port 3300\n"));
