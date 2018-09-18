@@ -108,10 +108,7 @@ server.get('/api/logout', (req, res) => {
   }
 });
 
-server.get('/setname', (req, res) => {
-  req.session.name = 'Lana';
-  res.send('it worked!');
-});
+
 
 server.get('/greet', (req, res) => {
   const name = req.session.username;
