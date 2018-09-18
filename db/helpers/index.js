@@ -17,7 +17,20 @@ module.exports = {
 
     return query
       .where({ username: creds.username })
-        .first()
+      .first()
       .then(user => user);
+  },
+
+  get: function(id) {
+    let query = db("users");
+
+    if (id) {
+      return query
+        .where("id", id)
+        .first()
+        .then(user => user);
+    } else {
+      return query.select("id", "username").then(users => users);
+    }
   }
 };
