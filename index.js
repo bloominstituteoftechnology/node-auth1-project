@@ -2,10 +2,20 @@ const express = require("express");
 const helmet = require("helmet");
 const bcrypt = require("bcryptjs");
 const cors = require("cors");
+const session = require("express-session");
 
 const db = require("./db/helpers");
 
 const server = express();
+
+const sessionConfig = {
+  secret: "keyboard cat",
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true }
+};
+
+server.use(session(sessionConfig));
 
 server.use(express.json());
 server.use(helmet());
@@ -30,7 +40,7 @@ server.post("/api/login", (req, res) => {
   const creds = req.body;
 
   db.verifyUser(creds)
-  
+
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
         res.status(201).send("Successful");
@@ -40,6 +50,8 @@ server.post("/api/login", (req, res) => {
     })
     .catch(err => res.status(500).send("There was an issue with the server"));
 });
+
+server.get("/api/users", (req, res) => {});
 
 const port = 9000;
 server.listen(
