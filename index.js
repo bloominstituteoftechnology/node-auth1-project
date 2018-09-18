@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const knex = require('knex');
 const dbConfig = require('./knexfile');
 
-const db = knex(dbConfig.development);
+const db = require('./db/helpers');
 const server = express();
 
 server.use(express.json());
@@ -14,9 +14,9 @@ server.get('/', (req, res) => {
 
 server.post('/api/register', (req, res) => {
     let creds = req.body;
-
     creds.password = bcrypt.hashSync(creds.password, 5);
-    db.insert(creds).into('users')
+
+    db.registerUser(creds)
         .then((data) => {
             res.status(201).json(data);
         })
@@ -26,7 +26,7 @@ server.post('/api/register', (req, res) => {
 server.post('/api/login', (req, res) => {
     let creds = req.body;
 
-    db('users').where({ username: creds.username }).first()
+    db.loginUser(creds)
         .then((user) => {
             if (user && bcrypt.compareSync(creds.password, user.password)) {
                 res.status(200).json({ message: `welcome ${creds.username}` });
@@ -38,9 +38,9 @@ server.post('/api/login', (req, res) => {
 });
 
 server.get('/api/users', (req, res) => {
-    db('users').select('id', 'username')
-        .then((data) => {
-            res.status(200).json(data);
+    db.getUsers()
+        .then((users) => {
+            res.status(200).json(users);
         })
         .catch(err =>
             res.status(404).json({ message: 'Could not find users database' }))
