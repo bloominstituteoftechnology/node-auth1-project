@@ -3,6 +3,19 @@ const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const db = require("./data/dbConfig.js");
 const server = express();
+const session = require('express-session');
+
+const sessionConfig = {
+    name: 'cookieSession',
+    secret: 'a clock is right twice a day',
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      secure: false,
+    },
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false,
+  };
 
 server.use(express.json());
 server.use(cors());
