@@ -4,7 +4,7 @@
   "description": "## Athentication",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon index.js"
+    "start": "nodemon"
   },
   "repository": {
     "type": "git",
@@ -17,10 +17,8 @@
   },
   "homepage": "https://github.com/AliasAJ/auth-i#readme",
   "dependencies": {
-    "connect-session-knex": "^1.4.0",
+    "bcryptjs": "^2.4.3",
     "express": "^4.16.3",
-    "express-session": "^1.15.6",
-    "helmet": "^3.13.0",
     "knex": "^0.15.2",
     "sqlite3": "^4.0.2"
   },
