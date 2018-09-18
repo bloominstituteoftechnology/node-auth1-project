@@ -84,9 +84,11 @@ server.post('/api/login', (req, res) => {
                 });
             }
         })
-        .catch(err => res.status(500).send(err))
-
-});
+        .catch(err => {
+            console.log('/api/login POST ERROR:', err)
+            res.status(500).send(err)
+        })
+    });
 
 server.get('/api/logout', (req, res) => {
     if (req.session) {
@@ -108,7 +110,10 @@ server.get('/api/users', protected, (req, res) => {
         .then(users => {
             res.json(users);
         })
-        .catch(err => res.send(err));
+        .catch(err => {
+            console.log('/api/users GET ERROR:', err)
+            res.send(err)
+        });
 });
 
 
