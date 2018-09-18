@@ -20,7 +20,10 @@ server.post('/api/register', (req, res) => {
             const id = ids[0];
             res.status(201).json(id);
         })
-        .catch(err => res.status(500).send(err));
+        .catch(err => {
+            console.log('/api/register POST error:', err);
+            res.status(500).send('Please try again later.');
+        });
 });
 
 server.post('/api/login', (req, res) => {
@@ -36,7 +39,10 @@ server.post('/api/login', (req, res) => {
                 res.status(401).json({ message: 'Unauthorized' });
             }
         })
-        .catch(err => res.status(500).send(err));
+        .catch(err => {
+            console.log('/api/login POST error:', err);
+            res.status(500).send('Please try again later.');
+        });
 });
 
 server.get('/api/users', (req, res) => {
@@ -45,7 +51,10 @@ server.get('/api/users', (req, res) => {
         .then(users => {
             res.json(users);
         })
-        .catch(err => res.send(err));
+        .catch(err => {
+            console.log('/api/users GET error:', err);
+            res.status(500).send('Please try again later.');
+        });
 });
 
 server.listen(9000, () => console.log('\n== API on port 9k ==\n'));
