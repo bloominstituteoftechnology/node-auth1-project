@@ -11,13 +11,9 @@ const db = require('./db/dbConfig.js');
 
 const server = express();
 
-server.use(express.json());
-server.use(cors());
-server.use(helmet());
 
-server.get('/', (req, res) => {
-  res.send('Hello!');
-});
+
+
 
 const sessionConfig = {
   name: 'kitty', // default is connect.sid
@@ -40,10 +36,22 @@ const sessionConfig = {
 
 server.use(session(sessionConfig));
 
+server.use(express.json());
+server.use(cors());
+server.use(helmet());
+
+function protected(req, res, next) {
+  if (req.session && req.session.username) {
+    next();
+  } else {
+    res.status(401).json({ message: 'you cannot sit with us' });
+  }
+}
 
 
-
-
+server.get('/', (req, res) => {
+  res.send('Hello!');
+});
 
 
 
@@ -74,7 +82,8 @@ server.post('/api/login', (req ,res) => {
   .first()
   .then(user => {
    if (user && bcrypt.compareSync(creds.password, user.password)) {
-    res.send(200).json({ message: 'login successful'});
+    req.session.username = user.username;
+    res.send(200).json({ message: `Welcome ${req.session.username}`});
       } else {
         res.status(401).json({ message: 'incorrect login' });
       }
@@ -82,11 +91,32 @@ server.post('/api/login', (req ,res) => {
   .catch(err => res.status(500).json(err))
 });
 
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('not able to log out');
+      } else {
+        res.send('Bye!');
+      }
+    });
+  }
+});
 
-server.get('/api/users', (req, res) => {
+server.get('/setname', (req, res) => {
+  req.session.name = 'Lana';
+  res.send('it worked!');
+});
+
+server.get('/greet', (req, res) => {
+  const name = req.session.username;
+  res.send(`hello ${name}`);
+});
+
+server.get('/api/users', protected, (req, res) => {
 
   db('users')
-  .select('id', 'username', 'password')
+  .select('id', 'username','password')
   .then(users => {
     res.status(200).json(users)
   })
