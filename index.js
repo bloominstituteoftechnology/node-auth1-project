@@ -38,9 +38,7 @@ function protected(req, res, next) {
     if (req.session && req.session.username) {
         next();
     } else {
-        res.status(401).json({
-            message: 'sorry, no can do!'
-        });
+        res.status(401).json({message: 'sorry, no can do!'});
     }
 }
 
@@ -102,15 +100,7 @@ server.get('/api/logout', (req, res) => {
     }
 });
 
-server.get('/setname', (req, res) => {
- req.session.name = "Bozo The Clown";
- res.send('got it');
-});
 
-server.get('/greet', (req, res) => {
-  const name = req.session.username;
-  res.send(`hello ${name}`);
-});
 
 server.get('/api/users', protected, (req, res) => {
     db('users')
@@ -121,18 +111,7 @@ server.get('/api/users', protected, (req, res) => {
         .catch(err => res.send(err));
 });
 
-server.get('/api/admins', protected, (req ,res) => {
- if (req.session && req.session.role === 'admin') {
-  db('users')
-  .select('id', 'username', 'password')
-  .then(users => {
-    res.json(users);
-  })
-  .catch(err => res.send(err));
- } else {
-  res.status(403).json({ message: 'No access for you!'});
-  }
-});
+
 
 
 
