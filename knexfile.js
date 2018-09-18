@@ -1,12 +1,14 @@
 // Update with your config settings.
 
 module.exports = {
-
   development: {
-    client: 'sqlite3',
+    client: "sqlite3",
     connection: {
-      filename: './db.sqlite3'
+      filename: "./db/db.sqlite3"
     },
-    useNullAsDefault : true,
-  },
+    useNullAsDefault: true,
+    migrations: {
+      directory: "./db/migrations"
+    }
+  }
 };

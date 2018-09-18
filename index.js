@@ -41,7 +41,7 @@ server.post("/api/login", (req, res) => {
     if (username && bcrypt.compareSync(credentials.password, user.password)){
         return res.status(200).send('Logged In')
     } else {
-      return res.status(401).json({ error: "You shall not pass!" })
+      res.status(401).json({ error: "You shall not pass!" })
     }
   })
   .catch(err => {
