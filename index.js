@@ -1,14 +1,17 @@
 const express = require("express");
+const server = express();
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const db = require("./db/dbConfig.js");
 const session = require("express-session");
-const server = express();
+const config = require("./config/middleware");
 
 const KnexSessionStore = require("connect-session-knex")(session);
 
 server.use(express.json());
 server.use(cors());
+// server.use();
+config(server); 
 
 const sessionConfig = {
   name: "banana", // default is connect.sid
@@ -43,32 +46,19 @@ server.get("/", (req, res) => {
   res.send("hello world");
 });
 
-server.post("/api/register", (req, res) => {
-  const creds = req.body;
-  const hash = bcrypt.hashSync(creds.password, 12);
-  creds.password = hash;
+//router post
 
-  db("users")
-    .insert(creds)
-    .then(ids => {
-      const id = ids[0];
-      res.status(201).json(id);
-    })
-    .catch(err => res.status(500).send(err));
+server.get("/api/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send("error logging out");
+      } else {
+        res.send("good bye");
+      }
+    });
+  }
 });
-
-server.get('/api/logout', (req, res) => {
-    if (req.session) {
-      req.session.destroy(err => {
-        if (err) {
-          res.send('error logging out');
-        } else {
-          res.send('good bye');
-        }
-      });
-    }
-  });
-  
 
 server.post("/api/login", (req, res) => {
   const creds = req.body;
@@ -94,7 +84,7 @@ server.get("/api/users", auth, (req, res) => {
     .then(users => {
       res.json(users);
     })
-    .catch(err => res.json({message:"Please login to access information"}));
+    .catch(err => res.json({ message: "Please login to access information" }));
 });
 
 server.listen(8000, () => console.log("========API running on 8000======="));
