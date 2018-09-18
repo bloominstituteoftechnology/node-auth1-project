@@ -69,8 +69,7 @@ server.get("/api/logout", (req, res) => {
       if (err) {
         res.send("Error logging out");
       } else {
-        req.session.username = user.username;
-        res.send(`Good Bye ${req.session.username}`);
+        res.send("Good Bye");
       }
     });
   }
