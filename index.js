@@ -27,22 +27,28 @@ server.post("/api/register", (req, res) => {
     })
     .catch(err => {
       res.status(500).send(err);
-    });
+    })
 });
 
 server.post("/api/login", (req, res) => {
   const credentials = req.body;
-
   // find the user in the database by it's username then
-  if (!user || !bcrypt.compareSync(credentials.password, user.password)) {
-    return res.status(401).json({ error: "You shall not pass!" });
-  }
-
-  // the user is valid, continue on
-  if (user|| bcrypt.compareSync(credentials.password, user.password)){
-      return res.send('Logged In');
-  }
+  db('users')
+  .where({ username: credentials.username })
+  .first()
+  .then(user => {
+    // check credentials
+    if (username && bcrypt.compareSync(credentials.password, user.password)){
+        return res.status(200).send('Logged In')
+    } else {
+      return res.status(401).json({ error: "You shall not pass!" })
+    }
+  })
+  .catch(err => {
+    res.status(500).send(err)
+})
 });
+  
 
 server.get("/api/users", (req, res) => {
     //the user is not valid
