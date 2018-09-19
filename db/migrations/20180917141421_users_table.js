@@ -14,6 +14,10 @@ exports.up = function(knex, Promise) {
     .notNullable()
     .unique();
 
+    tbl
+    .string('role', 128)
+    .notNullable();
+
 
   })
 };

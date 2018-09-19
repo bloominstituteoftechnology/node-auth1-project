@@ -38,7 +38,7 @@ server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
 
-function protected(req, res, next) {
+function restricted(req, res, next) {
     if (req.session && req.session.username) {
         next();
     } else {
@@ -109,7 +109,7 @@ server.get('/api/logout', (req, res) => {
     }
 });
 
-server.get('/api/users', protected, (req, res) => {
+server.get('/api/users', restricted, (req, res) => {
     
     if(req.session && req.session.username){
 
@@ -129,10 +129,10 @@ server.get('/api/users', protected, (req, res) => {
     
 });
 
-server.get('/api/admins', protected, (req, res) => {
+server.get('/api/admins', restricted, (req, res) => {
     // grab the logged in userid from the session
     if(req.session && req.session.userId){
-    const userId = req.ession.userId;
+    const userId = req.session.userId;
     db('roles as r')
         .join('user_roles as ur', 'ur.role_id', '=', 'r.id')
         .select('r.role_name')
@@ -154,7 +154,7 @@ server.get('/api/admins', protected, (req, res) => {
             res.status(201).json(users);
         }).catch(err => {
             console.log("error:", err);
-            res.status(500).json(err);
+            res.status(500).json({err});
         })
         .catch(err => {
             console.log('error:', err)
