@@ -41,6 +41,42 @@ router.get("/logout", (req, res) => {
 });
 //============GET LOGOUT============//
 
+//============GET ADMINS============//
+router.get("/admins", auth, (req, res) => {
+  if (req.session && req.session.userId) {
+    const userId = req.session.userId;
+    db.select("roles as r")
+      .join("user_roles as ur", "ur.role_id", "=", "r.id")
+      .where("ur.user_id", userId)
+      .then(roles => {
+        if (roles.includes("admin") || roles.includes("boss")) {
+          res.status(201).json(roles);
+        } else {
+          res
+            .status(403)
+            .json({ Error: "You are not an admin or boss! Cannot pass" });
+        }
+      });
+  }
+  // query the db and get the roles for the user
+
+  // only send the list of users if the client is an admin
+  if (req.session && req.session.role === "admin") {
+    db("users")
+      .select("id", "username")
+      .then(users => {
+        res.status(201).json(users);
+      })
+      .catch(err => {
+        console.log("Error: ", err);
+        res.status(500).json({ Error: "Admin Restriction" });
+      });
+  } else {
+    res.status(403).json({ Error: "You Are Not an Admin!" });
+  }
+});
+//============GET ADMINS============//
+
 //============POST REGISTER ENDPOINT============//
 router.post("/register", (req, res) => {
   const creds = req.body;
@@ -63,7 +99,7 @@ router.post("/register", (req, res) => {
 //============POST LOGIN ENDPOINT============//
 router.post("/login", (req, res) => {
   const creds = req.body;
-    console.log("REQ SESSION: " , req.session);
+  console.log("REQ SESSION: ", req.session);
 
   db("users")
     .where({ username: creds.username })
