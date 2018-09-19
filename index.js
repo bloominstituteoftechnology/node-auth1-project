@@ -31,11 +31,11 @@ server.use("/api", login);
 
 server.use(errorHandler);
 
-//--------------------------------------//
+//-----------------------------------------//
 // Optional Way for configuration //
 //const knexConfig = require("./knexfile");
 //const db = knex(knexConfig.development);
-//-------------------------------------//
+//----------------------------------------//
 
 //======session configuration====//
 const sessionsConfig = {
@@ -61,7 +61,6 @@ const sessionsConfig = {
 server.use(session(sessionsConfig));
 server.use(express.json());
 server.use(cors());
-server.use()
 
 //========middleware==========//
 function errorHandler(err, req, res, next) {
