@@ -41,14 +41,26 @@ server.post("/api/login", (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
-        res.status(200).send("Login Successful");
+        req.session.username = user.username;
+        res.status(200).send(`Welcome ${req.session.username}`);
       } else {
         res.status(401).json({ message: "You are not authorized." });
       }
     })
     .catch(err => res.status(500).send(err));
 });
-server.get("/api/users", (req, res) => {
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.send('You could not be logged out!');
+        } else {
+          res.send('See you next time!');
+        }
+      });
+    }
+  });
+ server.get('/api/users', protected, (req, res) => {
   db("users")
     .select("id", "username", "password")
     .then(users => {
