@@ -1,5 +1,4 @@
 const express = require("express");
-const cors = require("cors");
 const session = require("express-session");
 const db = require("./database/dbConfig.js");
 const KnexSessionStore = require("connect-session-knex")(session);
