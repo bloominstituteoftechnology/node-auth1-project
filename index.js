@@ -11,7 +11,7 @@ const db = knex(dbConfig.development);
 //server config
 const server = express();
 
-// configure express-session middleware I'm not sure I like this so I'm doing to go the  session config route
+// configure express-session middleware I'm not sure I like this so I'm doing to go the  session config route I now realize it's the same
 // server.use(
 //   session({
 //     name: 'login', // default is connect.sid
@@ -70,8 +70,9 @@ server.post("/api/register", (req, res) => {
  db("credentials")
    .insert(credentials)
    .then(users => {
+     req.session.username = users.username
      const id = users[0];
-
+     req.session.username = id.username
      res.status(201).json(id);
    })
    .catch(err => res.status(500).send(err));
