@@ -27,8 +27,6 @@ server.get("/download", (req, res, next) => {
   });
 });
 
-server.use("/api", login);
-
 server.use(errorHandler);
 
 //-----------------------------------------//
@@ -59,8 +57,8 @@ const sessionsConfig = {
 //======session configuration====//
 
 server.use(session(sessionsConfig));
-server.use(express.json());
-server.use(cors());
+
+server.use("/api", login);
 
 //========middleware==========//
 function errorHandler(err, req, res, next) {

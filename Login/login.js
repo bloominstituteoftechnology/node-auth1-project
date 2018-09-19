@@ -63,6 +63,7 @@ router.post("/register", (req, res) => {
 //============POST LOGIN ENDPOINT============//
 router.post("/login", (req, res) => {
   const creds = req.body;
+    console.log("REQ SESSION: " , req.session);
 
   db("users")
     .where({ username: creds.username })
