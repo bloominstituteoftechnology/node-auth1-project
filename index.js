@@ -168,6 +168,7 @@ server.listen(3300, () => console.log('Running on port 3300'));
 
 
 // // // *****BELOW IS THE CODE I ADDED COMMENTS TO AND COULDN"T GET WORKING AFTER BASING IT ON THE ORIGINALLY WORKING CODE ABOVE. 
+// // // ************NOTE: ADD LOGOUT ENDPOINT!!!!!!! ***************
 // //Assignment:
 // // Part one, due Monday: Use Node.js, Express and Knex to build an API 
 // // that provides Register and Login functionality using SQLite to store 
