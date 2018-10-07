@@ -15,6 +15,7 @@ const corsOptions = {
   "origin": "http://localhost:3000",
   "credentials": true
 };
+
 server.use(cors(corsOptions));
 // to enable parsing of json bodies for post requests
 server.use(bodyParser.json());
