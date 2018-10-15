@@ -1,4 +1,4 @@
-exports.up = knex => {
+exports.up = knex =>
   knex.schema.createTable('users', table => {
     table.increments();
     table
@@ -7,6 +7,5 @@ exports.up = knex => {
       .unique();
     table.string('password', 128).notNullable();
   });
-};
 
 exports.down = knex => knex.schema.dropTableIfExists('users');
