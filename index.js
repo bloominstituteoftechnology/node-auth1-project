@@ -8,6 +8,19 @@ const port = 5000;
 
 applyGlobalMiddleware(server);
 
+// get all the users
+server.get('/api/users', (req, res) => {
+	return userDb
+		.getAllUsers()
+		.then(users => {
+			if (users.length) {
+				return res.status(200).json(users);
+			}
+			return res.status(404).json({ error: 'There are no users in the database. You should register a user first.' });
+		})
+		.catch(err => res.status(500).json({ error: `Server failed to GET all users: ${ err }` }));
+});
+
 // login a user
 server.post('/api/login', (req, res) => {
 	const credentials = req.body;
@@ -44,17 +57,27 @@ server.post('/api/register', (req, res) => {
 	if (!credentials.password) {
 		return res.status(401).json({ error: 'Password cannot be empty.' });
 	}
-	return bcrypt
-		.hash(credentials.password, 14, function(bcryptErr, hash) {
-			if (bcryptErr) {
-				return res.status(500).json({ error: `Bcrypt hashing failed: ${ bcryptErr }` });
+	return userDb
+		.getUser(credentials.username)
+		.then(user => {
+			// if username does not exist, you can register it
+			if (!user) {
+				return bcrypt
+				.hash(credentials.password, 14, function(bcryptErr, hash) {
+					if (bcryptErr) {
+						return res.status(500).json({ error: `Bcrypt hashing failed: ${ bcryptErr }` });
+					}
+					credentials.password = hash;
+					return userDb
+						.registerNewUser(credentials)
+						.then(id => res.status(201).json(id.id[0]))
+						.catch(err => res.status(500).json({ error: `Server failed to register new user: ${ err }` }));
+				});
 			}
-			credentials.password = hash;
-			return userDb
-				.registerNewUser(credentials)
-				.then(id => res.status(201).json(id.id[0]))
-				.catch(err => res.status(500).json({ error: `Server failed to register new user: ${ err }` }));
-		});
+			// if username already exists, send error message
+			return res.status(403).json({ error: `Username ${ credentials.username } already exists. Please register with a new username.` });
+		})
+		.catch(err => res.status(500).json({ error: `Server failed to GET user: ${ err }` }));
 });
 
 server.listen(port, () => { console.log(`\n=== Listening on port ${ port } ===`) });

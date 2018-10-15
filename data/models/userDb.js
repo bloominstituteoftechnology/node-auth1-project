@@ -1,6 +1,10 @@
 const db = require('../dbConfig.js');
 
 module.exports = {
+	getAllUsers: function() {
+		let query = db('users');
+		return query;
+	},
 	getUser: function(username) {
 		let query = db('users as u');
 		return query
