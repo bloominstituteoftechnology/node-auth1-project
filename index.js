@@ -1,6 +1,6 @@
 const express = require('express');
-const helmet = require('helmet');
 
+const userRoutes = require("./routes/userRoutes");
 
 
 
@@ -11,14 +11,13 @@ const server = express();
 // endpoints here
 
 server.use(express.json());
-server.use(helmet());
 
+server.use("/users", userRoutes);
 
-server.get('/', (req, res) =>{
-  res.send("it's alive");
+server.get("/", (req, res) => {
+    res.send("it's alive");
+
 });
-
-
 
 const port = 3300;
 server.listen(port, function() {
