@@ -34,6 +34,7 @@ router.post("/login", async (req, res) => {
       .where({ username: credentials.username })
       .first();
     if (user && bcrypt.compareSync(credentials.password, user.password)) {
+      // added session username
       req.session.username = user.username;
       return res.status(200).json({ message: `${user.username} logged in.` });
     } else {
@@ -45,6 +46,19 @@ router.post("/login", async (req, res) => {
     return res
       .status(500)
       .json({ message: "An error occurred during the login." });
+  }
+});
+
+router.get("/users", async (req, res) => {
+  // check if user has an active session
+  if (!req.session.username) {
+    return res.status(400).json({ message: "You shall not pass!" });
+  }
+  try {
+    const allUsers = await db("users");
+    return res.status(200).json(allUsers);
+  } catch (error) {
+    return res.status(500).json({ message: "Users could not be retrieved." });
   }
 });
 
