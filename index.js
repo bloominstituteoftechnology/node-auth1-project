@@ -38,7 +38,7 @@ server.post('/api/login', (req, res) => {
 					.compare(credentials.password, user.password)
 					.then((match) => {
 						if (match) {
-							return res.status(201).json({ message: `You are now logged in as ${ credentials.username }` });
+							return res.status(201).json({ welcome: credentials.username });
 						}
 						return res.status(404).json({ error: 'You shall not pass!' });
 					});

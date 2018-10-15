@@ -8,7 +8,6 @@ module.exports = {
 	getUser: function(username) {
 		let query = db('users as u');
 		return query
-			.select('password')
 			.first()
 			.where({ username: username });
 	},
