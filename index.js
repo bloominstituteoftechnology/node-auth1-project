@@ -13,9 +13,7 @@ server.use(express.json());
 server.use(helmet());
 server.use(cors());
 
-server.get('/', (req, res) => res.json('Server is up and running!'));
-
-server.post('/register', (req, res) => {
+server.post('/api/register', (req, res) => {
   const credentials = req.body;
   const hash = bcrypt.hashSync(credentials.password, 16);
   credentials.password = hash;
@@ -23,11 +21,39 @@ server.post('/register', (req, res) => {
   db('users')
     .insert(credentials)
     .then(ids => {
-      res.status(201).json({ id: ids[0] });
+      const id = ids[0];
+      res.status(201).json({ id: id });
     })
     .catch(() =>
       res.status(500).json({ error: 'Oops! User could not be created.' })
     );
+});
+
+server.post('/login', (req, res) => {
+  const creds = req.body;
+
+  db('users')
+    .where({ username: creds.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        res.status(200).json({ welcome: user.username });
+      } else {
+        res.status(401).json({ message: 'you shall not pass!' });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({ err });
+    });
+});
+
+server.get('/api/users', (req, res) => {
+  db('users')
+    .select('id', 'username', 'password')
+    .then(users => {
+      res.json(users);
+    })
+    .catch(err => res.json(err));
 });
 
 const port = 6000;
