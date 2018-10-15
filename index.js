@@ -2,12 +2,15 @@ const express = require('express')
 const helmet = require('helmet')
 const cors = require('cors');
 const bcrypt = require('bcryptjs')
+const knex = require('knex')
+const knexConfig = require('./knexfile.js')
+const db = knex(knexConfig.development)
 const port = 9000
 const server = express()
 
 server.use(express.json())
 server.use(helmet())
-server.use(cors());
+server.use(cors())
 
 server.route('/')
   .get((req, res) => res.send("En vivo"))
