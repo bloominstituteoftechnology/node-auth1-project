@@ -18,15 +18,15 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.App-header button {
+  color: #fff;
+  background: #61dafb;
+  width: 200px;
+  height: 80px;
+  font-size: 30px;
+  font-weight: 700;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.App-link {
+  color: #61dafb;
 }
