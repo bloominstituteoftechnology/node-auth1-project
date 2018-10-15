@@ -18,22 +18,6 @@ server.get('/', (request, response) => {
 });
 
 // user endpoints
-server.get('/api/users', (request, response) => {
-
-    db('users')
-        .select('id', 'username', 'password')
-        .then(users => {
-            return response
-                .status(200)
-                .json(users);
-        })
-        .catch(() => {
-            return response
-                .status(500)
-                .json({ Error: "Could not find list of users." })
-        });
-});
-
 server.post('/api/register', (request, response) => {
     const credentials = request.body;
 
@@ -76,5 +60,21 @@ server.post('/api/login', (request, response) => {
             return response
                 .status(500)
                 .json({ Error: "There was an error while logging in." })
+        });
+});
+
+server.get('/api/users', (request, response) => {
+
+    db('users')
+        .select('id', 'username', 'password')
+        .then(users => {
+            return response
+                .status(200)
+                .json(users);
+        })
+        .catch(() => {
+            return response
+                .status(500)
+                .json({ Error: "Could not find list of users." })
         });
 });
