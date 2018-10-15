@@ -2,10 +2,11 @@ const express = require("express");
 const morgan = require("morgan");
 const session = require("express-session");
 const mainRoutes = require("./api/mainRoutes");
-
+const cors = require("cors");
 const server = express();
 
 server.use(express.json());
+server.use(cors());
 server.use(morgan("dev"));
 
 // setup session
