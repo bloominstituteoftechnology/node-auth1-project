@@ -37,6 +37,9 @@ server.post('/register', (req, res) => {
     })
     .catch(err => {
         console.log(err);
+        if(err.errno === 19){
+            res.status(409).json({error: `There is already an existing user with that username. Please try another username.`})
+        }
         res.status(500).json({errorMessage: `There was an error.\n`, error: err})
     })
 })
@@ -52,6 +55,16 @@ server.post('/login', (req, res) => {
           } else {
             res.status(401).json({message: 'You! Shall not! Pass!'})
           }
+    })
+})
+
+server.get('/users', (req, res) => {
+    db('users').select('id', 'username', 'password').then(users => {
+        res.json(users);
+    })
+    .catch(err => {
+        console.log(err);
+        res.json({error: err});
     })
 })
 
