@@ -10,6 +10,9 @@ applyGlobalMiddleware(server);
 
 // get all the users
 server.get('/api/users', (req, res) => {
+	if (!req.session.username) {
+		return res.status(401).json({ error: 'You shall not pass!' });
+	}
 	return userDb
 		.getAllUsers()
 		.then(users => {
@@ -38,14 +41,28 @@ server.post('/api/login', (req, res) => {
 					.compare(credentials.password, user.password)
 					.then((match) => {
 						if (match) {
+							req.session.username = credentials.username;
 							return res.status(201).json({ welcome: credentials.username });
 						}
-						return res.status(404).json({ error: 'You shall not pass!' });
+						return res.status(401).json({ error: 'You shall not pass!' });
 					});
 			}
-			return res.status(404).json({ error: 'You shall not pass!' });
+			return res.status(401).json({ error: 'You shall not pass!' });
 		})
 		.catch(err => res.status(500).json({ error: `Server failed to login user: ${ err }` }));
+});
+
+// logout a user
+server.get('/api/logout', (req, res) => {
+	if (req.session.username) {
+		return req.session.destroy(err => {
+			if (err) {
+				return res.status(500).json({ error: `Server failed to logout user: ${ err }` });
+			}
+			return res.status(200).json({ message: 'Successfully logged out.' });
+		});
+	}
+	return res.status(400).json({ error: 'You are not logged in.' });
 });
 
 // register a new user

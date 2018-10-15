@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 
+// Components
+import { Login } from './components/index.js';
+
 // Styles
 import styled from 'styled-components';
 
@@ -24,6 +27,8 @@ class App extends Component {
 			<header>
 				<h1>Authentication Project</h1>
 			</header>
+
+			<Login />
 		</AppDiv>
 	);
 	}
