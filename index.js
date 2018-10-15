@@ -25,6 +25,17 @@ server.post('/register', (req, res) => {
     })
 })
 
+server.post('/login', (req, res) => {
+    const userLog = req.body;
+    db('users').where({ username: userLog.username }).first().then(user => {
+        if(user && bcrypt.compareSync(userLog.password, user.password)) {
+            res.status(200).json({ welcome: user.username})
+        } else {
+            res.status(401).json({ LoginError: 'User name and/or password does not exist!' })
+        }
+    }).catch(err => res.status(500).json(err))
+})
+
 server.listen(9000, () => {
     console.log('\nServer running on port 9000\n')
 })
