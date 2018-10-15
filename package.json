@@ -1,0 +1,17 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/michaelagard/auth-i.git",
+  "author": "Michael Agard <mdagard@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.4",
+    "helmet": "^3.14.0",
+    "knex": "^0.15.2",
+    "sqlite3": "^4.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  }
+}
