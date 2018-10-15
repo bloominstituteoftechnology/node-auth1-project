@@ -37,6 +37,7 @@ server.post('/register', (req, res) => {
     })
     .catch(err => {
         console.log(err);
+        // inform client if username is taken
         if(err.errno === 19){
             res.status(409).json({error: `There is already an existing user with that username. Please try another username.`})
         }
