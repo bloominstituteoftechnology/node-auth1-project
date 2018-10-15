@@ -20,8 +20,8 @@ server.get('/', (request, response) => {
 // user endpoints
 server.get('/api/users', (request, response) => {
 
-
     db('users')
+        .select('id', 'username', 'password')
         .then(users => {
             return response
                 .status(200)
@@ -42,15 +42,16 @@ server.post('/api/register', (request, response) => {
 
     db('users')
         .insert(credentials)
-        .then(credentials => {
+        .then(ids => {
+            const id = ids[0];
             return response
                 .status(201)
-                .json(credentials);
+                .json({ newUserId: id });
         })
         .catch(() => {
             return response
                 .status(500)
-                .json({ Error: "There was an error while saving the user" })
+                .json({ Error: "There was an error while creating the user." })
         });
 });
 
