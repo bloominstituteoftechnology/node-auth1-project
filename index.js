@@ -40,4 +40,20 @@ server.post("/api/register", (req, res) => {
 		});
 });
 
+server.post("/api/login", (req, res) => {
+	const creds = req.body;
+	db("users")
+		.where({ username: creds.username })
+		.first()
+		.then(user => {
+			if (user && bcrypt.compareSync(creds.password, user.password)) {
+				res.status(201).json({ welcome: user.username });
+			} else {
+				res
+					.status(500)
+					.json({ error: "Wrong Username and/or Password, please try again" });
+			}
+		});
+});
+
 server.listen(3300, () => console.log("\nrunning on port 3300\n"));
