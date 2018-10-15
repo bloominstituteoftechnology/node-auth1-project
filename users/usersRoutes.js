@@ -32,13 +32,20 @@ router.post("/login", (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
-        res.status(200).json({ welcome: user.username });
+        res.status(200).json({ message: "Logged In!" });
       } else {
-        res
-          .status(401)
-          .json({ message: "Your username or password is incorrect" });
+        res.status(401).json({ message: "You shall not pass!" });
       }
     });
+});
+
+router.get("/users", (req, res) => {
+  db("users")
+    .select("id", "username", "password")
+    .then(users => {
+      res.json(users);
+    })
+    .catch(err => res.send(err));
 });
 
 module.exports = router;
