@@ -56,5 +56,19 @@ server.post('/api/login', (req ,res) => {
 
 });
 
+
+//################################### GET ########################################//
+// Protect this route, only authneticated users should see this
+//Introduction to Authentication for FSW13 w/ Luis Hernandez (near 1:03)
+server.get('/users', (req, res) => {
+  db('users')
+  // added the password field in just to see if it was hashed
+  .select('id', 'username', 'password')
+  .then(users => {
+      res.json(users);
+  })
+  .catch(err => res.send(err));
+});
+
 const port = 9001;
 server.listen(port, () => console.log(`******* Running on power level ${port} *******`));
