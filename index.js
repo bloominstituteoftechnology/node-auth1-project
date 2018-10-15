@@ -13,6 +13,10 @@ server.get('/', (req, res) => {
     res.send('<h1>Live Server</h1>')
 });
 
+server.get('/users', (req, res) => {
+    db('users').select('id', 'username').then(users => res.json(users)).catch(err => res.send(err));
+});
+
 server.post('/register', (req, res) => {
     const creds = req.body;
 
