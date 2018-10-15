@@ -1,0 +1,21 @@
+.formcontainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+
+  form {
+    width: 300px;
+    border: solid 2px black;
+    padding: 8px;
+    background: lightgray;
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    /* font-family: 'Pacifico', cursive; */
+
+  }
+  

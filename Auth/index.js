@@ -41,10 +41,10 @@ server.post('/login', (req, res) => {
       res.status(401).json({message: 'You just cannot enter. That is all.'})
     }
   })
-  .catch(err => req.status(500).json({ message: 'Something went wrong'}));
+  .catch(err => req.status(500).json({ message: 'Something went wrong...on our end.'}));
 
 })
-
+////////Per the notes fro lecture.
 // protect this route, only authenticated users should see it
 server.get('/users', (req, res) => {
   db('users')
@@ -55,4 +55,4 @@ server.get('/users', (req, res) => {
     .catch(err => res.send(err));
 });
 
-server.listen(3300, () => console.log('\nrunning on port 7700\n'));
+server.listen(7700, () => console.log('\nrunning on port 7700\n'));
