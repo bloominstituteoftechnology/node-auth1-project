@@ -3,9 +3,14 @@ const knexConfig = require('../knexfile.js');
 const db = knex(knexConfig.development);
 
 module.exports = {
-    register
+    register,
+    login
 };
 
 function register(user){
     return db('data').insert(user);
+};
+
+function login(credentials){
+    return db('data').where({username:credentials.username}).first();
 };

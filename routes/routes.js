@@ -16,4 +16,22 @@ router.post('/register', (req, res)=>{
         .catch(err => res.status(500).json(err.message));
 });
 
+router.post('/login', (req, res)=>{
+    const {username, password} = req.body;
+    const credentials = {username, password};
+    data.login(credentials)
+        .then(user=>{
+            if(user){
+                if(bcrypt.compareSync(credentials.password, user.password)){
+                    res.status(200).json({welcome: user.username});
+                }else{
+                    res.status(401).json({message:'Username and password do not match.'});
+                }
+            }else{
+                res.status(400).json(message:'Username not found.');
+            }
+        })
+        .catch(err => res.status(500).json(err.message));
+});
+
 module.exports = router;
