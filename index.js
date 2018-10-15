@@ -54,7 +54,7 @@ server.post('/login', (req, res) => {
 // only authenticated users should see it
 server.get('/users', (req, res) => {
   db('users')
-    .select('id', 'username')
+    .select('id', 'username', 'password')
     .then(users => {
       res.json(users);
     })
