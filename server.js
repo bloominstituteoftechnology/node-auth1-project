@@ -38,7 +38,9 @@ server.post('/api/login', (req, res) => {
 		.login(credentials)
 		.then(id => {
 			if (id) {
-				res.status(200).json({ success: `user id ${id} logged in` });
+				res
+					.status(200)
+					.json({ success: `User ${credentials.name} logged in`, cookie: id });
 			} else {
 				res.status(401).json({ error: `invalid username or password` });
 			}
