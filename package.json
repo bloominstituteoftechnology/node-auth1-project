@@ -1,0 +1,22 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:decagondev/auth-i.git",
+  "author": "decagondev <decagondevelopment@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.16.4",
+    "express-session": "^1.15.6",
+    "knex": "^0.15.2",
+    "morgan": "^1.9.1",
+    "sqlite3": "^4.0.2"
+  },
+  "scripts": {
+    "start": "nodemon"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  }
+}
