@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
 
-class Register extends Component {
+class Login extends Component {
 	constructor() {
 		super();
 		this.state = {
@@ -24,7 +25,7 @@ class Register extends Component {
 			password: this.state.password
 		};
 		axios
-			.post("http://localhost:3300/api/register", user)
+			.post("http://localhost:3300/api/login", user)
 			.then(res => console.log(res));
 	};
 
@@ -54,11 +55,12 @@ class Register extends Component {
 							placeholder="Password"
 						/>
 					</FormGroup>
-					<Button onClick={this.onSubmit}>Register</Button>
+					<Button onClick={this.onSubmit}>Log In</Button>
 				</Form>
 				<>
 					<h6>
-						Already signed up? Click <Link to="/login">Here</Link> to login.
+						Need to Register? Click <Link to="/register">Here</Link> to
+						register.
 					</h6>
 				</>
 			</div>
@@ -66,4 +68,4 @@ class Register extends Component {
 	}
 }
 
-export default Register;
+export default Login;
