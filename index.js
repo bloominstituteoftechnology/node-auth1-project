@@ -53,6 +53,16 @@ server.post('/login', (req, res) => {
       });
 });
 
+// protect this route, only authenticated users should see it
+server.get('/api/users', (req, res) => {
+    db('users')
+      .select('id', 'username', 'password')
+      .then(users => {
+        res.json(users);
+      })
+      .catch(err => res.send(err));
+});
+
 const port = 3300;
 
 server.listen(port, () => {
