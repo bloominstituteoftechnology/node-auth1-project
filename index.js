@@ -41,4 +41,12 @@ server.route('/api/login')
       .catch(err => res.status(500).json({ err }));
   })  
 
+server.route('/api/users')
+  .get((req, res) => {
+    db('users')
+      .select('id', 'username', 'password')
+      .then(users => res.json(users))
+      .catch(err => res.send(err));
+  });
+
 server.listen(port, () => console.log(`\n===Listening on ${port}===\n`))
