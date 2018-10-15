@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 
+const db = require('./data/dbConfig.js');
+
 const server = express();
 port = 7000;
 
@@ -11,4 +13,8 @@ server.use(cors());
 server.get('/', (req, res) => {
   res.send('Sane')
 })
-server.listen(port, () => console.log(`\n API running on port ${port}`))
+
+
+
+
+server.listen(port, () => console.log(`\n==  API running on port ${port} ==\n`))
