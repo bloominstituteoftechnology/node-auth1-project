@@ -1,5 +1,6 @@
 const express = require('express');
 const helmet = require('helmet');
+const bcrypt = require("bcryptjs");
 
 const db = require('./database/dbConfig');
 
@@ -8,10 +9,37 @@ const port = 8000;
 
 server.use(helmet(), express.json());
 
-// Sanity Check
 server.get('/', (req, res) => {
     res.send('<h1>Live Server</h1>')
 });
+
+server.post('/register', (req, res) => {
+    const creds = req.body;
+
+    // Has the password
+    const hash = bcrypt.hashSync(creds.password, 14);
+    creds.password = hash;
+
+    // Save the user to the database
+    db('users').insert(creds).then(ids => {
+        const id = ids[0];
+        res.status(201).json({newUserId: id});
+    }).catch(err => res.status(500).send(err));
+});
+
+server.post('/login', (req, res) => {
+    const creds = req.body;
+
+    db('users').where({ username: creds.username }).first().then(user => {
+        if(user && bcrypt.compareSync(creds.password, user.password)) {
+            res.status(200).json({ welcome: user.username });
+        } else {
+            res.status(401).json({ message: 'Username or password is incorrect' });
+        }
+    }).catch(err => res.status(500).json(err));
+});
+
+
 
 
 function runServer() {
