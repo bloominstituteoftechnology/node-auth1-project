@@ -21,14 +21,14 @@ server.get('/', (req, res) => {
 // implented this here
 //Introduction to Authentication for FSW13 w/ Luis Hernandez (near 1:02)
 server.post('/register', (req, res) => {
-  const creds = req.body;
+  const credentials = req.body;
   // hash the password here
-  const hash = bcrypt.hashSync(creds.password, 14);
-  creds.password = hash;
+  const hash = bcrypt.hashSync(credentials.password, 14);
+  credentials.password = hash;
   // then save the user
 
   db('users')
-  .insert(creds)
+  .insert(credentials)
   .then(ids => {
       const id = ids[0];
 
@@ -39,15 +39,16 @@ server.post('/register', (req, res) => {
   })
 });
 
-server.post('/api/login', (req ,res) => {
-  const creds = req.body;
+server.post('/login', (req ,res) => {
+  const credentials = req.body;
 
   db('users')
-  .where({username: creds.username})
+  .where({username: credentials.username})
   .first()
   .then(user => {
-      if (user && bcrypt.compareSync(creds.password, user.password)) {
-          res.send(200).send('Started from the bottom now you here!');
+    //Introduction to Authentication for FSW13 w/ Luis Hernandez (near 1:18)
+      if (user && bcrypt.compareSync(credentials.password, user.password)) {
+          res.status(200).json(`Started from the bottom now you here ${user.username}!`);
       } else {
           res.status(401).json({ message: `That's wrong dude....`});
       }
