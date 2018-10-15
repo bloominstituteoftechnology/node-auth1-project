@@ -1,9 +1,10 @@
 const express = require('express');
 const helmet = require('helmet');
+const bcrypt = require('bcryptjs');
 const knex = require('knex');
 const knexConfig = require('./knexfile.js');
 
-const projectDb = knex(knexConfig.development);
+const db = knex(knexConfig.development);
 const server = express();
 server.use(helmet());
 server.use(express.json());
@@ -16,6 +17,7 @@ server.get('/', (request, response) => {
     response.send('Server initialized.');
 });
 
+// user endpoints
 // server.get('/api/users', (request, response) => {
 //     projectDb('actions')
 //         .then(actions => {
@@ -30,50 +32,44 @@ server.get('/', (request, response) => {
 //         });
 // });
 
-// server.post('/api/register', (request, response) => {
-//     const newAction = request.body;
+server.post('/api/register', (request, response) => {
+    const newUser = request.body;
 
-//     if (!newAction.description_action) {
-//         return response
-//             .status(400)
-//             .send({ Error: "Missing description for the action" });
-//     }
+    db
+        .insert(newUser)
+        .into('users')
+        .then(newUser => {
+            return response
+                .status(201)
+                .json(newUser);
+        })
+        .catch(() => {
+            return response
+                .status(500)
+                .json({ Error: "There was an error while saving the user" })
+        });
+});
 
-//     projectDb
-//         .insert(newAction)
-//         .into('actions')
-//         .then(id => {
-//             return response
-//                 .status(201)
-//                 .json(id);
-//         })
-//         .catch(() => {
-//             return response
-//                 .status(500)
-//                 .json({ Error: "There was an error while saving the action" })
-//         });
-// });
+server.post('/api/login', (request, response) => {
+    const credentials = request.body;
 
-// server.post('/api/login', (request, response) => {
-//     const newAction = request.body;
-
-//     if (!newAction.description_action) {
-//         return response
-//             .status(400)
-//             .send({ Error: "Missing description for the action" });
-//     }
-
-//     projectDb
-//         .insert(newAction)
-//         .into('actions')
-//         .then(id => {
-//             return response
-//                 .status(201)
-//                 .json(id);
-//         })
-//         .catch(() => {
-//             return response
-//                 .status(500)
-//                 .json({ Error: "There was an error while saving the action" })
-//         });
-// });
+    db('users')
+        .where({ username: credentials.username })
+        .first()
+        .then(user => {
+            if (user && bcrypt.compareSync(credentials.password, user.password)) {
+                return response
+                    .status(201)
+                    .json({ welcome: user.username });
+            } else {
+                return response
+                    .status(401)
+                    .json({ message: "You shall not pass!" });
+            }
+        })
+        .catch(() => {
+            return response
+                .status(500)
+                .json({ Error: "There was an error while logging in." })
+        });
+});
