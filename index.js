@@ -14,13 +14,13 @@ server.use(cors();
 
 // test GET function
 
-server.get('/', (req, res) => {
+server.get('/api', (req, res) => {
   res.send('Server test.');
 });
 
 // GET users information
 
-server.get('/users', (req, res) => {
+server.get('/api/users', (req, res) => {
   db('users')
     .then(users => res.json(users));
     .catch(err => res.status(500).json(err));
@@ -30,8 +30,32 @@ server.get('/users', (req, res) => {
 
 server.post('/register', (req, res) => {
 const credentials = req.body;
+// console.log(credentials);
+const hash = bcrypt.hashSync(credentials.password, 14);
+credentials.password = hash;
+// console.log(credentials); <- check if there is a change
+
+db('users')
+  .insert(credentials)
+  .then(id => res.send(id))
+  .catch(err => res.status(500).json(err));
 });
 
+// authenticate login via POST
+
+server.post('/api/login', (req, res) => {
+  const credentials = req.body;
+  db('users')
+    .where({ username: credentials.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(credentials.password, user.password)) {
+        res.status(200).json({ message: "Login successful!" });
+      } else res.status(401).json({ message: "Access denied. Please try again. "});
+    })
+    .catch(err => res.status(500).send(err));
+  });
+  
 // server instantiation
 
 const port = 8000;
