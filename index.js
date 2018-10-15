@@ -3,15 +3,15 @@ const applyGlobalMiddleware = require('./config/middleware/global.js');
 const bcrypt = require('bcryptjs');
 const userDb = require('./data/models/userDb.js');
 
+const usersMiddleware = require('./config/middleware/usersMiddleware.js');
+
 const server = express();
 const port = 5000;
 
-//middleware
 applyGlobalMiddleware(server);
-const restricted = require('./config/middleware/restricted.js');
 
 // get all the users
-server.get('/api/users', restricted, (req, res) => {
+server.get('/api/users', usersMiddleware, (req, res) => {
 	return userDb
 		.getAllUsers()
 		.then(users => {
@@ -21,6 +21,11 @@ server.get('/api/users', restricted, (req, res) => {
 			return res.status(404).json({ error: 'There are no users in the database. You should register a user first.' });
 		})
 		.catch(err => res.status(500).json({ error: `Server failed to GET all users: ${ err }` }));
+});
+
+// get restricted access
+server.get('/api/restricted/:section', (req, res) => {
+	res.send('You are in the restricted area.');
 });
 
 // login a user
@@ -52,7 +57,7 @@ server.post('/api/login', (req, res) => {
 });
 
 // logout a user
-server.get('/api/logout', (req, res) => {
+server.post('/api/logout', (req, res) => {
 	if (req.session.username) {
 		return req.session.destroy(err => {
 			if (err) {

@@ -3,6 +3,7 @@ const cors			= require('cors');
 const helmet		= require('helmet');
 const morgan		= require('morgan');
 const session		= require('express-session');
+const restricted	= require('./restricted.js');
 
 module.exports = (server) => {
 	server.use(
@@ -21,5 +22,6 @@ module.exports = (server) => {
 			resave: false,
 			saveUninitialized: false,
 		}),
+		restricted,
 	);
 };
