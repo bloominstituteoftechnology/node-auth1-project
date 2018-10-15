@@ -19,7 +19,7 @@ server.get('/', (req, res) => {
 });
 
 // Add POST ROUTE HANDLER to register/create a user
-server.post('/register', (req, res) => {
+server.post('/api/register', (req, res) => {
   const credentials = req.body;
 
   const hash = bcrypt.hashSync(credentials.password, 14);
@@ -38,7 +38,7 @@ server.post('/register', (req, res) => {
 
 // Add POST ROUTE HANDLER to protect GET ROUTE HANDLER to access all users
 // so that only authenticated users can see it
-server.post('/login', (req, res) => {
+server.post('/api/login', (req, res) => {
   const creds = req.body;
 
   db('users')
