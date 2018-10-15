@@ -62,8 +62,8 @@ server.post('/api/login', (req ,res) => {
 //Introduction to Authentication for FSW13 w/ Luis Hernandez (near 1:03)
 server.get('/users', (req, res) => {
   db('users')
-  // added the password field in just to see if it was hashed
-  .select('id', 'username', 'password')
+  // added the password field in just to see if it was hashed...don't forget to takeout lol
+  .select('id', 'username')
   .then(users => {
       res.json(users);
   })
