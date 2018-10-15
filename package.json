@@ -9,6 +9,7 @@
     "start": "nodemon"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.4",
     "express": "^4.16.4",
     "helmet": "^3.14.0",

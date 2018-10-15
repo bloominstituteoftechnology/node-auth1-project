@@ -4,15 +4,15 @@ exports.up = function(knex, Promise) {
 			.increments();
 
 		table
-			.string('user', 128)
+			.string('username', 128)
 			.notNullable();
 		
 		table
-			.string('hash', 255)
+			.string('password', 255)
 			.notNullable();
 
 		table
-			.unique('user');
+			.unique('username');
 	});
 };
 
