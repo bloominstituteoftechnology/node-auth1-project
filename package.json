@@ -19,11 +19,16 @@
   "homepage": "https://github.com/Csillag61/auth-i#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "connect": "^3.6.6",
+    "connect-session": "^0.0.1",
+    "connect-session-knex": "^1.4.0",
     "cors": "^2.8.4",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
+    "helmet": "^3.14.0",
     "knex": "^0.15.2",
     "react": "^16.5.2",
+    "react-core": "^0.0.0",
     "sqlite3": "^4.0.2"
   },
   "devDependencies": {
