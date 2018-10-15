@@ -1,0 +1,22 @@
+{
+  "name": "lsw13i-authI",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/timh1203/lsw13i-authI.git",
+  "author": "Timothy Hoang <timh1203@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.4",
+    "helmet": "^3.14.0",
+    "knex": "^0.15.2",
+    "sqlite3": "^4.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  }
+}
