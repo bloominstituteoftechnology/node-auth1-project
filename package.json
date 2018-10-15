@@ -6,7 +6,7 @@
   "author": "Brock Maraee Rohloff <00AgentB@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "server":"nodemon index.js"
+    "start":"nodemon index.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
