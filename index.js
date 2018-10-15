@@ -16,7 +16,16 @@ server.get("/", (req, res) => {
 	res.send("Its Alive!");
 });
 
-server.post("/register", (req, res) => {
+server.get("/api/users", (req, res) => {
+	db("users")
+		.select("id", "username", "password")
+		.then(users => {
+			res.json(users);
+		})
+		.catch(err => res.send(err));
+});
+
+server.post("/api/register", (req, res) => {
 	const credentials = req.body;
 	const hash = bcrypt.hashSync(credentials.password, 15);
 	credentials.password = hash;
