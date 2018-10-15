@@ -23,7 +23,7 @@ router.post("/login", async (req, res) => {
       .where({ username: credentials.username })
       .first();
     if (user && bcrypt.compareSync(credentials.password, user.password)) {
-      res.status(201).json({ message: "Logged in." });
+      res.status(201).json({ message: `${user.username} has Logged in.` });
     } else {
       res.status(404).json({ message: "You shall not pass!" });
     }
