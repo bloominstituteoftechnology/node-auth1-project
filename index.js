@@ -1,12 +1,16 @@
 const express = require('express');
 const helmet = require('helmet');
+const cors = require('cors');
 const server = express();
+const bcrypt = require('bcryptjs');
 server.use(helmet());
+server.use(cors());
 server.use(express.json());
-
+const db = require('./data/dbConfig.js');
 // server config
-const port = 7100; // port for server to run from
+const serverPort = 7100; // server port
 const serverName = `auth-i`; // Name of server to display at "/" endpoint 
+const serverRepo = `https://github.com/LambdaSchool/auth-i/pull/341`;
 
 // endpoint routing
 // const projectRoutes = require('./routes/projectRoutes');
@@ -17,7 +21,32 @@ const serverName = `auth-i`; // Name of server to display at "/" endpoint
 // server endpoints
 
 server.get('/', (req, res) => { // sanity check
-  res.send(`${serverName} running on port ${port}`);
+  res.send(`${serverName} running on port ${serverPort}<br>More information: <a href="${serverRepo}">GitHub Repo</a>`);
+});
+
+server.get('/api/users', (req, res) => { // api user list endpoint
+  db('users')
+    .select('id', 'username', 'password')
+    .then(users => {
+      res.json(users);
+    })
+    .catch(err => res.send(err));
+});
+
+server.post('/api/login', (req, res) => { // api login endpoint
+  const creds = req.body;
+
+  db('users').where({ username: creds.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        // found the user
+        res.status(200).json({ message: `Authentication success. Welcome ${user.username}.` })
+      } else {
+        res.status(401).json({ message: 'Authentication failed.' })
+      }
+    })
+    .catch(err => res.status(500).json({ err }));
 });
 
 server.post('/api/register', (req, res) => { // api register endpoint
@@ -37,4 +66,4 @@ server.post('/api/register', (req, res) => { // api register endpoint
     });
 });
 
-server.listen({ port }, () => console.log(`## ${serverName} running on port ${port} ##`));
+server.listen(serverPort, () => console.log(`## ${serverName} running on port ${serverPort} ##`));
