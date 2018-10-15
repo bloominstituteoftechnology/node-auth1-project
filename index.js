@@ -2,8 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const bcrypt = require('bcrypt');
-const knex = require('knex');
-const knexConfig = require('knexfile');
+const db = require('./data/dbConfig.js');
+
+const port = 8000;
+
+
 
 const db = knex(knexConfig.development);
 
@@ -15,7 +18,7 @@ server.get('/', (req, res) => {
     res.send('It lives!');
 });
 
-server.post('api/register', (req, res) => {
+server.post('/api/register', (req, res) => {
     const credentials = req.body;
     const hash = bcrypt.hashSync(credentials.password, 12)
     credentials.password = hash;
@@ -29,7 +32,7 @@ server.post('api/register', (req, res) => {
         });
 })
 
-server.post('api/login', (req, res) => {
+server.post('/api/login', (req, res) => {
     const credentials = req.body;
     db('users')
         .where({ username: credentials.username })
@@ -43,3 +46,14 @@ server.post('api/login', (req, res) => {
             res.status(500).json(err)
         });
 })
+
+server.get('/api/users', (req, res) => {
+    db('users')
+        .select('id', 'username')
+        .then(users => {
+            res.status(200).json(users);
+        })
+        .catch(err => res.status(500).json(err))
+})
+
+server.listen(port, () => console.log(`API running on ${port} port.`))
