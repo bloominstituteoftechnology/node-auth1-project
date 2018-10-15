@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const bcrypt = require('bcryptjs');
 const usersTable = require('./data/helpers/credsmodel');
+const errorHandler = require('./api/ErrorHandler/errorhandler');
 
 const server = express();
 server.use(express.json());
@@ -57,9 +58,11 @@ server.get('/api/users', (req, res, next) => {
     }
 });
 
-server.use((req, res) => {
+server.use((req, res, next) => {
     next(["h404", `The requested path '${req.url}' doesn't exist.`]);
 });
+
+server.use(errorHandler);
 
 const port = 8080;
 server.listen(port, () => console.log(`\n~~~ Server listening on port ${port} ~~~\n`));
