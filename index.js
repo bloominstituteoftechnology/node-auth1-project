@@ -29,21 +29,19 @@ server.post('/api/register', (req, res) => {
     );
 });
 
-server.post('/login', (req, res) => {
+server.post('/api/login', (req, res) => {
   const creds = req.body;
-
   db('users')
     .where({ username: creds.username })
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
-        res.status(200).json({ welcome: user.username });
+        res.status(201).json({ welcome: user.username });
       } else {
-        res.status(401).json({ message: 'you shall not pass!' });
+        res
+          .status(500)
+          .json({ error: 'Wrong Username and/or Password, please try again' });
       }
-    })
-    .catch(err => {
-      res.status(500).json({ err });
     });
 });
 
