@@ -6,13 +6,12 @@ const userDb = require('./data/models/userDb.js');
 const server = express();
 const port = 5000;
 
+//middleware
 applyGlobalMiddleware(server);
+const restricted = require('./config/middleware/restricted.js');
 
 // get all the users
-server.get('/api/users', (req, res) => {
-	if (!req.session.username) {
-		return res.status(401).json({ error: 'You shall not pass!' });
-	}
+server.get('/api/users', restricted, (req, res) => {
 	return userDb
 		.getAllUsers()
 		.then(users => {

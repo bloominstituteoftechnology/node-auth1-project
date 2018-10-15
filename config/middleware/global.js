@@ -1,8 +1,8 @@
-const express	= require('express');
-const cors		= require('cors');
-const helmet	= require('helmet');
-const morgan	= require('morgan');
-const session	= require('express-session');
+const express		= require('express');
+const cors			= require('cors');
+const helmet		= require('helmet');
+const morgan		= require('morgan');
+const session		= require('express-session');
 
 module.exports = (server) => {
 	server.use(
@@ -20,6 +20,6 @@ module.exports = (server) => {
 			httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
 			resave: false,
 			saveUninitialized: false,
-			}),
+		}),
 	);
 };
