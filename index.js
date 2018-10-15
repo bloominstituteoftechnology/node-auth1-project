@@ -1,22 +1,20 @@
 const express = require('express');
+const helmet = require('helmet');
 const cors = require('cors');
-
-const db = require('./database/dbConfig.js');
-
 const server = express();
 
 server.use(express.json());
 server.use(cors());
 server.use(helmet());
 
+// log all API request types and their endpoint
 function logger(req, res, next){
     console.log(`${req.method} to ${req.url}`);
-
     next();
 }
-
 server.use(logger);
 
+// test if server is running
 server.get('/', (req, res) => {
     res.send('It works yo');
 })
