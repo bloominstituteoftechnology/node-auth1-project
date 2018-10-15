@@ -17,7 +17,7 @@ server.get('/users', (req, res) => {
     db('users').select('id', 'username').then(users => res.json(users)).catch(err => res.send(err));
 });
 
-server.post('/register', (req, res) => {
+server.post = server.post('/register', (req, res) => {
     const creds = req.body;
 
     // Has the password
@@ -38,7 +38,7 @@ server.post('/login', (req, res) => {
         if(user && bcrypt.compareSync(creds.password, user.password)) {
             res.status(200).json({ welcome: user.username });
         } else {
-            res.status(401).json({ message: 'Username or password is incorrect' });
+            res.status(401).json({ message: 'You shall not pass!' });
         }
     }).catch(err => res.status(500).json(err));
 });

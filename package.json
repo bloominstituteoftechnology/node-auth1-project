@@ -12,6 +12,7 @@
     "sqlite3": "^4.0.2"
   },
   "devDependencies": {
+    "eslint-config-google": "^0.11.0",
     "nodemon": "^1.18.4"
   },
   "scripts": {
