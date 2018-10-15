@@ -34,12 +34,17 @@ router.post("/login", async (req, res) => {
       .where({ username: credentials.username })
       .first();
     if (user && bcrypt.compareSync(credentials.password, user.password)) {
-      res.status(201).json({ message: `${user.username} has Logged in.` });
+      req.session.username = user.username;
+      return res.status(200).json({ message: `${user.username} logged in.` });
     } else {
-      res.status(404).json({ message: "You shall not pass!" });
+      return res
+        .status(404)
+        .json({ message: "You shall not pass your attempt was logged!" });
     }
   } catch (error) {
-    res.status(500).json({ message: "An error occurred during login." });
+    return res
+      .status(500)
+      .json({ message: "An error occurred during the login." });
   }
 });
 
