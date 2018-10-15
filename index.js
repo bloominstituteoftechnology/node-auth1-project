@@ -22,9 +22,9 @@ server.post('/api/login', (req, res) => {
     .first()
     .then(user => {
         if(user && bcrypt.compareSync(creds.password, user.password)) {
-            res.status(200).json({welcome: user.username });
+            res.status(200).json({ message: `Logged in` });
         } else {
-            res.status(401).json({ message: "Not authenticated"});
+            res.status(401).json({ message: "You shall not pass!"});
         }
     })
     .catch(err => res.status(500).json({err}));
@@ -42,7 +42,7 @@ server.post('/api/register', (req, res) => {
         res.status(201).json({ newUserId: id });
     })
     .catch(err => {
-        res.status(500).json(err);
+        res.status(500).json({err});
     })
 })
 
