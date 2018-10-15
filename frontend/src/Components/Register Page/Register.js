@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
 
 class Register extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
 			username: "",
 			password: ""
@@ -18,14 +19,19 @@ class Register extends Component {
 		});
 	};
 
-	onSubmit = event => {
+	onSubmit = (event, props) => {
 		const user = {
 			username: this.state.username,
 			password: this.state.password
 		};
-		axios
-			.post("http://localhost:3300/api/register", user)
-			.then(res => console.log(res));
+		axios.post("http://localhost:3300/api/register", user).then(res => {
+			console.log(res);
+			if (res.data.id) {
+				this.props.history.push("/home");
+			} else {
+				this.props.history.push("/register");
+			}
+		});
 	};
 
 	render() {
@@ -66,4 +72,4 @@ class Register extends Component {
 	}
 }
 
-export default Register;
+export default withRouter(Register);
