@@ -40,10 +40,10 @@ server.post('/login', (req, res) => {
     .then(user => {
       if(user && bcrypt.compareSync(creds.password, user.password)) {
         // FOUND USER
-        res.status(200).json({ welcome: user.username})
+        res.status(200).json({ Welcome: user.username})
       } else {
         // USER NOT FOUND
-      res.status(401).json({ message: 'you shall not pass!'})
+      res.status(401).json({ message: 'YOU SHALL NOT PASS!'})
     }
   })
   .catch(err => {
@@ -51,8 +51,8 @@ server.post('/login', (req, res) => {
   });
 });
 
-// protect this route, only authenticated users should see it
-server.get('/api/users', (req, res) => {
+// only authenticated users should see it
+server.get('/users', (req, res) => {
   db('users')
     .select('id', 'username')
     .then(users => {
