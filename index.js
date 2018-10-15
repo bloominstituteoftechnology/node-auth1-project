@@ -14,7 +14,7 @@ server.get('/', (req, res) => {
     res.send('Its Alive!');
 });
 
-server.post('/register', (req, res) => {
+server.post('/api/register', (req, res) => {
     const credentials = req.body;
   
     // hash the password
@@ -32,7 +32,7 @@ server.post('/register', (req, res) => {
       });
 });
 
-server.post('/login', (req, res) => {
+server.post('/api/login', (req, res) => {
     const creds = req.body;
   
     db('users')
