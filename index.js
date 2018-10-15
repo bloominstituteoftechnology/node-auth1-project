@@ -38,7 +38,8 @@ server.post('/register', (req, res) => {
       res.status(500).send(err);   
   })
 });
-
+//Introduction to Authentication for FSW13 w/ Luis Hernandez (near 1:22)
+// Always send as a post because you don't wanna send login information as part of the URL becuase people can see that
 server.post('/login', (req ,res) => {
   const credentials = req.body;
 
@@ -47,6 +48,7 @@ server.post('/login', (req ,res) => {
   .first()
   .then(user => {
     //Introduction to Authentication for FSW13 w/ Luis Hernandez (near 1:18)
+    // (near 1:24) CompareSync is comparing the 2 password the user sent to he hash password in the database
       if (user && bcrypt.compareSync(credentials.password, user.password)) {
           res.status(200).json(`Started from the bottom now you here ${user.username}!`);
       } else {
@@ -73,3 +75,5 @@ server.get('/users', (req, res) => {
 
 const port = 9001;
 server.listen(port, () => console.log(`******* Running on power level ${port} *******`));
+
+// NEVER STORE PLAIN-TEXT Passwords
