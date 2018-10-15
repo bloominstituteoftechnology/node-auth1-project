@@ -23,8 +23,27 @@ server.post('/api/register', (req, res) => {
 			res.status(201).json({ newUserId: id });
 		})
 		.catch(err => {
-			res.status(500).json(err);
+			if (err.code === 'SQLITE_CONSTRAINT') {
+				return res.status(409).json({ error: 'Duplicate username' });
+			} else {
+				return res.status(500).json(err);
+			}
 		});
+});
+
+server.post('/api/login', (req, res) => {
+	const credentials = req.body;
+
+	model
+		.login(credentials)
+		.then(id => {
+			if (id) {
+				res.status(200).json({ success: `user id ${id} logged in` });
+			} else {
+				res.status(401).json({ error: `invalid username or password` });
+			}
+		})
+		.catch(err => res.status(500).json(err));
 });
 
 // PORT
