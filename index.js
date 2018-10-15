@@ -45,15 +45,14 @@ server.post('/authenticate', (request, response) => {
         )}
 
     // Hash Password
-        const hash = bcrypt.hashSync(password, 14)
-        password = hash;
+    const hash = bcrypt.hashSync(password, 14)
+    password = hash;
     
     // Construct Credentials Object
-        const credentials = { username, password }
-
+    const credentials = { username, password }
 
     // Database Promise Methods
-    db('users')
+    db('user')
     .insert(credentials)
     .then(ids => {
         if (!ids || ids.length < 1) {
@@ -63,15 +62,48 @@ server.post('/authenticate', (request, response) => {
         }
         let id = ids[0];
         response.status(201).json(
-            { createUserId: id }
+            { createdUserId: id }
         )
     })
-    .catch(error => response.status(500).send(MediaStreamErrorEvent))
+    .catch(error => {
+        if (error.errno === 19) {
+            return response.status(500).json(
+                { errorMessage: "A user already exists with the specified username." }
+            )
+        }    
+        response.status(500).json(error);
+    });
 });
 
 
 /// ---- CREATE Login Session Endpoint ----
+server.post('/login', (request, response)  => {
+    // Deconstruct Request Body
+    const { username, password } = request.body;
 
+    // Request Validation
+    if (!username || !password) {
+        return response.status(400).json(
+            { errorMessage: "Please provide a password and username when attempting to log in a user." }
+    )}
+
+    // Construct Credentials Object
+    const credentials = { username, password }
+
+    // Database Promise Methods
+    db('user')
+    .where({ username: credentials.username })
+    .first()
+    .then( user => {
+        // Verify That a User Exists With The Specified Password
+        if (user && bcrypt.compareSync(credentials.password, user.password)) {
+            response.status(200).json({ authorized: `${username} has been logged in.` })
+        } else {
+            response.status(401).json({ rejected: "Unable to find a user with the provided password and username." })
+        }
+    })
+    .catch(error => response.status(500).send(error));
+})
 
 /// ---- Server Port and Listen Method ----
 const port = 9999;
