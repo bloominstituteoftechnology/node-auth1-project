@@ -5,9 +5,18 @@
   "repository": "https://github.com/cornielleandres/auth-i.git",
   "author": "<cornielleandres@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "start": "nodemon"
+  },
   "dependencies": {
+    "cors": "^2.8.4",
     "express": "^4.16.4",
+    "helmet": "^3.14.0",
     "knex": "^0.15.2",
+    "morgan": "^1.9.1",
     "sqlite3": "^4.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
   }
 }
