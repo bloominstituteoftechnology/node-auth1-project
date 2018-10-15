@@ -13,10 +13,11 @@ server.use(express.json(), helmet());
 const db = require('./data/expressDb');
 
 ///// ---------- CRUD Enpoints ----------
-// Sanity Check CRUD Endpoint
+
+/// ---- Sanity Check CRUD Endpoint ----
 server.get('/', (request, response) => {
     response.send(`IT'S ALIVE!!!`)
-})
+});
 
 /// ---- CREATE User Endpoint ----
 server.post('/authenticate', (request, response) => {
@@ -75,7 +76,6 @@ server.post('/authenticate', (request, response) => {
     });
 });
 
-
 /// ---- CREATE Login Session Endpoint ----
 server.post('/login', (request, response)  => {
     // Deconstruct Request Body
@@ -103,7 +103,20 @@ server.post('/login', (request, response)  => {
         }
     })
     .catch(error => response.status(500).send(error));
+});
+
+/// ---- READ All Users Endpoint ----
+server.get('/users', (request, response) => {
+db('user')
+.select('id', 'username')
+.then( users => {
+    if (users.length < 1) {
+        return response.status(204).json({message: "No users were found."})
+    }
+    response.status(200).json(users);
 })
+.catch(error => response.status(500).json({error}))
+});
 
 /// ---- Server Port and Listen Method ----
 const port = 9999;
