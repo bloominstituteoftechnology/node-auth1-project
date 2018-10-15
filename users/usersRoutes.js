@@ -24,4 +24,21 @@ router.post("/register", (req, res) => {
     });
 });
 
+router.post("/login", (req, res) => {
+  const creds = req.body;
+
+  db("users")
+    .where({ username: creds.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        res.status(200).json({ welcome: user.username });
+      } else {
+        res
+          .status(401)
+          .json({ message: "Your username or password is incorrect" });
+      }
+    });
+});
+
 module.exports = router;
