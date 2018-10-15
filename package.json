@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js"
+    "start": "nodemon index.js"
   },
   "repository": "https://github.com/VeraSimon/auth-i.git",
   "author": "Vera Simon <ghjkl>",
