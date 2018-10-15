@@ -28,7 +28,7 @@ router.post('/login', (req, res)=>{
                     res.status(401).json({message:'Username and password do not match.'});
                 }
             }else{
-                res.status(400).json(message:'Username not found.');
+                res.status(400).json({message:'Username not found.'});
             }
         })
         .catch(err => res.status(500).json(err.message));
