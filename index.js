@@ -21,6 +21,21 @@ server.get('/users', (req, res) => {
       .catch(err => res.send({error: "A problem occurred, unable to retrieve users"}));
   });
 
+  server.get('/users/:id', (req, res)=> {
+      const {id} = req.params;
+      db('users')
+        .where({id})
+        .then(user=> {
+            if (!user) {
+                res.status(404).json({message: "This user does not exist"});
+            }
+            res.status(200).json(user);
+        })
+        .catch(err=> {
+            res.status(500).json({message: "A problem occurred, unable to retrieve this user"});
+        })
+  });
+
 //REGISTER user
 server.post('/register', (req, res)=> {
     const credentials = req.body;
