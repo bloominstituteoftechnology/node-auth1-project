@@ -7,6 +7,8 @@ const db = require('./database/dbConfig.js');
 
 const server = express();
 
+const restrictedRoute = require('./restricted/restrictedRoutes.js');
+
 const session = require('express-session');
 
 function protected(req, res, next) {
@@ -80,6 +82,8 @@ server.get('/api/users', protected, (req, res) => {
       })
       .catch(err => res.send(err));
   });
+
+  server.use('/api/restricted', protected, restrictedRoute);
 
 const port = 8888;
 server.listen(port, () => console.log(`API running on ${port}`));
