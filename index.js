@@ -8,7 +8,7 @@ const knexConfig = require('./knexfile.js');
 const db = knex(knexConfig.development);
 
 server.use(express.json());
-server.use(cors();
+server.use(cors());
 
 // server functions
 
@@ -22,13 +22,13 @@ server.get('/api', (req, res) => {
 
 server.get('/api/users', (req, res) => {
   db('users')
-    .then(users => res.json(users));
+    .then(users => res.json(users))
     .catch(err => res.status(500).json(err));
 });
 
 // POST a user via register
 
-server.post('/register', (req, res) => {
+server.post('/api/register', (req, res) => {
 const credentials = req.body;
 // console.log(credentials);
 const hash = bcrypt.hashSync(credentials.password, 14);
@@ -38,7 +38,7 @@ credentials.password = hash;
 db('users')
   .insert(credentials)
   .then(id => res.send(id))
-  .catch(err => res.status(500).json(err));
+  .catch(err => res.status(500).json(err.message));
 });
 
 // authenticate login via POST
@@ -55,7 +55,7 @@ server.post('/api/login', (req, res) => {
     })
     .catch(err => res.status(500).send(err));
   });
-  
+
 // server instantiation
 
 const port = 8000;
