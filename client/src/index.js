@@ -7,7 +7,6 @@ import logger from "redux-logger";
 import rootReducer from "./reducers";
 import Root from './components/Root';
 
-import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 
 const reduxDevToolsHook = window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
@@ -19,4 +18,4 @@ const store = createStore(
 
 
 ReactDOM.render(<Root store={store} />, document.getElementById('root'));
-registerServiceWorker();
+
