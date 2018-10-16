@@ -111,6 +111,20 @@ server.post('/login', (request, response)  => {
     .catch(error => response.status(500).send(error));
 });
 
+/// ---- READ and Destroy Current Session Endpoint ----
+server.get('/logout', (request, response) => {
+    username = request.session.username;
+    if (request.session) {
+        request.session.destroy( err => {
+            if (err) {
+                response.status(500).json({ errorMessage: `Unable to logout user with username: ${username}.` })
+            } else {
+                response.status(200).json({ loggedOut: `${username} has been successfully logged out.` })
+            }
+        })
+    }
+})
+
 /// ---- READ All Users Endpoint ----
 server.get('/users', protected, (request, response) => {
     // Database Promise Methods
