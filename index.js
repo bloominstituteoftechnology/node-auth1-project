@@ -36,7 +36,7 @@ server.get('/api/users', protected, (req, res) => {
         db('users')
             .select('id', 'username')
             .then(users => {
-                console.log(req.session);
+                console.log(req.session.userId);
                 res.status(200).json(users);
             })
             .catch(err => res.status(500).json(err))
@@ -50,7 +50,7 @@ server.post('/api/register', (req, res) => {
 
     db('users').insert(credentials).then(ids => {
         const id = ids[0];
-        req.session.username = credentials.username;
+        req.session.userId = id;
         res.status(201).json({ newUserId: id });
     }).catch(err => {
         res.status(500).json({ err });
@@ -63,7 +63,7 @@ server.post('/api/login', (req, res) => {
 
     db('users').where({username: credentials.username}).first().then(user => {
         if(user && bcrypt.compareSync(credentials.password, user.password)) {
-            req.session.username = user.username; //added for session
+            req.session.userId = user.id; //added for session
             res.status(200).json({message: 'Access granted'})
         } else {
             res.status(401).json({message: 'Invalid username and/or password'})
@@ -83,8 +83,20 @@ server.get('/api/logout', (req, res) => {
     }
 })
 
+//Get restricted
+server.get('/api/restricted', protected, (req, res) => {
+   
+    db('missions')
+        .select('description', 'notes')
+        .where({user_id: req.session.userId})
+        .then(missions => {
+            res.status(200).json(missions);
+        })
+        .catch(err => res.status(500).json(err));
+})
+
 function protected(req, res, next) {
-    if (req.session && req.session.username) {
+    if (req.session && req.session.userId) {
         next();
     } else {
         res.status(401).json({ message: 'Not Authorized' });
