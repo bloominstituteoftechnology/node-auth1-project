@@ -1,5 +1,5 @@
 const express = require('express');
-
+const session = require('express-session');
 const userRoutes = require("./routes/userRoutes");
 
 
@@ -8,9 +8,23 @@ const userRoutes = require("./routes/userRoutes");
 
 const server = express();
 
-// endpoints here
+const sessionConfig = {
+    secret: 'nobody.tosses.a.dwarf.!',
+    name: 'monkey',
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false, 
+      maxAge: 100 * 60 * 1,
+  
+    }
+}
 
+// endpoints here
+server.use(session(sessionConfig));
 server.use(express.json());
+
 
 server.use("/users", userRoutes);
 
