@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
+import { Route, withRouter } from 'react-router-dom';
+
+import Nav from './Nav/nav';
+import Home from './Home/home';
 
 class App extends Component {
   render() {
     return (
       <div>
-        <h1>Hi!</h1>
+        <Nav />
+        <Route exact path='/' component={Home} />
       </div>
     );
   }
 }
 
-export default App;
+export default withRouter(App);
