@@ -4,9 +4,9 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs')
 const knex = require('knex')
 const knexConfig = require('./knexfile.js')
-const session = require('express-session');
-const db = knex(knexConfig.development)
+const session = require('express-session')
 const port = 9000
+const db = knex(knexConfig.development)
 const server = express()
 
 server.use(express.json())
@@ -25,15 +25,15 @@ server.use(session({
   })
 );
 
-server.route('/setname')
+server.route('/api/setname')
   .get((req, res) => {
-    req.session.name = 'Kitty';
-    res.send('got it');
+    req.session.username = 'Kitty';
+    res.send(`Set username to ${req.session.username}`);
   })
 
-server.route('/getname')
+server.route('/api/getname')
   .get((req, res) => {
-    res.send(`Hey ${req.session.name}, good to see you!`);
+    res.send(`Hey ${req.session.username}, good to see you!`);
   })
 
 server.route('/api/register')
@@ -56,7 +56,10 @@ server.route('/api/login')
     db('users')
       .where({ username: credentials.username }).first()
       .then(user => {
-        if (user && bcrypt.compareSync(credentials.password, user.password)) return res.status(200).json({ message: `Welcome ${user.username}!` })
+        if (user && bcrypt.compareSync(credentials.password, user.password)) {
+          req.session.username = user.username
+          return res.status(200).json({ message: `Welcome ${user.username}!` })
+        }
         return res.status(401).json({ message: 'You shall not pass!' });
       })
       .catch(err => res.status(500).json({ err }));
@@ -76,11 +79,16 @@ server.route('/api/logout')
   })
 
 server.route('/api/users')
-  .get((req, res) => {
+  .get(protected, (req, res) => {
     db('users')
       .select('id', 'username', 'password')
       .then(users => res.json(users))
       .catch(err => res.send(err));
   });
+
+function protected(req, res, next) {
+  if (req.session && req.session.username) return next();
+  return res.status(401).json({ message: 'you shall not pass!!' });
+}
 
 server.listen(port, () => console.log(`\n===Listening on ${port}===\n`))
