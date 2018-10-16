@@ -50,7 +50,7 @@ server.post('/register', (req, res) => {
 
   db('users').insert(credentials).then(ids => {
     const id = ids[0];
-    req.session.username = user.username;  
+    req.session.username = credentials.username;  
     res.status(201).json({ newUserId: id})
   })
    .catch(err => {
@@ -85,6 +85,19 @@ server.get('/users', cookieTime, (req, res) => {
         res.json(users);
       })
       .catch(err => res.send(err));
+});
+
+server.get('/logout', (req, res) => {
+  if(req.session) {
+    req.session.destroy(err => {
+      if(err) {
+        res.send('You will stay.')
+      }
+      else {
+        res.send('See ya');
+      }
+    });
+  }
 });
 
 //////Day 2
