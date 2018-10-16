@@ -24,6 +24,14 @@ server.use(
   })
 );
 
+function restricted(req, res, next) {
+  if (req.session && req.session.username) {
+    next();
+  } else {
+    res.status(401).json({ message: 'Please log in to view this content' });
+  }
+};
+
 server.use(express.json());
 server.use(cors());
 server.use(morgan('combined'));
@@ -32,17 +40,7 @@ const port = 8000;
 
 //GET user information
 
-server.get('/setname', (req, res)=> {
-  req.session.name = 'nerds';
-  res.send('blorch');
-});
-
-server.get('/getname', (req, res)=> {
-  const name = req.session.name;
-  res.send(`hello ${req.session.name}`);
-});
-
-server.get('/users', (req, res) => {
+server.get('/users', restricted, (req, res) => {
     db('users')
       .select('id', 'username', 'password')
       .then(users => {
@@ -51,7 +49,7 @@ server.get('/users', (req, res) => {
       .catch(err => res.send({error: "A problem occurred, unable to retrieve users"}));
   });
 
-  server.get('/users/:id', (req, res)=> {
+  server.get('/users/:id', restricted, (req, res)=> {
       const {id} = req.params;
       db('users')
         .where({id})
@@ -105,7 +103,7 @@ server.post('/login', (req, res)=> {
       });
 });
 
-//
+//LOGOUT user
 server.get('/logout', (req, res)=> {
   if (req.session) {
     req.session.destroy(err=> {
