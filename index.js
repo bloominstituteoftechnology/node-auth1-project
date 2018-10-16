@@ -2,15 +2,16 @@
 const express = require('express');
 const helmet = require('helmet');
 const bcrypt = require('bcryptjs');
+const sessionConfig = require('./data/sessionConfig')
 
 /// ---- Instantiate Express Server ----
 const server = express();
 
-/// ---- Connect Middleware ----
-server.use(express.json(), helmet());
-
 /// ---- Instantiate Database ----
 const db = require('./data/expressDb');
+
+/// ---- Connect Middleware ----
+server.use(express.json(), sessionConfig(db), helmet());
 
 ///// ---------- CRUD Enpoints ----------
 
@@ -107,15 +108,17 @@ server.post('/login', (request, response)  => {
 
 /// ---- READ All Users Endpoint ----
 server.get('/users', (request, response) => {
-db('user')
-.select('id', 'username')
-.then( users => {
-    if (users.length < 1) {
-        return response.status(204).json({message: "No users were found."})
-    }
-    response.status(200).json(users);
-})
-.catch(error => response.status(500).json({error}))
+    // Database Promise Methods
+    db('user')
+    .select('id', 'username')
+    .then( users => {
+        // Validate That Some Users Were Found
+        if (users.length < 1) {
+            return response.status(204).json({message: "No users were found."})
+        }
+        response.status(200).json(users);
+    })
+    .catch(error => response.status(500).json({error}))
 });
 
 /// ---- Server Port and Listen Method ----
