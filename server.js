@@ -47,16 +47,16 @@ server.post('/api/register', (req, res) => {
 		});
 });
 
+// login
 server.post('/api/login', (req, res) => {
 	const credentials = req.body;
 
 	model
 		.login(credentials)
-		.then(id => {
-			if (id) {
-				res
-					.status(200)
-					.json({ success: `User ${credentials.name} logged in`, cookie: id });
+		.then(user => {
+			if (user) {
+				req.session.name = user.name;
+				res.status(200).json({ success: `User ${credentials.name} logged in` });
 			} else {
 				res.status(401).json({ error: `invalid username or password` });
 			}
@@ -64,9 +64,11 @@ server.post('/api/login', (req, res) => {
 		.catch(err => res.status(500).json(err));
 });
 
+// get users (must be logged in)
 server.get('/api/users', (req, res) => {
 	if (req.session && req.session.name) {
-		model.getUsers
+		model
+			.getUsers()
 			.then(users => {
 				res.status(201).json(users);
 			})

@@ -25,7 +25,7 @@ function login(credentials) {
 		.where({ name: credentials.name })
 		.then(([user]) => {
 			if (user && bcrypt.compareSync(credentials.password, user.password)) {
-				return user.id;
+				return user;
 			} else {
 				return undefined;
 			}
