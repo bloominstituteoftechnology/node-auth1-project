@@ -52,6 +52,20 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.get("/logout", restrictedRoutes, (req, res) => {
+  if (req.session) {
+    req.seesion.destroy(err => {
+      if (err) {
+        res.json({ err });
+      } else {
+        res.json({ message: "you are logged out" });
+      }
+    });
+  } else {
+    res.status(500).json({ message: "An error occurred during the logout" });
+  }
+});
+
 router.get("/users", async (req, res) => {
   // check if user has an active session
   if (!req.session.username) {
