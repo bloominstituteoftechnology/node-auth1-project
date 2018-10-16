@@ -10,6 +10,15 @@ const bcrypt = require('bcryptjs');
 
 const server = express();
 
+const cookieTime = (req, res, next) => {
+  if (req.session && req.session.username) {
+    next();
+    } else {
+      res.status(401).send('Not authorized');
+    }
+  }
+
+
 const sessionConfig = {
     name:'notsession', ///we want to change to anon session software
     secret:'something%dwarf#something',
@@ -41,6 +50,7 @@ server.post('/register', (req, res) => {
 
   db('users').insert(credentials).then(ids => {
     const id = ids[0];
+    req.session.username = user.username;  
     res.status(201).json({ newUserId: id})
   })
    .catch(err => {
@@ -68,18 +78,13 @@ server.post('/login', (req, res) => {
 })
 ////////Per the notes from lecture.
 // protect this route, only authenticated users should see it
-server.get('/users', (req, res) => {
-  // console.log(req.session.username);
-  if (req.session && req.session.username) {
+server.get('/users', cookieTime, (req, res) => {
     db('users')
       .select('id', 'username', 'password')
       .then( users => {
         res.json(users);
       })
       .catch(err => res.send(err));
-    } else {
-      res.status(401).send('Not authorized');
-    }
 });
 
 //////Day 2
