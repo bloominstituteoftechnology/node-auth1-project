@@ -74,7 +74,11 @@ credentials.password = hash;
 
 db('users')
   .insert(credentials)
-  .then(id => res.send(id))
+  .then(sessionID => {
+    const id = sessionID[0];
+    req.sessionuserId = id;
+    res.json({ userId: id });
+  })
   .catch(err => res.status(500).json(err.message));
 });
 
