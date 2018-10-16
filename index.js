@@ -4,25 +4,45 @@ const bcrypt = require("bcryptjs");
 const session = require("express-session");
 const db = require("./database/dbConfig.js");
 const server = express();
-// const helmet = require('helmet')
+const KnexSessionStore=require('connect-session-knex')(session);
+
+const helmet = require('helmet')
 server.use(express.json());
-server.use(cors());
-// const KnexSessionStore = require('connect-session-knex')(session)
+server.use(cors({ origin: "http://localhost:3000" }));
+
+
+const serverLogger = (req, res, next) => {
+  console.log(
+    `\n\n\nIncoming Request:\n\nurl: ${req.url}\n\nmethod: ${
+    req.method
+    }\n\nbody:`
+  );
+  console.log(req.body);
+  next();
+};
 server.get("/", (req, res) => {
   res.send("Server Running");
 });
 const sessionConfig = {
-  name: "",
-  secret: "keyboard cica",
+  name: "cica",
+  secret: "keyboard.cica",
+  httpOnly: true,
+  resave: false,
+  saveUninitialized: false,
   cookie: {
     maxAge: 1 * 24 * 60 * 60 * 1000,
     secure: false
   },
-  httpOnly: true,
-  resave: false,
-  saveUninitialized: false
+   
+store: new KnexSessionStore({
+  tablename: "sessions",
+  sidfieldname: "sid",
+  knex: db,
+  createtable: true,
+  clearInterval: 1 * 24 * 60 * 60 * 1000,
+}),
 };
-server.use(session(sessionConfig));
+server.use(session(sessionConfig));      
 function protection (req, res, next) {
   if (req.session && req.session.username) {
     next();
@@ -77,7 +97,7 @@ server.get("/api/logout", (req, res) => {
       if (err) {
         res.send("error logging out");
       } else {
-        res.send("beat it no one wants to be defeated ");
+        res.send("'You just got out!!'");
       }
     });
   }
