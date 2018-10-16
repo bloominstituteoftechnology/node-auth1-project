@@ -29,17 +29,23 @@ server.get('/api/restricted/:section', (req, res) => {
 	res.send('You are in the restricted area.');
 });
 
+// check if a user is logged in during this session
+server.post('/api/checklogin', (req, res) => {
+	// if not logged in, req.session.username will be undefined
+	return res.status(200).json(req.session.username || false);
+});
+
 // login a user
 server.post('/api/login', (req, res) => {
 	const credentials = req.body;
+	if (req.session.username) {
+		return res.status(401).json({ error: `You are already logged in as ${ req.session.username }. Please log out first before logging in again.`});
+	}
 	if (!credentials.username) {
 		return res.status(401).json({ error: 'Username cannot be empty.' });
 	}
 	if (!credentials.password) {
 		return res.status(401).json({ error: 'Password cannot be empty.' });
-	}
-	if (req.session.username) {
-		return res.status(401).json({ error: `You are already logged in as ${ req.session.username }. Please log out first before logging in.`});
 	}
 	return userDb
 		.getUser(credentials.username)

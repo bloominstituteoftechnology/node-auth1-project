@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 
 const Auth = Home => Login => class extends Component {
     state = {
@@ -7,7 +8,22 @@ const Auth = Home => Login => class extends Component {
 
 	logIn = (username) => {
 		this.setState({ username: username });
-	};
+    };
+
+    componentDidMount() {
+        if (!this.state.username) {
+            axios.defaults.withCredentials = true;
+            return axios
+                .post('http://localhost:5000/api/checklogin')
+                .then(res => {
+                    const username = res.data;
+                    if (username) {
+                        return this.setState({ username: username });
+                    }
+                })
+                .catch(err => console.log(err));
+        }
+    };
 
     render () {
         if (this.state.username) {

@@ -11,6 +11,7 @@ export default class Login extends Component {
 	state = {
 		username: '',
 		password: '',
+		errMsg: '',
 	};
 
 	handleInputChange = e => {
@@ -25,17 +26,26 @@ export default class Login extends Component {
 			.then(res => {
 				this.props.logIn(res.data.welcome);
 			})
-			.catch(err => console.log(err));
+			.catch(err => {
+				const errorMsg = err.response.data.error;
+				console.log(err);
+				return this.setState({ errMsg: errorMsg });
+			});
 	};
 
 	render() {
+		const {
+			username,
+			password,
+			errMsg,
+		} = this.state;
 		return(
 			<LoginForm onSubmit = { this.handleSubmit }>
 				Username:
 				<input
 					name = 'username'
 					placeholder = 'Enter username...'
-					value = { this.state.username }
+					value = { username }
 					onChange = { this.handleInputChange }
 				/>
 
@@ -44,11 +54,13 @@ export default class Login extends Component {
 					type = 'password'
 					name = 'password'
 					placeholder = 'Enter password...'
-					value = { this.state.password }
+					value = { password }
 					onChange = { this.handleInputChange }
 				/>
 
 				<button type = 'submit'>Log in</button>
+
+				{ errMsg && <p>Failed to log in: { errMsg }</p> }
 			</LoginForm>
 		);
 	}
