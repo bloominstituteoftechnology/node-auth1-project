@@ -7,7 +7,7 @@ const Auth = Home => Login => class extends Component {
 	};
 
 	logIn = (username) => {
-		this.setState({ username: username });
+        this.setState({ username: username });
     };
 
     componentDidMount() {

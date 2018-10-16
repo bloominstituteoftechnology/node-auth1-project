@@ -26,7 +26,10 @@ server.get('/api/users', usersProtected, (req, res) => {
 
 // get restricted access
 server.get('/api/restricted/:section', (req, res) => {
-	res.send('You are in the restricted area.');
+	// the only way to get here is if the 'restricted' global middleware sees that you
+	// are logged into a session
+	const { section } = req.params;
+	res.status(200).json({ message: `You are in ${ section }.` });
 });
 
 // check if a user is logged in during this session
