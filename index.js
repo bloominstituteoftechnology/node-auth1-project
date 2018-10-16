@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 
 const db = require('./data/dbConfig.js');
 
@@ -18,6 +19,13 @@ sessionConfig = {
     secure: false,
     maxAge: 1000 * 60 * 3,
   },
+  store: new KnexSessionStore({
+    tablename: 'sessions',
+    sidfieldname: 'sid',
+    knex: db,
+    createtable: true,
+    clearInterval: 1000 * 60 * 60,
+  }),
 };
 server.use(session(sessionConfig));
 
