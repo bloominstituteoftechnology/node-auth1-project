@@ -56,8 +56,10 @@ server.post('/register', (req, res) => {
     .insert(credentials)
     .then(ids => {
       const id = ids[0];
-      req.session.username = user.username;
-      res.status(201).json({ newUserId: id});
+      req.session.username = credentials.username;
+      res.status(201).json({ 
+        newUserId: id, 
+        message: `Welcome to the database, ${credentials.username}`});
   })
     .catch(err => {
     res.status(500).json(err);
