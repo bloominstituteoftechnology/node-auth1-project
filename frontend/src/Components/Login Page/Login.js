@@ -24,9 +24,14 @@ class Login extends Component {
 			username: this.state.username,
 			password: this.state.password
 		};
-		axios
-			.post("http://localhost:3300/api/login", user)
-			.then(res => console.log(res));
+		axios.post("http://localhost:3300/api/login", user).then(res => {
+			console.log(res);
+			if (res.data.welcome !== "") {
+				this.props.history.push("/home");
+			} else {
+				this.props.history.push("/register");
+			}
+		});
 	};
 
 	render() {

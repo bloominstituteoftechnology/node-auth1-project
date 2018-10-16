@@ -5,6 +5,21 @@ const helmet = require("helmet");
 const knex = require("knex");
 const knexConfig = require("./knexfile.js");
 const server = express();
+const session = require("express-session");
+
+const sessionConfig = {
+	secret: "some.will.know.where.to.go",
+	name: "Ooga-Booga",
+	httpOnly: true,
+	resave: false,
+	saveUninitialized: false,
+	cookie: {
+		secure: false,
+		maxAge: 1000 * 60 * 1
+	}
+};
+
+server.use(session(sessionConfig));
 
 const db = knex(knexConfig.development);
 
@@ -17,18 +32,39 @@ server.get("/", (req, res) => {
 });
 
 server.get("/api/users", (req, res) => {
-	db("users")
-		.select("id", "username", "password")
-		.then(users => {
-			res.json(users);
-		})
-		.catch(err => res.send(err));
+	console.log(req.session);
+	if (req.session && req.session.username) {
+		db("users")
+			.select("id", "username", "password")
+			.then(users => {
+				res.json(users);
+			})
+			.catch(err => res.send(err));
+	} else {
+		res.status(401).send("Not Authorized");
+	}
+});
+
+server.get("/logout", (req, res) => {
+	if (req.session) {
+		req.session.destroy(err => {
+			if (err) {
+				res.send("You cant leave!");
+			} else {
+				res.send("goodbye!");
+			}
+		});
+	} else {
+		res.send(500).send("No Session To Log Out From");
+	}
 });
 
 server.post("/api/register", (req, res) => {
 	const credentials = req.body;
 	const hash = bcrypt.hashSync(credentials.password, 15);
 	credentials.password = hash;
+	//Cookie made for session
+	req.session.username = credentials.username;
 
 	db("users")
 		.insert(credentials)
@@ -47,6 +83,8 @@ server.post("/api/login", (req, res) => {
 		.first()
 		.then(user => {
 			if (user && bcrypt.compareSync(creds.password, user.password)) {
+				//Cookie made for session
+				req.session.username = user.username;
 				res.status(201).json({ welcome: user.username });
 			} else {
 				res
