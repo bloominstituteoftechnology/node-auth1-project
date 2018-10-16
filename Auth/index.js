@@ -2,6 +2,8 @@ const express = require('express');
 
 const session = require('express-session');
 
+const KnexSessionStore = require('connect-session-knex')(session);
+
 const cors = require('cors');
 
 const db = require('./database/dbConfig.js');
@@ -29,8 +31,14 @@ const sessionConfig = {
     httpOnly: true, ///block JS
     resave: false,
     saveUninitialized: false,
-
-}
+    store: new KnexSessionStore({
+      tablename: 'sessions',
+      sidefieldname: 'sid',
+      knex: db,
+      createtable: true,
+      clearIntervale: 1000 * 60 * 60,
+    }),
+};
 
 server.use(
   express.json(), 
