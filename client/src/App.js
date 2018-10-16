@@ -4,6 +4,7 @@ import './App.css';
 import {Switch, Link, Route, withRouter} from 'react-router-dom';
 
 class App extends Component {
+
   constructor(props){
     super(props);
     this.state = {
@@ -81,6 +82,7 @@ class App extends Component {
     if(this.state.isLoggedIn){
       axios.get(`http://localhost:9000/users`)
       .then(res => {
+        console.log(res);
         this.setState({
           users: res.data
         })
@@ -89,11 +91,11 @@ class App extends Component {
     return (
       <div className="App">
         
-        <form>
+        <form onSubmit={this.handleLogin}>
           <h3>Log In</h3>
         <input onChange={this.handleInput} type='text' name='username' value={this.state.username}></input>
         <input onChange={this.handleInput} type = 'password' name='password' value={this.state.password}></input>
-        <button onClick={this.handleLogin}>Log In</button>
+        <button type='submit'>Log In</button>
         </form>
 
       <h1>Logged in?</h1>
@@ -105,11 +107,11 @@ class App extends Component {
         })}
 
 
-        <form>
+        <form onSubmit={this.handleRegister}>
           <h3>Register New User</h3>
         <input onChange={this.handleInput} type='text' name='newusername' value={this.state.newusername}></input>
         <input onChange={this.handleInput} type = 'password' name='newpassword' value={this.state.newpassword}></input>
-        <button onClick={this.handleRegister}>Register</button>
+        <button type='submit'>Register</button>
         </form>
       </div>
       </div>
