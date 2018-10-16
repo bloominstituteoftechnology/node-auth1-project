@@ -60,7 +60,20 @@ server.route('/api/login')
         return res.status(401).json({ message: 'You shall not pass!' });
       })
       .catch(err => res.status(500).json({ err }));
-  })  
+  });
+
+server.route('/api/logout')
+  .get((req, res) => {
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.send('error logging out');
+        } else {
+          res.send('good bye');
+        }
+      })
+    }
+  })
 
 server.route('/api/users')
   .get((req, res) => {
