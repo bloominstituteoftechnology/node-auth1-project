@@ -22,7 +22,34 @@ a {
   line-height: 70px;
   padding: 10px;
 }
-.App-header .button {
+h1 {
+  font-size: 50px;
+}
+label {
+  font-size: 30px;
+  display: block;
+}
+.formContainer {
+  background: #eee;
+  margin: 10px auto;
+  width: 90%;
+  text-align: center;
+  padding: 30px 0;
+  border: 2px solid #333;
+  border-radius: 10px;
+}
+.formField {
+  width: 90%;
+  margin: 10px auto;
+}
+input {
+  width: 70%;
+  height: 50px;
+  font-size: 30px;
+  margin: 10px 20px;
+  margin-bottom: 30px;
+}
+button {
   color: #fff;
   background: #61dafb;
   width: 200px;
@@ -30,6 +57,12 @@ a {
   font-size: 30px;
   font-weight: 700;
   border-radius: 8px;
+  border: 2px solid #333;
+}
+
+button:hover {
+  color: #61dafb;
+  background: #fff;
 }
 
 .App-link {
