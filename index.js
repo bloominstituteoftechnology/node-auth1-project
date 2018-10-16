@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const morgan = require('morgan');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const db = require('./database/dbConfig.js');
 
@@ -8,10 +10,38 @@ const server = express();
 
 server.use(express.json());
 server.use(cors());
+server.use(
+  session({
+    name: 'blergh',
+    secret: 'high fiving a million angels',
+    cookie: {
+      maxAge: 1*24*60*60*1000,
+      secure: false
+    },
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: true
+  })
+);
+
+server.use(express.json());
+server.use(cors());
+server.use(morgan('combined'));
 
 const port = 8000;
 
 //GET user information
+
+server.get('/setname', (req, res)=> {
+  req.session.name = 'nerds';
+  res.send('blorch');
+});
+
+server.get('/getname', (req, res)=> {
+  const name = req.session.name;
+  res.send(`hello ${req.session.name}`);
+});
+
 server.get('/users', (req, res) => {
     db('users')
       .select('id', 'username', 'password')
@@ -73,6 +103,19 @@ server.post('/login', (req, res)=> {
       .catch(err=> {
         res.status(500).json({error: "A problem occurred, unable to login"});
       });
+});
+
+//
+server.get('/logout', (req, res)=> {
+  if (req.session) {
+    req.session.destroy(err=> {
+      if (err) {
+        res.json({error: "An error occurred while attempting to log out"});
+      } else {
+        res.json('Goodbye!');
+      }
+    });
+  }
 });
 
 server.listen(port, ()=> console.log(`API running on port ${port}`));
