@@ -87,6 +87,7 @@ server.post('/api/login', (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(credentials.password, user.password)) {
+        req.session.userId = user.id;
         res.status(200).json({ message: "Login successful!" });
       } else res.status(401).json({ message: "Access denied. Please try again. "});
     })
