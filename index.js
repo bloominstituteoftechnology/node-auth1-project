@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 
 //Using Sessions & Cookies for FSW13 w/ Luis Hernandez (near 0:23:15)
 const session = require('express-session'); // added this library
+// Using this name (KnexSessionStore) becauase its in examples to be safe..this is a constructor function
 const KnexSessionStore = require('connect-session-knex')(session);
 
 const db = require('./dbConfig.js');
@@ -18,18 +19,19 @@ const sessionConfig = {
     name: 'Kakarot', // defaults to connect.sid when there is a vulnerablity
     secret: 'The secret is....',
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 1, // Day
+        maxAge: 1000 * 60, // 1 min
         secure: false, // only saves the cookies over http(s) or when connection is secure. Server will not send back a cookie over http.
-    }, // 1 day/milliseconds
+    },
     httpOnly: true, // Only JS code can access cookies.
     resave: false,
     saveUninitialized: false, // laws
-    store: new KnexSessionStore({
+    //Using Sessions & Cookies for FSW13 w/ Luis Hernandez (near 1:31:00)
+    store: new KnexSessionStore({ //pass in an object to configure it
         tablename: 'sessions',
         sidfieldname: 'sid',
-        knex: db,
-        createtable: true,
-        clearInterval: 1000 * 60 * 60,
+        knex: db, //this is a reference not a STRING
+        createtable: true, //Lets create this sessions table if it doesn't exist
+        clearInterval: 1000 * 60 * 60, // How long until a package does a check on the database/ 1 hour
     }),
 };
 server.use(session(sessionConfig));
@@ -38,7 +40,7 @@ server.use(express.json());
 server.use(helmet());
 server.use(cors());
 
-//*** Day 2 Makes sure you are logged in ***//
+//*** Day 2 Middleware. Makes sure you are logged in ***//
 function protection(req, res, next) {
     if (req.session && req.session.username) {
         next();
