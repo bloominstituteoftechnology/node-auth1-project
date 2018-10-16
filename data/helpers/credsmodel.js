@@ -1,4 +1,4 @@
-const db = require('../dbConfig');
+const db = require('../dbconfig');
 
 const find = (id) => {
     if(id) {
