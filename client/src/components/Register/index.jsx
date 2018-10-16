@@ -45,7 +45,7 @@ class Register extends React.Component {
   render() {
     return (
       <div className="formContainer">
-        <h1>Register Page</h1>
+        <h1>Registration Page</h1>
         <div className="formField">
           <label htmlFor="username">Username</label>
           <input
