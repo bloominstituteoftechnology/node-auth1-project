@@ -1,12 +1,25 @@
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const db = require('./data/dbConfig.js');
 
 const server = express();
-port = 7000;
 
+const sessionConfig = {
+  secret: 'blah-blah.bittyblah~!',
+  name: 'giles',
+  httpOnly: true,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false,
+    maxAge: 1000 * 60 * 1,
+  },
+};
+
+server.use(session(sessionConfig))
 server.use(express.json());
 server.use(cors());
 
@@ -43,6 +56,7 @@ server.post('/login', (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
+        req.session.username = user.username;
         res
           .status(200)
           .json({ welcome: user.username });
@@ -59,14 +73,26 @@ server.post('/login', (req, res) => {
     })
 })
 
+// server.get('/users', (req, res) => {
+//   console.log(req.session);
+// })
 
-server.get('/api/users', (req, res) => {
+server.get('/api/users', protected, (req, res) => {
   db('users')
-    .select('id', 'username')
+    .select('id', 'username', 'password')
     .then(users => {
       res.json(users);
     })
     .catch(err => res.send(err));
 });
 
+function protected(req, res, next) {
+  if (req.session && req.session.username) {
+    next();
+  } else {
+    res.status(401).json({ message: 'Not authorized' })
+  }
+}
+
+port = 7000;
 server.listen(port, () => console.log(`\n==  API running on port ${port} ==\n`))
