@@ -14,10 +14,9 @@ const server = express();
 const db = require('./data/expressDb');
 
 /// ---- Connect Middleware ----
-server.use(express.json(), sessionConfig(db), helmet());
+server.use(express.json(), sessionConfig(db), protected, helmet());
 
 ///// ---------- CRUD Enpoints ----------
-
 /// ---- Sanity Check CRUD Endpoint ----
 server.get('/', (request, response) => {
     response.send(`IT'S ALIVE!!!`)
@@ -114,7 +113,7 @@ server.post('/login', (request, response)  => {
 /// ---- READ and Destroy Current Session Endpoint ----
 server.get('/logout', (request, response) => {
     username = request.session.username;
-    if (request.session) {
+    if (request.session && username) {
         request.session.destroy( err => {
             if (err) {
                 response.status(500).json({ errorMessage: `Unable to logout user with username: ${username}.` })
@@ -122,11 +121,28 @@ server.get('/logout', (request, response) => {
                 response.status(200).json({ loggedOut: `${username} has been successfully logged out.` })
             }
         })
+    } else {
+        response.status(400).json({ errorMessage: `No user logged in to logout.` })
     }
-})
+});
 
-/// ---- READ All Users Endpoint ----
-server.get('/users', protected, (request, response) => {
+/// ---- READ All Users Endpoint (Restricted) ----
+server.get('/api/restricted/users', (request, response) => {
+    // Database Promise Methods
+    db('user')
+    .select('id', 'username')
+    .then( users => {
+        // Validate That Some Users Were Found
+        if (users.length < 1) {
+            return response.status(204).json({message: "No users were found."})
+        }
+        response.status(200).json(users);
+    })
+    .catch(error => response.status(500).json({error}))
+});
+
+/// ---- READ All Users Endpoint (Unrestricted) ----
+server.get('/api/users', (request, response) => {
     // Database Promise Methods
     db('user')
     .select('id', 'username')
