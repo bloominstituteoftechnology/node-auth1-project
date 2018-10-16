@@ -6,23 +6,27 @@ class App extends Component {
   state = {
     username: "doris",
     password: "12345678",
-    error: null
+    error: null,
+    registering: false
   };
   handleOnChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
   handleRegister = () => {
+    this.setState({registering: true});
     axios
       .post("http://localhost:9000/api/register", {
         username: this.state.username,
         password: this.state.password
       })
       .then(resp => {
+        console.log(resp);
         this.setState({
           username: resp.data.username,
-          password: resp.data.password
+          password: resp.data.password,
+          registering: false
         });
-        console.log(resp);
+        this.props.history.push("/login");
       })
       .catch(err => {
         this.setState({ error: err });
@@ -30,8 +34,19 @@ class App extends Component {
       });
   };
   render() {
-    return (
-      <div className="App">
+    return this.state.registering ? (
+      <h2>
+        Registering your account... hold tight, this will take a few seconds.
+      </h2>
+    ) : (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column"
+        }}
+      >
         <h1>Please Register</h1> <br />
         <input
           onChange={this.handleOnChange}

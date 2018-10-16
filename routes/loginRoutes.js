@@ -49,14 +49,11 @@ router.post("/register", (req, res) => {
       .status(400)
       .json({ message: "Password must be at least 8 characters long" });
   } else {
-    const users = db("users");
-    if ([...users].includes(creds.username)) {
-      res.status(400).json({ message: "User has been" });
-    }
+    const hashedPassword = bcrpyt.hashSync(creds.password, 16);
+    creds.password = hashedPassword;
     db("users")
       .insert(creds)
       .then(ids => {
-        req.session.username = creds.username;
         res.status(201).json({
           message: `User with Username: ${creds.username}, Password: ${
             creds.password
@@ -104,10 +101,13 @@ router.post("/login", (req, res) => {
         console.log(req.session.username);
         res.status(201).json({
           message: `Welome ${user.username[0].toUpperCase() +
-            user.username.slice(1, user.username.length)}`
+            user.username.slice(1, user.username.length)}`,
+          isLoggedIn: true
         });
       } else {
-        res.status(400).json({ message: "Invalid username or password" });
+        res
+          .status(400)
+          .json({ message: "Invalid username or password", isLoggedIn: false });
       }
     })
     .catch(err => res.status(500).message({ message: err }));
