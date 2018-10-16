@@ -1,63 +1,41 @@
-import axios from 'axios';
+import { FETCHING, FETCHED, FETCH_ERROR, LOGGING_IN, LOGGING_OUT, LOGGED_IN, LOGGED_OUT, LOG_IN_ERROR, LOG_OUT_ERROR, ADD_USER, ADDED_USER, ADD_USER_ERROR } from '../actions';
 
-export const FETCHING = 'FETCHING';
-export const FETCHED = 'FETCHED';
-export const FETCH_ERROR = 'FETCH_ERROR';
-export const LOGGING_IN = 'LOGGING_IN';
-export const LOGGED_IN = 'LOGGED_IN';
-export const LOG_IN_ERROR = 'LOG_IN_ERROR';
-export const LOGGING_OUT = 'LOGGING_OUT';
-export const LOGGED_OUT = 'LOGGED_OUT';
-export const LOG_OUT_ERROR = 'LOG_OUT_ERROR';
+const initialState = {
+    users: [],
+    fetchingUsers: false,
+    addingUser: false,
+    loggingIn: false,
+    loggingOut: false,
+    error: ''
+};
 
-
-export const fetchUsers = () => {
-    return dispatch => {
-        dispatch({ type: FETCHING });
-        
-        axios.get('http://localhost:8888/api/restricted/users')
-        .then(response => {
-            dispatch({
-                type: FETCHED,
-                payload: response.data
-            });
-        })
-        .catch(err => {
-            console.log(err);
-            dispatch({ type: FETCH_ERROR, payload: err })
-        });
-    }
-}
-
-export const logIn = (creds) => {
-    return dispatch => {
-        dispatch({ type: LOGGING_IN });
-        axios
-        .post('http://localhost:8888/api/login', creds)
-        .then(response => {
-            dispatch({
-                type: LOGGED_IN,
-                payload: response.data
-            });
-        })
-        .catch(err => {
-            dispatch({ type: LOG_IN_ERROR, payload: err });
-        });
-    }
-}
-
-export const logOut = () => {
-    return dispatch => {
-        dispatch({ type: LOGGING_OUT });
-        axios.get('http://localhost:8888/api/logout')
-        .then(response => {
-            dispatch({
-                type: LOGGED_IN,
-                payload: response.data
-            });
-        })
-        .catch(err => {
-            dispatch({ type: LOG_OUT_ERROR, payload: err })
-        });
+export default function (state = initialState, action) {
+    switch(action.type) {
+        case FETCHING:
+            return {...state, fetchingUsers: true};
+        case FETCHED:
+            return {...state, users: [...action.payload], fetchingUsers: false};
+        case ADD_USER:
+            return {...state, addingUser: true};
+        case ADDED_USER:
+            return {...state, addingUser: false};
+        case LOGGING_IN:
+            return {...state, loggingIn: true};
+        case LOGGED_IN:
+            return {...state, loggingIn: false};
+        case LOGGING_OUT:
+            return {...state, loggingOut: true};
+        case LOGGED_OUT:
+            return {...state, loggingOut: false};
+        case FETCH_ERROR:
+            return {...state, fetchingUsers: false, error: action.payload };
+        case ADD_USER_ERROR:
+            return {...state, addingUser: false, error: action.payload };
+        case LOG_IN_ERROR:
+            return {...state, loggingIn: false, error: action.payload };
+        case LOG_OUT_ERROR:
+            return {...state, loggingOut: false, error: action.payload };
+        default:
+            return state;
     }
 }
