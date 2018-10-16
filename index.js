@@ -6,8 +6,17 @@ const knex = require("knex");
 const knexConfig = require("./knexfile.js");
 const server = express();
 const session = require("express-session");
+const KnexSessionStore = require("connect-session-knex")(session);
 
+const db = knex(knexConfig.development);
 const sessionConfig = {
+	store: new KnexSessionStore({
+		tablename: "sessions",
+		sidfieldname: "sid",
+		knex: db,
+		createtable: true,
+		clearInterval: 1000 * 60 * 60
+	}),
 	secret: "some.will.know.where.to.go",
 	name: "Ooga-Booga",
 	httpOnly: true,
@@ -19,13 +28,10 @@ const sessionConfig = {
 	}
 };
 
-server.use(session(sessionConfig));
-
-const db = knex(knexConfig.development);
-
 server.use(helmet());
 server.use(express.json());
 server.use(cors());
+server.use(session(sessionConfig));
 
 server.get("/", (req, res) => {
 	res.send("Its Alive!");
