@@ -71,7 +71,7 @@ server.post("/api/register", (req, res) => {
 
 server.post("/api/login", (req, res) => {
   const creds = req.body;
-
+  console.log(creds);
   db("users")
     .where({ username: creds.username })
     .first()

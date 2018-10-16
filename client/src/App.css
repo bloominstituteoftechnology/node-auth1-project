@@ -1,0 +1,12 @@
+.App {
+  text-align: center;
+}
+
+.login-form {
+  margin: 80px auto;
+  width: 400px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid blue;
+}
