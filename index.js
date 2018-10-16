@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs')
 const knex = require('knex')
 const knexConfig = require('./knexfile.js')
 const session = require('express-session')
+const knexSessionStore = require('connect-session-knex')(session)
 const port = 9000
 const db = knex(knexConfig.development)
 const server = express()
@@ -45,7 +46,8 @@ server.route('/api/register')
       .insert(credentials)
       .then(ids => {
         const id = ids[0]
-        res.status(201).json({ newUserId: id });
+        req.session.username = credentials.username
+        return res.status(201).json({ newUserId: id });
       })
       .catch(err => res.status(500).json(err));
   })
@@ -69,11 +71,8 @@ server.route('/api/logout')
   .get((req, res) => {
     if (req.session) {
       req.session.destroy(err => {
-        if (err) {
-          res.send('error logging out');
-        } else {
-          res.send('good bye');
-        }
+        if (err) return res.send('Error logging out!');
+        return res.send('Good bye!');
       })
     }
   })
