@@ -19,10 +19,13 @@ const knex = require('knex');
 const knexConfig = require('./knexfile.js');
 
 const db = knex(knexConfig.development);
+const restricted = require('./routes/restricted');
 const server = express();
+
 server.use(helmet());
 server.use(express.json());
 server.use(session(sessionConfig));
+server.use('/api/restricted', protected, restricted);
 
 function protected(request, response, next) {
     if (request.session && request.session.username) {
@@ -91,23 +94,23 @@ server.post('/api/login', (request, response) => {
 });
 
 // user list and logout GET requests
-server.get('/api/users', protected, (request, response) => {
-    request.session.name = '12345';
-    const sessionName = request.session.name;
+// server.get('/api/users', protected, (request, response) => {
+//     request.session.name = '12345';
+//     const sessionName = request.session.name;
 
-    db('users')
-        .select('id', 'username', 'password')
-        .then(users => {
-            return response
-                .status(200)
-                .json(users);
-        })
-        .catch(() => {
-            return response
-                .status(500)
-                .json({ Error: "Could not find list of users." });
-        });
-});
+//     db('users')
+//         .select('id', 'username', 'password')
+//         .then(users => {
+//             return response
+//                 .status(200)
+//                 .json(users);
+//         })
+//         .catch(() => {
+//             return response
+//                 .status(500)
+//                 .json({ Error: "Could not find list of users." });
+//         });
+// });
 
 server.get('/api/logout', (request, response) => {
     if (request.session) {
