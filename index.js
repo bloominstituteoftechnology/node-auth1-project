@@ -1,7 +1,20 @@
 const express = require('express');
 const helmet = require('helmet');
 const bcrypt = require('bcryptjs');
+
 const session = require('express-session');
+const sessionConfig = {
+    name: 'session',
+    secret: "Hello I am a horse",
+    cookie: {
+        maxAge: 1 * 24 * 60 * 60 * 1000,
+        secure: false
+    },
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false
+};
+
 const knex = require('knex');
 const knexConfig = require('./knexfile.js');
 
@@ -9,23 +22,20 @@ const db = knex(knexConfig.development);
 const server = express();
 server.use(helmet());
 server.use(express.json());
+server.use(session(sessionConfig));
+
+function protected(request, response, next) {
+    if (request.session && request.session.username) {
+        next();
+    } else {
+        response
+            .status(401)
+            .json({ message: "You shall not pass!" });
+    }
+}
 
 const port = 8000;
 server.listen(port, () => console.log(`API running on port ${port}`));
-
-server.use(
-    session({
-        name: 'session',
-        secret: "Hello I am a horse",
-        cookie: {
-            maxAge: 1 * 24 * 60 * 60 * 1000,
-            secure: true
-        },
-        httpOnly: true,
-        resave: false,
-        saveUninitialized: false
-    })
-);
 
 // checker endpoint
 server.get('/', (request, response) => {
@@ -43,6 +53,7 @@ server.post('/api/register', (request, response) => {
         .insert(credentials)
         .then(ids => {
             const id = ids[0];
+            request.session.username = credentials.username;
             return response
                 .status(201)
                 .json({ newUserId: id });
@@ -66,6 +77,7 @@ server.post('/api/login', (request, response) => {
                     .status(401)
                     .json({ message: "You shall not pass!" });
             } else {
+                request.session.username = user.username;
                 return response
                     .status(200)
                     .json({ message: `${credentials.username} logged in...` });
@@ -78,10 +90,9 @@ server.post('/api/login', (request, response) => {
         });
 });
 
-server.get('/api/users', (request, response) => {
+server.get('/api/users', protected, (request, response) => {
     request.session.name = '12345';
     const sessionName = request.session.name;
-    console.log(request.session);
 
     db('users')
         .select('id', 'username', 'password')
@@ -96,3 +107,16 @@ server.get('/api/users', (request, response) => {
                 .json({ Error: "Could not find list of users." })
         });
 });
+
+server.get('/api/logout', (request, response) => {
+    if (request.session) {
+        request.session.destroy(err => {
+            return response
+                .send("You can't leave!");
+        });
+    } else {
+        return response
+            .status(200)
+            .json({ message: "Logged user out." });
+    }
+})
