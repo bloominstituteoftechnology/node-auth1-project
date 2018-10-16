@@ -1,5 +1,7 @@
 const db = require('../dbconfig');
 
+// find() -> [{id: int, username: 'string'}, ..., {id: int, username: 'string'}]
+// find(userId) -> {id: int, username: 'string'}
 const find = (id) => {
     if(id) {
         return db('users')
@@ -12,12 +14,14 @@ const find = (id) => {
     }
 };
 
+// addNewUser({username: 'string', password: 'hashed string'}) -> [id: int]
 const addNewUser = (userObj) => {
     return db('users')
         .insert(userObj)
         .into('users');
 };
 
+// authUser({username: 'string'}) -> {id: int, username: 'string', password: 'hashed string'}
 const authUser = (userObj) => {
     return db('users')
 		.where({username: userObj.username})

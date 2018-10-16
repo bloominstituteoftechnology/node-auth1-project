@@ -28,7 +28,7 @@ const protected = (req, res, next) => {
 	}
 };
 
-// ~~ Global restricted route ~~ //
+// ~~ Global restricted routes ~~ //
 const restricted = (req, res, next) => {
 	if(req.url === '/api/restricted*') {
 		if(req.session && req.session.username) {
@@ -45,6 +45,7 @@ server.use(restricted);
 
 // Routes
 // ~~ User registration ~~ //
+// addNewUser({username: 'string', password: 'hashed string'}) -> [id: int]
 server.post('/api/register', (req, res, next) => {
     const credentials = req.body;
     const hash = bcrypt.hashSync(credentials.password, 14);
@@ -61,8 +62,10 @@ server.post('/api/register', (req, res, next) => {
 });
 
 // ~~ User login ~~ //
+// authUser({username: 'string'}) -> {id: int, username: 'string', password: 'hashed string'}
 server.post('/api/login', (req, res, next) => {
 	const credentials = req.body;
+
 	usersTable.authUser(credentials)
 		.then((user) => {
 			if(user && bcrypt.compareSync(credentials.password, user.password)) {
@@ -78,6 +81,7 @@ server.post('/api/login', (req, res, next) => {
 });
 
 // ~~ User logout ~~ //
+// destroy -> destroys the session in the sessions table
 server.get('/api/logout', (req, res, next) => {
 	if(req.session) {
 		req.session.destroy((err) => {
@@ -91,6 +95,7 @@ server.get('/api/logout', (req, res, next) => {
 });
 
 // ~~ A targeted protected route ~~ //
+// find() -> [{id: int, username: 'string'}, ..., {id: int, username: 'string'}]
 server.get('/api/users', protected, (req, res, next) => {
     usersTable.find()
         .then((users) => {
@@ -102,6 +107,7 @@ server.get('/api/users', protected, (req, res, next) => {
 });
 
 // ~~ A global restricted route ~~ //
+// find() -> [{id: int, username: 'string'}, ..., {id: int, username: 'string'}]
 server.get('/api/restricted/users', protected, (req, res, next) => {
     usersTable.find()
         .then((users) => {
