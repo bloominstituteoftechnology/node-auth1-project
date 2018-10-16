@@ -10,7 +10,7 @@ const sessionConfig = {
 	saveUninitialized: false, // laws! (?)
 	cookie: {
 		secure: false, // over https
-		maxAge: 1000 * 60 * 1 // 1000 ms * 60 s * 1 m
+		maxAge: 1000 * 60 * 1 // ms * s * m
 	},
 	store: new KnexSessionStore({
 		tablename: 'sessions',
