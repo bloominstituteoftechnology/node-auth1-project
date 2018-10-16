@@ -16,14 +16,14 @@ sessionConfig = {
   saveUninitialized: false,
   cookie: {
     secure: false,
-    maxAge: 100 * 60 * 3,
+    maxAge: 1000 * 60 * 3,
   },
 };
 server.use(session(sessionConfig));
 
 server.use(express.json(), helmet());
 
-server.get('/api/users', (req, res) => {
+server.get('/api/users', protected, (req, res) => {
   db('users')
     .then(users => res.status(200).json(users))
     .catch(err => res.status(500).json(err));
@@ -52,6 +52,7 @@ server.post('/api/login', (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(login.password, user.password)) {
+        req.session.userId = user.id;
         res.status(200).json({ login: `Welcome ${user.username}` });
       } else {
         res.status(401).json({ message: 'You shall not pass!' });
@@ -59,5 +60,13 @@ server.post('/api/login', (req, res) => {
     })
     .catch(err => res.status(500).json(err));
 });
+
+function protected(req, res, next) {
+  if (req.session && req.session.userId) {
+    next();
+  } else {
+    res.status(401).json({ message: 'You shall not pass!' });
+  }
+}
 
 server.listen(port, () => console.log(`===API running on ${port} port===\n`));
