@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
-// const KnexSessionStore = require('connect-session-knex')(session);
+const KnexSessionStore = require('connect-session-knex')(session);
 
 const db = require('./database/dbConfig.js');
 
@@ -19,13 +19,13 @@ const sessionConfig = {
     secure: false, // over httpS
     maxAge: 1000 * 60 * 1 // keep logged on for 1 minute
   },
-  // store: new KnexSessionStore({
-  //   tablename: 'sessions',
-  //   sidfieldname: 'sid',
-  //   knex: db,
-  //   createtable: true,
-  //   clearInterval: 1000 * 60 * 60, // remove only expired sessions every hour
-  // })
+  store: new KnexSessionStore({
+    tablename: 'sessions',
+    sidfieldname: 'sid',
+    knex: db,
+    createtable: true,
+    clearInterval: 1000 * 60 * 60, // remove only expired sessions every hour
+  })
 };
 
 
@@ -62,6 +62,7 @@ server.post('/api/register', (req, res) => {
     .insert(credentials)
     .then(ids => {
       const id = ids[0];
+      req.session.username = credentials.username;
       res.status(201).json({ newUserId: id });
     })
     .catch(err => {
