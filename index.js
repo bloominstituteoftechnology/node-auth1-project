@@ -1,5 +1,6 @@
 const express = require('express');
 const helmet = require('helmet');
+const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const KnexSessionStore = require('connect-session-knex')(session);
@@ -29,9 +30,10 @@ sessionConfig = {
 };
 server.use(session(sessionConfig));
 
-server.use(express.json(), helmet());
+server.use(express.json(), helmet(), cors());
 
 server.get('/api/users', protected, (req, res) => {
+  console.log(req.session);
   db('users')
     .then(users => res.status(200).json(users))
     .catch(err => res.status(500).json(err));
