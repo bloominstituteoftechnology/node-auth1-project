@@ -2,7 +2,10 @@
 const express = require('express');
 const helmet = require('helmet');
 const bcrypt = require('bcryptjs');
-const sessionConfig = require('./data/sessionConfig')
+
+/// ---- Middleware ----
+const sessionConfig = require('./middleware/sessionConfig')
+const protected = require('./middleware/protected')
 
 /// ---- Instantiate Express Server ----
 const server = express();
@@ -98,6 +101,8 @@ server.post('/login', (request, response)  => {
     .then( user => {
         // Verify That a User Exists With The Specified Password
         if (user && bcrypt.compareSync(credentials.password, user.password)) {
+            // Store user's username as the session identifier.
+            request.session.username = user.username;
             response.status(200).json({ authorized: `${username} has been logged in.` })
         } else {
             response.status(401).json({ rejected: "Unable to find a user with the provided password and username." })
@@ -107,7 +112,7 @@ server.post('/login', (request, response)  => {
 });
 
 /// ---- READ All Users Endpoint ----
-server.get('/users', (request, response) => {
+server.get('/users', protected, (request, response) => {
     // Database Promise Methods
     db('user')
     .select('id', 'username')
@@ -123,4 +128,4 @@ server.get('/users', (request, response) => {
 
 /// ---- Server Port and Listen Method ----
 const port = 9999;
-server.listen(port, console.log(`Server Active on Port ${port}`))
+server.listen(port, console.log(`\n#####~> --Server Active on Port ${port}-- <~#####\n`));
