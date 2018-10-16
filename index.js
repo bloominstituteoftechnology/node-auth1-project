@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 
 const knex = require('knex');
 const knexConfig = require('./knexfile');
@@ -11,6 +12,13 @@ const server = express();
 const port = 9000;
 
 const sessionConfig = {
+  store: new KnexSessionStore({
+    tablename: 'sessions',
+    sidfieldname: 'sid',
+    knex: db,
+    createtable: true,
+    clearInterval: 1000 * 60 * 60, //removes only expired sessions
+  }),
   secret: 'heck-if-I.know%',
   name: 'eagle', //defaults to connect.sid
   httpOnly: true, // JS can't access this
@@ -37,8 +45,8 @@ server.use(cors());
 server.get('/api/users', checkAuth, (req, res) => {
   db('users')
     .select('id', 'username', 'password')
-    .then((response) => {
-      res.status(200).json(response);
+    .then((users) => {
+      res.status(200).json({ userId: req.session.userId, users });
     });
 });
 
