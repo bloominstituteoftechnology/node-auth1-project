@@ -110,4 +110,17 @@ server.get('/api/users', (req, res) => {
     .catch(err => res.send(err));
 });
 
+// api logout endpoint
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('error logging out');
+      } else {
+        res.send('good bye');
+      }
+    });
+  }
+});
+
 server.listen(3500, () => console.log('\n====running on port 3500====\n'));
