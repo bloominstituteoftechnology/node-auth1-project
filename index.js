@@ -12,8 +12,29 @@ const db = knex(knexConfig.development);
 const session = require('express-session');
 const KnexSessionStore = require('connect-session-knex');
 
+// session configuration
+
+const sessionConfig = {
+  store: new KnexSessionStore({
+    tablename: "sessions",
+    sidfieldname: "sid",
+    createtable: true,
+    clearInterval: 30000
+  }),
+  secret: "this.isMy-Secret",
+  name: "Evan",
+  httpOnly: true,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // maybe test this as a true value too?
+    maxAge: 1000 * 60 * 1
+  }
+};
+
 server.use(express.json());
 server.use(cors());
+server.use(session(sessionConfig));
 
 // server functions
 
