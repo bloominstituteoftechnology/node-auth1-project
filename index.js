@@ -39,6 +39,7 @@ server.post('/api/register', (req, res) => {
     .insert(credentials)
     .then(ids => {
       const id = ids[0];
+      req.session.username = credentials.username;
       res.status(201).json({ newUserId: id });
     })
     .catch(err => res.status(500).json(err));
@@ -52,8 +53,10 @@ server.post('/api/login', (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(login.password, user.password)) {
-        req.session.userId = user.id;
-        res.status(200).json({ login: `Welcome ${user.username}` });
+        req.session.username = user.username;
+        res
+          .status(200)
+          .json({ login: `${user.username} make your way to Mount Doom.` });
       } else {
         res.status(401).json({ message: 'You shall not pass!' });
       }
@@ -61,8 +64,20 @@ server.post('/api/login', (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.status(400).json('You shall not leave!');
+      } else {
+        res.status(200).json('You shall pass!');
+      }
+    });
+  }
+});
+
 function protected(req, res, next) {
-  if (req.session && req.session.userId) {
+  if (req.session && req.session.username) {
     next();
   } else {
     res.status(401).json({ message: 'You shall not pass!' });
