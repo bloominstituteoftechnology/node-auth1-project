@@ -57,8 +57,11 @@ server.post("/api/register", (req, res) => {
   creds.password = hash;
   db("users")
     .insert(creds)
-    .then(id => {
-      res.send(id);
+    .then(idObj => {
+      console.log(idObj);
+      const id = idObj[0];
+      req.session.userId = id;
+      res.json({ newUserId: id });
     })
     .catch(err => {
       console.log(err);
