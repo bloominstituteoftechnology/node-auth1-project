@@ -83,6 +83,18 @@ server.get('/api/users', protected, (req, res) => {
       .catch(err => res.send(err));
   });
 
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                res.send("I'm sorry, I'm afraid I can't let you do that")
+            } else {
+                res.send('Signing off...');
+            }
+        });
+    }
+});
+
   server.use('/api/restricted', protected, restrictedRoute);
 
 const port = 8888;
