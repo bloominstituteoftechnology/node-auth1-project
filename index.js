@@ -46,12 +46,23 @@ server.get('/api', (req, res) => {
 
 // GET users information
 
-server.get('/api/users', (req, res) => {
+server.get('/api/users', protected, (req, res) => {
+  const credentials = req.body;
+  // console.log(req.session);
+
   db('users')
     .then(users => res.json(users))
     .catch(err => res.status(500).json(err));
 });
 
+// additional protection function
+
+function protected(req, res, next) {
+  if (req.session && req.session.userId) {
+    console.log(req.session.userId);
+    next();
+  } else res.status(400).json({ error: "You are not authorized to view this resource. "});
+}
 // POST a user via register
 
 server.post('/api/register', (req, res) => {
