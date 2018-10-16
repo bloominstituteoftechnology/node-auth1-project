@@ -2,12 +2,36 @@
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
+// const KnexSessionStore = require('connect-session-knex')(session);
 
 const db = require('./database/dbConfig.js');
 
 const server = express();// creates the server
 
+const sessionConfig = {
+  secret: 'nobody.tosses.a.dwarf.!',
+  name: 'monkey', // default to connect.sid
+  httpOlny: true, // JS can't access this
+  resave: false,
+  saveUninitialized: false, // laws!
+  cookie: {
+    secure: false, // over httpS
+    maxAge: 1000 * 60 * 1 // keep logged on for 1 minute
+  },
+  // store: new KnexSessionStore({
+  //   tablename: 'sessions',
+  //   sidfieldname: 'sid',
+  //   knex: db,
+  //   createtable: true,
+  //   clearInterval: 1000 * 60 * 60, // remove only expired sessions every hour
+  // })
+};
+
+
+
 // Add GLOBAL MIDDLEWARE
+server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
 
@@ -33,6 +57,26 @@ server.post('/api/register', (req, res) => {
     })
     .catch(err => {
       res.status(500).json(err);
+    });
+});
+
+// Add POST ROUTE HANDLER to create api login endpoint
+server.post('/api/login', (req, res) => {
+  const creds = req.body;
+
+  db('users')
+    .where({ username: creds.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        req.session.username = user.username;
+        res.status(200).json({ welcome: `You are logged in ${user.username}!` });
+      } else {
+        res.status(401).json({ message: 'you shall not pass!' });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({ err });
     });
 });
 
