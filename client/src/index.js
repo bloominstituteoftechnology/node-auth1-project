@@ -5,6 +5,7 @@ import "./index.css";
 import App from "./components/App";
 import Register from "./components/Register";
 import Login from "./components/Login";
+import Logout from "./components/Logout";
 import Profile from "./components/Profile";
 import Unauthorized from "./components/Unauthorized";
 import * as serviceWorker from "./serviceWorker";
@@ -15,6 +16,7 @@ ReactDOM.render(
       <Route exact path="/" component={App} />
       <Route path="/register" component={Register} />
       <Route path="/login" component={Login} />
+      <Route path="/logout" component={Logout} />
       <Route path="/profile" component={Profile} />
       <Route path="/unauthorized" component={Unauthorized} />
     </section>

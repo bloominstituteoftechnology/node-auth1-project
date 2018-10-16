@@ -1,0 +1,70 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 40vmin;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+a {
+  text-decoration: none;
+  line-height: 70px;
+  padding: 10px;
+}
+h1 {
+  font-size: 50px;
+}
+label {
+  font-size: 30px;
+  display: block;
+}
+.formContainer {
+  background: #eee;
+  margin: 10px auto;
+  width: 90%;
+  text-align: center;
+  padding: 30px 0;
+  border: 2px solid #333;
+  border-radius: 10px;
+}
+.formField {
+  width: 90%;
+  margin: 10px auto;
+}
+input {
+  width: 70%;
+  height: 50px;
+  font-size: 30px;
+  margin: 10px 20px;
+  margin-bottom: 30px;
+}
+button {
+  color: #fff;
+  background: #61dafb;
+  width: 200px;
+  height: 80px;
+  font-size: 30px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 2px solid #333;
+}
+
+button:hover {
+  color: #61dafb;
+  background: #fff;
+}
+
+.App-link {
+  color: #61dafb;
+}

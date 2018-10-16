@@ -4,6 +4,7 @@
 .button {
   color: #fff;
   background: #61dafb;
+  border: 2px solid #333;
   width: 200px;
   height: 80px;
   font-size: 30px;
