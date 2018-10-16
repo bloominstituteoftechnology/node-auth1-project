@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs')
 const knex = require('knex')
 const knexConfig = require('./knexfile.js')
 const session = require('express-session')
-const knexSessionStore = require('connect-session-knex')(session)
+const KnexSessionStore = require('connect-session-knex')(session)
 const port = 9000
 const db = knex(knexConfig.development)
 const server = express()
@@ -20,6 +20,13 @@ server.use(session({
       maxAge: 1 * 24 * 60 * 60 * 1000,
       secure: false, // only set cookies over https. Server will not send back a cookie over http.
     }, // 1 day in milliseconds
+    store: new KnexSessionStore({
+      tablename: 'sessions',
+      sidfield: 'sid',
+      knex: db,
+      createtable: true,
+      clearInterval: 1000 * 60 * 60 // removes only expired sessions
+    }),
     httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
     resave: false,
     saveUninitialized: false,
