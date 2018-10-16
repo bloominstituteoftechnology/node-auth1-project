@@ -4,6 +4,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs')
 const knex = require('knex')
 const knexConfig = require('./knexfile.js')
+const session = require('express-session');
 const db = knex(knexConfig.development)
 const port = 9000
 const server = express()
@@ -11,9 +12,29 @@ const server = express()
 server.use(express.json())
 server.use(helmet())
 server.use(cors())
+server.use(session({
+    name: 'panda', // default is connect.sid
+    secret: 'bamboo rules',
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      secure: false, // only set cookies over https. Server will not send back a cookie over http.
+    }, // 1 day in milliseconds
+    httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
-server.route('/')
-  .get((req, res) => res.send("En vivo"))
+server.route('/setname')
+  .get((req, res) => {
+    req.session.name = 'Kitty';
+    res.send('got it');
+  })
+
+server.route('/getname')
+  .get((req, res) => {
+    res.send(`Hey ${req.session.name}, good to see you!`);
+  })
 
 server.route('/api/register')
   .post((req, res) => {
