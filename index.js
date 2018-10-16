@@ -30,7 +30,7 @@ server.get('/api/restricted/:section', (req, res) => {
 });
 
 // check if a user is logged in during this session
-server.post('/api/checklogin', (req, res) => {
+server.get('/api/checklogin', (req, res) => {
 	// if not logged in, req.session.username will be undefined
 	return res.status(200).json(req.session.username || false);
 });

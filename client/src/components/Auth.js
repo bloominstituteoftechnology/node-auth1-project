@@ -14,7 +14,7 @@ const Auth = Home => Login => class extends Component {
         if (!this.state.username) {
             axios.defaults.withCredentials = true;
             return axios
-                .post('http://localhost:5000/api/checklogin')
+                .get('http://localhost:5000/api/checklogin')
                 .then(res => {
                     const username = res.data;
                     if (username) {
@@ -27,7 +27,7 @@ const Auth = Home => Login => class extends Component {
 
     render () {
         if (this.state.username) {
-            return <Home username = { this.state.username } />;
+            return <Home username = { this.state.username } logIn = { this.logIn } />;
         } else {
             return <Login logIn = { this.logIn } />;
         }

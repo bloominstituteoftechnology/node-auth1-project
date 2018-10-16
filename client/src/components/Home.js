@@ -11,6 +11,7 @@ export default class Home extends Component {
 
 	getUsers = e => {
 		e.preventDefault();
+		axios.defaults.withCredentials = true;
 		return axios
 			.get('http://localhost:5000/api/users')
 			.then(res => {
@@ -19,10 +20,22 @@ export default class Home extends Component {
 			.catch(err => console.log(err));
 	};
 
+	logOut = e => {
+		e.preventDefault();
+		axios.defaults.withCredentials = true;
+		return axios
+			.post('http://localhost:5000/api/logout')
+			// logging in with an empty string as a username will effectively log out
+			.then(message => this.props.logIn(''))
+			.catch(err => console.log(err));
+	};
+
 	render() {
 		return(
 			<div>
 				Welcome, { this.props.username }!
+
+				<button onClick = { this.logOut }>Log out</button>
 
 				<button onClick = { this.getUsers }>Get a list of users</button>
 
