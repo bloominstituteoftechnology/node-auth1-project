@@ -1,6 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 const knex = require('knex');
 const knexConfig = require('./knexfile.js');
 
@@ -11,6 +12,20 @@ server.use(express.json());
 
 const port = 8000;
 server.listen(port, () => console.log(`API running on port ${port}`));
+
+server.use(
+    session({
+        name: 'session',
+        secret: "Hello I am a horse",
+        cookie: {
+            maxAge: 1 * 24 * 60 * 60 * 1000,
+            secure: true
+        },
+        httpOnly: true,
+        resave: false,
+        saveUninitialized: false
+    })
+);
 
 // checker endpoint
 server.get('/', (request, response) => {
@@ -64,6 +79,9 @@ server.post('/api/login', (request, response) => {
 });
 
 server.get('/api/users', (request, response) => {
+    request.session.name = '12345';
+    const sessionName = request.session.name;
+    console.log(request.session);
 
     db('users')
         .select('id', 'username', 'password')
