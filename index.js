@@ -42,7 +42,7 @@ server.get('/', (request, response) => {
     response.send('Server initialized.');
 });
 
-// user endpoints
+// register/login POST requests
 server.post('/api/register', (request, response) => {
     const credentials = request.body;
 
@@ -90,6 +90,7 @@ server.post('/api/login', (request, response) => {
         });
 });
 
+// user list and logout GET requests
 server.get('/api/users', protected, (request, response) => {
     request.session.name = '12345';
     const sessionName = request.session.name;
@@ -104,7 +105,7 @@ server.get('/api/users', protected, (request, response) => {
         .catch(() => {
             return response
                 .status(500)
-                .json({ Error: "Could not find list of users." })
+                .json({ Error: "Could not find list of users." });
         });
 });
 
@@ -113,10 +114,10 @@ server.get('/api/logout', (request, response) => {
         request.session.destroy();
         return response
             .status(200)
-            .json({ message: "User logged out." })
+            .json({ message: "User logged out." });
     } else {
         return response
             .status(500)
             .json({ message: "Unable to log out." });
     }
-})
+});
