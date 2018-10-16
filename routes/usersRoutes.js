@@ -98,7 +98,7 @@ router.post('/login', (req, res) => {
 });
 
 // Add GET ROUTE HANDLER to access all users
-router.get('/users', protected, (req, res) => {
+router.get('/users',  (req, res) => {
   db('users')
     .select('id', 'username', 'password')
     .then(users => {
