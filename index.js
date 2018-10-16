@@ -4,10 +4,10 @@ const bcrypt = require("bcryptjs");
 const session = require("express-session");
 const db = require("./database/dbConfig.js");
 const server = express();
-const helmet = require("helmet");
+// const helmet = require('helmet')
 server.use(express.json());
 server.use(cors());
-const KnexSessionStore = require("connect-session-knex")(session);
+// const KnexSessionStore = require('connect-session-knex')(session)
 server.get("/", (req, res) => {
   res.send("Server Running");
 });
@@ -23,7 +23,7 @@ const sessionConfig = {
   saveUninitialized: false
 };
 server.use(session(sessionConfig));
-function protected(req, res, next) {
+function protection (req, res, next) {
   if (req.session && req.session.username) {
     next();
   } else {
@@ -37,6 +37,7 @@ server.post("/api/register", (req, res) => {
   db("users")
     .insert(creds)
     .then(ids => {
+      console.log(creds);
       const id = ids[0];
       res.status(201).json(id);
     })
@@ -45,25 +46,24 @@ server.post("/api/register", (req, res) => {
 
 server.post("/api/login", (req, res) => {
   const creds = req.body;
-  console.log(creds.username)
   db("users")
     .where({ username: creds.username })
-    .select('id')
+    .select("id", "username", "password")
     .then(user => {
-        console.log(user)
-      if (user && bcrypt.compareSync(creds.password, user.password)) {
-        req.session.username = user.username;
+      console.log(user, creds);
+      if (user && user[0] && bcrypt.compareSync(creds.password, user[0].password)) {
+        req.session.username = user[0].username;
         res.status(200).send(`Welcome back ${req.session.username}`);
       } else {
-        res.status(401).json({ message: "No pass...:(" });
+        res.status(401).json({ message: "No pass..." });
       }
     })
     .catch(err => {
-        console.log(err)
-        res.status(500).send(err)
+      console.log(err);
+      res.status(500).send(err);
     });
 });
-server.get("/api/users", protected, (req, res) => {
+server.get("/api/users", protection, (req, res) => {
   db("users")
     .select("id", "username", "password")
     .then(users => {
