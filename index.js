@@ -26,12 +26,21 @@ server.use(
   })
 );
 
+// middleware to handled protected parts of server
+function protected(req, res, next) {
+  if (req.session && req.session.userId) {
+    next();
+  } else {
+    res.status(401).json({ message: 'you shall not pass!!' });
+  }
+}
+
 // GET //
-server.get('/', (req, res) => {
+server.get('/', protected, (req, res) => {
   res.send('server functional');
 })
 
-server.get('/users', (req, res) => {
+server.get('/api/users', protected, (req, res) => {
   db('users').select('id', 'username', 'password').then(users => {
       res.json(users);
   })
