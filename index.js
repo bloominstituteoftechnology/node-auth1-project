@@ -29,17 +29,20 @@ server.get('/', (req, res) => {
     res.send('Its Alive!');
 });
 
+// register a new user
 server.post('/api/register', (req, res) => {
     const credentials = req.body;
   
     // hash the password
     const hash = bcrypt.hashSync(credentials.password, 14);
     credentials.password = hash;
+
     // then save the user.
     db('users')
       .insert(credentials)
       .then(ids => {
         const id = ids[0];
+        req.session.username = user.username;
         res.status(201).json({ newUserId: id });
       })
       .catch(err => {
@@ -49,7 +52,6 @@ server.post('/api/register', (req, res) => {
 
 server.post('/api/login', (req, res) => {
     const creds = req.body;
-  
     db('users')
       .where({ username: creds.username })
       .first()
@@ -79,17 +81,25 @@ server.get('/api/logout', (req, res) => {
         }
       });
     }
-  });
+});
 
 // protect this route, only authenticated users should see it
-server.get('/api/users', (req, res) => {
+server.get('/api/users', protected, (req, res) => {
     db('users')
-      .select('id', 'username', 'password')
-      .then(users => {
-        res.json(users);
-      })
-      .catch(err => res.send(err));
+    .select('id', 'username', 'password')
+    .then(users => {
+      res.json(users);
+    })
+    .catch(err => res.send(err));
 });
+
+function protected(req, res, next) {
+    if(req.session && req.session.username) {
+        next();
+    } else {
+        res.status(401).json({ message: 'Not Authorized' });
+    }
+}
 
 const port = 3300;
 
