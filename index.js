@@ -1,9 +1,10 @@
 const express = require('express');
-const applyGlobalMiddleware = require('./config/middleware/global.js');
 const bcrypt = require('bcryptjs');
 const userDb = require('./data/models/userDb.js');
 
-const usersMiddleware = require('./config/middleware/usersMiddleware.js');
+// middleware
+const applyGlobalMiddleware = require('./config/middleware/global.js');
+const usersProtected = require('./config/middleware/usersProtected.js');
 
 const server = express();
 const port = 5000;
@@ -11,7 +12,7 @@ const port = 5000;
 applyGlobalMiddleware(server);
 
 // get all the users
-server.get('/api/users', usersMiddleware, (req, res) => {
+server.get('/api/users', usersProtected, (req, res) => {
 	return userDb
 		.getAllUsers()
 		.then(users => {
@@ -37,6 +38,9 @@ server.post('/api/login', (req, res) => {
 	if (!credentials.password) {
 		return res.status(401).json({ error: 'Password cannot be empty.' });
 	}
+	if (req.session.username) {
+		return res.status(401).json({ error: `You are already logged in as ${ req.session.username }. Please log out first before logging in.`});
+	}
 	return userDb
 		.getUser(credentials.username)
 		.then(user => {
@@ -58,7 +62,9 @@ server.post('/api/login', (req, res) => {
 
 // logout a user
 server.post('/api/logout', (req, res) => {
+	// if user is logged in
 	if (req.session.username) {
+		// destroy session
 		return req.session.destroy(err => {
 			if (err) {
 				return res.status(500).json({ error: `Server failed to logout user: ${ err }` });
@@ -66,6 +72,7 @@ server.post('/api/logout', (req, res) => {
 			return res.status(200).json({ message: 'Successfully logged out.' });
 		});
 	}
+	// if user is not logged in, send error message
 	return res.status(400).json({ error: 'You are not logged in.' });
 });
 
@@ -84,16 +91,16 @@ server.post('/api/register', (req, res) => {
 			// if username does not exist, you can register it
 			if (!user) {
 				return bcrypt
-				.hash(credentials.password, 14, function(bcryptErr, hash) {
-					if (bcryptErr) {
-						return res.status(500).json({ error: `Bcrypt hashing failed: ${ bcryptErr }` });
-					}
-					credentials.password = hash;
-					return userDb
-						.registerNewUser(credentials)
-						.then(id => res.status(201).json(id.id[0]))
-						.catch(err => res.status(500).json({ error: `Server failed to register new user: ${ err }` }));
-				});
+					.hash(credentials.password, 12, function(bcryptErr, hash) {
+						if (bcryptErr) {
+							return res.status(500).json({ error: `Bcrypt hashing failed: ${ bcryptErr }` });
+						}
+						credentials.password = hash;
+						return userDb
+							.registerNewUser(credentials)
+							.then(id => res.status(201).json(id.id[0]))
+							.catch(err => res.status(500).json({ error: `Server failed to register new user: ${ err }` }));
+					});
 			}
 			// if username already exists, send error message
 			return res.status(403).json({ error: `Username ${ credentials.username } already exists. Please register with a new username.` });
