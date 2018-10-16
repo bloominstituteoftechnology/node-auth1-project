@@ -9,14 +9,15 @@
     "start": "nodemon index.js"
   },
   "dependencies": {
-		"bcryptjs": "^2.4.3",
-		"cors": "^2.8.4",
-		"express": "^4.16.4",
-		"helmet": "^3.14.0",
-		"knex": "^0.15.2",
-		"sqlite3": "^4.0.2"
-	},
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.4",
+    "express-session": "^1.15.6",
+    "helmet": "^3.14.0",
+    "knex": "^0.15.2",
+    "sqlite3": "^4.0.2"
+  },
   "devDependencies": {
-		"nodemon": "^1.18.4"
-	}
+    "nodemon": "^1.18.4"
+  }
 }

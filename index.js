@@ -3,12 +3,29 @@ const bcrypt = require("bcryptjs");
 const cors = require("cors");
 const knex = require("knex");
 const knexConfig = require("./knexfile.js");
+const session = require('express-session');
 
 const server = express();
 const db = knex(knexConfig.development);
 
 server.use(express.json());
 server.use(cors());
+
+// configure express-session middleware
+server.use(
+  session({
+    name: 'notsession', // default is connect.sid
+    secret: 'nobody tosses a dwarf!',
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      secure: true, // only set cookies over https. Server will not send back a cookie over http.
+    }, // 1 day in milliseconds
+    httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
 
 // GET
 server.get('/', (req, res) => {
@@ -38,10 +55,6 @@ server.post('/api/register', (req, res) => {
       res.status(201).json({newUserId: id})
   })
   .catch(err => {
-      console.log(err);
-      if(err.errno === 19){
-          res.status(409).json({error: `Username taken!`})
-      }
       res.status(500).json({errorMessage: `There was an error registering.\n`, error: err})
   })
 })
