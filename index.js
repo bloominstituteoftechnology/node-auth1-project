@@ -7,6 +7,11 @@ const server = express();
 const knexConfig = require('./knexfile.js');
 const db = knex(knexConfig.development);
 
+// additional session requirements
+
+const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex');
+
 server.use(express.json());
 server.use(cors());
 
