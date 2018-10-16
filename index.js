@@ -11,7 +11,7 @@ const server = express();// creates the server
 
 const sessionConfig = {
   secret: 'nobody.tosses.a.dwarf.!',
-  name: 'monkey', // default to connect.sid
+  name: 'cookie', // default to connect.sid
   httpOlny: true, // JS can't access this
   resave: false,
   saveUninitialized: false, // laws!
@@ -34,6 +34,15 @@ const sessionConfig = {
 server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
+
+// middleware to restrict access to protected routes
+function protected(req, res, next) {
+  if (req.session && req.session.username) {
+    next();
+  } else {
+    res.status(401).json({ message: 'Not Authorized' });
+  }
+}
 
 // ROUTES
 
@@ -101,7 +110,7 @@ server.post('/api/login', (req, res) => {
 });
 
 // Add GET ROUTE HANDLER to access all users
-server.get('/api/users', (req, res) => {
+server.get('/api/users', protected, (req, res) => {
   db('users')
     .select('id', 'username', 'password')
     .then(users => {
