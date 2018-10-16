@@ -94,6 +94,18 @@ server.post('/api/login', (req, res) => {
     .catch(err => res.status(500).send(err));
   });
 
+// logout function
+
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('The system encountered an error. Please try again.');
+      } else res.json({ message: "You have been successfully logged out. "});
+    });
+  }
+});
+
 // server instantiation
 
 const port = 8000;
