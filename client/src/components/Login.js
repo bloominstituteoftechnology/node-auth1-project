@@ -36,6 +36,11 @@ const LoginForm = styled.form`
 			cursor: pointer;
 		}
 	}
+
+	.errmsg {
+		margin: 15px;
+		font-size: 1.1rem;
+	}
 `;
 
 export default class Login extends Component {
@@ -95,7 +100,7 @@ export default class Login extends Component {
 
 				<button type = 'submit'>Log in</button>
 
-				{ errMsg && <p>Failed to log in: { errMsg }</p> }
+				{ errMsg && <p className = 'errmsg'>Failed to log in: { errMsg }</p> }
 			</LoginForm>
 		);
 	}
