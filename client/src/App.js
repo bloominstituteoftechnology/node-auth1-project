@@ -75,14 +75,27 @@ class App extends Component {
     } else {
       window.alert('Username must have at least 4 characters. Password must have at least 8 characters.')
     }
-    
   }
+
+    handleLogout = event => {
+      event.preventDefault();
+      axios.get(`http://localhost:9000/logout`)
+      .then(res => {
+        console.log(res.data);
+        this.setState({
+          isLoggedIn: false
+        })
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    }
 
   render() {
     if(this.state.isLoggedIn){
       axios.get(`http://localhost:9000/users`)
       .then(res => {
-        console.log(res);
+        console.log(res.data);
         this.setState({
           users: res.data
         })
@@ -114,6 +127,8 @@ class App extends Component {
         <button type='submit'>Register</button>
         </form>
       </div>
+
+      <button onClick={this.handleLogout}>LOGOUT</button>
       </div>
     );
   }

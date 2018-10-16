@@ -22,11 +22,11 @@ const sessionConfig = {
     resave: false,
     saveUninitialized: false,
     store: new KnexSessionStore({
-    tablename: 'sessions',
-    sidfieldname: 'sid',
-    knex: db,
-    createtable: true,
-    clearInterval: 1000 * 60 * 60,
+        tablename: 'sessions',
+        sidfieldname: 'sid',
+        knex: db,
+        createtable: true,
+        clearInterval: 1000 * 60 * 60, // clean up sessions every hour
         })
     }
 
@@ -66,6 +66,8 @@ server.post('/register', (req, res) => {
     db('users').insert(credentials).then(ids => {
         // return the associated user ID
         const id = ids[0];
+        // set session username to new username
+        req.session.username = credentials.username;
         res.status(201).json({newUserId: id})
     })
     .catch(err => {
@@ -86,7 +88,6 @@ server.post('/login', (req, res) => {
         if(user && bcrypt.compareSync(creds.password, user.password)){
             // if user found, add username to session
             req.session.username = user.username;
-            console.log(req.session.username);
             
             res.status(200).json({message: `Welcome, ${creds.username}!`})
           } else {
@@ -100,7 +101,6 @@ server.post('/login', (req, res) => {
 })
 
 server.get('/users', confidential, (req, res) => {
-    if(req.session && req.session.username){
     db('users').select('id', 'username', 'password').then(users => {
         res.json(users);
     })
@@ -108,9 +108,6 @@ server.get('/users', confidential, (req, res) => {
         console.log(err);
         res.json({error: err});
     })
-} else {
-    res.status(401).send('not authorized');
-}
 })
 
 
@@ -118,9 +115,9 @@ server.get('/logout', (req, res) => {
     if(req.session){
         req.session.destroy(err => {
             if(err){
-                res.send('error logging out');
+                res.json({error: `Error when logging out.`, errMsg: err});
             } else {
-                res.send('good bye!')
+                res.json({message: 'Logout Successful!'})
             }
         })
     }
