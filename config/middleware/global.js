@@ -8,7 +8,7 @@ const restricted	= require('./restricted.js');
 module.exports = (server) => {
 	server.use(
 		express.json(),
-		cors(),
+		cors({ credentials: true, origin: 'http://localhost:3000' }),
 		helmet(),
 		morgan('tiny'),
 		session({
@@ -20,7 +20,10 @@ module.exports = (server) => {
 			},
 			httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
 			resave: false,
-			saveUninitialized: false,
+			saveUninitialized: true,
+			/*
+				The saveUninitialized flag, forces a session that is “uninitialized” to be saved to the store. A session is uninitialized when it is new but not modified. Choosing false is useful for implementing login sessions, reducing server storage usage, or complying with laws that require permission before setting a cookie.
+			*/
 		}),
 		restricted,
 	);

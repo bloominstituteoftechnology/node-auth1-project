@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 
 // Components
-import { Login } from './components/index.js';
+import {
+	Auth,
+	Home,
+	Login,
+} from './components/index.js';
 
 // Styles
 import styled from 'styled-components';
@@ -20,6 +24,8 @@ const AppDiv = styled.div`
 	}
 `;
 
+const AuthComp = Auth(Home)(Login);
+
 class App extends Component {
 	render() {
 	return (
@@ -28,7 +34,7 @@ class App extends Component {
 				<h1>Authentication Project</h1>
 			</header>
 
-			<Login />
+			<AuthComp />
 		</AppDiv>
 	);
 	}
