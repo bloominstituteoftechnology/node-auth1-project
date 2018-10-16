@@ -1,5 +1,7 @@
 const express = require('express');
 
+const session = require('express-session');
+
 const cors = require('cors');
 
 const db = require('./database/dbConfig.js');
@@ -8,8 +10,24 @@ const bcrypt = require('bcryptjs');
 
 const server = express();
 
-server.use(express.json());
-server.use(cors());
+const sessionConfig = {
+    name:'notsession', ///we want to change to anon session software
+    secret:'something%dwarf#something',
+    cookie: { 
+      secure: false,
+      maxAge: 1000 * 60 * 1
+    },
+    httpOnly: true, ///block JS
+    resave: false,
+    saveUninitialized: false,
+
+}
+
+server.use(
+  express.json(), 
+  cors(),
+  session(sessionConfig),
+);
 
 server.get('/', (req, res) => {
   res.send('Werk Werk');
@@ -33,8 +51,12 @@ server.post('/register', (req, res) => {
 server.post('/login', (req, res) => {
   const creds = req.body;
 
-  db('users').where({username: creds.username}).first().then(user => {
+  db('users')
+    .where({username: creds.username})
+    .first()
+    .then(user => {
     if (user && bcrypt.compareSync(creds.password, user.password)) {
+      req.session.username = user.username;
       res.status(200).json({welcome: user.username})
     }
     else {
@@ -44,15 +66,33 @@ server.post('/login', (req, res) => {
   .catch(err => req.status(500).json({ message: 'Something went wrong...on our end.'}));
 
 })
-////////Per the notes fro lecture.
+////////Per the notes from lecture.
 // protect this route, only authenticated users should see it
 server.get('/users', (req, res) => {
-  db('users')
-    .select('id', 'username', 'password')
-    .then(users => {
-      res.json(users);
-    })
-    .catch(err => res.send(err));
+  // console.log(req.session.username);
+  if (req.session && req.session.username) {
+    db('users')
+      .select('id', 'username', 'password')
+      .then( users => {
+        res.json(users);
+      })
+      .catch(err => res.send(err));
+    } else {
+      res.status(401).send('Not authorized');
+    }
 });
+
+//////Day 2
+// server.get('/getname', (req, res) => {
+//   const name = req.session.name;
+//   res.send(`hello ${name}`);
+// });
+
+// server.get('/setname', (req, res) => {
+//   req.session.name = 'Frodo';
+//   res.send('received');
+// });
+
+
 
 server.listen(7700, () => console.log('\nrunning on port 7700\n'));
