@@ -11,7 +11,7 @@ const server = express();
 
 const sessionConfig = {
     secret: 'nobody-tosses.a%dwarf.!',
-    name: 'monkey',
+    name: 'user-session',
     httpOnly: true,
     resave: false,
     saveUninitialized: false,
@@ -21,7 +21,7 @@ const sessionConfig = {
     },
 };
 
-  server.use(session(sessionConfig));
+server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
 
@@ -55,10 +55,11 @@ server.post('/api/login', (req, res) => {
       .first()
       .then(user => {
         if (user && bcrypt.compareSync(creds.password, user.password)) {
-          // found the user.
-          res.status(200).json({ welcome: user.username });
+            req.session.username = user.username;
+            // found the user.
+            res.status(200).json({ welcome: user.username });
         } else {
-          res.status(401).json({
+            res.status(401).json({
             message: `You shall not pass... as you are not authenticated.`,
           });
         }
@@ -67,6 +68,18 @@ server.post('/api/login', (req, res) => {
         res.status(500).json(err);
       });
 });
+
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.send('error logging out');
+        } else {
+          res.send('good bye');
+        }
+      });
+    }
+  });
 
 // protect this route, only authenticated users should see it
 server.get('/api/users', (req, res) => {
