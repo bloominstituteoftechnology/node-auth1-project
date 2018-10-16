@@ -45,7 +45,7 @@ server.post('/api/register', (req, res) => {
 	model
 		.addUser(credentials)
 		.then(id => {
-			req.session.name = user.name;
+			req.session.name = credentials.name;
 			res.status(201).json({ newUserId: id });
 		})
 		.catch(err => {
