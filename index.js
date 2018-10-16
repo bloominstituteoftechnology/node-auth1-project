@@ -37,20 +37,6 @@ server.get("/", (req, res) => {
 	res.send("Its Alive!");
 });
 
-server.get("/api/users", (req, res) => {
-	console.log(req.session);
-	if (req.session && req.session.username) {
-		db("users")
-			.select("id", "username", "password")
-			.then(users => {
-				res.json(users);
-			})
-			.catch(err => res.send(err));
-	} else {
-		res.status(401).send("Not Authorized");
-	}
-});
-
 server.get("/logout", (req, res) => {
 	if (req.session) {
 		req.session.destroy(err => {
@@ -98,6 +84,20 @@ server.post("/api/login", (req, res) => {
 					.json({ error: "Wrong Username and/or Password, please try again" });
 			}
 		});
+});
+
+server.get("/api/users", (req, res) => {
+	console.log(req.session);
+	// if (req.session && req.session.username) {
+	db("users")
+		.select("id", "username", "password")
+		.then(users => {
+			res.json(users);
+		})
+		.catch(err => res.send(err));
+	// } else {
+	// res.status(401).send("Not Authorized");
+	// }
 });
 
 server.listen(3300, () => console.log("\nrunning on port 3300\n"));
