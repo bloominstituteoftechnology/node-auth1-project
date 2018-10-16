@@ -73,13 +73,10 @@ server.post('/login', (req, res) => {
     })
 })
 
-// server.get('/users', (req, res) => {
-//   console.log(req.session);
-// })
 
-server.get('/api/users', protected, (req, res) => {
+server.get('/users', protected, (req, res) => {
   db('users')
-    .select('id', 'username', 'password')
+    //.select('id', 'username', 'password')
     .then(users => {
       res.json(users);
     })
@@ -93,6 +90,18 @@ function protected(req, res, next) {
     res.status(401).json({ message: 'Not authorized' })
   }
 }
+
+server.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('Error logging out', err)
+      } else {
+        res.send('Bye!!')
+      }
+    })
+  }
+})
 
 port = 7000;
 server.listen(port, () => console.log(`\n==  API running on port ${port} ==\n`))
