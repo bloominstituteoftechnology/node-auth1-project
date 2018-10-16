@@ -30,14 +30,15 @@ const protected = (req, res, next) => {
 
 // ~~ Global restricted routes ~~ //
 const restricted = (req, res, next) => {
-	if(req.url === '/api/restricted*') {
+	if(req.url.includes('/api/restricted')) {
 		if(req.session && req.session.username) {
 			next();
 		} else {
 			next(["h401", "Not authorized!"]);
 		}
+	} else {
+		next();
 	}
-	next();
 };
 server.use(restricted);
 
@@ -108,7 +109,7 @@ server.get('/api/users', protected, (req, res, next) => {
 
 // ~~ A global restricted route ~~ //
 // find() -> [{id: int, username: 'string'}, ..., {id: int, username: 'string'}]
-server.get('/api/restricted/users', protected, (req, res, next) => {
+server.get('/api/restricted/users', (req, res, next) => {
     usersTable.find()
         .then((users) => {
             res.status(200).json(users);
