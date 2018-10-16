@@ -34,4 +34,16 @@ router.post('/login', (req, res)=>{
         .catch(err => res.status(500).json(err.message));
 });
 
+router.get('/users', (req, res)=>{
+    data.getUsers()
+        .then(users=>{
+            if(users.length>0){
+                res.status(200).json(users);
+            }else{
+                res.status(400).json('No users in database.');
+            }
+        })
+        .catch(err => res.status(500).json(err.message));
+});
+
 module.exports = router;

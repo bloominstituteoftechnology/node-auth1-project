@@ -4,7 +4,8 @@ const db = knex(knexConfig.development);
 
 module.exports = {
     register,
-    login
+    login,
+    getUsers
 };
 
 function register(user){
@@ -13,4 +14,8 @@ function register(user){
 
 function login(credentials){
     return db('data').where({username:credentials.username}).first();
+};
+
+function getUsers(){
+    return db('data');
 };
