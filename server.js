@@ -2,6 +2,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const model = require('./data/helpers/model.js');
+const session = require('express-session');
 
 // SERVER
 const server = express();
@@ -9,6 +10,21 @@ const server = express();
 // MIDDLEWARE
 const configureMiddleware = require('./middleware/middleware');
 configureMiddleware(server);
+
+// authentication
+const sessionConfig = {
+	secret: "I'm a secret! Shhh",
+	name: 'aardvark',
+	httpOnly: true,
+	resave: false,
+	saveUninitialized: false,
+	cookie: {
+		maxAge: 1000 * 60 * 20, // 20 minutes
+		secure: false
+	}
+};
+
+server.use(session(sessionConfig));
 
 // ENDPOINTS
 // create user
@@ -46,6 +62,18 @@ server.post('/api/login', (req, res) => {
 			}
 		})
 		.catch(err => res.status(500).json(err));
+});
+
+server.get('/api/users', (req, res) => {
+	if (req.session && req.session.name) {
+		model.getUsers
+			.then(users => {
+				res.status(201).json(users);
+			})
+			.catch(err => res.status(500).json(err));
+	} else {
+		res.status(401).json({ error: 'Not authorized' });
+	}
 });
 
 // PORT
