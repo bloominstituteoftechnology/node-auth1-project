@@ -19,8 +19,17 @@ const sessionConfig = {
 	resave: false,
 	saveUninitialized: false,
 	cookie: {
-		maxAge: 1000 * 60 * 20, // 20 minutes
+		maxAge: 1000 * 20, // 20 seconds for testing
 		secure: false
+	}
+};
+
+// login check
+const restricted = (req, res, next) => {
+	if (req.session && req.session.name) {
+		next();
+	} else {
+		res.status(401).json({ error: 'Not authorized' });
 	}
 };
 
@@ -36,6 +45,7 @@ server.post('/api/register', (req, res) => {
 	model
 		.addUser(credentials)
 		.then(id => {
+			req.session.name = user.name;
 			res.status(201).json({ newUserId: id });
 		})
 		.catch(err => {
@@ -76,6 +86,11 @@ server.get('/api/users', (req, res) => {
 	} else {
 		res.status(401).json({ error: 'Not authorized' });
 	}
+});
+
+// global middleware check
+server.get('/api/restricted/secret', restricted, (req, res) => {
+	res.status(201).json({ secret: 'You are logged in!' });
 });
 
 // PORT
