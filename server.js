@@ -19,7 +19,7 @@ const sessionConfig = {
 	resave: false,
 	saveUninitialized: false,
 	cookie: {
-		maxAge: 1000 * 20, // 20 seconds for testing
+		maxAge: 1000 * 60, // 1 minute for testing
 		secure: false
 	}
 };
@@ -72,6 +72,19 @@ server.post('/api/login', (req, res) => {
 			}
 		})
 		.catch(err => res.status(500).json(err));
+});
+
+// logout
+server.get('/api/logout/', (req, res) => {
+	if (req.session) {
+		req.session.destroy(err => {
+			if (err) {
+				res.status(500).json({ error: 'Failed to log out' });
+			} else {
+				res.status(201).json({ message: 'See ya later!' });
+			}
+		});
+	}
 });
 
 // get users (must be logged in)
