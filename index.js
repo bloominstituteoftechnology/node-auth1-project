@@ -1,13 +1,25 @@
 const express = require('express');
 const helmet = require('helmet');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
-const knex = require('knex');
-const knexConfig = require('./knexfile');
-const db = knex(knexConfig.development);
+const db = require('./data/dbConfig.js');
 
 const server = express();
 const port = 4400;
+
+sessionConfig = {
+  secret: 'Run.you.FOOLS!',
+  name: 'yum',
+  httpOnly: false,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false,
+    maxAge: 100 * 60 * 3,
+  },
+};
+server.use(session(sessionConfig));
 
 server.use(express.json(), helmet());
 
