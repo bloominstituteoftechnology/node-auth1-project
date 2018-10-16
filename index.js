@@ -36,12 +36,12 @@ function protected(req, res, next) {
 }
 
 // GET //
-server.get('/', protected, (req, res) => {
+server.get('/', (req, res) => {
   res.send('server functional');
 })
 
 server.get('/api/users', protected, (req, res) => {
-  db('users').select('id', 'username', 'password').then(users => {
+  db('users').select('id', 'username').then(users => {
       res.json(users);
   })
   .catch(err => {
@@ -81,23 +81,22 @@ server.post('/api/register', (req, res) => {
 })
 
 server.post("/api/login", (req, res) => {
-  const creds = req.body;
+  const credentials = req.body;
   db("users")
-    .where({ username: creds.username })
+    .where({ username: credentials.username })
     .first()
     .then(user => {
-      if (user && bcrypt.compareSync(creds.password, user.password)) {
+      if (user && bcrypt.compareSync(credentials.password, user.password)) {
         res.status(200).json({ message: "You may enter" });
       } else res.status(401).json({ message: "YOUUUU SHALLLL NOTTTTT PASSSSS" });
     })
     .catch(err => {
-      console.log(err);
       res.status(500).send(err);
     });
 });
 /////
  
 // Server Listener
-server.listen(9000, () => {
+server.listen(5000, () => {
   console.log("API is running");
 });
