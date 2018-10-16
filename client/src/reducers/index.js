@@ -6,6 +6,7 @@ const initialState = {
     addingUser: false,
     loggingIn: false,
     loggingOut: false,
+    isLoggedIn: false,
     error: ''
 };
 
@@ -22,11 +23,11 @@ export default function (state = initialState, action) {
         case LOGGING_IN:
             return {...state, loggingIn: true};
         case LOGGED_IN:
-            return {...state, loggingIn: false};
+            return {...state, loggingIn: false, isLoggedIn: true};
         case LOGGING_OUT:
             return {...state, loggingOut: true};
         case LOGGED_OUT:
-            return {...state, loggingOut: false};
+            return {...state, loggingOut: false, isLoggedIn: false};
         case FETCH_ERROR:
             return {...state, fetchingUsers: false, error: action.payload };
         case ADD_USER_ERROR:

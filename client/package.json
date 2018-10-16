@@ -5,6 +5,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "react": "^16.5.2",
+    "react-cookie": "^3.0.4",
     "react-dom": "^16.5.2",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",
