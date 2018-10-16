@@ -110,13 +110,13 @@ server.get('/api/users', protected, (request, response) => {
 
 server.get('/api/logout', (request, response) => {
     if (request.session) {
-        request.session.destroy(err => {
-            return response
-                .send("You can't leave!");
-        });
-    } else {
+        request.session.destroy();
         return response
             .status(200)
-            .json({ message: "Logged user out." });
+            .json({ message: "User logged out." })
+    } else {
+        return response
+            .status(500)
+            .json({ message: "Unable to log out." });
     }
 })
