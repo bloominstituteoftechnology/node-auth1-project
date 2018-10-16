@@ -15,7 +15,7 @@ import styled from 'styled-components';
 const AppDiv = styled.div`
 	background: #444;
 	color: white;
-	height: 100vh;
+	min-height: 100vh;
 
 	header {
 		h1 {
@@ -25,8 +25,21 @@ const AppDiv = styled.div`
 		}
 
 		.links {
+			display: flex;
+			justify-content: center;
+
 			a {
 				color: white;
+				text-decoration: none;
+				border: 1px solid black;
+				border-radius: 5px;
+				padding: 5px 10px;
+				margin: 0 10px 10px;
+
+				&:hover {
+					background-color: black;
+					cursor: pointer;
+				}
 			}
 		}
 	}
@@ -40,15 +53,16 @@ class App extends Component {
 			<AppDiv>
 				<header>
 					<h1>Authentication Project</h1>
+
 					<div className = 'links'>
 						<Link to = '/'>Home</Link>
 						<Link to = '/restricted/Area51'>Go to Area 51</Link>
 					</div>
 				</header>
 
-				<AuthComp />
-
 				<Route path = '/restricted/:section' render = { props => <Area51 section = { props.match.params.section } /> } />
+
+				<AuthComp />
 			</AppDiv>
 		);
 	}

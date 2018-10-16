@@ -4,6 +4,36 @@ import axios from 'axios';
 // Components
 import { User } from './index.js';
 
+// Styles
+import styled from 'styled-components';
+
+const HomeDiv = styled.div`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+	flex-direction: column;
+
+	* {
+		margin: 20px;
+	}
+
+	p {
+		font-size: 2rem;
+	}
+
+	button {
+		border-radius: 5px;
+		padding: 5px 10px;
+
+		&:hover {
+			background-color: black;
+			color: white;
+			cursor: pointer;
+		}
+	}
+`;
+
 export default class Home extends Component {
 	state = {
 		users: [],
@@ -32,15 +62,15 @@ export default class Home extends Component {
 
 	render() {
 		return(
-			<div>
-				Welcome, { this.props.username }!
+			<HomeDiv>
+				<p>Welcome, { this.props.username }!</p>
 
 				<button onClick = { this.logOut }>Log out</button>
 
 				<button onClick = { this.getUsers }>Get a list of users</button>
 
 				{ this.state.users.map((user, i) => <User key = { i } user = { user } />) }
-			</div>
+			</HomeDiv>
 		);
 	}
 };

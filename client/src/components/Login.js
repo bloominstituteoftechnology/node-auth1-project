@@ -5,6 +5,37 @@ import axios from 'axios';
 import styled from 'styled-components';
 
 const LoginForm = styled.form`
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	align-items: center;
+	flex-direction: column;
+
+	.input-div {
+		margin: 10px;
+
+		p {
+			text-align: center;
+			margin-bottom: 5px;
+		}
+
+		input {
+			border-radius: 5px;
+			padding: 5px;
+		}
+	}
+
+	button {
+		width: fit-content;
+		border-radius: 5px;
+		padding: 5px 10px;
+
+		&:hover {
+			background-color: black;
+			color: white;
+			cursor: pointer;
+		}
+	}
 `;
 
 export default class Login extends Component {
@@ -41,22 +72,26 @@ export default class Login extends Component {
 		} = this.state;
 		return(
 			<LoginForm onSubmit = { this.handleSubmit }>
-				Username:
-				<input
-					name = 'username'
-					placeholder = 'Enter username...'
-					value = { username }
-					onChange = { this.handleInputChange }
-				/>
+				<div className = 'input-div'>
+					<p>Username:</p>
+					<input
+						name = 'username'
+						placeholder = 'Enter username...'
+						value = { username }
+						onChange = { this.handleInputChange }
+					/>
+				</div>
 
-				Password:
-				<input
-					type = 'password'
-					name = 'password'
-					placeholder = 'Enter password...'
-					value = { password }
-					onChange = { this.handleInputChange }
-				/>
+				<div className = 'input-div'>
+					<p>Password:</p>
+					<input
+						type = 'password'
+						name = 'password'
+						placeholder = 'Enter password...'
+						value = { password }
+						onChange = { this.handleInputChange }
+					/>
+				</div>
 
 				<button type = 'submit'>Log in</button>
 
