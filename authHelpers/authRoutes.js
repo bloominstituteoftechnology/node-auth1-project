@@ -1,11 +1,28 @@
 const express = require('express');
+const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
-const db = require('./data/dbConfig.js');
+
+const db = require('../data/dbConfig.js');
 
 const router = express.Router();
 
+const sessionConfig = {
+  secret: 'nobody-tosses.a%dwarf.!',
+  name: 'user-session',
+  httpOnly: true,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false,
+    maxAge: 1000 * 60 * 1
+  },
+};
+
+router.use(session(sessionConfig));
+
 // register a new user
-server.post('/register', (req, res) => {
+router.post('/register', isAuthenticated, (req, res) => {
     const credentials = req.body;
   
     // hash the password
@@ -25,7 +42,7 @@ server.post('/register', (req, res) => {
       });
 });
 
-server.post('/login', (req, res) => {
+router.post('/login', (req, res) => {
     const creds = req.body;
     db('users')
       .where({ username: creds.username })
@@ -46,7 +63,7 @@ server.post('/login', (req, res) => {
       });
 });
 
-server.get('/logout', (req, res) => {
+router.get('/logout', isAuthenticated, (req, res) => {
     if (req.session) {
       req.session.destroy(err => {
         if (err) {
@@ -59,7 +76,7 @@ server.get('/logout', (req, res) => {
 });
 
 // protect this route, only authenticated users should see it
-server.get('/users', protected, (req, res) => {
+router.get('/users', isAuthenticated, (req, res) => {
     db('users')
     .select('id', 'username', 'password')
     .then(users => {
@@ -68,12 +85,21 @@ server.get('/users', protected, (req, res) => {
     .catch(err => res.send(err));
 });
 
-function protected(req, res, next) {
-    if(req.session && req.session.username) {
-        next();
-    } else {
-        res.status(401).json({ message: 'Not Authorized' });
-    }
+// function protected(req, res, next) {
+//     if(req.session && req.session.username) {
+//         next();
+//     } else {
+//         res.status(401).json({ message: 'Not Authorized' });
+//     }
+// }
+
+function isAuthenticated(req, res, next) {
+  if(req.session && req.session.username) {
+      next();
+  } else {
+      res.status(401).json({ message: 'Not Authorized' });
+  }
 }
+
 
 module.exports = router;
