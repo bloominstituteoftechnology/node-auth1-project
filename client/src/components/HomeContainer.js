@@ -20,7 +20,15 @@ registerUser = () => {
     axios.post('http://localhost:7777/api/register', {username, password})
     .then(() => {
         alert('registered')
-    }).catch()
+    }).catch(err => alert(err))
+}
+
+loginUser = () => {
+  const {username, password} = this.state
+  axios.post('http://localhost:7777/api/login', {username, password})
+  .then(response => {
+      response.data.loggedIn ? alert('logged in'): alert('not logged in')
+  }).catch(err => alert(err))
 }
 
   render() {
@@ -58,7 +66,7 @@ registerUser = () => {
                   <h2>Login</h2>
                   <input name="username" onChange={this.handleInput} value = {this.state.username}/>
                   <input name="password" onChange={this.handleInput} value = {this.state.password}/>
-                  <button>Sumbit</button>
+                  <button onClick={this.loginUser} >Sumbit</button>
                 </div>
               </div>
             );
