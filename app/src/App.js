@@ -4,6 +4,7 @@ import './App.css';
 import Navigation from './components/Navigation';
 import LogIn from './components/LogIn';
 import {Route} from 'react-router-dom';
+import UserInfo from './components/UserInfo';
 
 class App extends Component {
   render() {
@@ -14,6 +15,7 @@ class App extends Component {
         </header>
         <Navigation />
         <Route path={'/login'} component={LogIn} />
+        <Route path={'/user-info'} component={UserInfo} />
       </div>
     );
   }

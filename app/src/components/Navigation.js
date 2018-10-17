@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {logOut} from '../actions';
@@ -6,19 +6,21 @@ import {logOut} from '../actions';
 class Navigation extends React.Component{
     render(){
         return(
-            <div>
+            <Fragment>
                 <div>
                     <Link to={'/'}>Home</Link>
                 </div>
-                <div>
-                    <Link to={'/login'}>Log In</Link>
-                </div>
                 {(this.props.loggedIn) ? (
-                    <div onClick={this.props.logOut}>Log Out</div>
+                    <div>
+                        <Link to={'/user-info'}>User Info</Link><br/>
+                        <Link onClick={this.props.logOut} to={'/login'}>Log Out</Link>
+                    </div>
                 ) : (
-                    <div/>
+                    <div>
+                        <Link to={'/login'}>Log In</Link>
+                    </div>
                 )}
-            </div>
+            </Fragment>
         )
     }
 }
