@@ -10,11 +10,11 @@ class Users extends React.Component {
     axios.get('http://localhost:9000/api/users')
       .then(resp => {
         if(resp.data.message) {
+          console.log(resp.data);
           this.setState({errors: resp.data.message});
-          console.log(resp.data);
         } else {
-          this.setState({users: resp.data});
           console.log(resp.data);
+          this.setState({users: resp.data});
         }
       })
       .catch(err => console.log(err));
@@ -33,7 +33,7 @@ class Users extends React.Component {
               :
               this.state.users.map(user => {
                 return (
-                  <p>{user.username}</p>
+                  <p key={user.id}>{user.username}</p>
                 )
               })
             }

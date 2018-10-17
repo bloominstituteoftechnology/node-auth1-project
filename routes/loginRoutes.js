@@ -28,6 +28,7 @@ const sessionConfig = {
 };
 
 const protected = (req, res, next) => {
+  console.log(req.session.username);
   if (req.session.username) {
     next();
   } else {
@@ -98,7 +99,6 @@ router.post("/login", (req, res) => {
     .then(user => {
       if (user && bcrpyt.compareSync(creds.password, user.password)) {
         req.session.username = user.username;
-        console.log(req.session.username);
         res.status(201).json({
           message: `Welome ${user.username[0].toUpperCase() +
             user.username.slice(1, user.username.length)}`,

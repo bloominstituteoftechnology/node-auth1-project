@@ -29,8 +29,8 @@ class App extends Component {
         this.props.history.push("/login");
       })
       .catch(err => {
-        this.setState({ error: err });
         console.log(err);
+        this.setState({ error: err, registering: false });
       });
   };
   render() {
