@@ -27,9 +27,9 @@ function generateToken(user) {
     }
     return jwt.sign(jwtPayload, jwtSecret, jwtOptions)
 }
-const jwtSecret = 'nobody tosses a dwarf!';
+const jwtSecret = process.env.JWT_SECRET || 'add a secret to your .env file with this key';
 // implemented this
-server.post('/register', (req, res) => {
+server.post('/api/register', (req, res) => {
   const credentials = req.body;
 
   const hash = bcrypt.hashSync(credentials.password, 10);
@@ -39,14 +39,14 @@ server.post('/register', (req, res) => {
     .insert(credentials)
     .then(ids => {
       const id = ids[0];
-      res.status(201).json({ newUserId: id });
+      res.status(201).json({ newUserId: id});
     })
     .catch(err => {
       res.status(500).json(err);
     });
 });
 
-server.post('/login', (req, res) => {
+server.post('/api/login', (req, res) => {
   const creds = req.body;
 
   db('users')
@@ -66,7 +66,7 @@ server.post('/login', (req, res) => {
 });
 
 // protect this route, only authenticated users should see it
-server.get('/users', protected, checkRole('admin'), (req, res) => {
+server.get('/api/users', protected, checkRole('admin'), (req, res) => {
     console.log('\n** decoded token infomration **\n',req.decodedToken);
   db('users')
     .select('id', 'username', 'password')
@@ -103,4 +103,6 @@ function checkRole(role){
     }
 }
 
-server.listen(3300, () => console.log('\nrunning on port 3300\n'));
+const port = process.env.PORT ||3300
+
+server.listen(port, () => console.log('\nrunning on port 3300\n'));
