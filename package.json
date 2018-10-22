@@ -1,0 +1,27 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "Authenauthentication\u001b[D\u001b[D\u001b[D\u001b[D\u001b[authentication day 1",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duckets615/auth-i.git"
+  },
+  "author": "Chris Reilly",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/duckets615/auth-i/issues"
+  },
+  "homepage": "https://github.com/duckets615/auth-i#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "helmet": "^3.14.0",
+    "knex": "^0.15.2",
+    "nodemon": "^1.18.4",
+    "rest": "^2.0.0",
+    "sqlite3": "^4.0.2"
+  }
+}
