@@ -1,0 +1,8 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/lyang9/auth-i.git",
+  "author": "lyang9 <lyang9@buffalo.edu>",
+  "license": "MIT"
+}
