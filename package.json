@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/duckets615/auth-i#readme",
   "dependencies": {
+    "bcrypt": "^3.0.2",
+    "cors": "^2.8.4",
     "express": "^4.16.4",
     "helmet": "^3.14.0",
     "knex": "^0.15.2",
