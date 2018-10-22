@@ -11,7 +11,7 @@ server.use(express.json());
 server.use(cors());
 
 // listening port
-const port = 500;
+const port = 5000;
 server.listen(port, function() {
   console.log(`\n=== API listening on port ${port} ===\n`);
 });
