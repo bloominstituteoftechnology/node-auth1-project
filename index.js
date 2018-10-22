@@ -33,21 +33,25 @@ server.post('/register', (req, res) => {
     const credentials = req.body;
     const hash = bcrypt.hashSync(credentials.password, 14);
     credentials.password = hash;
-
+    console.log(hash);
     db('users')
         .insert(credentials)
             .then(ids => {
-                
+                const id = ids[0];
+                console.log('testing from then');
+                res.status(201).json({ newUserId: id })
             })
-            .catch();
+            .catch(err => {
+                res.status(500).json(err);
+            });
 });
 
-server.post('/login', (req, res) => {
-    const credentials = req.body;
-    db('users')
-        .then()
-        .catch();
-})
+// server.post('/login', (req, res) => {
+//     const credentials = req.body;
+//     db('users')
+//         .then()
+//         .catch();
+// })
 
 // port
 const port = 3333;
