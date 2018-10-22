@@ -1,0 +1,8 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Xarfo/auth-i.git",
+  "author": "<abdulfatah.a.ahmad@gmx.com>",
+  "license": "MIT"
+}
