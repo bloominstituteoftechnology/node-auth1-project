@@ -35,6 +35,23 @@ server.post('/register', (req, res) => {
 		})
 });
 
+server.post('/login', (req, res) => {
+	const creds = req.body;
+
+	db('users')
+		.where({ username: creds.username })
+		.first()
+		.then(user => {
+			if (user && bcrypt.compareSync(creds.password, user.password)) {
+				// found the user
+				res.status(200).json({ welcome: user.username });
+			} else {
+				res.status(401).json({ message: 'username or password is incorrect' });
+			}
+		})
+		.catch(err => res.status(500).json({ err }));
+});
+
 // protect this route, only authenticated users should see it
 server.get('/users', (req, res) => {
 	db('users')
