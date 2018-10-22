@@ -1,0 +1,9 @@
+{
+  "name": "auth-i-master",
+  "version": "1.0.0",
+  "description": "used yarn instead of npm this time but never again",
+  "main": "index.js",
+  "repository": "\"http://github.com/blokboy/auth-i.git\"",
+  "author": "Jordan Marsaw <jordan@bloklabs.org>",
+  "license": "MIT"
+}
