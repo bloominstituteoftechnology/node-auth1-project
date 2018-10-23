@@ -63,10 +63,11 @@ server.post('/login', (req, res) => {
 		.catch(err => res.status(500).json({ err }));
 });
 
-server.get('/users/', (req, res) => {
+server.get('/users', (req, res) => {
+    console.log(req.session);
 	if (req.session && req.session.username) {
 		db('users')
-		.select('id', 'username', 'password')
+		.select('id','username')
 		.then(users => {
 			res.json(users);
 		})
