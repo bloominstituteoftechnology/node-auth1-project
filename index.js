@@ -63,11 +63,11 @@ server.post('/login', (req, res) => {
 		.catch(err => res.status(500).json({ err }));
 });
 
-server.get('/users', (req, res) => {
+server.get('/users', protected, (req, res) => {
     console.log(req.session);
 	if (req.session && req.session.username) {
 		db('users')
-		.select('id','username')
+		.select('id','username', 'password')
 		.then(users => {
 			res.json(users);
 		})
@@ -76,6 +76,27 @@ server.get('/users', (req, res) => {
 		res.status(401).send('not authorized');
 	}
 });
+
+function protected(req, res, next) {
+    if (req.session && req.session.username) {
+      next();
+    } else {
+      res.status(401).json({ message: 'Not authorized' })
+    }
+  }
+  
+  server.get('/logout', (req, res) => {
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.send(err)
+        } else {
+          res.send('See ya!!')
+        }
+      })
+    }
+  })
+  
 
 
 const port = 5000;
