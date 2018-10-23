@@ -39,18 +39,18 @@ server.get('/', (req, res) => {
 });
 
 server.post('/register', (req, res) => {
-	const credentials = req.body;
+	const credentials = req.body; // store body of post request in credentials variable
 
 	// hash the password
 	const hash = bcrypt.hashSync(credentials.password, 14);
-	credentials.password = hash;
+	credentials.password = hash; // store hashed pw on the credentials object
 	
 	// then save the user
 	db('users')
 		.insert(credentials)
 		.then(ids => {
 			const id = ids[0];
-			req.session.username = user.username; // prevent user from re-registering
+			req.session.username = credentials.username; // prevent user from re-registering
 			res.status(201).json({ newUserId: id });
 		})
 		.catch(err => {
