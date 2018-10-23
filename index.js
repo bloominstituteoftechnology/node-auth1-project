@@ -1,3 +1,4 @@
+
 // dependencies
 const express = require('express');
 const cors = require('cors');
@@ -9,30 +10,34 @@ const db = require('./data/dbConfig.js');
 // server
 const server =  express();
 
+// session
+const sessionConfig = {
+    name: 'testSession', // defaults to connect.sid
+    secret: 'wonj@3',
+    httpOnly: true, // JS can't access this
+    resave: false,
+    saveUninitialized: false, // laws !
+    cookie: {
+        secure: false, // over httpS
+        maxAge: 1000 * 60 * 1,
+    },
+};
+
 // middleware
 server.use(express.json());
 server.use(cors());
-server.use(
-    session({
-      name: 'sessionOnline',
-      secret: 'not-wonjaes-session',
-      cookie: {
-        maxAge: 1000 * 60 * 1,
-        secure: true
-      },
-      httpOnly: true,
-      resave: false,
-      saveUninitialized: false
-    })
-  );
+server.use(session(sessionConfig));
 
-// test
-server.get('/', (req, res) => {
-    res.send('testing!');
-});
+function protected(req, res, next) {
+    if (req.session && req.session.username) {
+        next();
+    } else {
+        res.status(401).json({ message: 'Not authorized' });
+    }
+};
 
 // endpoints
-server.get('/api/users', (req, res) => {
+server.get('/api/users', protected, (req, res) => {
     db('users')
         .select('id', 'username')
             .then(users => {
@@ -52,6 +57,7 @@ server.post('/register', (req, res) => {
         .insert(credentials)
             .then(ids => {
                 const id = ids[0];
+                req.session.username = credentials.username;
                 console.log('testing from then');
                 res.status(201).json({ newUserId: id })
             })
@@ -66,9 +72,13 @@ server.post('/login', (req, res) => {
         .where({ username: credentials.username })
         .first()
             .then(user => {
-                (user && bcrypt.compareSync(credentials.password, user.password)) ?
-                    res.status(200).json({ welcome: user.username }) :
+                if (user && bcrypt.compareSync(credentials.password, user.password)) {
+                    req.session.username = user.username;
+                    console.log(req.session.username);
+                    res.status(200).json({ welcome: user.username })
+                } else {
                     res.status(500).json({ error: 'You shall not pass!'});
+                } 
             })
             .catch(err => {
                 res.status(500).json(err);
