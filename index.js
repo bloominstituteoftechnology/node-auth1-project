@@ -4,6 +4,11 @@ const knex = require('knex');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
 
+const knexConfig = require('./knexfile');
+const db = knex(knexConfig.development);
+
+const server = express();
+
 const sessionConfig = {
 	secret: 'yabba-#dabba%.doo!', 
 	name: 'monkey', // defaults to connect.sid (sessionId)
@@ -15,11 +20,7 @@ const sessionConfig = {
 		maxAge: 1000 * 60 * 1,
 	},
 };
-
-const knexConfig = require('./knexfile');
-const db = knex(knexConfig.development);
-
-const server = express();
+server.use(session(sessionConfig));
 
 server.use(express.json());
 server.use(cors());
