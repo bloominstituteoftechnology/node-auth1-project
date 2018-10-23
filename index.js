@@ -20,7 +20,7 @@ const sessionConfig = {
 		maxAge: 1000 * 60 * 1,
 	},
 };
-server.use(session(sessionConfig));
+server.use(session(sessionConfig)); // use it as a middleWare
 
 server.use(express.json());
 server.use(cors());
@@ -58,6 +58,7 @@ server.post('/login', (req, res) => {
 		.then(user => {
 			if (user && bcrypt.compareSync(creds.password, user.password)) {
 				// found the user
+				req.session.username = user.username;
 				res.status(200).json({ welcome: user.username });
 			} else {
 				res.status(401).json({ message: 'username or password is incorrect' });
@@ -68,12 +69,17 @@ server.post('/login', (req, res) => {
 
 // protect this route, only authenticated users should see it
 server.get('/users', (req, res) => {
-	db('users')
+	// only if the device is logged in
+	if (req.session && req.session.username) {
+		db('users')
 		.select('id', 'username', 'password')
 		.then(users => {
 			res.json(users);
 		})
 		.catch(err => res.send(err));
+	} else {
+		res.status(401).send('You are not logged in');
+	}
 });
 
 // listening port
