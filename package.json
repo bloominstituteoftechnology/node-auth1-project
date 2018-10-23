@@ -4,5 +4,10 @@
   "main": "index.js",
   "repository": "https://github.com/Mlancelot88/auth-i.git",
   "author": "Marious Davis <mlancelot88@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.4",
+    "knex": "^0.15.2",
+    "nodemon": "^1.18.4"
+  }
 }
