@@ -79,3 +79,18 @@ server.route('/api/login')
       })
     }
   })
+
+  server.route('/api/users')
+  .get(protected, (req, res) => {
+    db('users')
+      .select('id', 'username', 'password')
+      .then(users => res.json(users))
+      .catch(err => res.send(err));
+  });
+
+function protected(req, res, next) {
+  if (req.session && req.session.username) return next();
+  return res.status(401).json({ message: 'you shall not pass!!' });
+}
+
+server.listen(port, () => console.log(`\n===Listening on ${port}===\n`))
