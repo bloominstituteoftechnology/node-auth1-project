@@ -2,30 +2,41 @@ const express = require('express');
 const cors = require('cors');
 const knex = require('knex');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const knexConfig = require('./knexfile');
 const db = knex(knexConfig.development);
 
 const server = express();
 
+//middleware
+const sessionConfig = {
+	secret: 'noBody$tosses.a%dwarf!', 
+	name: 'monkey', // defaults to connect.sid (sessionId)
+	httpOnly: true, // JS can't access this
+	resave: false,
+	saveUninitialized: false, // laws!
+	cookie: {
+		secure: false, // over httpS
+		maxAge: 1000 * 60 * 1,
+	},
+};
+server.use(session(sessionConfig)); // use it as a middleWare
+
 server.use(express.json());
 server.use(cors());
 
-// endpoints here
 server.get('/', (req, res) => {
 	res.send('It is working!');
 });
 
 server.post('/register', (req, res) => {
-	const credentials = req.body;
-
-	// hash the password
-	const hash = bcrypt.hashSync(credentials.password, 14);
-	credentials.password = hash;
+	const creds = req.body;
+	const hash = bcrypt.hashSync(creds.password, 14);
+	creds.password = hash;
 	
-	// then save the user
 	db('users')
-		.insert(credentials)
+		.insert(creds)
 		.then(ids => {
 			const id = ids[0];
 			res.status(201).json({ newUserId: id });
@@ -43,7 +54,6 @@ server.post('/login', (req, res) => {
 		.first()
 		.then(user => {
 			if (user && bcrypt.compareSync(creds.password, user.password)) {
-				// found the user
 				req.session.username = user.username;
 				res.status(200).json({ welcome: user.username });
 			} else {
@@ -53,9 +63,7 @@ server.post('/login', (req, res) => {
 		.catch(err => res.status(500).json({ err }));
 });
 
-// protect this route, only authenticated users should see it
-server.get('/users', (req, res) => {
-	// only if the device is logged in
+server.get('/users/', (req, res) => {
 	if (req.session && req.session.username) {
 		db('users')
 		.select('id', 'username', 'password')
@@ -64,11 +72,11 @@ server.get('/users', (req, res) => {
 		})
 		.catch(err => res.send(err));
 	} else {
-		res.status(401).send('You are not logged in');
+		res.status(401).send('not authorized');
 	}
 });
 
-// listening port
+
 const port = 5000;
 server.listen(port, function() {
   console.log(`\n=== API listening on port ${port} ===\n`);
