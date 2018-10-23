@@ -43,6 +43,24 @@ server.get('/api/users',(req,res)=>{
   })
 })
 
+server.post('/login', (req,res)=>{
+  const credentials = req.body;
+  db('users').where({username: credentials.username}).first()
+  .then(users => {
+    if (users&&bcrypt.compareSync(credentials.password, users.password)){
+      res.status(200).json({welcome: users.username})
+    } else {
+      res.status(401).json({
+        message:'you shall not pass'
+      })
+    }
+  })
+.catch(err=>{
+  res.send(err)
+});
+
+});
+
 
 const port=3500;
 server.listen(port,()=> {
