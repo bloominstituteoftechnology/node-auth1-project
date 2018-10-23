@@ -87,6 +87,18 @@ server.get('/users', protected, (req, res) => {
 	.catch(err => res.send(err));
 });
 
+server.get('/logout', (req, res) => {
+	if (req.session) {
+		req.session.destroy(err => {
+			if (err) {
+				res.send('Unable to log out');
+			} else {
+				res.send('Successfully logged out');
+			}
+		});
+	}
+});
+
 // listening port
 const port = 5000;
 server.listen(port, function() {
