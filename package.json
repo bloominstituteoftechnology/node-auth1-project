@@ -5,9 +5,17 @@
   "repository": "https://github.com/Mlancelot88/auth-i.git",
   "author": "Marious Davis <mlancelot88@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "start": "nodemon"
+  },
   "dependencies": {
+    "cors": "^2.8.4",
     "express": "^4.16.4",
+    "helmet": "^3.14.0",
     "knex": "^0.15.2",
+    "sqlite3": "^4.0.3"
+  },
+  "devDependencies": {
     "nodemon": "^1.18.4"
   }
 }
