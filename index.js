@@ -2,6 +2,7 @@ const express = require("express");
 const helmet = require("helmet");
 const bcrypt = require("bcryptjs");
 const server = express();
+const cors = require("cors");
 
 const port = 4000;
 
@@ -12,6 +13,7 @@ server.use(cors());
 server.get("/", (req, res) => res.send("Our server lives!"));
 
 // Hash Password
+
 server.route("/api/register").post((req, res) => {
   const credentials = req.body;
   const hash = bcrypt.hashSync(credentials.password, 14);
