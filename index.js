@@ -12,11 +12,9 @@ server.use(
   session({
     name:'notsession',
     secret:'john doe',
-    cookie:{maxAge:1*24*60*60*1000
-    secure:false,
-    },//1 day
-    httpOnly:true
-
+    cookie:{maxAge:1*24*60*60*1000},//1 day
+    secure:true,
+    httpOnly:true,
     resave:false,
     saveUninitialized:false,
   })
@@ -28,16 +26,20 @@ server.use(helmet());
 server.use(express.json());
 
 function protected(req,res,next){
-  return function(protected){
+  let newUserId = req.session.username
 db('users').select('username')
-.then(username=>{
-  if(username===req.session.username){
-    next();
+.then(usernames=>{
+  console.log(usernames,{username: newUserId});
 
-  } else{
-    return res.status(401).json({error: 'Incorrect Credentials'})
-  }
-});
+    console.log(usernames.username);
+      if (usernames.username.includes(newUserId) ) {
+        next();
+      }else{
+      return res.status(401).json({error: 'Incorrect Credentials'})
+    }
+
+
+})
 .catch(err=>{
   res.send(err)
 })
@@ -57,6 +59,7 @@ server.post('/register',(req,res) =>{
 //hash
 const hash = bcrypt.hashSync(credentials.password,14);
 credentials.password = hash;
+req.session.username = credentials.username
 db('users').insert(credentials)
 .then(ids=>{
   const id = id[0];
@@ -96,12 +99,17 @@ server.post('/login', (req,res)=>{
 .catch(err=>{
   res.send(err)
 });
-
 });
+
+server.get('/api/restricted', protected, (req,res)=>{
+    res.status(200).json({message:'welcome to api'});
+});
+
+
+
 
 
 const port=3500;
 server.listen(port,()=> {
   console.log(`\n===Api Active On ${port}===\n`)
-  }
-);
+});
