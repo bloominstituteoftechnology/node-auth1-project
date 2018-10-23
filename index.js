@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const db = require('./data/dbConfig.js');
 
@@ -11,6 +12,19 @@ const server =  express();
 // middleware
 server.use(express.json());
 server.use(cors());
+server.use(
+    session({
+      name: 'sessionOnline',
+      secret: 'not-wonjaes-session',
+      cookie: {
+        maxAge: 1000 * 60 * 1,
+        secure: true
+      },
+      httpOnly: true,
+      resave: false,
+      saveUninitialized: false
+    })
+  );
 
 // test
 server.get('/', (req, res) => {
