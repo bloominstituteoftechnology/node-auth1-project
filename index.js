@@ -25,7 +25,7 @@ const sessionConfig = {
 	saveUninitialized: false, // laws!
 	cookie: {
 		secure: false, // over httpS
-		maxAge: 1000 * 60 * 1,
+		maxAge: 1000 * 60 * 1, // user only log in for 1min
 	},
 };
 server.use(session(sessionConfig)); // use it as a middleWare
@@ -50,6 +50,7 @@ server.post('/register', (req, res) => {
 		.insert(credentials)
 		.then(ids => {
 			const id = ids[0];
+			req.session.username = user.username; // prevent user from re-registering
 			res.status(201).json({ newUserId: id });
 		})
 		.catch(err => {
@@ -78,12 +79,12 @@ server.post('/login', (req, res) => {
 // protect this route, only authenticated users should see it
 server.get('/users', protected, (req, res) => {
 	// only if the device is logged in
-		db('users')
-		.select('id', 'username', 'password')
-		.then(users => {
-			res.json(users);
-		})
-		.catch(err => res.send(err));
+	db('users')
+	.select('id', 'username', 'password')
+	.then(users => {
+		res.json(users);
+	})
+	.catch(err => res.send(err));
 });
 
 // listening port
