@@ -3,6 +3,7 @@ const cors = require('cors');
 const knex = require('knex');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 
 const knexConfig = require('./knexfile');
 const db = knex(knexConfig.development);
@@ -27,6 +28,13 @@ const sessionConfig = {
 		secure: false, // over httpS
 		maxAge: 1000 * 60 * 1, // user only log in for 1min
 	},
+	store: new KnexSessionStore({
+		tablename: 'sessions',
+		sidfieldname: 'sid',
+		knex: db,
+		createtable: true,
+		clearInterval: 1000 * 60 * 60, // removes only expired sessions every 60mins (1hr)
+	})
 };
 server.use(session(sessionConfig)); // use it as a middleWare
 
