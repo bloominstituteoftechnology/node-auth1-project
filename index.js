@@ -9,6 +9,14 @@ const db = knex(knexConfig.development);
 
 const server = express();
 
+const protected = (req, res, next) => {
+	if (req.session && req.session.username) {
+		next();
+	} else {
+		res.status(401).send('You are not logged in');
+	}
+};
+
 const sessionConfig = {
 	secret: 'yabba-#dabba%.doo!', 
 	name: 'monkey', // defaults to connect.sid (sessionId)
@@ -68,18 +76,14 @@ server.post('/login', (req, res) => {
 });
 
 // protect this route, only authenticated users should see it
-server.get('/users', (req, res) => {
+server.get('/users', protected, (req, res) => {
 	// only if the device is logged in
-	if (req.session && req.session.username) {
 		db('users')
 		.select('id', 'username', 'password')
 		.then(users => {
 			res.json(users);
 		})
 		.catch(err => res.send(err));
-	} else {
-		res.status(401).send('You are not logged in');
-	}
 });
 
 // listening port
