@@ -1,7 +1,20 @@
 const express = require('express');
 const cors = require('cors');
-const bcrypt = require('bcryptjs');
 const knex = require('knex');
+const bcrypt = require('bcryptjs');
+const session = require('express-session');
+
+const sessionConfig = {
+	secret: 'yabba-#dabba%.doo!', 
+	name: 'monkey', // defaults to connect.sid (sessionId)
+	httpOnly: true, // JS can't access this
+	resave: false,
+	saveUninitialized: false, // laws!
+	cookie: {
+		secure: false, // over httpS
+		maxAge: 1000 * 60 * 1,
+	},
+};
 
 const knexConfig = require('./knexfile');
 const db = knex(knexConfig.development);
