@@ -4,7 +4,7 @@
   "description": "Authenauthentication\u001b[D\u001b[D\u001b[D\u001b[D\u001b[authentication day 1",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "server": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -17,13 +17,16 @@
   },
   "homepage": "https://github.com/duckets615/auth-i#readme",
   "dependencies": {
-    "bcrypt": "^3.0.2",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.4",
     "express": "^4.16.4",
+    "express-session": "^1.15.6",
     "helmet": "^3.14.0",
     "knex": "^0.15.2",
-    "nodemon": "^1.18.4",
     "rest": "^2.0.0",
     "sqlite3": "^4.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
   }
 }

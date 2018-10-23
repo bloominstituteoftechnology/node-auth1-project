@@ -1,23 +1,26 @@
-// depends
-const express = require('express');
-const helmet = require('helmet');
-const knexConfig = require('./knexfile');
-const knex = require('knex');
-
-const server = express(); //server
-
-const port = "8000";
-server.listen(port, () => {console.log(`=*= Sprint Challenge Rolling on Port ${port}- =*=`)});
-
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const db = require('./data/dbConfig.js');
 
 const server = express();
-port = 7000;
+const port = 8000;
 
+const sessionConfig = {
+  secret: 'blah-blah.bittyblah~!',
+  name: 'giles',
+  httpOnly: true,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false,
+    maxAge: 1000 * 60 * 1,
+  },
+};
+
+server.use(session(sessionConfig))
 server.use(express.json());
 server.use(cors());
 
@@ -54,6 +57,7 @@ server.post('/login', (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
+        req.session.username = user.username;
         res
           .status(200)
           .json({ welcome: user.username });
@@ -71,14 +75,34 @@ server.post('/login', (req, res) => {
 })
 
 
-server.get('/api/users', (req, res) => {
+server.get('/users', protected, (req, res) => {
   db('users')
-    .select('id', 'username')
+    //.select('id', 'username', 'password')
     .then(users => {
       res.json(users);
     })
     .catch(err => res.send(err));
 });
 
-const port = "8000";
-server.listen(port, () => {console.log(`=*= Sprint Challenge Rolling on Port ${port}- =*=`)});
+function protected(req, res, next) {
+  if (req.session && req.session.username) {
+    next();
+  } else {
+    res.status(401).json({ message: 'Not authorized' })
+  }
+}
+
+server.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('Error logging out', err)
+      } else {
+        res.send('Bye!!')
+      }
+    })
+  }
+})
+
+
+server.listen(port, () => console.log(`\n==  API running on port ${port} ==\n`))
