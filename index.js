@@ -13,7 +13,7 @@ const protected = (req, res, next) => {
 	if (req.session && req.session.username) {
 		next();
 	} else {
-		res.status(401).send('You are not logged in');
+		res.status(401).json({ message: 'You are not logged in' });
 	}
 };
 
