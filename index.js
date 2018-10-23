@@ -6,7 +6,6 @@ const session = require('express-session');
 const db = require('./data/dbConfig.js');
 
 const server = express();
-const port = 8000;
 
 const sessionConfig = {
   secret: 'blah-blah.bittyblah~!',
@@ -64,7 +63,7 @@ server.post('/login', (req, res) => {
       } else {
         res
           .status(401)
-          .json({ message: 'You shall not pass!'})
+          .json({ message: 'XX nope, your not getting in with that password XX'})
       }
     })
     .catch(err => {
@@ -88,7 +87,7 @@ function protected(req, res, next) {
   if (req.session && req.session.username) {
     next();
   } else {
-    res.status(401).json({ message: 'Not authorized' })
+    res.status(401).json({ message: 'Nope, its not cool to show you that' })
   }
 }
 
@@ -96,13 +95,12 @@ server.get('/logout', (req, res) => {
   if (req.session) {
     req.session.destroy(err => {
       if (err) {
-        res.send('Error logging out', err)
+        res.send('Error logged out', err)
       } else {
-        res.send('Bye!!')
+        res.send('Adios')
       }
     })
   }
 })
 
-
-server.listen(port, () => console.log(`\n==  API running on port ${port} ==\n`))
+server.listen(port, () => console.log(`\n==  Project rolling on port ${port} ==\n`))
