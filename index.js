@@ -1,102 +1,111 @@
 const express = require('express');
 const cors = require('cors');
-const knex = require('knex');
 const bcrypt = require('bcryptjs');
-const session = require('express-session');
+const jwt = require('jsonwebtoken');
 
-const knexConfig = require('./knexfile');
-const db = knex(knexConfig.development);
+const db = require('./database/dbConfig.js');
 
 const server = express();
-
-//middleware
-const sessionConfig = {
-	secret: 'noBody$tosses.a%dwarf!', 
-	name: 'monkey', // defaults to connect.sid (sessionId)
-	httpOnly: true, // JS can't access this
-	resave: false,
-	saveUninitialized: false, // laws!
-	cookie: {
-		secure: false, // over httpS
-		maxAge: 1000 * 60 * 1,
-	},
-};
-server.use(session(sessionConfig)); // use it as a middleWare
 
 server.use(express.json());
 server.use(cors());
 
 server.get('/', (req, res) => {
-	res.send('It is working!');
+  res.send('Its Alive!');
 });
 
+// implemented this
 server.post('/register', (req, res) => {
-	const creds = req.body;
-	const hash = bcrypt.hashSync(creds.password, 14);
-	creds.password = hash;
-	
-	db('users')
-		.insert(creds)
-		.then(ids => {
-			const id = ids[0];
-			res.status(201).json({ newUserId: id });
-		})
-		.catch(err => {
-			res.status(500).json(err);
-		})
+  const credentials = req.body;
+
+  const hash = bcrypt.hashSync(credentials.password, 10);
+  credentials.password = hash;
+
+  db('users')
+    .insert(credentials)
+    .then(ids => {
+      const id = ids[0];
+      res.status(201).json({ newUserId: id });
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
 });
+
+const jwtSecret = 'nobody tosses a dwarf!';
+
+function generateToken(user) {
+  const jwtPayload = {
+    ...user,
+    hello: 'FSW13',
+    roles: ['admin', 'root'],
+  };
+  const jwtOptions = {
+    expiresIn: '1h',
+  };
+
+  return jwt.sign(jwtPayload, jwtSecret, jwtOptions);
+}
 
 server.post('/login', (req, res) => {
-	const creds = req.body;
+  const creds = req.body;
 
-	db('users')
-		.where({ username: creds.username })
-		.first()
-		.then(user => {
-			if (user && bcrypt.compareSync(creds.password, user.password)) {
-				req.session.username = user.username;
-				res.status(200).json({ welcome: user.username });
-			} else {
-				res.status(401).json({ message: 'you shall not pass' });
-			}
-		})
-		.catch(err => res.status(500).json({ err }));
+  db('users')
+    .where({ username: creds.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        const token = generateToken(user); // new line
+        res.status(200).json({ welcome: user.username, token });
+      } else {
+        res.status(401).json({ message: 'you shall not pass!' });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({ err });
+    });
 });
 
-server.get('/users', protected, (req, res) => {
-    console.log(req.session);
-	if (req.session && req.session.username) {
-		db('users')
-		.select('id','username', 'password')
-		.then(users => {
-			res.json(users);
-		})
-		.catch(err => res.send(err));
-	} else {
-		res.status(401).send('not authorized');
-	}
+// protect this route, only authenticated users should see it
+server.get('/users', protected, checkRole('admin'), (req, res) => {
+  db('users')
+    .select('id', 'username', 'password')
+    .then(users => {
+      res.json({ users });
+    })
+    .catch(err => res.send(err));
 });
 
 function protected(req, res, next) {
-    if (req.session && req.session.username) {
+  // authentication tokens are normally sent as a header instead of the body
+  const token = req.headers.authorization;
+  if (token) {
+    jwt.verify(token, jwtSecret, (err, decodedToken) => {
+      if (err) {
+        // token verification failed
+        res.status(401).json({ message: 'invalid token' });
+      } else {
+        // token is valid
+        req.decodedToken = decodedToken; // any sub-sequent middleware of route handler have access to this
+        console.log('\n** decoded token information **\n', req.decodedToken);
+        next();
+      }
+    });
+  } else {
+    res.status(401).json({ message: 'no token provided' });
+  }
+}
+
+function checkRole(role) {
+  return function(req, res, next) {
+    if (req.decodedToken && req.decodedToken.roles.includes(role)) {
       next();
     } else {
-      res.status(401).json({ message: 'Not authorized' })
+      res.status(403).json({ message: 'you shall not pass! forbidden' });
     }
-  }
-  
-  server.get('/logout', (req, res) => {
-    if (req.session) {
-      req.session.destroy(err => {
-        if (err) {
-          res.send(err)
-        } else {
-          res.send('See ya!!')
-        }
-      })
-    }
-  })
-  
+  };
+}
+
 
 
 const port = 5000;
