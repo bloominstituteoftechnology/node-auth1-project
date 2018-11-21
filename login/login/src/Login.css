@@ -1,0 +1,17 @@
+.login-form {
+  width: 500px;
+  background: rgb(1, 18, 19);
+  border-radius: 6px;
+  margin: 10px auto;
+  padding: 50px 25px;
+  color: white;
+  font-weight: bold;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+}
+.loginContainer {
+  text-align: center;
+  padding-bottom: 2rem;
+}

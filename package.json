@@ -18,9 +18,14 @@
   },
   "homepage": "https://github.com/TRIF3X/auth-i#readme",
   "dependencies": {
+    "axios": "^0.18.0",
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "create-react-app": "^2.1.1",
     "express": "^4.16.4",
     "knex": "^0.15.2",
+    "login": "^0.8.0",
+    "reactstrap": "^6.5.0",
     "sqlite3": "^4.0.4"
   },
   "devDependencies": {
