@@ -8,7 +8,7 @@ exports.up = function(knex, Promise) {
 
     tbl.string('password').notNullable();
 
-    tbl.string('Empty').defaultTo([]);
+    tbl.string('role').defaultTo('admin');
   });
 };
 
