@@ -1,4 +1,9 @@
 const express = require('express');
+const cors = require('cors');
+
+const bcrypt = require('bcryptjs');
+
+const session = require('express-session');
 
 const db = require('./database/dbConfig.js')
 
