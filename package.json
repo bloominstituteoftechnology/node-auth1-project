@@ -3,6 +3,10 @@
     "version": "1.0.0",
     "description": "this is my discription",
     "main": "index.js",
+        "scripts": {
+    "start": "nodemon"
+},
+    "main": "index.js",
     "repository": "\"http://github.com/brandongrych/auth-i.git\"",
     "author": "Brandon Grych <brandongrych@gmail.com>",
     "license": "MIT",
@@ -11,10 +15,10 @@
         "express": "^4.16.4",
         "helmet": "^3.14.0",
         "knex": "^0.15.2",
-        "nodemon": "^1.18.4",
+        "nodemon": "^1.18.6",
         "sqlite3": "^4.0.3"
     },
     "devDependencies": {
         "nodemon": "^1.18.4"
     }
-    }
+}
