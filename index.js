@@ -4,6 +4,7 @@ const helmet = require('helmet')
 const morgan = require('morgan')
 const bcrypt = require('bcryptjs')
 const knex = require('knex')
+const session = require('express-session')
 
 const knexConfig = require('./knexfile.js')
 const db = knex(knexConfig.development)
@@ -14,6 +15,20 @@ server.use(express.json())
 server.use(cors())
 server.use(helmet())
 server.use(morgan('dev'))
+
+server.use(
+  session({
+    name: 'project_session',
+    secret: 'Colorless green ideas sleep furiously',
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      secure: true
+    },
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false
+  })
+)
 
 server.post('/api/login', (req, res) => {
   const { username, password } = req.body
