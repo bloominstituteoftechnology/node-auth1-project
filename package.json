@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/jsmnglng/auth-i#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.16.4",
     "knex": "^0.15.2",
     "sqlite3": "^4.0.4"
