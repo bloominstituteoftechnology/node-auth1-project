@@ -38,7 +38,11 @@ server.post('/api/register', (req, res) => {
 server.post('/api/login', (req, res) => {
     // grab username and password from body
     const creds = req.body;
-  
+    if (!creds.username|| !creds.password) {
+        const errorMessage = "Please provide both a username and password"; 
+        res.status(400).json({ errorMessage});
+        return
+    }
     db('users')
       .where({ username: creds.username })
       .first()
