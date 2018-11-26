@@ -8,6 +8,12 @@ server.use(express.json());
 server.post('/api/register', (req, res) => {
     // grab username and password from body
     const creds = req.body;
+    if (!creds.username|| !creds.password) {
+        const errorMessage = "Please provide both a username and password"; 
+        res.status(400).json({ errorMessage});
+        return
+    }  
+
     // generate the hash from the user's password
     const hash = bcrypt.hashSync(creds.password, 4); // rounds is 2^X
     // override the user.password with the hash
