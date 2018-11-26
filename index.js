@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
+const session = require("express-session");
 
 //init db and server
 const db = require("./database/dbConfig");
@@ -10,7 +11,19 @@ const server = express();
 //necessary middleware
 server.use(express.json());
 server.use(cors());
-
+server.use(
+  session({
+    name: "linksession",
+    secret: "it's dangerous to go alone",
+    cookie: {
+      maxAge: 60 * 1000,
+      secure: true
+    },
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false
+  })
+);
 //endpoints
 
 server.get("/", (req, res) => {
@@ -61,6 +74,9 @@ server.post("/api/register", (req, res) => {
 
 // authenticate user
 server.post("/api/login", (req, res) => {
+  //   //see if session implementation is working
+  //   req.session.name = "Link";
+
   const creds = req.body;
 
   db("users")
@@ -80,6 +96,12 @@ server.post("/api/login", (req, res) => {
 
 //TODO: get list of all users IF user is logged in
 server.get("/api/users", (req, res) => {
+  //   //check for session name?
+  //   const name = req.session.name;
+  //   if (!name || name === undefined) {
+  //     res.status(401).json({ message: "Imposters not allowed!" });
+  //   } else {
+
   db("users")
     .select("id", "username")
     .orderBy("id")
@@ -89,6 +111,7 @@ server.get("/api/users", (req, res) => {
         .status(500)
         .json({ error: "Error occurred while retrieving users: ", err })
     );
+  //   }
 });
 
 server.listen(5500, () => console.log("\nrunning on Port 5500\n"));
