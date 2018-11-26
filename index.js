@@ -16,4 +16,25 @@ server.get('/', (req, res) => {
     res.send('Server is running properly');
 });
 
+server.get('/api/users', (req, res) => {
+    db('users')
+        .select('username','password')
+        .then(users => {
+            res.json(users);
+        })
+        .catch(err => res.send(err));
+});//for testing purposes will be revamped
+
+server.post('/api/register', (req,res) => {
+    const creds = req.body;
+    creds.password = bcrypt.hashSync(creds.password, 14)
+    db('users').insert(creds)
+    .then(userId => {
+        res.status(201).json(userId);
+    })
+    .catch(err => {
+        res.status(500).json({error : err})
+    })
+})
+
 server.listen(9000, () => console.log('\nrunning on port 9000\n'));
