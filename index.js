@@ -10,14 +10,14 @@ const server = express();
 server.use(express.json());
 
 // get all users
-server.get('/users', (req, res) => {
+server.get('/api/users', (req, res) => {
     db('users').select('id', 'username', 'password').then(users => {
         res.json(users);
     }).catch(err => res.send(err));
 });
 
 // register user
-server.post('/register', (req, res) => {
+server.post('/api/register', (req, res) => {
     const creds = req.body;
     const hash = bcrypt.hashSync(creds.password, 14);
     creds.password = hash;
@@ -28,7 +28,7 @@ server.post('/register', (req, res) => {
 })
 
 // login user
-server.post('/login', (req, res) => {
+server.post('/api/login', (req, res) => {
     const creds = req.body;
 
     db('users').where({ username: creds.username }).first().then(user => {
