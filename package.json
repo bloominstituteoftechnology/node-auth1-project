@@ -1,0 +1,21 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "Adding Authentication to an API using Sessions and Cookies",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samsisle/auth-i.git"
+  },
+  "author": "samsisle",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/samsisle/auth-i/issues"
+  },
+  "homepage": "https://github.com/samsisle/auth-i#readme"
+}
