@@ -14,24 +14,32 @@ server.use(morgan('short'));
 
 server.use(
 	session({
-		name: 'isLogged',
+		name: 'notsession', // default name is connect.sid
 		secret: 'nobody tosses a dwarf!',
 		cookie: {
 			maxAge: 1 * 24 * 60 * 60 * 1000,
 			secure: true
 		},
-		httpOnly: true,
+		httpOnly: true, // doesn't let JS code access cookies
 		resave: false,
 		saveUninitialized: false
 	})
 );
+
+restricted = (req, res, next) => {
+	if (req.session && req.session.username) {
+		next();
+	} else {
+		res.status(401).json({ message: 'Invalid credentials' });
+	}
+};
 
 server.get('/', (req, res) => {
 	res.send('Server is running');
 });
 
 // get all user id and usernames
-server.get('/users', (req, res) => {
+server.get('/users', restricted, (req, res) => {
 	db('students')
 		.select('id', 'username')
 		.then((student) => res.status(400).json(student))
@@ -48,10 +56,10 @@ server.post('/users/register', (req, res) => {
 		.then((ids) => {
 			res.status(201).json(ids);
 		})
-		.catch((err) => json(err));
+		.catch((err) => res.status(400).json(err));
 });
 
-server.post('/users/login', (req, res) => {
+server.post('/users/login', restricted, (req, res) => {
 	const creds = req.body;
 	db('students')
 		.where({ username: creds.username })
