@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "This is a project that I am doing and I forgot to do -y after the init so here I am",
   "main": "index.js",
-  "author": "y",
-  "license": "Lambda School",
+  "author": "Lambda School",
+  "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -14,9 +14,9 @@
     "sqlite3": "^4.0.4"
   },
   "devDependencies": {
-		"nodemon": "^1.18.6"
-	},
-  "scripts":{
-    "server" : "nodemon"
+    "nodemon": "^1.18.6"
+  },
+  "scripts": {
+    "start": "nodemon"
   }
 }
