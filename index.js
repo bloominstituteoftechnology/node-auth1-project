@@ -6,10 +6,42 @@ const db = require('./data/dbConfig');
 const server = express();
 
 server.use(express.json());
+
 // REGISTER
 server.post('/api/register', async (req, res) => {
   // get form input values
   const registrationData = req.body;
+  // generate a hash
+  const hash = bcrypt.hashSync(registrationData.password, 10);
+  // replace plain text with hash
+  registrationData.password = hash;
+  // save to db
+  try {
+    const newUserId = await db('users').insert(registrationData);
+    res.status(201).json(newUserId);
+  } catch (error) {
+    res.status(500).json({ error: 'Something went wrong with the request.' });
+  }
+});
+
+// LOGIN
+server.post('/api/login', async (req, res) => {
+  // get form input values
+  const loginData = req.body;
+  // get user
+  try {
+    const user = await db('users')
+      .where({ username: loginData.username })
+      .first();
+    return user && bcrypt.compareSync(loginData.password, user.password)
+      ? res.status(200).json({ message: 'Logged in.' })
+      : res
+          .status(401)
+          .json({ message: 'The username or password does not match.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Something went wrong, pal.' });
+  }
+
   // generate a hash
   const hash = bcrypt.hashSync(registrationData.password, 10);
   // replace plain text with hash
