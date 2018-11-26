@@ -9,6 +9,7 @@
   "author": "<edwin.torres.jr2@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "knex": "^0.15.2",
