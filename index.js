@@ -23,6 +23,15 @@ server.post('/api/register', (req, res) => {
         });
 });
 
-
+server.get('/api/users', (req, res) => {
+    db('users')
+        .select('id', 'username', 'password')
+        .then(users => {
+            res.status(200).json(users);
+        })
+        .catch(err => {
+            res.status(500).json({ error: 'There was an error fetching the users', err });
+        });
+})
 
 server.listen(3000, () => console.log('\n Server is running on port 3000 \n' ));
