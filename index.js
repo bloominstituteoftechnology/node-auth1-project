@@ -38,4 +38,20 @@ server.post('/api/register', (req, res) => {
     .catch(err => json(err));
 });
 
+// login - checks supplied user against database
+server.post('/api/login', (req, res) => {
+  const creds = req.body;
+
+  db('users')
+    .where({ username: creds.username })
+    .first()
+    .then(user => {
+      if(user && bcrypt.compareSync(creds.password, user.password)) {
+        res.status(200).json({ message: 'logged in' });
+      } else {
+        res.status(401).json({ message: 'login failed' });
+      }
+    }).catch(err => res.json(err));
+});
+
 server.listen(8300, () => console.log('\nServer running on 8300\n'));
