@@ -7,6 +7,7 @@ const router = express.Router();
 /* ----  GET ALL USERS  ---- */
 router.get("/", (req, res) => {
   db("users")
+    .select("id", "username", "created_at", "updated_at")
     .then(users => res.status(200).json(users))
     .catch(err => res.status(500).json(err));
 });
