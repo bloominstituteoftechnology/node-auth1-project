@@ -25,5 +25,18 @@ app.post('/api/register', (req, res) => {
 
 })
 
+app.post('/api/login', (req, res) => {
+    const creds = req.body;
+    db('users').where({username: creds.username}).first()
+    .then(user => {
+        if(user && bcrypt.compareSync(creds.password, user.password)) {
+            res.status(200).json({message: 'Welcome!'})
+        } else {
+            res.status(401).json({message: 'Invalid!'})
+        }
+    })
+    .catch(err => json(err));
+})
+
 const PORT = 3500
 app.listen(PORT, console.log(`==^_^== ${PORT} ==^_^==`));
