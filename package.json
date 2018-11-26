@@ -1,0 +1,20 @@
+{
+    "name": "auth-i-master",
+    "version": "1.0.0",
+    "description": "this is my discription",
+    "main": "index.js",
+    "repository": "\"http://github.com/brandongrych/auth-i.git\"",
+    "author": "Brandon Grych <brandongrych@gmail.com>",
+    "license": "MIT",
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "express": "^4.16.4",
+        "helmet": "^3.14.0",
+        "knex": "^0.15.2",
+        "nodemon": "^1.18.4",
+        "sqlite3": "^4.0.3"
+    },
+    "devDependencies": {
+        "nodemon": "^1.18.4"
+    }
+    }
