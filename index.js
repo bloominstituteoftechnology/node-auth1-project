@@ -42,14 +42,14 @@ server.post('/api/login', (req, res) => {
     db('users').where({ username: creds.username}).first().then(user => {
         if(user && bcrypt.compareSync(creds.password, user.password)) {
         //paswords match and username exists
-        res.status(200).json({message: 'Welcome!'});
+        res.status(200).json({message: 'Logged in'});
     
     
         } else {
-        res.status(401).json({message: 'You will not get this info'})
+        res.status(401).json({message: 'You shall not pass!'})
         }
         
-    }).catch(err => res.json(err))
+    }).catch(err => res.status(401).json({message: "You shall not pass!"}, err))
 });
 
 //==========GET USER INFO==========
@@ -59,7 +59,7 @@ server.get('/api/users', (req, res) => {
       .then(users => {
         res.json(users);
       })
-      .catch(err => res.send(err));
+      .catch(err => res.status(401).json({message: 'You shall not pass!'}));
 });
  
 
