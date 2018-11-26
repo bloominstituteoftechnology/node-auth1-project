@@ -2,14 +2,29 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const helmet = require('helmet');
-// const morgan = require('morgan');
+const morgan = require('morgan');
 const db = require('./data/dbConfig.js');
+const session = require('express-session');
 
 const server = express();
 server.use(express.json());
 server.use(cors());
 server.use(helmet());
-// server.use(morgan('short'));
+server.use(morgan('short'));
+
+server.use(
+	session({
+		name: 'isLogged',
+		secret: 'nobody tosses a dwarf!',
+		cookie: {
+			maxAge: 1 * 24 * 60 * 60 * 1000,
+			secure: true
+		},
+		httpOnly: true,
+		resave: false,
+		saveUninitialized: false
+	})
+);
 
 server.get('/', (req, res) => {
 	res.send('Server is running');
