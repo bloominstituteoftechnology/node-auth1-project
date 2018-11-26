@@ -15,6 +15,21 @@ server.get('/', (req, res) => {
   res.send('*** Is your server running, better catch it before it runs away***')
 });
 
+server.post('/register', (req, res) => {
+    const credentials = req.body;
+    const hash = bcrypt.hashSync(credentials.password, 14);
+    credentials.password = hash;
+    db('users')
+    .insert(credentials)
+    .then(ids => {
+        const id = ids[0];
+        res.status(201).json({ newUserId: id});
+    })
+    .catch(err => {
+        res.status(500).json(err);
+    });
+});
+
 const port = 9000;
 server.listen(port, function() {
 console.log(`\n=== Web API Listening on http://localhost:${port} ===\n`);
