@@ -64,7 +64,7 @@ server.post('/api/login', (req, res) => {
   })
 
  // protect this route, only authenticated users should see it
- server.get('/api/users', (req, res) => {
+ server.get('/api/users', protected, (req, res) => {
     db('users')
       .select('id', 'username', 'password')
       .then(users => {
@@ -72,5 +72,12 @@ server.post('/api/login', (req, res) => {
       })
       .catch(err => res.send(err));
   });
+
+  function protected(req, res, next) {
+    if (req.session && req.session.username) {
+      next();
+    } else {
+      res.status(401).send('Not authorized!')
+    }}
 
 server.listen(3700, () => console.log('\n Party at part 3700 '))
