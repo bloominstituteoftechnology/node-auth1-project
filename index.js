@@ -42,4 +42,11 @@ server.post("/api/register", (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
+server.get("/api/users", (req, res) => {
+  db("users")
+    .select("id", "username", "password")
+    .then(users => res.status(200).json(users))
+    .catch(err => res.status(500).json(err));
+});
+
 server.listen(PORT, () => console.log(`PORT ${PORT}`));
