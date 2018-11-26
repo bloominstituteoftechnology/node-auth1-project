@@ -9,6 +9,21 @@ const server = express();
 server.use(express.json());
 server.use(cors());
 
+server.post("/login", (req, res) => {
+  const creds = req.body;
+  db("users")
+    .where({ username: creds.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        res.status(200).json({ message: "Authentication succesful" });
+      } else {
+        res.status(401).json({ message: "Failed to authenticate" });
+      }
+    })
+    .catch(err => res.json(err));
+});
+
 server.post("/register", (req, res) => {
   const creds = req.body;
   const hash = bcrypt.hashSync(creds.password, 14);
@@ -27,7 +42,7 @@ server.get("/", (req, res) => {
 
 server.get("/users", (req, res) => {
   db("users")
-    .select("id", "username", "password")
+    .select("id", "username")
     .then(users => {
       res.json(users);
     })
