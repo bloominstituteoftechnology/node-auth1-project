@@ -29,7 +29,7 @@ server.post('/api/register', (req, res) => {
     })
   })
 
-server.post('/login', (req, res) => {
+server.post('/api/login', (req, res) => {
     const creds = req.body;
     db('users')
     .where({ username: creds.username})
@@ -45,5 +45,15 @@ server.post('/login', (req, res) => {
     })
     .catch(err => res.status(500).json(err))
   })
+
+ // protect this route, only authenticated users should see it
+ server.get('/api/users', (req, res) => {
+    db('users')
+      .select('id', 'username', 'password')
+      .then(users => {
+        res.json(users);
+      })
+      .catch(err => res.send(err));
+  });
 
 server.listen(3700, () => console.log('\n Party at part 3700 '))
