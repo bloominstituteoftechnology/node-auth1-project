@@ -9,23 +9,14 @@ const server = express();
 server.use(express.json());
 server.use(cors());
 
+//sanity check
+server.get('/', (req, res) => {
+  res.send("It's Alive!");
+});
+
 server.post('/api/register', (req, res) => {
   //grab username and password from the body
   const creds = req.body;
-
-  db('users')
-    .where({ username: creds.username })
-    .first()
-    .then(user => {
-      if (user && bcrypt.compareSync(creds.password, user.password)) {
-        //passwrods match and user exists by that username
-        res.status(200).json({ message: 'Welcome!' });
-      } else {
-        //either username is invalid or password is wrong
-        res.status(401).json({ message: 'You shall not pass!' });
-      }
-    })
-    .catch(err => res.json(err));
   //generate the hash from the user's password
   const hash = bcrypt.hashSync(creds.password, 14); //rounds is 2^X
   //override the user.password with the hash
@@ -39,8 +30,21 @@ server.post('/api/register', (req, res) => {
     .catch(err => json(err));
 });
 
-server.get('/', (req, res) => {
-  res.send("It's Alive!");
+server.post('/api/login', (req, res) => {
+  const creds = req.body;
+  db('users')
+    .where({ username: creds.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        //passwrods match and user exists by that username
+        res.status(200).json({ message: 'Welcome!' });
+      } else {
+        //either username is invalid or password is wrong
+        res.status(401).json({ message: 'You shall not pass!' });
+      }
+    })
+    .catch(err => res.json(err));
 });
 
 //protect this route, only authenticated users should see it
