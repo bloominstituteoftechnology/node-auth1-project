@@ -32,7 +32,16 @@ server.get('/', (req, res) => {
 
 
 server.get('/api/users', (req, res) => {
-    
+    if(req.session && req.session.username) {
+        db('users')
+            .select('id', 'username', 'password') // password on this line just to see if the password hash
+            .then(users => {
+                res.status(200).json(users)
+            })
+            .catch(err => res.send(err))
+    } else {
+        res.status(401).send('Not Authorized')
+    }
 });
 
 
