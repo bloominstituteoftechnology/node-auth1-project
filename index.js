@@ -19,9 +19,15 @@ server.get('/', (req, res) => {
 //register new users
 server.post('/api/register', (req, res) => {
   const creds = req.body;
-  const hash = bcrypt.hashSync(creds.password, 14);
-  creds.password = hash;
-  db('users').insert(creds).then(id => res.status(201).json(id)).catch(err => res.json(err))
+  db('users').where({ username: creds.username }).first().then(user => {
+    if (user) {
+      res.status(400).json({ message: 'A user with that username already exists' })
+    } else {
+      const hash = bcrypt.hashSync(creds.password, 14);
+      creds.password = hash;
+      db('users').insert(creds).then(id => res.status(201).json(id)).catch(err => res.json(err))
+    }
+  }).catch(err => res.json(err));
 })
 
 //login existing users
@@ -45,7 +51,7 @@ server.get('/api/users', (req, res) => {
     .then(users => {
       res.json(users);
     })
-    .catch(err => res.json(err)); 
+    .catch(err => res.json(err));
 })
 
 server.listen(9000, () => {
