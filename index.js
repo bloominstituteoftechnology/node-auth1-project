@@ -16,6 +16,15 @@ server.use(cors())
 server.use(helmet())
 server.use(morgan('dev'))
 
+// middleware for authorizing
+function verifySession(req, res, next) {
+  if (req.session && req.session.userId) {
+    next()
+  } else {
+    res.status(401).json({ message: 'cannot access that resource' })
+  }
+}
+
 server.use(
   session({
     name: 'project_session',
@@ -38,6 +47,7 @@ server.post('/api/login', (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
+        req.session.userId = username
         res.status(200).json({ message: 'logged in!' })
       } else {
         res.status(401).json({ message: 'log in faild :(' })
@@ -60,6 +70,25 @@ server.post('/api/register', (req, res) => {
       console.log(err)
       res.status(500).json(err)
     })
+})
+
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('error logging out')
+      } else {
+        res.send('you were logged out successfully')
+      }
+    })
+  }
+})
+
+server.get('/api/users', verifySession, (req, res) => {
+  db('users')
+    .select('id', 'username')
+    .then(users => res.status(200).json(users))
+    .catch(err => res.status(500).json(err))
 })
 
 server.listen(3300, () => console.log('\nrunning on port 3300\n'))
