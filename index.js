@@ -38,5 +38,15 @@ server.post('/api/register', (req, res) => {
         .catch(err => console.log(err));
 })
 
+server.post('/api/login', async (req, res) => {
+    const creds = req.body;
+    const user = await db('users').where({ user: creds.user }).first();
+    if (user && bcrypt.compareSync(creds.password, user.password)) {
+        res.status(200).json({ message: 'welcome'})
+    } else {
+        res.status(401).json({ message: 'try again' })
+    }
+})
+
 const port = 4200;
 server.listen(port, console.log(`\n === watching on port ${port} === \n`));
