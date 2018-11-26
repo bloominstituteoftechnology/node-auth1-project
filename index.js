@@ -19,7 +19,9 @@ server.post("/api/login", (req, res) => {
     .first()
     .then(user => {
       console.log("user", user);
-      // console.log(bcrpyt.compareSync(creds.password, user.password));
+      console.log(bcrpyt.compareSync(creds.password, user.password));
+      console.log("creds", creds.password);
+      console.log("hash", user.password);
       if (user && bcrpyt.compareSync(creds.password, user.password)) {
         res.status(200).json({message: "welcome!"});
       } else {
