@@ -37,7 +37,7 @@ server.post("/api/register", (req, res) => {
           res.status(422).json({ message: "That username is already taken." });
         } else {
           //generate hash
-          const hash = bcrypt.hashSync(creds.password, 2);
+          const hash = bcrypt.hashSync(creds.password, 16);
 
           //override password with hash
           creds.password = hash;
