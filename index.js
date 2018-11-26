@@ -1,11 +1,14 @@
 const express = require('express');
+const cors = require('cors');
 const bcrypt = require('bcryptjs');
+
 const knex = require('knex');
 const knexConfig = require('./knexfile');
 const db = knex(knexConfig.development);
 
 const server = express();
 server.use(express.json());
+server.use(cors());
 
 server.post('/api/register', (req, res) => {
     const creds = req.body;
