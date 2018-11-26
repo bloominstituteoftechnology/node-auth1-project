@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "server": "nodemon"
+    "start": "nodemon"
   },
   "repository": "https://github.com/danfrrr13/auth-i.git",
   "author": "Daniel Ferrer <danfrrr13@gmail.com>",
