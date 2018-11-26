@@ -1,6 +1,8 @@
 
 
-//== Seed Credentials Table ====================================================
+/*== Seed Credentials Table ====================================================
+
+    Cannot Seed! Necesity to generate hashes precludes seeding at this time.
 
 //-- Dependencies --------------------------------
 const config = require('../../config.js');
@@ -13,4 +15,4 @@ exports.seed = function(knex, Promise) {
         {[config.FIELD_USERNAME]: 'asdf', [config.FIELD_PASSWORD]: 'jkl;'},
     ]));
 };
-  
+*/

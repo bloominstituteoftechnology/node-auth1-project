@@ -10,7 +10,7 @@ const routeAuthenticate = require('./authenticate/router.js');
 //-- Open New Server -----------------------------
 const application = express();
 application.listen(config.PORT, () => {
-    console.log(config.MESSAGE_SERVER_LISTENING);
+    console.log(config.SERVER_LISTENING);
 });
 
 //-- Server Middleware ---------------------------

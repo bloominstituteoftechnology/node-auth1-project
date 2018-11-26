@@ -11,6 +11,7 @@ Must be able to:
 
 //-- Dependencies --------------------------------
 const knex = require('knex');
+const bcrypt = require('bcryptjs');
 const config = require('./config.js');
 const knexConfig = require('./knexfile.js');
 
@@ -18,16 +19,34 @@ const knexConfig = require('./knexfile.js');
 const knexDB = knex(knexConfig[config.DATABASE_ENVIRONMENT]);
 module.exports = {
     addCredential: addCredential,
-    authenticate : authenticate,
-    getUsers     : getUsers,
+    authenticate : authenticate ,
+    getUsers     : getUsers     ,
 };
 
+//== Database Utilities ========================================================
+
+//-- Transform Username to Canonical form --------
+function prepUsername(raw) {
+    return raw.toLowerCase();
+}
+
+//-- Hash Password -------------------------------
+function prepPassword(raw) {
+    return bcrypt.hashSync(raw, config.PASSWORD_HASH_DEPTH);
+}
+
+//-- Compare Password to Hash --------------------
+function comparePassword(raw, storedHash) {
+    return bcrypt.compareSync(raw, storedHash);
+}
 
 //== Database Access Functions =================================================
 
 //-- Add Credential ------------------------------
-async function addCredential(username, password) {
+async function addCredential(rawUsername, rawPassword) {
     try {
+        let username = prepUsername(rawUsername);
+        let password = prepPassword(rawPassword);
         // Check for previous users
         const priorUser = await knexDB(config.TABLE_CREDENTIALS)
             .select(config.FIELD_ID)
@@ -54,16 +73,17 @@ async function addCredential(username, password) {
 }
 
 //-- Authenticate --------------------------------
-async function authenticate(username, password) {
+async function authenticate(rawUsername, rawPassword) {
     try {
-        const user = await knexDB(config.TABLE_CREDENTIALS)
-            .select(config.FIELD_ID)
+        let username = await prepUsername(rawUsername);
+        let storedHash = await knexDB(config.TABLE_CREDENTIALS)
+            .select(config.FIELD_PASSWORD)
             .where({
                 [config.FIELD_USERNAME]: username,
-                [config.FIELD_PASSWORD]: password,
             })
             .first();
-        return user? true : false;
+        storedHash = storedHash[config.FIELD_PASSWORD];
+        return comparePassword(rawPassword, storedHash);
     }
     catch(error) {
         throw config.ERROR_DATABASE_INTERNAL;
@@ -72,9 +92,13 @@ async function authenticate(username, password) {
 
 //-- Get Users -----------------------------------
 async function getUsers() {
+    // Dot not return passwords or password hashes!
+    /* Only doing it here as this is an example project, and we want to view the
+        generated hashes. */
     try {
         return await knexDB(config.TABLE_CREDENTIALS).select(
-            config.FIELD_USERNAME
+            config.FIELD_USERNAME,
+            config.FIELD_PASSWORD,
         );
     }
     catch(error) {
