@@ -30,6 +30,21 @@ server.post('/register', (req, res) => {
     });
 });
 
+server.post('/login', (req,res) => {
+    const creds = req.body;
+    db('users').where({username: creds.username}).first()
+    .then(user => {
+        if(user && bcrypt.compareSync(creds.password, user.password)) {
+            res.status(200).json({welcome: user.username})
+        } else {
+            res.status(401).json({ message: 'you shall not pass!'});
+        }
+    })
+    .catch(err => {
+        res.status(500).json(err);
+    });
+});
+
 server.get("/users", (req, res) => {
     db('users')
     .select('id', 'username')
