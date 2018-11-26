@@ -1,0 +1,31 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "intro to authentification",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sabrinagear/auth-i.git"
+  },
+  "author": "sgear",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sabrinagear/auth-i/issues"
+  },
+  "homepage": "https://github.com/sabrinagear/auth-i#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "g": "^2.0.1",
+    "helmet": "^3.15.0",
+    "knex": "^0.15.2",
+    "sqlite3": "^4.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.6"
+  }
+}
