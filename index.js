@@ -23,7 +23,7 @@ server.post('/api/register', (req, res) => {
     .insert(credentials)
     .then(ids => {
       const id = ids[0];
-      req.session.username = credentials.username // save that session, i want to put a username in that session
+    //   req.session.username = credentials.username // save that session, i want to put a username in that session
       res.status(201).json({ newUserId: id})
     })
     .catch(err => {
