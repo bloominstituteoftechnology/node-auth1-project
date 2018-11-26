@@ -26,7 +26,7 @@ server.use(session({
         tablename: 'sessions',
         knex: db,
         createTable: true,
-        createInterval: 1000*60*1
+        createInterval: 1000*60*2
     })
 
 }))
