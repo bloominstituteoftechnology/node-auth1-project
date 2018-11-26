@@ -28,13 +28,64 @@ router.post(config.URL_AUTHENTICATION_REGISTER , handleRegistration);
 router.post(config.URL_AUTHENTICATION_LOGIN    , handleLogin       );
 router.get (config.URL_AUTHENTICATION_USERSLIST, handleGetAllUsers );
 
-//-- Route Handlers ------------------------------
+
+//== Route Handlers ============================================================
+
+//-- Register New User ---------------------------
 async function handleRegistration(request, response, next) {
-    next();
+    try {
+        // Attempt to register a new user
+        let username = request.body.username;
+        let password = request.body.password;
+        await database.addCredential(username, password);
+        // Inform of success
+        response.status(201).end();
+    }
+    catch(error) {
+        response.status(500).json({
+            [config.RESPONSE_ERROR]: error,
+        });
+    }
+    finally {
+        next();
+    }
 }
-async function handleLogin       (request, response, next) {
-    next();
+
+//-- User Login ----------------------------------
+async function handleLogin(request, response, next) {
+    try {
+        // Check if supplied username and password are valid
+        let username = request.body.username;
+        let password = request.body.password;
+        let authenticated = await database.authenticate(username, password);
+        // Authentication failed
+        if(!authenticated){
+            response.status(401).json({
+                [config.RESPONSE_MESSAGE]: config.MESSAGE_AUTHENTICATION_FAILURE,
+            });
+        // Authentication was a success
+        } else{
+            // To Do: Complete tomorrow after lesson on sessions and cookies.
+            response.status(200).json({
+                [config.RESPONSE_MESSAGE]: config.MESSAGE_AUTHENTICATION_SUCCESS,
+            })
+        }
+    }
+    catch(error) {
+        response.status(500).json({
+            [config.RESPONSE_ERROR]: error,
+        });
+    }
+    finally {
+        next();
+    }
 }
-async function handleGetAllUsers (request, response, next) {
+
+//-- Display All Registered Users ----------------
+async function handleGetAllUsers(request, response, next) {
+    // To Do: Check if user is logged in.
+    // To be completed tomorrow after our lesson on sessions and cookies.
+    let users = await database.getUsers();
+    response.status(200).json(users);
     next();
 }

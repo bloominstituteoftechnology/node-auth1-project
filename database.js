@@ -32,7 +32,7 @@ async function addCredential(username, password) {
         const priorUser = await knexDB(config.TABLE_CREDENTIALS)
             .select(config.FIELD_ID)
             .where({
-                [config.FIELD_USERNAME]: username
+                [config.FIELD_USERNAME]: username,
             })
             .first();
         if(priorUser){
