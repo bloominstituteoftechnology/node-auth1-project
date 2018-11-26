@@ -18,7 +18,21 @@ server.post("/api/register", (req, res) => {
     db("users")
         .insert(creds)
         .then(ids => res.status(201).json(ids))
-        .catch(err => json(err))
+        .catch(err => res.status(401).json(err))
+})
+
+server.post("/api/login", (req, res) => {
+    const creds = req.body;
+
+    db("users")
+        .where({username: creds.username})
+        .first()
+        .then(user => {
+            user && bcrypt.compareSync(creds.password, user.password) ?
+                res.status(200).json({message: "Logged in!"}) :
+                res.status(401).json({message: "You shall not pass!"});
+        })
+        .catch(err => res.status(401).json(err));
 })
 
 server.get("/", (req, res) => {
@@ -29,7 +43,7 @@ server.get("/api/users", (req, res) => {
     db("users")
         .select("id", "username", "password")
         .then(users => res.status(200).json(users))
-        .catch(err => res.status(400).json(err))
+        .catch(err => res.status(401).json(err))
 })
 
 const port = 9001;
