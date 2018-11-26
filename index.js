@@ -61,4 +61,20 @@ server.post('/api/register', (req, res) => {
         })
 });
 
+server.post('/api/login', (req, res) => {
+    const creds = req.body;
+
+    db('users').where({username: creds.username}).first().then(user => {
+        if(user && bcrypt.compareSync(creds.password, password)) {
+            req.session.username = username
+            res.status(200).json({Hello: user.username})
+        } else {
+            res.status(401).json({message: 'You shall not pass!'})
+        }
+    })
+    .catch(err => {
+        res.status(500).json(err)
+    })
+});
+
 server.listen(9000, () => console.log('\nRunning on port 9000'));
