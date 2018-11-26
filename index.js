@@ -1,11 +1,25 @@
 const express = require('express');
 const helmet = require('helmet');
 const bcrypt = require ('bcryptjs');
+const session = require('express-session')
 
 const db = require('./data/dbConfig.js')
 
 const server = express();
 
+const sessionConfig = {
+    secret: 'anong.balita.sa.radyo.at.tv.',
+    name: 'monkey',// defaults to connect.sid
+    httpOnly: true, // no JS access
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: false,// restrict so a cookie is only saved when it is secured - https : put true. but we use false to test
+        maxAge: 1000 * 60 * 10 // 10 minutes, when it expires. hey, your session expired! -- this is it
+    },
+}
+
+server.use(session(sessionConfig));
 server.use(express.json());
 server.use(helmet());
 
@@ -23,7 +37,7 @@ server.post('/api/register', (req, res) => {
     .insert(credentials)
     .then(ids => {
       const id = ids[0];
-    //   req.session.username = credentials.username // save that session, i want to put a username in that session
+      req.session.username = credentials.username // save that session, i want to put a username in that session
       res.status(201).json({ newUserId: id})
     })
     .catch(err => {
@@ -39,6 +53,7 @@ server.post('/api/login', (req, res) => {
     .then(user => {
       // found user - right password or not (compare sync) -- compare to user password (hash same, found)
       if (user && bcrypt.compareSync(creds.password, user.password)) {
+        req.session.username = user.username // save that session, i want to put a username in that session
         res.status(200).json({ welcome: user.username})
   
       } else {
