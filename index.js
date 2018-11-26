@@ -3,6 +3,10 @@ const cors = require('cors');
 const db = require('./database/dbConfig.js');
 const bcrypt = require('bcryptjs')
 
+
+//POST to /api/register
+//POST to /api/login
+//GET to /api/users
 const server = express();
 
 server.use(express.json());
