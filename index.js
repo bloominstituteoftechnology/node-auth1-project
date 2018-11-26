@@ -73,6 +73,16 @@ server.post('/api/login', (req, res) => {
       .catch(err => res.send(err));
   });
 
+  server.get('/api/restricted/passwords', protected, (req, res) => {
+    db('users')
+      .select('password')
+      .then(users => {
+        res.json(users);
+      })
+      .catch(err => res.send(err));
+  });
+
+
   function protected(req, res, next) {
     if (req.session && req.session.username) {
       next();
