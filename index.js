@@ -41,17 +41,17 @@ server.post('/api/login', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Something went wrong, pal.' });
   }
+});
 
-  // generate a hash
-  const hash = bcrypt.hashSync(registrationData.password, 10);
-  // replace plain text with hash
-  registrationData.password = hash;
-  // save to db
+// GET USERS
+server.get('/api/users', async (req, res) => {
   try {
-    const newUserId = await db('users').insert(registrationData);
-    res.status(201).json(newUserId);
+    const users = await db.select('username').from('users');
+    res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ error: 'Something went wrong with the request.' });
+    res
+      .status(500)
+      .json({ message: 'Something went wrong getting the users.' });
   }
 });
 
