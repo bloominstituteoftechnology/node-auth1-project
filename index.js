@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const bcrypt = require ('bcryptjs');
 
+const db = require('./data/dbConfig.js')
 
 const server = express();
 
@@ -13,19 +14,20 @@ server.get('/', (req,res) => {
 })
 
 server.post('/api/register', (req, res) => {
-    const credentials = req.body;
+    const credentials = req.body; // store body of post req un credentials var
     // hash the password
-    const hash = bcrypt.hashSync(credentials.password, 14) // 2^14 times
-    credentials.password= hash;
+    const hash = bcrypt.hashSync(credentials.password, 14) // 2^14 times, hash the pw
+    credentials.password= hash; // store hashed pw on credentials
     // save user
     db('users')
     .insert(credentials)
     .then(ids => {
       const id = ids[0];
+      req.session.username = credentials.username // save that session, i want to put a username in that session
       res.status(201).json({ newUserId: id})
     })
     .catch(err => {
-      res.status(500).json(err)
+      res.status(500).json({ message: 'Err'})
     })
   })
 
