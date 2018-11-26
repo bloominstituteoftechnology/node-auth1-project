@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const db = require('./data/dbConfig.js');
-const session = require('express-session');
+const session = require('express-session'); // brints in session library
 
 const server = express();
 server.use(express.json());
@@ -12,19 +12,19 @@ server.use(cors());
 server.use(helmet());
 server.use(morgan('short'));
 
-server.use(
-	session({
-		name: 'notsession', // default name is connect.sid
-		secret: 'nobody tosses a dwarf!',
-		cookie: {
-			maxAge: 1 * 24 * 60 * 60 * 1000,
-			secure: true
-		},
-		httpOnly: true, // doesn't let JS code access cookies
-		resave: false,
-		saveUninitialized: false
-	})
-);
+const sessionConfig = {
+	secret: 'Random.Weird.Things.That.I.Tell.My.Dog',
+	name: 'banana', // defaults to connect.sid
+	httpOnly: true, // JS can't access, only https
+	resave: false,
+	saveUninitialized: false, // laws ?
+	cookie: {
+		secure: false, // over http(S) in production change to true
+		maxAge: 1000 * 60 * 5
+	}
+};
+
+server.use(session(sessionConfig));
 
 restricted = (req, res, next) => {
 	if (req.session && req.session.username) {
@@ -39,7 +39,8 @@ server.get('/', (req, res) => {
 });
 
 // get all user id and usernames
-server.get('/users', restricted, (req, res) => {
+server.get('/users', (req, res) => {
+	// if logged in
 	db('students')
 		.select('id', 'username')
 		.then((student) => res.status(400).json(student))
@@ -47,7 +48,7 @@ server.get('/users', restricted, (req, res) => {
 });
 
 // register a user by username and password
-server.post('/users/register', (req, res) => {
+server.post('/users/register', restricted, (req, res) => {
 	const creds = req.body;
 	const hash = bcrypt.hashSync(creds.password, 14);
 	creds.password = hash;
@@ -59,13 +60,14 @@ server.post('/users/register', (req, res) => {
 		.catch((err) => res.status(400).json(err));
 });
 
-server.post('/users/login', restricted, (req, res) => {
+server.post('/users/login', (req, res) => {
 	const creds = req.body;
 	db('students')
 		.where({ username: creds.username })
 		.first()
 		.then((user) => {
 			if (user && bcrypt.compareSync(creds.password, user.password)) {
+				req.session.username = user.username;
 				res.status(200).json({ message: `Welcome ${user.username}` });
 			} else {
 				res.status(401).json({ message: 'Invalid credentials!' });
