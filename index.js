@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const knex = require("knex");
 const bcrypt = require("bcryptjs");
 const knexConfig = require("./knexfile");
+const cors = require("cors");
 
 const db = knex(knexConfig.development)
 
@@ -10,6 +11,7 @@ const server = express();
 
 server.use(express.json());
 server.use(helmet());
+server.use(cors());
 
 server.post("/api/register", (req, res) => {
     const creds = req.body;
