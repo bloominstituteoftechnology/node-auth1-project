@@ -1,0 +1,21 @@
+{
+		"name": "authmini",
+		"version": "1.0.0",
+		"description": "Authentication Sprint Demo",
+		"main": "index.js",
+		"scripts": {
+				"server": "nodemon"
+		},
+		"keywords": [],
+		"author": "Lambda School",
+		"license": "MIT",
+		"dependencies": {
+				"bcryptjs": "^2.4.3",
+				"express": "^4.16.4",
+				"knex": "^0.15.2",
+				"sqlite3": "^4.0.4"
+		},
+		"devDependencies": {
+				"nodemon": "^1.18.6"
+		}
+}
