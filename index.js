@@ -17,7 +17,7 @@ server.get('/', (req, res) => {
 // return all usernames with id
 server.get('/api/users', (req, res) => {
     db('users')
-        .select('id', 'username', 'password')
+        .select('id', 'username')
         .then(users => {
             if (users.length) {
                 res.status(200).json(users);
@@ -31,7 +31,7 @@ server.get('/api/users', (req, res) => {
 });
 
 // [POST] /api/register
-// create account with username and password
+// create account with username and password, fails if username already exists
 server.post('/api/register', (req, res) => {
     const creds = req.body;
     const hash = bcrypt.hashSync(creds.password, 14);
@@ -49,7 +49,29 @@ server.post('/api/register', (req, res) => {
                 res.status(500).json({ message: 'Error creating new account' });
             }
         });
-})
+});
+
+// [POST] /api/login
+// user login, fails if username does not exist or password incorrect
+server.post('/api/login', (req, res) => {
+    const creds = req.body;
+  
+    db('users')
+      .where({ username: creds.username })
+      .first()
+      .then(user => {
+        if(user && bcrypt.compareSync(creds.password, user.password)) {
+          res.status(200).json({ message: 'Correct username and password, good job!' });
+        } else {
+          res.status(401).json({ message: 'Failed authentication, username does not exist or password is incorrect'});
+        }
+      })
+      .catch(err => {
+        res.status(500).json({ message: 'Error occurred during login'});
+      })
+  
+  
+  });
 
 const port = 8765;
 server.listen(port, () => console.log(`\nServer listening on port ${port}\n`));
