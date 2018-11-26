@@ -14,19 +14,48 @@ const knex = require('knex');
 const config = require('./config.js');
 const knexConfig = require('./knexfile.js');
 
-//-- Configure Knex Database ---------------------
+//-- Configure and Export Helper -----------------
 const knexDB = knex(knexConfig[config.DATABASE_ENVIRONMENT]);
-
-//-- Database Access Helper ----------------------
 module.exports = {
-    async addCredential(username, password) {
+    addCredential: addCredential,
+    authenticate : authenticate,
+    getUsers     : getUsers,
+};
+
+
+//== Database Access Functions =================================================
+
+//-- Add Credential ------------------------------
+async function addCredential(username, password) {
+    try {
+        // Check for previous users
+        const priorUser = await knexDB(config.TABLE_CREDENTIALS)
+            .select(config.FIELD_ID)
+            .where({
+                [config.FIELD_USERNAME]: username
+            })
+            .first();
+        if(priorUser){
+            throw config.ERROR_AUTHENTICATION_NAMETAKEN;
+        }
+        // Insert new user
         await knexDB(config.TABLE_CREDENTIALS).insert({
             [config.FIELD_USERNAME]: username,
             [config.FIELD_PASSWORD]: password,
         });
         return true;
-    },
-    async authenticate(username, password) {
+    }
+    catch(error) {
+        if(error === config.ERROR_AUTHENTICATION_NAMETAKEN){
+            throw error;
+        }
+        throw config.ERROR_DATABASE_INTERNAL;
+    }
+}
+
+//-- Authenticate --------------------------------
+async function authenticate(username, password) {
+    try {
         const user = await knexDB(config.TABLE_CREDENTIALS)
             .select(config.FIELD_ID)
             .where({
@@ -35,10 +64,20 @@ module.exports = {
             })
             .first();
         return user? true : false;
-    },
-    async getUsers() {
+    }
+    catch(error) {
+        throw config.ERROR_DATABASE_INTERNAL;
+    }
+}
+
+//-- Get Users -----------------------------------
+async function getUsers() {
+    try {
         return await knexDB(config.TABLE_CREDENTIALS).select(
             config.FIELD_USERNAME
         );
     }
-};
+    catch(error) {
+        throw config.ERROR_DATABASE_INTERNAL;
+    }
+}

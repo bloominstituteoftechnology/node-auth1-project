@@ -21,4 +21,7 @@ module.exports = {
     URL_AUTHENTICATION_REGISTER : '/register',
     URL_AUTHENTICATION_LOGIN    : '/login'   ,
     URL_AUTHENTICATION_USERSLIST: '/users'   ,
+    // Errors
+    ERROR_DATABASE_INTERNAL: 'Internal Error',
+    ERROR_AUTHENTICATION_NAMETAKEN: 'Registration failed: Username not available',
 };
