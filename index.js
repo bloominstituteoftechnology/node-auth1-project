@@ -42,3 +42,26 @@ server.post("/api/register", (req, res) => {
     })
     .catch(err => json(err));
 });
+
+// Login
+
+server.post("/api/login", (req, res) => {
+  // grab username and password from body
+  const creds = req.body;
+
+  db("users")
+    .where({ username: creds.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        //passwords match and user exists
+        res.status(200).json({ message: "Welcome!" });
+      } else {
+        //   either username or password is invalid
+        res.status(401).json({ message: "Username/Password does not exists" });
+      }
+    })
+    .catch(err =>
+      res.status(500).json({ message: "There was an error, please try again" })
+    );
+});
