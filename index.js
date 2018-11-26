@@ -21,7 +21,7 @@ server.post('/api/register', (req, res) => {
   const creds = req.body;
   db('users').where({ username: creds.username }).first().then(user => {
     if (user) {
-      res.status(400).json({ message: 'A user with that username already exists' })
+      res.status(422).json({ message: 'A user with that username already exists' })
     } else {
       const hash = bcrypt.hashSync(creds.password, 14);
       creds.password = hash;
