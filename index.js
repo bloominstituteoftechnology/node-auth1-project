@@ -38,5 +38,13 @@ app.post('/api/login', (req, res) => {
     .catch(err => json(err));
 })
 
+app.get('/users', (req, res) => {
+    db('users')
+    .select('id', 'username')
+    .then(users => {
+        res.status(200).json(users)
+    })
+    .catch(err => json(err))
+});
 const PORT = 3500
 app.listen(PORT, console.log(`==^_^== ${PORT} ==^_^==`));
