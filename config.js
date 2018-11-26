@@ -4,6 +4,8 @@
 
 const PORT = 3000;
 module.exports = {
+    // ENVIRONMENT
+    DATABASE_ENVIRONMENT: 'development',
     // Server Port and Listening
     PORT: PORT,
     MESSAGE_SERVER_LISTENING: `Server Listening on port ${PORT}`,

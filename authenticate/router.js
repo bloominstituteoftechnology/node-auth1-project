@@ -20,6 +20,7 @@ GET  /api/users
 //-- Dependencies --------------------------------
 const express = require('express');
 const config = require('../config.js');
+const database = require('../database.js');
 
 //-- Route Handler -------------------------------
 const router = module.exports = express.Router();
