@@ -13,6 +13,24 @@ const server = express();
 server.use(express.json());
 server.use(cors());
 
+server.post('/api/login', (req,res) => {
+    const cred = req.body;
+
+    db('users')
+        .where({username: cred.username})
+        .first()
+        .then(user => {
+            if (user && bcrypt.compareSync(cred.password, user.password)) {
+                res.status(201).json({ message: 'login successful' });
+            } else {
+                res.status(401).json({ message: 'access denied' });
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ message: 'could not log you in' });
+        })
+});
+
 server.post('/api/register', (req, res) => {
     const cred = req.body;
 
@@ -25,8 +43,10 @@ server.post('/api/register', (req, res) => {
         .then(ids => {
             res.status(201).json(ids)
         })
-        .catch(err => err);
-})
+        .catch(err => {
+            res.status(500).json({ message: 'could not register', err });
+        });
+});
 
 server.get('/', (req, res) => {
     res.send('running');
@@ -34,7 +54,7 @@ server.get('/', (req, res) => {
   
 server.get('/api/users', (req, res) => {
     db('users')
-    .select('id', 'username', 'password') // ****** added password to see if it worked
+    .select('id', 'username') // ****** added password earlier to see if it worked
     .then(users => {
         res.json(users);
     })
