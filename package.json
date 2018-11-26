@@ -2,6 +2,9 @@
   "name": "auth-i",
   "version": "1.0.0",
   "main": "index.js",
+  "scripts": {
+    "start": "nodemon"
+  },
   "repository": "https://github.com/MichaelCheco/auth-i.git",
   "author": "Michael Checo <checomichael2@gmail.com>",
   "license": "MIT",
@@ -11,5 +14,8 @@
     "express": "^4.16.4",
     "knex": "^0.15.2",
     "sqlite3": "^4.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.6"
   }
 }
