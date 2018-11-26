@@ -1,9 +1,9 @@
-const userRouter = require('./api/users/userRouter')
-const restrictedRouter = require('./api/restricted/restrictedRouter')
-const authRouter = require('./auth/authRouter')
+const userRouter = require('./userRouter')
+const restrictedRouter = require('./restrictedRouter')
+const authRouter = require('./authRouter')
 
-module.exports = (server) => {
+module.exports = server => {
   server.use('/api/users', userRouter)
   server.use('/api/restricted', restrictedRouter)
-  server.use('/', authRouter)
+  server.use('/api/', authRouter)
 }

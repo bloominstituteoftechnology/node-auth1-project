@@ -2,9 +2,9 @@
   "name": "auth",
   "version": "0.0.0",
   "description": "Auth Lab",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon"
   },
   "repository": {
     "type": "git",

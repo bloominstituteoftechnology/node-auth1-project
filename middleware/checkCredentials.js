@@ -1,7 +1,3 @@
-const router = require('express').Router()
-const { loginUser, registerUser } = require('../../controllers/authController')
-
-//* Local Middleware
 const checkCredentials = (req, res, next) => {
   const { username, password } = req.body
   if (!username.trim() || username.length > 20) {
@@ -15,12 +11,4 @@ const checkCredentials = (req, res, next) => {
   next()
 }
 
-//* Routes
-router.post('/login', loginUser)
-
-router.post('/register',
-  checkCredentials,
-  registerUser
-)
-
-module.exports = router
+module.exports = checkCredentials
