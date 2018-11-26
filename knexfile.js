@@ -6,7 +6,7 @@ module.exports = {
     useNullAsDefault: true, // used to avoid warning on console
     migrations: {
       directory: './database/migrations',
-      tableName: 'dbmigrations',
+      
     },
    
   },
