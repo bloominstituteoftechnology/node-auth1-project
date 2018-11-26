@@ -3,6 +3,7 @@ const knex = require("knex");
 const knexConfig = require("../knexfile");
 const db = knex(knexConfig.development);
 const router = express.Router();
+const bcrypt = require("bcryptjs");
 
 /* ----  REGISTER NEW USER  ---- */
 router.post("/", (req, res) => {
