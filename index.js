@@ -25,4 +25,21 @@ server.post('/api/register', (req, res) => {
         });
 } )
 
+server.post('/api/login', (req, res) => {
+    const creds = req.body;
+
+    db('users')
+        .where({username: creds.username }).first()
+        .then(user => {
+            if(user && bcrypt.compareSync(creds.password, user.password)){
+                res.status(200).json({ message: 'WELCOME!'})
+            }else{
+                res.status(401).json({ message: 'WRONG CREDENTIALS!!'})
+            }
+        })
+        .catch(error => {
+            res.status(500).json(error)
+        })
+})
+
 server.listen(8000, () => console.log('running on port 8000'));
