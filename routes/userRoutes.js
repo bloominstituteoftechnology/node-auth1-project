@@ -3,6 +3,7 @@ const db = require('../data/dbConfig')
 const route = express.Router()
 
 route.get('/', (req, res) => {
+    console.log(req.session)
     if (req.session && req.session.username) {
         db('users')
         .select('id', 'username')

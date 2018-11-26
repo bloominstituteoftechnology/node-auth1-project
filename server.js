@@ -8,6 +8,7 @@ const sessionConfig = require('./data/sessionConfig.js')
 const userRoutes = require('./routes/userRoutes.js')
 const registerRoutes = require('./routes/registerRoutes.js')
 const loginRoutes = require('./routes/loginRoutes')
+const logoutRoute = require('./routes/logoutRoute')
 
 
 // initialize server
@@ -23,6 +24,7 @@ server.use(session(sessionConfig))
 server.use('/api/users', userRoutes)
 server.use('/api/register', registerRoutes)
 server.use('/api/login', loginRoutes)
+server.use('/api/logout', logoutRoute)
 
 //Sanity Check
 server.get('/', (req, res) => {

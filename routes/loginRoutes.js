@@ -15,7 +15,7 @@ route.post('/', (req, res) => {
         // the existing user's password then success, else fail.
         if (user && bcrypt.compareSync(creds.password, user.password)) {
             req.session.username = user.username
-            res.status(200).json({message: 'Login successful.'})
+            res.status(200).json({message: `Login successful. Welcome ${user.username}`})
         } else {
             res.status(401).json({message: 'Username or password is incorrect.'})
         }
@@ -23,6 +23,18 @@ route.post('/', (req, res) => {
     .catch(err => res.json(err))
 })
 
+
+route.get('/logout', (req, res) => {
+    if(req.session) {
+        req.session.destory(err => {
+            if (err) {
+                res.send('You can\'t leave')
+            } else {
+                res.send('Logged out.')
+            }
+        })
+    }
+})
 
 
 module.exports = route
