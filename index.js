@@ -21,9 +21,21 @@ server.post("/api/register", (req, res) => {
     creds.password = hash;
 
     db("users")
-        .insert(creds)
-        .then(ids => {
-            res.status(201).json(ids);
+        .where({ username: creds.username })
+        .first()
+        .then(user => {
+            if (user) {
+                res.status(409).json({ message: "Username in use" });
+            } else {
+                db("users")
+                    .insert(creds)
+                    .then(ids => {
+                        res.status(201).json(ids);
+                    })
+                    .catch(err => {
+                        res.status(500).json({ error: err });
+                    });
+            }
         })
         .catch(err => {
             res.status(500).json({ error: err });
@@ -39,6 +51,7 @@ server.post("/api/login", (req, res) => {
         .then(user => {
             if (user && bcrypt.compareSync(creds.password, user.password)) {
                 // Start session, cookie
+                res.status(200).json({ message: "Welcome!" });
             } else {
                 res.status(401).json({ message: "You shall not pass!" });
             }
