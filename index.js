@@ -46,4 +46,23 @@ server.post('/api/register', (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
+// login a user
+server.post('/api/login', (req, res) => {
+  const creds = req.body;
+
+  db('users')
+    .where({ username: creds.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        // if the user exists and passwords match,
+        res.status(200).json({ message: 'Logged in.' })
+      } else {
+        // either username is invalid or password is wrong
+        res.status(401).json({ message: 'you shall not pass!!' });
+      }
+    })
+    .catch(err => res.status(500).json(err));
+});
+
 server.listen(port, () => console.log(`Listening to port: ${port}`));
