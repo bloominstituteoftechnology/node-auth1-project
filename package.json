@@ -1,0 +1,31 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "## Topics",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon",
+    "start": "node index.js"
+
+  },
+  
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ceejaay/auth-i.git"
+  },
+  "author": "Chad Jemmett",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ceejaay/auth-i/issues"
+  },
+  "homepage": "https://github.com/ceejaay/auth-i#readme",
+  "devDependencies": {
+    "nodemon": "^1.18.6"
+  },
+  "dependencies": {
+    "express": "^4.16.4",
+    "knex": "^0.15.2",
+    "sqlite3": "^4.0.4"
+  }
+}
