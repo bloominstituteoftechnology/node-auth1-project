@@ -1,12 +1,10 @@
 {
-  "name": "y",
-  "version": "y",
-  "description": "y",
-  "main": "y",
-  "repository": "y",
+  "name": "auth",
+  "version": "1.0.0",
+  "description": "This is a project that I am doing and I forgot to do -y after the init so here I am",
+  "main": "index.js",
   "author": "y",
-  "license": "y",
-  "private": true,
+  "license": "Lambda School",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
