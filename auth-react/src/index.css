@@ -45,8 +45,17 @@ body{
 }
 .input:focus{
   outline:none;
-  box-shadow:5px 5px 5px rgb(26, 164, 255);
+  animation:focus-input infinite 2s linear;
+  /* box-shadow:5px 5px 5px rgb(26, 164, 255); */
   transition : 0.5s ease-in-out;
+}
+@keyframes focus-input{
+  from{
+    box-shadow:5px 5px 5px rgb(26, 164, 255);
+  }
+  to{
+    box-shadow:7px 6px 15px rgb(130, 142, 253);
+  }
 }
 
 
