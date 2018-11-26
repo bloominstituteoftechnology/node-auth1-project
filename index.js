@@ -14,14 +14,19 @@ server.post('/api/register', (req, res) => {
     creds.password = hash;
     // save the user to the database
     db('users')
-      .insert(creds)
-      .then(ids => {
-        res.status(201).json(ids);
-      })
-      .catch(err => {
-        console.log(err)
-         res.json(err);
-  });
+    .where({ username: creds.username })
+    .then(user => {
+        if (user) {
+        res.status(409).json({ message: 'username already exists' });
+        } else {
+        db('users')
+        .insert(creds)
+        .then(ids => {  
+            res.status(201).json(ids);
+        })
+        }
+    })
+    .catch(err => res.json(err));
 });
 
 server.post('/api/login', (req, res) => {
