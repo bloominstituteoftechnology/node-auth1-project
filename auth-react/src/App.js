@@ -41,6 +41,7 @@ class App extends Component {
             <input className="input submit-btn" type="submit" />
 
           </form>
+          
         </header>
         <p>Brought to you by gradients.</p>
       </div>
