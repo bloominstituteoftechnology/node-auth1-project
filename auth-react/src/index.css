@@ -1,0 +1,57 @@
+body{
+  height:100vh;
+  background: linear-gradient(60deg, #020202, #ffffff);
+}
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 3s linear;
+  height: 7vmin;
+}
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.login-form{
+  display:flex;
+  width:100%;
+  height:15vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+.input {
+	position:relative;
+	font-size: 1.5em;
+	background: linear-gradient(21deg, #3fbafc, #06ebb9);
+	padding: 3px;
+  display: inline-block;
+  border:0px;
+  border-radius: 15px;
+}
+.input:hover{
+  box-shadow:5px 5px 5px rgb(26, 164, 255);
+  transition : 0.5s ease-in-out;
+}
+.input:focus{
+  outline:none;
+  box-shadow:5px 5px 5px rgb(26, 164, 255);
+  transition : 0.5s ease-in-out;
+}
+
+
+.submit-btn{
+  cursor: pointer;
+  width:25%;
+  background: linear-gradient(21deg, #9cdaf3, #a763ff);
+}
