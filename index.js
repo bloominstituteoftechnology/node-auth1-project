@@ -32,6 +32,21 @@ server.get('/api/users', (req, res) => {
         .catch(err => {
             res.status(500).json({ error: 'There was an error fetching the users', err });
         });
-})
+});
+
+server.post('/api/login', (req, res) => {
+    const creds = req.body;
+
+    db('users')
+        .where({ username: creds.username })
+        .first()
+        .then(user => {
+            if(user && bcrypt.compareSync(creds.password, user.password)) {
+                res.status(200).json({ message: `Welcome ${user.username}`});
+            } else {
+                res.status(401).json({ message: 'Authentication failed.' });
+            }
+        });
+});
 
 server.listen(3000, () => console.log('\n Server is running on port 3000 \n' ));
