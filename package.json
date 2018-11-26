@@ -1,0 +1,17 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/brad-mortensen/auth-i.git",
+  "author": "Brad Mortensen <b.mort86@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "knex": "^0.15.2",
+    "sqlite3": "^4.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.6"
+  }
+}
