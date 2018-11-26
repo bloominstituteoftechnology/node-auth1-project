@@ -22,7 +22,7 @@ class Users extends Component {
         if (users) {
             return ( 
                 <div>
-                    {users.map(user => <p>{user.username}</p>)}
+                    {users.map(user => <p key={user.id}>{user.username}</p>)}
                 </div>
              );
         } else {
