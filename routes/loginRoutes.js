@@ -14,6 +14,7 @@ route.post('/', (req, res) => {
         // says if we have a user, and the password coming in from the post matches
         // the existing user's password then success, else fail.
         if (user && bcrypt.compareSync(creds.password, user.password)) {
+            req.session.username = user.username
             res.status(200).json({message: 'Login successful.'})
         } else {
             res.status(401).json({message: 'Username or password is incorrect.'})
