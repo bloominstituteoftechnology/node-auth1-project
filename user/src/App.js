@@ -24,7 +24,7 @@ class App extends Component {
     axios
       .post("http://localhost:4500/api/register", newUser)
       .then(() => {
-        this.setState({ users: [newUser, ...this.state.notes] });
+        this.setState({ users: [newUser, ...this.state.users] });
       })
       .catch(err => console.log(err));
   };

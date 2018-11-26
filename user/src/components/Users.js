@@ -4,7 +4,7 @@ const Users = props => {
   return (
     <div>
       {props.users.map(user => {
-        return <p key={user.username}>{user.username}</p>;
+        return <h4 key={user.username}>{user.username}</h4>;
       })}
     </div>
   );
