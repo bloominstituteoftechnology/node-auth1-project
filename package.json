@@ -1,0 +1,18 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon"
+  },
+  "repository": "https://github.com/Edsauril/auth-i.git",
+  "author": "<edwin.torres.jr2@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "knex": "^0.15.2",
+    "nodemon": "^1.18.6",
+    "sqlite3": "^4.0.4"
+  }
+}
