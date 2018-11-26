@@ -26,6 +26,23 @@ server.post('/api/register', (req, res) =>{
     
 })
 
+ server.post('/api/login', (req, res) =>{
+    let {password, username} = req.body;
+    
+    db('users').where({username}).first()
+    .then(user =>{
+        console.log(password, user.password)
+        if(user && bcrypt.compareSync(password, user.password) ){
+            res.status(200).json({message: 'Welcome!'})
+        }
+        else{
+            res.status(401).json({ message: 'Authentication failed.' });
+        }
+        
+    })
+    .catch(err => res.status(500).json({message: 'Error occurred'}))
+});
+
 
 
 const port = process.env.PORT || 8888;
