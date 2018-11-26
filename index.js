@@ -23,25 +23,39 @@ server.post("/api/register", (req, res) => {
   // grab username and password from body
   const creds = req.body;
 
+  //verify username and password was submitted
   if (!creds.username || !creds.password) {
     res.status(400).json({ message: "Submit both username and password" });
   } else {
-    //generate hash
-    const hash = bcrypt.hashSync(creds.password, 2);
-
-    //override password with hash
-    creds.password = hash;
-
-    //save user to db, return new user's id
+    //verify username does not already exist (needs to be unique)
     db("users")
-      .insert(creds)
+      .where({ username: creds.username })
+      .first()
+      .then(user => {
+        //kill request if user already exists
+        if (user) {
+          res.status(422).json({ message: "That username is already taken." });
+        } else {
+          //generate hash
+          const hash = bcrypt.hashSync(creds.password, 2);
 
-      .then(id => {
-        res.status(201).json(id);
-      })
-      .catch(err =>
-        res.status(500).json({ error: "Error while saving this user: ", user })
-      );
+          //override password with hash
+          creds.password = hash;
+
+          //save user to db, return new user's id
+          db("users")
+            .insert(creds)
+
+            .then(id => {
+              res.status(201).json(id);
+            })
+            .catch(err =>
+              res
+                .status(500)
+                .json({ error: "Error while saving this user: ", user })
+            );
+        }
+      });
   }
 });
 
@@ -64,7 +78,17 @@ server.post("/api/login", (req, res) => {
     );
 });
 
-// get list of all users IF user is logged in
-server.get("/api/users", (req, res) => {});
+//TODO: get list of all users IF user is logged in
+server.get("/api/users", (req, res) => {
+  db("users")
+    .select("id", "username")
+    .orderBy("id")
+    .then(users => res.status(200).json(users))
+    .catch(err =>
+      res
+        .status(500)
+        .json({ error: "Error occurred while retrieving users: ", err })
+    );
+});
 
 server.listen(5500, () => console.log("\nrunning on Port 5500\n"));
