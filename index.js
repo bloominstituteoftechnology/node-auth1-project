@@ -11,8 +11,25 @@ const server = express();
 server.use(express.json());
 server.use(helmet());
 
+server.post("/api/register", (req, res) => {
+    const creds = req.body;
+    const hash = bcrypt.hashSync(creds.password, 8);
+    creds.password = hash;
+    db("users")
+        .insert(creds)
+        .then(ids => res.status(201).json(ids))
+        .catch(err => json(err))
+})
+
 server.get("/", (req, res) => {
     res.status(200).json({api: "running"});
+})
+
+server.get("/api/users", (req, res) => {
+    db("users")
+        .select("id", "username", "password")
+        .then(users => res.status(200).json(users))
+        .catch(err => res.status(400).json(err))
 })
 
 const port = 9001;
