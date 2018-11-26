@@ -7,7 +7,7 @@ module.exports = {
       filename: './data/lambda.sqlite3'
     },
     useNullAsDefault: true,
-    migratioms: {
+    migrations: {
       directory: './data/migrations'
     },
     seeds: {
