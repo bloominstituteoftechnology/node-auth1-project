@@ -15,6 +15,15 @@ server.use(cors());
 
 server.post("/api/register", (req, res) => {
     const creds = req.body;
+
+    if (creds.username === "" || creds.username === undefined) {
+        return res.status(400).json({error: "Please enter a username."})
+    }
+
+    if (creds.password === "" || creds.password === undefined) {
+        return res.status(400).json({error: "Please enter a password."})
+    }
+
     const hash = bcrypt.hashSync(creds.password, 8);
     creds.password = hash;
     db("users")
@@ -25,6 +34,14 @@ server.post("/api/register", (req, res) => {
 
 server.post("/api/login", (req, res) => {
     const creds = req.body;
+
+    if (creds.username === "" || creds.username === undefined) {
+        return res.status(400).json({error: "Please enter a username."})
+    }
+
+    if (creds.password === "" || creds.password === undefined) {
+        return res.status(400).json({error: "Please enter a password."})
+    }
 
     db("users")
         .where({username: creds.username})
