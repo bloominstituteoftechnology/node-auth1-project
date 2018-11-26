@@ -5,6 +5,7 @@
 //-- Dependencies --------------------------------
 const express = require('express');
 const config = require('./config.js');
+const routeAuthenticate = require('./authenticate/router.js');
 
 //-- Open New Server -----------------------------
 const application = express();
@@ -16,3 +17,4 @@ application.listen(config.PORT, () => {
 application.use(express.json());
 
 //-- Request Routing -----------------------------
+application.use(config.URL_AUTHENTICATION, routeAuthenticate);
