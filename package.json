@@ -1,0 +1,29 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "- Authentication.\r - Express Middleware.\r - Password Hashing.",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shawnantonucci/auth-i.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shawnantonucci/auth-i/issues"
+  },
+  "homepage": "https://github.com/shawnantonucci/auth-i#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.16.4",
+    "knex": "^0.15.2",
+    "sqlite3": "^4.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.6"
+  }
+}
