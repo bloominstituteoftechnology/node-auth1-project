@@ -49,4 +49,5 @@ server.post('/api/login', (req, res) => {
         });
 });
 
+// tested with postman
 server.listen(3000, () => console.log('\n Server is running on port 3000 \n' ));
