@@ -74,6 +74,19 @@ server.get("/api/users", (req, res) => {
   }
 });
 
+// log out
+
+server.get("/api/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send("You can never leave!");
+      } else {
+        res.send("bye :( ");
+      }
+    });
+  }
+});
 // Post to users
 
 server.post("/api/register", (req, res) => {
