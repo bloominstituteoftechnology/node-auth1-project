@@ -3,6 +3,7 @@ const cors = require('cors');
 const db = require('./database/dbConfig.js');
 const bcrypt = require('bcryptjs')
 const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 
 
 //POST to /api/register
@@ -10,20 +11,45 @@ const session = require('express-session');
 //GET to /api/users
 const server = express();
 
+// const sessionConfig = {
+//     secret : "My name is Drew",
+//     cookie : {
+//         maxAge : 1000 *60*10,//10 minutes
+//         secure : false
+//     },
+//     httpOnly : false,
+//     resave : false,
+//     saveUninitialized : false,
+//     store : new KnexSessionStore({
+//         tablename:'sessions',
+//         sidfieldname:'sid',
+//         knex:db,
+//         createtable:true,
+//         clearInterval:1000 * 60 * 60
+//     }),
+// }
 const sessionConfig = {
-    secret : "My name is Drew",
-    cookie : {
-        maxAge : 1000 *60*10,//10 minutes
-        secure : false
+    name: 'monkey',
+    secret: 'asfjaofuwruq04r3oj;ljg049fjq30j4jlajg40j40tjojasl;kjg',
+    cookie: {
+      maxAge: 1000 * 60 * 10,
+      secure: false, // only set it over https; in production you want this true.
     },
-    httpOnly : false,
-    resave : false,
-    saveUninitialized : false
-}
-
+    httpOnly: true, // no js can touch this cookie
+    resave: false,
+    saveUninitialized: false,
+    store: new KnexSessionStore({
+      tablename: 'sessions',
+      sidfieldname: 'sid',
+      knex: db,
+      createtable: true,
+      clearInterval: 1000 * 60 * 60,
+    }),
+  };
+server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
-server.use(session(sessionConfig));
+
 
 server.get('/', (req, res) => {
     res.send('Server is running properly');
@@ -40,7 +66,7 @@ server.get('/api/users', (req,res) => {
     }else{
         res.status(401).json({message : "Please Login"})
     }
-})//for testing purposes will be revamped
+})
 
 server.post('/api/register', (req,res) => {
     const creds = req.body;
@@ -64,6 +90,7 @@ server.post('/api/login', (req, res) => {
             //this checks if a user was present and compares the password entered with the password stored
             //in the database and only continues on if both are true
             if(user && bcrypt.compareSync(creds.password, user.password)) {
+                req.session.user = user.id;
                 res.status(200).json({ message: 'You have passed the mighty security protocols!' });
             }else{
                 res.status(401).json({ message: 'You shall not pass!' });

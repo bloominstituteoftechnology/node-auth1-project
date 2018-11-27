@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "This is a project that I am doing and I forgot to do -y after the init so here I am",
   "main": "index.js",
+  "scripts": {
+    "server": "nodemon"
+  },
   "author": "Lambda School",
   "license": "MIT",
   "dependencies": {
@@ -17,8 +20,5 @@
   },
   "devDependencies": {
     "nodemon": "^1.18.6"
-  },
-  "scripts": {
-    "server": "nodemon"
   }
 }
