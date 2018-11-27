@@ -6,7 +6,6 @@ const sessionConfig = require("./sessionConfig");
 
 module.exports = server => {
   const protected = (req, res, next) => {
-      console.log(req.session.userId)
     const {path} = req
     let reg = /(?:api\/)(\w+)\/*/g
     let destination = reg.exec(path)[1]

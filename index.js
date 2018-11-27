@@ -41,18 +41,42 @@ server.post("/api/login", async (req, res) => {
   if (!credentials.username || !credentials.password) {
     return sendError(res, "Username and password required!", 400);
   }
-  try{
-  const user = await db('users').where({username:credentials.username}).first();
-  if (user && bcrypt.compareSync(credentials.password, user.password)){
-    req.session.userId = await user.id;
-    return res.status(200).json({message:'You did good'})
+  try {
+    const user = await db("users")
+      .where({ username: credentials.username })
+      .first();
+    if (user && bcrypt.compareSync(credentials.password, user.password)) {
+      req.session.userId = await user.id;
+      return res.status(200).json({ message: "You did good" });
+    } else {
+      return sendError(res, "get outta here", 401);
+    }
+  } catch (err) {
+    return sendError(res);
   }
-  else{
-      return sendError(res, 'get outta here', 401)
+});
+
+server.get("/api/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        return res.send("there is no escape");
+      } else {
+        return res.send("later dude");
+      }
+    });
+  }else{
+    return res.send('no session')
   }
-}catch(err){
-    return sendError(res)
-}
+});
+
+server.get("/api/restricted", (req, res) => {
+  res.json("secrets are here");
+});
+
+server.get("/api/restricted/:x", (req, res) => {
+  const { x } = req.params;
+  res.json(x);
 });
 
 server.listen(port, () => console.log(`We hear you ${port}`));
