@@ -18,7 +18,10 @@ server.use(morgan('dev'))
 
 // middleware for authorizing
 function verifySession(req, res, next) {
-  if (req.session && req.session.userId) {
+  console.log(req)
+  console.log(req.session)
+  console.log(req.session.name)
+  if (req.session && req.session.name) {
     next()
   } else {
     res.status(401).json({ message: 'cannot access that resource' })
@@ -27,11 +30,11 @@ function verifySession(req, res, next) {
 
 server.use(
   session({
-    name: 'project_session',
+    name: 'raaaar',
     secret: 'Colorless green ideas sleep furiously',
     cookie: {
       maxAge: 1 * 24 * 60 * 60 * 1000,
-      secure: true
+      secure: false
     },
     httpOnly: true,
     resave: false,
@@ -47,7 +50,7 @@ server.post('/api/login', (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
-        req.session.userId = username
+        req.session.name = username
         res.status(200).json({ message: 'logged in!' })
       } else {
         res.status(401).json({ message: 'log in faild :(' })
