@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 
 const db = require('./database/dbConfig');
 
@@ -16,6 +17,13 @@ const sessionConfig = {
     maxAge: 1000 * 60 * 5, // 5mins til session expires
     secure: false,  // set it to true when using https, irl: true
   },
+  store: new KnexSessionStore({
+    tablename: 'session',
+    sidfieldname: 'sid',
+    knex: db,
+    createtable: true,
+    clearInterval: 1000 * 60 * 60
+  })
 };
 
 // middleware
