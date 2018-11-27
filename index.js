@@ -11,41 +11,9 @@ const server = express()
 server.use(express.json())
 server.use(cors())
 server.use(helmet())
-server.use(
-    session({
-        name              : 'connect.sid',
-        secret            : 'lsjlelsl93',
-        cookie            : {
-            maxAge : 1 * 24 * 60 * 60 * 1000,
-            secure : true,
-        },
-        httpOnly          : true,
-        resave            : false,
-        saveUninitialized : false,
-    }),
-)
-server.get('/', (req, res) => {
-    req.session.name = 'connect'
-    res.send('got it')
-})
 
-server.get('/greet', (req, res) => {
-    const { name } = req.session
-    res.send(`hello ${name}`)
-})
 
-server.get('/api/logout', (req, res) => {
-    if (req.session) {
-        req.session.destroy(err => {
-            if (err) {
-                res.send('error logging out')
-            }
-            else {
-                res.send('good bye')
-            }
-        })
-    }
-})
+
 server.post('/api/register', async (req, res) => {
     try {
         const creds = req.body
@@ -70,7 +38,7 @@ server.post('/api/login', async (req, res) => {
     }
 })
 
-server.get('/api/users', protected, async (req, res) => {
+server.get('/api/users', async (req, res) => {
     try {
         const users = await db('users').select('id', 'username')
         res.status(200).json(users)
