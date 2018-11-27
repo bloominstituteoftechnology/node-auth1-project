@@ -14,7 +14,7 @@ const sessionConfig = {
     name: 'Voltaire',
     httpOnly: true,
     resave: false,
-    saveUnitialized: false,
+    saveUninitialized: false,
     cookie: {
         secure: false,
         maxAge: 1000 * 60 * 10
@@ -37,6 +37,18 @@ function protected(req, res, next) {
     }
 }
 
+app.get('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if(err) {
+                res.send('Unfortunate Really..')
+            } else {
+                res.send('Goodbye =^_^=')
+            }
+        })
+    }
+})
+
 app.post('/api/register', (req, res) => {
  const creds = req.body;
 
@@ -45,7 +57,9 @@ app.post('/api/register', (req, res) => {
  creds.password = hash;
 
  db('users').insert(creds).then(ids => {
-     res.status(201).json(ids)
+     const id = ids[0]
+     req.session.username = creds.username;
+     res.status(201).json({newUserId: id})
  })
  .catch(err => json(err))
 
@@ -64,7 +78,7 @@ app.post('/api/login', (req, res) => {
     .catch(err => json(err));
 })
 
-app.get('/users', (req, res) => {
+app.get('/users', protected, (req, res) => {
     db('users')
     .select('id', 'username')
     .then(users => {
