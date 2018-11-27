@@ -81,6 +81,20 @@ server.get('/api/users', protected, (req, res) => {
         })
 });
 
+// logout 
+
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                res.json('You cannot leave');
+            } else {
+                res.json('Goodbye');
+            }
+        });
+    }
+});
+
 // test server to get up and running
 
 server.get('/', (req, res) => {
