@@ -5,6 +5,7 @@ const morgan = require('morgan')
 const bcrypt = require('bcryptjs')
 const knex = require('knex')
 const session = require('express-session')
+const KnexSessionStore = require('connect-session-knex')(session)
 
 const knexConfig = require('./knexfile.js')
 const db = knex(knexConfig.development)
@@ -18,9 +19,6 @@ server.use(morgan('dev'))
 
 // middleware for authorizing
 function verifySession(req, res, next) {
-  console.log(req)
-  console.log(req.session)
-  console.log(req.session.name)
   if (req.session && req.session.name) {
     next()
   } else {
@@ -33,12 +31,19 @@ server.use(
     name: 'raaaar',
     secret: 'Colorless green ideas sleep furiously',
     cookie: {
-      maxAge: 1 * 24 * 60 * 60 * 1000,
+      maxAge: 24 * 60 * 60 * 1000,
       secure: false
     },
     httpOnly: true,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: new KnexSessionStore({
+      tablename: 'sessions',
+      sidfieldname: 'sid',
+      knex: db,
+      createtable: true,
+      clearInterval: 24 * 60 * 60 * 1000
+    })
   })
 )
 
