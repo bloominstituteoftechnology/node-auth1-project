@@ -1,11 +1,44 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const cors = require('cors');
+const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 
 const db = require('./data/dbConfig.js');
 
 const server = express();
 
 server.use(express.json());
+server.use(cors());
+
+server.use(
+    session({
+        name: 'session1',
+        secret: 'lambda secret',
+        cookie: {
+            maxAge: 1*24*60*60*1000,
+            secure: false,
+        },
+        httpOnly: true,
+        resave: false,
+        saveUninitialized: false,
+        store: new KnexSessionStore({
+            tablename: 'sessions',
+            sidfieldname: 'sid',
+            knex: db,
+            createtable: true,
+            clearInterval: 60*60*1000,
+        })
+    })
+);
+ 
+const protected = (req, res, next) => {
+    if (req.session && req.session.username) {
+        next();
+    } else {
+        res.status(401).json({ message: 'You must be logged in to access this page.' });
+    }
+}
 
 server.post('/api/register', (req, res) => {
     const creds = req.body;
@@ -23,7 +56,7 @@ server.post('/api/register', (req, res) => {
         });
 });
 
-server.get('/api/users', (req, res) => {
+server.get('/api/users', protected, (req, res) => {
     db('users')
         .select('id', 'username', 'password')
         .then(users => {
@@ -42,11 +75,24 @@ server.post('/api/login', (req, res) => {
         .first()
         .then(user => {
             if(user && bcrypt.compareSync(creds.password, user.password)) {
-                res.status(200).json({ message: `Welcome ${user.username}`});
+                req.session.username = user.username;
+                res.status(200).json({ message: `Welcome ${req.session.username}`});
             } else {
                 res.status(401).json({ message: 'Authentication failed.' });
             }
         });
+});
+
+server.get('/api/logout', protected, (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                res.status(500).json({ error: 'Error logging out', err });
+            } else {
+                res.status(200).json({ message: 'Logout successful.' });
+            }
+        });
+    }
 });
 
 // tested with postman
