@@ -15,11 +15,10 @@ const echo = (req, res) => {
   });
 }
 
-const restrictedMW = [protected, echo]
-router.use('/*', restrictedMW);
-router.post('/', restrictedMW);
-router.get('/:id', restrictedMW);
-router.get('/something', restrictedMW);
-router.get('/other', restrictedMW);
+router.use('/*', echo);
+router.post('/', echo);
+router.get('/:id', echo);
+router.get('/something', );
+router.get('/other', echo);
 
 module.exports = router;
