@@ -8,11 +8,20 @@ const helmet = require('helmet')
 const db = require('./data/dbConfig.js')
 const server = express()
 
+const sessionConfig = {
+    secret            : 'alsdfldsklsdfkldflfdff',
+    cookie            : {
+        maxAge : 1000 * 60 * 10,
+        secure : false,
+    },
+    httpOnly          : true,
+    resave            : false,
+    saveUninitialized : false,
+}
+server.use(session(sessionConfig))
 server.use(express.json())
 server.use(cors())
 server.use(helmet())
-
-
 
 server.post('/api/register', async (req, res) => {
     try {
@@ -30,20 +39,29 @@ server.post('/api/login', async (req, res) => {
     try {
         const creds = req.body
         const user = await db('users').where({ username: creds.username }).first()
-        user && bcrypt.compareSync(creds.password, user.password)
-            ? res.status(200).json({ message: 'Logged in' })
-            : res.status(401).json({ message: 'You shall not pass!' })
+        if (user && bcrypt.compareSync(creds.password, user.password)) {
+            req.session.userId = user.id
+            res.status(200).json({ message: 'Logged in' })
+        }
+        else {
+            res.status(401).json({ message: 'You shall not pass!' })
+        }
     } catch (e) {
         res.status(500).json({ message: 'A server error occuried while attempting to log in.' })
     }
 })
 
 server.get('/api/users', async (req, res) => {
-    try {
-        const users = await db('users').select('id', 'username')
-        res.status(200).json(users)
-    } catch (e) {
-        res.status(500).json({ error: 'An error occuried while accessing users from the database.' })
+    if (req.session && req.session.userId) {
+        try {
+            const users = await db('users').select('id', 'username')
+            res.status(200).json(users)
+        } catch (e) {
+            res.status(500).json({ error: 'An error occuried while accessing users from the database.' })
+        }
+    }
+    else {
+        res.status(401).json({ message: 'You shall not pass.' })
     }
 })
 
