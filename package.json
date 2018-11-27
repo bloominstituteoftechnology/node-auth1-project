@@ -6,6 +6,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
+    "create-react-app": "^2.1.1",
     "express": "^4.16.4",
     "knex": "^0.15.2",
     "sqlite3": "^4.0.4"
