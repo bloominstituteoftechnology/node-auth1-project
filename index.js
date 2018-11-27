@@ -35,12 +35,16 @@ server.post('api/login', (req, res) => {
 });
 
 server.get('/api/users', (req, res) =>{
-    db('users')
-        .select('id', 'username', 'password')
-        .then(users => {
-            res.json('users')
-        })
-        .catch(err => json(err));
+    if (req.session && req.session.username) {
+        db('users')
+            .select('id', 'username', 'password')
+            .then(users => {
+                res.json('users')
+            })
+            .catch(err => json(err));
+    } else {
+        res.status(401).json({ message: 'You shall not pass!' })
+    }
 })
 
 server.listen(8000, () => console.log('Running on port 8000'));
