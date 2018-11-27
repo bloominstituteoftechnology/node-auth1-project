@@ -1,12 +1,14 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const knexSessionStore = require('connect-session-knex')(session);
 const db = require('./database/dbConfig');
 
 
 
 const server = express();
 const sessionConfig = {
+  name: 'spock',
   secret: 'live long and prosper',
   cookie: {
     maxAge: 1000 * 60 * 10,
@@ -16,6 +18,13 @@ const sessionConfig = {
   httpOnly: true,
   resave: false,
   saveUninitialized: false,
+  store: new knexSessionStore({
+    tablename: 'sessions',
+    sidfieldname: 'sid',
+    knex: db,
+    createtable: true,
+    clearInterval: 1000 * 60 * 60
+  })
 }
 
 server.use(session(sessionConfig))
