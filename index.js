@@ -1,10 +1,24 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 const db = require('./database/dbConfig');
 
 
 
 const server = express();
+const sessionConfig = {
+  secret: 'live long and prosper',
+  cookie: {
+    maxAge: 1000 * 60 * 10,
+    secure: false,
+
+  },
+  httpOnly: true,
+  resave: false,
+  saveUninitialized: false,
+}
+
+server.use(session(sessionConfig))
 server.use(express.json());
 
                                                                                                                                 
@@ -35,6 +49,7 @@ server.post('/api/login', (req, res) => {
     .first()
     .then(user => {
       if(user && bcrypt.compareSync(creds.password, user.password)){
+        req.session.userId = user.id;
         res.status(200).json({message: 'Logged in'})
       } else {
         res.status(401).json({message: 'you shall not pass!'})
@@ -46,12 +61,16 @@ server.post('/api/login', (req, res) => {
 
 
 server.get('/api/users', (req, res) => {
-  db('users')
+  if(req.session && req.session.userId){
+    db('users')
     .select('id', 'username')
     .then(users => {
       res.json(users);
     })
     .catch(error => res.send(error))
+  } else {
+    res.status(401).json({message: 'you shall not pass!'})
+  }
 })
 
 
