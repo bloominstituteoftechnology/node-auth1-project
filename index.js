@@ -31,8 +31,17 @@ server.use(express.json())
 server.use(cors())
 server.use(session(sessionConfig))
 server.use(helmet())
+server.use(restricted)
 
-
+function restricted(req, res, next) {
+    if (req.url.match('/api/restricted')) {
+        req.session && req.session.user ?
+        next() :
+        res.status(401).json({ message: 'scram' })
+    } else {
+        next()
+    }
+}
 
 server.post('/api/register', (req, res) => {
     const creds = req.body
@@ -61,20 +70,14 @@ server.post('/api/login', (req, res) => {
         .catch(err => res.json(err))
 })
 
-function protected(req, res, next) {
-    req.session && req.session.user ?
-    next() :
-    res.status(401).json({ message: 'scram' })
-}
-
-server.get('/api/users', protected, (req, res) => {
+server.get('/api/restricted/users', (req, res) => {
     db('users')
     .select('id', 'username')
     .then(users => res.json(users))
     .catch(err => res.send(err))
 })
 
-server.get('/api/me', protected, (req, res) => {
+server.get('/api/restricted/me', (req, res) => {
     db('users')
     .select('id', 'username')
     .where({ id: req.session.user })
