@@ -17,9 +17,12 @@ const sessionConfig = {
     maxAge: 1000 * 60 * 10,
     secure: false
   },
-  httpOnly: true,
+  httpOnly: true, //protects from javascript
+  //neccessary to run (not camelCased)
   resave: false,
+  //camelCased for some reason
   saveUninitialized: false,
+  //builds a table of cookie session data and sets the amount of time to clear cookies
   store: new KnexSessionStore({  
     tablename: 'sessions',
     sidfieldname: 'sessionId',
