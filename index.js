@@ -11,41 +11,24 @@ const KnexSessionStore = require('connect-session-knex')(session);
 //GET to /api/users
 const server = express();
 
-// const sessionConfig = {
-//     secret : "My name is Drew",
-//     cookie : {
-//         maxAge : 1000 *60*10,//10 minutes
-//         secure : false
-//     },
-//     httpOnly : false,
-//     resave : false,
-//     saveUninitialized : false,
-//     store : new KnexSessionStore({
-//         tablename:'sessions',
-//         sidfieldname:'sid',
-//         knex:db,
-//         createtable:true,
-//         clearInterval:1000 * 60 * 60
-//     }),
-// }
 const sessionConfig = {
-    name: 'monkey',
-    secret: 'asfjaofuwruq04r3oj;ljg049fjq30j4jlajg40j40tjojasl;kjg',
-    cookie: {
-      maxAge: 1000 * 60 * 10,
-      secure: false, // only set it over https; in production you want this true.
+    secret : "My name is Drew",
+    cookie : {
+        maxAge : 1000 *60*10,//10 minutes
+        secure : false
     },
-    httpOnly: true, // no js can touch this cookie
-    resave: false,
-    saveUninitialized: false,
-    store: new KnexSessionStore({
-      tablename: 'sessions',
-      sidfieldname: 'sid',
-      knex: db,
-      createtable: true,
-      clearInterval: 1000 * 60 * 60,
+    httpOnly : false,
+    resave : false,
+    saveUninitialized : false,
+    store : new KnexSessionStore({
+        tablename:'sessions',
+        sidfieldname:'sid',
+        knex:db,
+        createtable:true,
+        clearInterval:1000 * 60 * 60
     }),
-  };
+}
+
 server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
