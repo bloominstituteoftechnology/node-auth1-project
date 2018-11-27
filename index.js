@@ -5,6 +5,27 @@ const cors = require('cors')
 const bcrypt = require('bcryptjs')
 const morgan = require('morgan')
 const db = require('./database/dbConfig')
+const session = require('express-session')
+const KnexSessionStore = require('connect-session-knex')(session); //needs to be below const session to work
+
+const sessionConfig = { //setting up for cookies
+    name: 'the best cookie',
+    secret: 'order66',
+    cookie: {
+        maxAge: 1000 * 60 * 10, //1 sec into 1 min into 10 mins. So it times out in 10 mins
+        secure: false //only set it over https; in production make this TRUE!!!!
+    },
+    httpOnly: true, //make it so that no JS can touch this cookie, aka more secure.
+    resave: false,
+    saveUninitialized: false,
+    store: new KnexSessionStore({
+        tablename: 'sessions', //notice it's all lower case
+        sidfieldname: 'sid',
+        knex: db,
+        createtable: true,
+        clearInterval: 1000 * 60 * 60, //for some reason this is camalcase...  
+    })
+};
 
 //set up server with dependencies
 const server = express();
@@ -12,6 +33,7 @@ server.use(express.json());
 server.use(cors());
 server.use(morgan());
 server.use(helmet());
+server.use(session(sessionConfig)) //wires up session management
 
 //make sure it works check
 server.get('/', (req, res) => {
@@ -19,10 +41,18 @@ server.get('/', (req, res) => {
     res.send({ message: 'do not forget to add the correct url info' })
 })
 
+//middleware
+function restricted(req, res, next) {
+    if (req.session && req.session.user) {
+        next();
+    } else {
+        res.status(401).json({ you: 'shall not pass!' })
+    }
+}
 
 //endpoints
 
-//testing
+
 //register new users
 server.post('/api/register', (req, res) => {
     // grab username and password from body
@@ -49,6 +79,7 @@ server.post('/api/login', (req, res) => {
         .then(user => {
             if (user && bcrypt.compareSync(creds.password, user.password)) {
                 //passwords match and has correct username too
+                req.session.userId = user.id
                 res.status(200).json({ message: 'Welcome to Asgard mortal' })
             } else {
                 //they don't match
@@ -60,14 +91,37 @@ server.post('/api/login', (req, res) => {
 
 
 //List of users
+//protect this route, only authenticated users should see it (without using the middleware)
 server.get('/api/users', (req, res) => {
-    db('users')
-        .select('id', 'username')
-        .then(users => {
-            res.json(users);
+    if (req.session && req.session.userId) {
+        //they're logged in, go ahead and provide access/data
+        db('users')
+            .select('id', 'username')
+            .then(users => {
+                res.json(users);
+            })
+            .catch(err => res.json(err));
+
+    } else {
+        //bounce them
+        res.status(401).json({ message: 'you shall not pass' })
+    }
+});
+
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                res.send('you can never leave');
+            } else {
+                res.send('bye')
+            }
         })
-        .catch(err => res.json(err));
+    } else {
+        res.end();
+    }
 })
+
 
 
 //port
