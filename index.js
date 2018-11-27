@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const server = express();
 const db = require('./data/db');
+const auth = require('./auth.js');
 
 server.use(express.json());
 
@@ -63,7 +64,21 @@ server.post('/api/login', (req,res) => {
     })
 })
 
-server.get('/getname', (req,res) => {
+server.get('/api/users', (req,res) => {
     const name = req.session.name;
-    res.send(`hello ${req.session.name}`);
+    if(req.session.name) {
+        db.getUsers()
+        .then(users => {
+            res.status(200).json(users)
+        })
+        .catch(err => {
+            res.status(500).json(err)
+        })
+    } else {
+        res.status(401).json({message: 'You shall not pass!'})
+    }
+})
+
+server.get('/api/restricted/BOO', auth,  (req,res) => {
+    res.status(200).json({message: 'HEYYYYY'})
 })
