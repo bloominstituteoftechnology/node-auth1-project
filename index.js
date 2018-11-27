@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const protect = require('./middleware/protectMiddleware');
 
 const db = require('./data/dbConfig');
 
@@ -37,6 +38,7 @@ server.post('/api/login', (req, res) => {
 });
 
 server.get('/api/users', (req, res) => {
+server.get('/api/users', protect, (req, res) => {
   db('user_info')
     .select('id', 'username')
     .then((users) => {
