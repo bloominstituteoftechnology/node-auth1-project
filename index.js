@@ -73,7 +73,7 @@ server.post('/api/login', (req, res) => {
             //this checks if a user was present and compares the password entered with the password stored
             //in the database and only continues on if both are true
             if(user && bcrypt.compareSync(creds.password, user.password)) {
-                req.session.user = user.id;
+                req.session.userId = user.id;
                 res.status(200).json({ message: 'You have passed the mighty security protocols!' });
             }else{
                 res.status(401).json({ message: 'You shall not pass!' });
