@@ -73,8 +73,20 @@ server.post('/api/login', (req, res) => {
         .catch(err => {
             res.status(500).json({ message: 'Error occurred during login' });
         })
+});
 
-
+// [GET] /api/logout
+// destroys session and logs out user
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if(err) {
+                res.status(500).json({ message: 'Error logging out' });
+            } else {
+                res.status(200).json({ message: 'Successfully logged out'})
+            }
+        })
+    }
 });
 
 const port = 8765;
