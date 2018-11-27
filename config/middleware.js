@@ -9,9 +9,8 @@ const restrictedAccess = require('../middleware/restrictedMiddleware.js');
 
 const db = require('../database/dbConfig.js')
 
-// const usersRouter = require('../routers/usersRouter.js');
-// const postsRouter = require('../routers/postsRouter.js');
-// const tagsRouter = require('../routers/tagsRouter.js');
+const restrictedRouter = require('../routers/restrictedRouter.js');
+const authRouter = require('../routers/authRouter.js');
 
 const sessionConfig = {
     name: 'superSecret',
@@ -40,7 +39,6 @@ module.exports = server => {
     server.use(helmet());
     server.use(morgan('dev'));
 
-    // server.use('/users', usersRouter);
-    // server.use('/posts', postsRouter);
-    // server.use('/tags', tagsRouter);
+    server.use('/api/restricted', restrictedRouter);
+    server.use('/api', authRouter);
 };
