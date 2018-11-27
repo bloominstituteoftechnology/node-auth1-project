@@ -110,4 +110,10 @@ server.get("/logout", (req, res) => {
   }
 });
 
+// S T R E T C H :  R E S T R I C T E D   R O U T E
+
+server.get("/restricted/:anything", protected, (req, res) => {
+  res.send("you can be here");
+});
+
 server.listen(3000, () => console.log("\nrunning on port 3000\n"));
