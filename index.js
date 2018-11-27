@@ -97,4 +97,19 @@ server.post('/api/login', (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
+// logout user
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('Failed to logout');
+      } else {
+        res.send('Come back :(')
+      }
+    })
+  } else {
+    res.end();
+  }
+});
+
 server.listen(port, () => console.log(`Listening to port: ${port}`));
