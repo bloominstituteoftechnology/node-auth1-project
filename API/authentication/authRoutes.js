@@ -28,20 +28,40 @@ const authDb = require('./authHelper');
 
 // ROUTES
 // ==============================================
-router.post(config.AUTH_REGISTER, async (req, res) => {
+router.post(config.REGISTER, authRegister);
+router.post(config.LOGIN, login);
+
+// ROUTES CALLBACK FUNCTIONS
+// ==============================================
+async function authRegister(req, res) {
   try {
     const raw = req.body;
-    const hash = bcrypt.hashSync(raw.password, 4);
-    raw.password = hash;
-    const user = await authDb.registerUser(raw);
-    res.status(201).json(user);
+    const username = await authDb.checkCredentials(raw.username);
+    if (username) {
+      res.status(404).json(config.USERNAME_UNAVAILABLE);
+    } else {
+      const hash = bcrypt.hashSync(raw.password, 4);
+      raw.password = hash;
+      await authDb.registerUser(raw);
+      res.status(201).json(config.REGISTER_SUCCESS);
+    }
   } catch (err) {
     res.status(500).json(err);
   }
-});
+}
 
-// router.post(config.AUTH_LOGIN, async (req, res) => {
-
-// })
+async function login(req, res) {
+  try {
+    const raw = req.body;
+    const user = await authDb.checkCredentials(raw.username);
+    if (user && bcrypt.compareSync(raw.password, user.password)) {
+      res.status(200).json(config.AUTH_SUCCESS);
+    } else {
+      res.status(400).json(config.AUTH_FAIL);
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+}
 
 module.exports = router;
