@@ -1,7 +1,9 @@
 // WEB API ARCHITECTURE
 // ==============================================
 const app = require('express')();
+
 require('./API/middleware')(app);
+require('./API/routes')(app);
 
 const port = process.env.PORT || 3300;
 
