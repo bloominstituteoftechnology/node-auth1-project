@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 
-const db = require('./data/dbConfig');
+const db = require('./data/helpers');
 
 const server = express();
 
@@ -11,6 +11,21 @@ server.use(express.json());
 server.post('/api/register', async (req, res) => {
   // get form input values
   const registrationData = req.body;
+  // validate data
+  if (!registrationData.username || !registrationData.password) {
+    return res
+      .status(400)
+      .json({ message: 'Please enter a valid username and password.' });
+  }
+  // Check if user already exists
+  db.getByUsername(registrationData.username)
+    .then(userInDb => {
+      return userInDb
+        ? res.status(422).json({ message: 'That username already exists.' })
+        : null;
+    })
+    .catch(err => console.log(err));
+  // registrationData.username
   // generate a hash
   const hash = bcrypt.hashSync(registrationData.password, 10);
   // replace plain text with hash
@@ -30,9 +45,7 @@ server.post('/api/login', async (req, res) => {
   const loginData = req.body;
   // get user
   try {
-    const user = await db('users')
-      .where({ username: loginData.username })
-      .first();
+    const user = await db.getByUsername(loginData.username);
     return user && bcrypt.compareSync(loginData.password, user.password)
       ? res.status(200).json({ message: 'Logged in.' })
       : res
