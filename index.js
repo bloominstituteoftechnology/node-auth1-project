@@ -81,4 +81,18 @@ server.post('/api/login', (req, res) => {
     })
 });
 
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if(err) {
+                res.send('LoL, still not logout yet')
+            } else {
+                res.send('Your are logout')
+            }
+        })
+    } else {
+        res.end();
+    }
+});
+
 server.listen(9000, () => console.log('\nRunning on port 9000'));
