@@ -19,7 +19,6 @@ router.get('/api/users', protected, (req, res) => {
     .catch(err => res.send(err));
 })
 
-
 router.post('/api/register', (req, res) => {
     const creds = req.body;
 
