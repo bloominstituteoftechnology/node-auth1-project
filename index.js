@@ -38,7 +38,7 @@ server.get('/api/users', (req,res) => {
         })
         .catch(err => res.send(err));
     }else{
-        res.status(401).json({message : "you shall not pass"})
+        res.status(401).json({message : "Please Login"})
     }
 })//for testing purposes will be revamped
 
