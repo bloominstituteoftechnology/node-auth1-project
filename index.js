@@ -94,6 +94,18 @@ server.get('/api/login', (req, res) => {
         .catch(err => res.send(err));
 });
   
+//USER  LOGOUT...
+server.get('/api/logout', (req, res) => {
+     if(req.session) {
+         req.session.destroy(err => {
+               if(err) {
+                   res.send('Can not LOGOUT..');
+               } else {
+                   res.send('bye');
+               }
+         });
+     }
+});
 
 
 server.listen(9000, () => console.log("Running on port : 9000"));
