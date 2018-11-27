@@ -1,13 +1,35 @@
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs'); //added package and required it here
+const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 
 const db = require('./data/dbConfig.js');
 
 const server = express();
 
+const sessionConfig = {
+  name: 'foobar',
+  secret: 'qwertyuiop',
+  cookie: {
+    maxAge: 1000 * 60 * 10,
+    secure: false
+  },
+  httpOnly: true,
+  resave: false,
+  saveUninitialized: false,
+  store: new KnexSessionStore({
+    tablename: 'sessions',
+    sidfieldname: 'sid',
+    knex: db,
+    createtable: true,
+    clearInterval: 1000 * 60 * 60
+  })
+};
+
 server.use(express.json());
 server.use(cors());
+server.use(session(sessionConfig));
 
 //sanity check
 server.get('/', (req, res) => {
@@ -32,6 +54,14 @@ server.post('/api/register', (req, res) => {
     );
 });
 
+function protected(req, res, next) {
+  if (req.session && req.session.user) {
+    next();
+  } else {
+    res.status(401).json({ you: 'shall not pass!' });
+  }
+}
+
 server.post('/api/login', (req, res) => {
   const creds = req.body;
   db('users')
@@ -40,6 +70,7 @@ server.post('/api/login', (req, res) => {
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
         //passwords match and user exists by that username
+        req.session.user = user.id;
         res.status(200).json({ message: 'Welcome!' });
       } else {
         //either username is invalid or password is wrong
@@ -51,12 +82,39 @@ server.post('/api/login', (req, res) => {
 
 //protect this route, only authenticated users should see it
 server.get('/api/users', (req, res) => {
+  if (req.session && req.session.user) {
+    db('users')
+      .select('id', 'username', 'password') //added password to the select
+      .then(users => {
+        res.json(users);
+      })
+      .catch(err => res.send(err));
+  } else {
+    res.status(401).json({ you: 'shall not pass!' });
+  }
+});
+
+server.get('/api/me/', protected, (req, res) => {
   db('users')
-    .select('id', 'username', 'password') //added password to the select
+    .select('id', 'username', 'password')
+    .where({ id: req.session.user })
+    .first()
     .then(users => {
       res.json(users);
     })
     .catch(err => res.send(err));
+});
+
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('You can never leave');
+      } else {
+        res.send('farewell');
+      }
+    });
+  }
 });
 
 const port = 8800;
