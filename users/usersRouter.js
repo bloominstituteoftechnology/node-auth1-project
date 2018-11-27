@@ -1,9 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const knex = require('knex');
-const knexConfig = require('../knexfile');
 
-const db = knex(knexConfig.development);
+const db = require('../data/dbConfig.js');
+const protected = require('../middleware/protected');
 
 const router = express.Router();
 
@@ -11,7 +10,7 @@ router.get('/', (req, res) => {
     res.status(200).json({message: 'Alive on post 3300'})
 })
 
-router.get('/api/users', (req, res) => {
+router.get('/api/users', protected, (req, res) => {
     db('users')
     .select('id', 'username', 'password') // added password to the select
     .then(users => {
@@ -40,6 +39,7 @@ router.post('/api/login', (req, res) => {
     db('users').where({username: creds.username}).first()
         .then(user => {
             if(user && bcrypt.compareSync(creds.password, user.password)) {
+                req.session.userId = user.id;
                 res.status(201).json({message: 'logged in'})
                 return
             }
