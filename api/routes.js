@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+// custom middleware
 const { protected } = require('./middleware.js')
 
 const db = require('../data/dbConfig.js')
@@ -44,16 +45,11 @@ const register = (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    const userMatchingId = await db('users').where({id: userId}).first()
-    console.log(userIdInDb)
-    if (userMatchingId.id) {
-      const users = await db('users').select('id', 'username', 'password')
-      res.status(200).json(users);
-    }
-    res.status(500).json({message: 'You shall not pass!'});
+    const users = await db('users').select('id', 'username', 'password')
+    res.status(200).json(users);
   }
   catch(err) {
-    res.send(err)
+    res.status(500).json({message: 'You shall not pass!'});
   };
 }
 
@@ -68,6 +64,6 @@ const echo = (req, res) => {
 
 router.post('/login', login)
 router.post('/register', register)
-router.get('/users', getUsers)
+router.get('/users', protected, getUsers)
 
 module.exports = router;
