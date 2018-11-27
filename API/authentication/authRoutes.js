@@ -30,6 +30,7 @@ const authDb = require('./authHelper');
 // ==============================================
 router.post(config.REGISTER, authRegister);
 router.post(config.LOGIN, login);
+router.get(config.USERS, users);
 
 // ROUTES CALLBACK FUNCTIONS
 // ==============================================
@@ -59,6 +60,15 @@ async function login(req, res) {
     } else {
       res.status(400).json(config.AUTH_FAIL);
     }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+}
+
+async function users(_, res) {
+  try {
+    const users = await authDb.get();
+    res.status(200).json(users);
   } catch (err) {
     res.status(500).json(err);
   }

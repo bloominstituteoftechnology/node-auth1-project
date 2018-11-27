@@ -10,5 +10,8 @@ module.exports = {
     return db('users')
       .insert(credentials)
       .then(ids => ({ id: ids[0] }));
+  },
+  get: function() {
+    return db('users').select('id', 'username');
   }
 };
