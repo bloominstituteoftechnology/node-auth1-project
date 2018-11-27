@@ -30,6 +30,14 @@ server.get('/', (req, res) => {
     res.send('Server is running')
 });
 
+function protected(req, res, next) {
+    if (req.session && req.session.user) {
+        next();
+    } else {
+        res.status(401).send('Not AUthorized')
+    }
+}
+
 
 server.get('/api/users', (req, res) => {
     if(req.session && req.session.userId) {
