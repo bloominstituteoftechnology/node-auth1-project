@@ -9,8 +9,8 @@ const db = require('./data/dbConfig.js');
 const server = express();
 
 const sessionConfig = {
-  name: 'foobar',
-  secret: 'qwertyuiop',
+  name: 'dragon',
+  secret: 'as;odfgjhasjrlfg;oasjn;sofanvg',
   cookie: {
     maxAge: 1000 * 60 * 10,
     secure: false
@@ -40,6 +40,7 @@ server.post('/api/register', (req, res) => {
   //grab username and password from the body
   const creds = req.body;
   //generate the hash from the user's password
+
   const hash = bcrypt.hashSync(creds.password, 14); //rounds is 2^X
   //override the user.password with the hash
   creds.password = hash;
@@ -47,6 +48,7 @@ server.post('/api/register', (req, res) => {
   db('users')
     .insert(creds)
     .then(ids => {
+      console.log('test');
       res.status(201).json(ids);
     })
     .catch(err =>
@@ -81,24 +83,9 @@ server.post('/api/login', (req, res) => {
 });
 
 //protect this route, only authenticated users should see it
-server.get('/api/users', (req, res) => {
-  if (req.session && req.session.user) {
-    db('users')
-      .select('id', 'username', 'password') //added password to the select
-      .then(users => {
-        res.json(users);
-      })
-      .catch(err => res.send(err));
-  } else {
-    res.status(401).json({ you: 'shall not pass!' });
-  }
-});
-
-server.get('/api/me/', protected, (req, res) => {
+server.get('/api/users', protected, (req, res) => {
   db('users')
-    .select('id', 'username', 'password')
-    .where({ id: req.session.user })
-    .first()
+    .select('id', 'username', 'password') //added password to the select
     .then(users => {
       res.json(users);
     })
@@ -114,6 +101,8 @@ server.get('/api/logout', (req, res) => {
         res.send('farewell');
       }
     });
+  } else {
+    res.end();
   }
 });
 
