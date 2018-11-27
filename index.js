@@ -39,17 +39,13 @@ function protected(req, res, next) {
 }
 
 
-server.get('/api/users', (req, res) => {
-    if(req.session && req.session.userId) {
-        db('users')
-            .select('id', 'username','password') // password on this line just to see if the password hash
-            .then(users => {
-                res.status(200).json(users)
-            })
-            .catch(err => res.send(err))
-    } else {
-        res.status(401).send('Not Authorized')
-    }
+server.get('/api/users', protected, (req, res) => {
+    db('users')
+        .select('id', 'username','password') // password on this line just to see if the password hash
+        .then(users => {
+            res.status(200).json(users)
+        })
+        .catch(err => res.send(err))
 });
 
 server.post('/api/register', (req, res) => {
