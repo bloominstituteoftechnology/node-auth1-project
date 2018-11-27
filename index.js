@@ -1,8 +1,8 @@
 const express = require('express')
 const bcrypt = require('bcryptjs')
 const cors = require('cors')
-const protected = require('./middleware/protected.js')
 const session = require('express-session')
+const KnexSessionStore = require('connect-session-knex')(session)
 const helmet = require('helmet')
 
 const db = require('./data/dbConfig.js')
@@ -17,11 +17,29 @@ const sessionConfig = {
     httpOnly          : true,
     resave            : false,
     saveUninitialized : false,
+    store             : new KnexSessionStore({
+        tablename     : 'sessions',
+        sidfieldname  : 'sid',
+        knex          : db,
+        createtable   : true,
+        clearInterval : 1000 * 60 * 60,
+    }),
 }
 server.use(session(sessionConfig))
 server.use(express.json())
 server.use(cors())
 server.use(helmet())
+
+function protected(req, res, next){
+    if (req.session && req.session.userId) {
+        // they're logged in, go ahead and provide access
+        next()
+    }
+    else {
+        // bounce them
+        res.status(401).json({ you: 'shall not pass!!' })
+    }
+}
 
 server.post('/api/register', async (req, res) => {
     try {
@@ -62,6 +80,22 @@ server.get('/api/users', async (req, res) => {
     }
     else {
         res.status(401).json({ message: 'You shall not pass.' })
+    }
+})
+server.get('/api/restricted', protected, async (req, res) => {
+    try {
+        const user = await db('users').select('id', 'username').where({ id: req.session.userId }).first()
+        res.status(200).json(user)
+    } catch (e) {
+        res.status(500).json({ error: 'An error occuried' })
+    }
+})
+server.get('/api/restricted/:id', protected, async (req, res) => {
+    try {
+        const user = await db('users').select('id', 'username').where({ id: req.session.userId }).first()
+        res.status(200).json(user)
+    } catch (e) {
+        res.status(500).json({ error: 'An error occuried' })
     }
 })
 
