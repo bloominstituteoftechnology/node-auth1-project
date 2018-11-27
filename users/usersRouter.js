@@ -48,4 +48,18 @@ router.post('/api/login', (req, res) => {
         .catch(err => console.log(err));
 });
 
+router.get('/api/logout', (req, res) => {
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.send('you can never leave')
+        } else {
+          res.send('bye')
+        }
+      })
+    } else {
+      res.send('error logging out');
+    }
+})
+
 module.exports = router;
