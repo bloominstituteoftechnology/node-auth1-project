@@ -78,7 +78,7 @@ server.post('/api/login', (req, res) => {
     db('users').where({ username: creds.username }).first().then(user => {
         if(user && bcrypt.compareSync(creds.password, user.password)) {
             req.session.user = user.id;
-            res.status(200).json({ user });
+            res.status(200).json({ username: user.username });
         } else {
             res.status(401).json({ message: 'Wrong username or password. Try again...' });
         }
