@@ -3,22 +3,41 @@
 const express = require('express');
 const knex = require('knex');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
+
 
 const knexConfig = require('./knexfile.js');
 const server = express();
 
 const db = knex(knexConfig.development);
 
+const sessionStuff = {
+    name: 'nothingtosee',
+    secret: 'helpers help when helped',
+    cookie: {
+        maxAge: 1 * 24 * 60 * 60 * 1000,
+        secure: false
+    },
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false
+}
+
 server.use(express.json());
+server.use(session(sessionStuff))
 
 server.get('/', (req, res) => {
     res.json('alive and well');
 })
 
-// server.get('/api/users', async (req, res) => {
-//     const users = await db('users').select('id', 'user');
-//     res.status(200).json(users)
-// })
+server.get('/api/users', async (req, res) => {
+    if (req.session && req.session.userId) {
+        const users = await db('users').select('id', 'user');
+        res.status(200).json(users)
+    } else {
+        res.status(401).json({ message: 'please log in and try again' })
+    };
+})
 
 server.get('/api/users/:id', async (req, res) => {
     const id = req.params.id;
@@ -42,8 +61,8 @@ server.post('/api/login', async (req, res) => {
     const creds = req.body;
     const user = await db('users').where({ user: creds.user }).first();
     if (user && bcrypt.compareSync(creds.password, user.password)) {
-        const users = await db('users').select('id', 'user');
-        res.status(200).json(users)
+        req.session.userId = user.id;
+        res.status(200).json({ message: 'welcome' })
     } else {
         res.status(401).json({ message: 'try again' })
     }
