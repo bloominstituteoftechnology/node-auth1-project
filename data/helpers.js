@@ -1,6 +1,9 @@
 const db = require('./dbConfig');
 
 module.exports = {
+  get: function() {
+    return db.select('username').from('users');
+  },
   getByUsername: function(username) {
     return db('users')
       .where({ username: username })
