@@ -37,11 +37,14 @@ server.post("/api/login", (req, res) => {
   db("users")
     .where({ username: creds.username })
     .first()
-    .then(user =>
-      user && bcrypt.compareSync(creds.password, user.password)
-        ? res.status(200).json({ message: "Login successful." })
-        : res.status(401).json({ message: "Invalid username or password." })
-    )
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        req.session.username = user.username;
+        res.status(200).json({ message: "Login successful." });
+      } else {
+        res.status(401).json({ message: "Invalid username or password." });
+      }
+    })
     .catch(err => res.json(err));
 });
 
@@ -56,9 +59,15 @@ server.post("/api/register", (req, res) => {
 });
 
 const protected = (req, res, next) =>
-  req.session && req.session.use
+  req.session && req.session.username
     ? next()
     : res.status(401).json({ message: "Please log in." });
+
+const restricted = (req, res, next) =>
+  req.url.match("/api/restricted") ? protected(req, res, next) : next();
+server.use(restricted);
+
+server.get("/api/restricted/test", (req, res) => res.send("Restricted Area"));
 
 server.get("/api/me", protected, (req, res) =>
   db("users")
