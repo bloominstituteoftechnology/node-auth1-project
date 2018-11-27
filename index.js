@@ -37,24 +37,20 @@ server.use(helmet());
 server.use(cors());
 
 
-
-//middleware for restricting routes to logged-in users
-const protected = (req, res, next) => {
-  console.log(req);
-  if (req.session && req.session.userId) {
-    next();
-  } else {
-    res.status(401).json({ message: 'go away' })
-  }
-}
-
+//middleware for restricting specific routes
 const checkUser = (req, res, next) => {
-  if (req.path.includes('/restricted/')) {
-      protected(req, res, next);
+  if ((req.path.includes('/restricted/')) || req.path == '/api/users') {
+    if (req.session && req.session.userId) {
+      next();
+    } else {
+      res.status(401).json({ message: 'go away' })
+    }
   } else {
     next();
   }
 }
+
+server.use(checkUser);
 
 //sanity check
 server.get('/', (req, res) => {
@@ -94,7 +90,7 @@ server.post('/api/login', (req, res) => {
 })
 
 //list of users if logged in
-server.get('/api/users', protected, (req, res) => {
+server.get('/api/users', (req, res) => {
   db('users')
     .select('id', 'username')
     .then(users => {
@@ -118,7 +114,7 @@ server.get('/api/logout', (req, res) => {
   }
 })
 
-server.get('/api/restricted/something', checkUser, (req, res) => {
+server.get('/api/restricted/something', (req, res) => {
   res.status(200).json({ message: 'one of us!'})
 })
 server.listen(9000, () => {
