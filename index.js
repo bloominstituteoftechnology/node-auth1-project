@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -12,8 +13,8 @@ const server = express();
 
 //session cookie
 const sessionConfig = {
-  name: 'the cookie cookie',
-  secret: 'moveittoanenv',
+  name: 'the cookie monster',
+  secret: process.env.SECRET,
   cookie: {
     maxAge: 1000 * 60 * 20,
     secure: false,
@@ -51,7 +52,7 @@ const checkUser = (req, res, next) => {
   if (req.path.includes('/restricted/')) {
       protected(req, res, next);
   } else {
-    next(); 
+    next();
   }
 }
 
