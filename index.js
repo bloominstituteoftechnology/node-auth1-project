@@ -17,15 +17,6 @@ server.use(cors())
 server.use(helmet())
 server.use(morgan('dev'))
 
-// middleware for authorizing
-function verifySession(req, res, next) {
-  if (req.session && req.session.name) {
-    next()
-  } else {
-    res.status(401).json({ message: 'cannot access that resource' })
-  }
-}
-
 server.use(
   session({
     name: 'raaaar',
@@ -46,6 +37,26 @@ server.use(
     })
   })
 )
+
+server.use(restricted)
+
+// global middleware for checking restricted routes
+function restricted(req, res, next) {
+  if (req.url.match('/api/restricted')) {
+    verifySession(req, res, next)
+  } else {
+    next()
+  }
+}
+
+// middleware for authorizing
+function verifySession(req, res, next) {
+  if (req.session && req.session.name) {
+    next()
+  } else {
+    res.status(401).json({ message: 'cannot access that resource' })
+  }
+}
 
 server.post('/api/login', (req, res) => {
   const { username, password } = req.body
@@ -92,7 +103,7 @@ server.get('/api/logout', (req, res) => {
   }
 })
 
-server.get('/api/users', verifySession, (req, res) => {
+server.get('/api/restricted/users', (req, res) => {
   db('users')
     .select('id', 'username')
     .then(users => res.status(200).json(users))
