@@ -67,7 +67,7 @@ server.post("/login", (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(credentials.password, user.password)) {
-        req.session.userId = user.id;
+        req.session.user = user.id;
         res.status(200).json({ welcome: user.username });
       } else {
         res.status(401).json({ message: "big problem" });
@@ -75,6 +75,15 @@ server.post("/login", (req, res) => {
     })
     .catch(err => res.status(500).json({ err }));
 });
+
+// P R O T E C T E D   M I D D L E W A R E
+function protected(req, res, next) {
+  if (req.session && req.session.user) {
+    next();
+  } else {
+    res.status(401).json({ you: "need to get off my lawn right now" });
+  }
+}
 
 // U S E R   L I S T   R O U T E
 server.get("/users", protected, (req, res) => {
@@ -86,13 +95,19 @@ server.get("/users", protected, (req, res) => {
     .catch(err => res.send(err));
 });
 
-// P R O T E C T E D   M I D D L E W A R E
-function protected(req, res, next) {
-  if (req.session && req.session.user) {
-    next();
+// L O G O U T   R O U T E
+server.get("/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send("i'm really sorry about this");
+      } else {
+        res.send("ok man great to see you");
+      }
+    });
   } else {
-    res.status(401).json({ you: "need to get off my lawn right now" });
+    res.end();
   }
-}
+});
 
 server.listen(3000, () => console.log("\nrunning on port 3000\n"));
