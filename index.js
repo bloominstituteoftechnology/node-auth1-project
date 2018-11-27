@@ -34,7 +34,7 @@ server.use(helmet())
 server.use(restricted)
 
 function restricted(req, res, next) {
-    if (req.url.match('/api/restricted')) {
+    if (req.url.includes('/api/restricted')) {
         req.session && req.session.user ?
         next() :
         res.status(401).json({ message: 'scram' })
