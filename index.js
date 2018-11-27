@@ -77,18 +77,22 @@ server.post("/login", (req, res) => {
 });
 
 // U S E R   L I S T   R O U T E
-server.get("/users", (req, res) => {
-  if (req.session && req.session.userId) {
-    // they're logged in, proceed with access
-    db("users")
-      .select("id", "username", "password")
-      .then(users => {
-        res.json(users);
-      })
-      .catch(err => res.send(err));
-  } else {
-    res.status(401).json({ you: "are not authorized" });
-  }
+server.get("/users", protected, (req, res) => {
+  db("users")
+    .select("id", "username", "password")
+    .then(users => {
+      res.json(users);
+    })
+    .catch(err => res.send(err));
 });
+
+// P R O T E C T E D   M I D D L E W A R E
+function protected(req, res, next) {
+  if (req.session && req.session.user) {
+    next();
+  } else {
+    res.status(401).json({ you: "need to get off my lawn right now" });
+  }
+}
 
 server.listen(3000, () => console.log("\nrunning on port 3000\n"));
