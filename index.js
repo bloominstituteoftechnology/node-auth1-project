@@ -27,15 +27,7 @@ const sessionConfig = {
     })
 }
 
-function protected(req, res, next) {
-    if (req.session && req.session.user) {
-        next()
-    } else {
-        res.status(401).json({ message: "you shall not pass!" })
-    }
-}
-
-// server.use(session(sessionConfig))
+server.use(session(sessionConfig))
 server.use(express.json())
 server.use(cors())
 
@@ -61,8 +53,9 @@ server.post('/api/login', (req, res) => {
 
 
 
-server.get('/api/users', protected, (req, res) => {
-    db('users')
+server.get('/api/users', (req, res) => {
+    if (req.session && req.session.userId) {
+        db('users')
         .select('id', 'username', 'password')
         .then(users => {
             res.json(users)
@@ -70,6 +63,10 @@ server.get('/api/users', protected, (req, res) => {
         .catch(error => {
             res.send(error)
         })
+    } else {
+        res.status(401).json({ message: "you shall not pass!" })
+    }
+    
 })
 
 
