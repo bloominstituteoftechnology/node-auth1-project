@@ -22,7 +22,7 @@ server.get('/', (req, res) => {
 
 //endpoints
 
-
+//testing
 //register new users
 server.post('/api/register', (req, res) => {
     // grab username and password from body
@@ -71,7 +71,6 @@ server.get('/api/users', (req, res) => {
 
 
 //port
-
 server.listen(9000, () => {
     console.log('\nrunning on port 9000\n');
 })
