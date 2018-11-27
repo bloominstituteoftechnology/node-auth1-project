@@ -1,14 +1,38 @@
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const db = require('./database/dbConfig.js');
 
 const server = express();
 
+const sessionConfig = {
+    secret: 'who.throws.a.shoe.!',
+    name: 'monkey',
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: false,
+        maxAge: 1000 * 60 * 1
+    }
+};
+
+function protected(req, res, next) {
+    if (req.session && req.session.username) {
+        next();
+    } else {
+        res.status(500).json({ message: 'not authorized' });
+    }
+};
+
+server.use(session(sessionConfig));
+
 server.use(express.json());
 server.use(cors());
 
+//login as an existing user
 
 server.post('/api/login', (req, res) => {
     const creds = req.body;
@@ -16,14 +40,19 @@ server.post('/api/login', (req, res) => {
         .where({ username: creds.username })
         .first()
         .then(user => {
-            user && bcrypt.compareSync(creds.password, user.password)
-                ? res.status(200).json({ message: 'welcome' })
-                : res.status(401).json({ message: "You're not welcome" })
+            if (user && bcrypt.compareSync(creds.password, user.password)) {
+                req.session.username = user.username
+                res.status(200).json({ message: 'welcome' })
+            } else {
+                res.status(401).json({ message: 'nope' })
+            }
         })
         .catch(err => {
             res.status(500).json(err)
         })
 });
+
+// register as a user
 
 server.post('/api/register', (req, res) => {
     const creds = req.body;
@@ -39,7 +68,9 @@ server.post('/api/register', (req, res) => {
         })
 });
 
-server.get('/api/users', (req, res) => {
+//get all users once login approved
+
+server.get('/api/users', protected, (req, res) => {
     db('users')
         .select('id', 'username')
         .then(users => {
@@ -50,11 +81,11 @@ server.get('/api/users', (req, res) => {
         })
 });
 
+// test server to get up and running
 
 server.get('/', (req, res) => {
     res.json({ message: 'Up and Running' })
 })
-
 
 
 server.listen(3333, () => console.log('\nrunning on port 3333\n'));
