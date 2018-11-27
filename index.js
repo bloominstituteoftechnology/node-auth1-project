@@ -1,13 +1,27 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const db = require('./database/dbConfig');
 
 const server = express();
 const port = 8080;
+const sessionConfig = {
+  name: 'chimichurri',
+  secret: 'story of my lyf serchin fordarai keeps keeps pordami',
+  httpOnly: true,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 1000 * 60 * 5, // 5mins til session expires
+    secure: false,  // set it to true when using https, irl: true
+  },
+};
 
 // middleware
 server.use(express.json());
+server.use(session(sessionConfig)); // wires up session management
+
 
 // test api
 server.get('/', (_, res) => res.send('API is running...'));
