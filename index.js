@@ -32,9 +32,9 @@ server.get('/', (req, res) => {
 
 
 server.get('/api/users', (req, res) => {
-    if(req.session && req.session.username) {
+    if(req.session && req.session.userId) {
         db('users')
-            .select('id', 'username', 'password') // password on this line just to see if the password hash
+            .select('id', 'username','password') // password on this line just to see if the password hash
             .then(users => {
                 res.status(200).json(users)
             })
@@ -66,7 +66,7 @@ server.post('/api/login', (req, res) => {
 
     db('users').where({username: creds.username}).first().then(user => {
         if(user && bcrypt.compareSync(creds.password, user.password)) {
-            req.session.username = user.username
+            req.session.userId = user.id
             res.status(200).json({Hello: user.username})
         } else {
             res.status(401).json({message: 'You shall not pass!'})
