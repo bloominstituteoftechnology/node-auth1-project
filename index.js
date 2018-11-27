@@ -76,6 +76,16 @@ server.get("/api/users", protected, (req, res) =>
     .catch(err => res.send(err))
 );
 
+server.get("/api/logout", (req, res) =>
+  req.session
+    ? req.session.destroy(err =>
+        err
+          ? res.send("Error logging out.")
+          : res.send("Successfully logged out.")
+      )
+    : res.end()
+);
+
 server.get("/", (req, res) => {
   res.send("Its Alive!");
 });
