@@ -1,3 +1,4 @@
+// ---- DEPENDENCIES ----
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
@@ -9,6 +10,7 @@ const db = require('./data/dbConfig');
 
 const server = express();
 
+// ---- MIDDLEWARE CONFIG ---- (what is passed into middleware functions)
 const sessionConfig = {
   name: 'authProject',
   secret: 'isThereAWayToGenerateUniqueSecrets?',
@@ -32,6 +34,8 @@ server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
 
+// ---- ENDPOINTS ----
+// ---- REGISTER USER ----
 server.post('/api/register', (req, res) => {
   const creds = req.body;
   const hash = bcrypt.hashSync(creds.password, 11);
@@ -44,6 +48,7 @@ server.post('/api/register', (req, res) => {
     .catch((err) => res.json(err));
 });
 
+// ---- LOGIN ----
 server.post('/api/login', (req, res) => {
   const creds = req.body;
   db('user_info')
@@ -60,10 +65,10 @@ server.post('/api/login', (req, res) => {
     .catch((err) => res.json(err));
 });
 
-server.get('/api/users', (req, res) => {
+// ----GET ALL USERS ----
 server.get('/api/users', protect, (req, res) => {
   db('user_info')
-    .select('id', 'username')
+    .select('id', 'username', 'password')
     .then((users) => {
       res.json(users);
     })
