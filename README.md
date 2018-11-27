@@ -18,14 +18,14 @@ You will build the solution from scratch, no starter code is provided. Feel free
 
 ### Download Project Files
 
-- **Fork** and **Clone** this repository.
-- **CD into the folder** where you cloned the repository.
+x **Fork** and **Clone** this repository.
+x **CD into the folder** where you cloned the repository.
 - Do your magic!
 
 ### Implement Requirements
 
-- Take the steps necessary to create a `package.json` to keep a record of all dependencies.
-- Configure an _npm script_ named _"start"_ that will execute your code using _nodemon_ so that the server restarts on changes. Make _nodemon_ be a development time dependency only, it shouldn't be deployed to production.
+x Take the steps necessary to create a `package.json` to keep a record of all dependencies.
+x Configure an _npm script_ named _"start"_ that will execute your code using _nodemon_ so that the server restarts on changes. Make _nodemon_ be a development time dependency only, it shouldn't be deployed to production.
 - Design and build a set of endpoints listed below.
 - **Use _Postman_ to test the API as you work through the exercises.**
 
