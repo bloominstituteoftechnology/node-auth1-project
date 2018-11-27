@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 const bcrypt = require('bcryptjs'); // adds hash library
 
 const db = require('./database/dbConfig.js');
@@ -17,6 +18,13 @@ const sessionConfig = {
     httpOnly: true, // no js
     resave: false,
     saveUninitialized: false,
+    store: new KnexSessionStore({
+        tablename: 'userSessions',
+        sidfieldname: 'sessionId',
+        knex: db,
+        createtable: true,
+        clearInterval: 1000 * 60 * 60, // 1 hour
+    })
 }
 
 server.use(session(sessionConfig));
