@@ -76,8 +76,8 @@ app.post('/api/login', (req, res) => {
 app.get('/', (req, res) => {
   res.send('Server Is Alive, Register at /api/register');
 });
-
-app.get('/api/users', protected, (req, res) => {
+//removed { protected } middleware to debug react app
+app.get('/api/users', (req, res) => {
   db('users')
     .select('id', 'username', 'password')
     .then(users => {
