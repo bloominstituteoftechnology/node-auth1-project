@@ -27,9 +27,21 @@ const sessionConfig = {
   }),
 };
 
+
+// restrict access global middleware
+function restrictAccess(req, res, next) {
+  if (req.session && req.session.user) {
+    next();
+  } else {
+    res.status(401).json({ message: 'access denied' });
+  }
+} 
+
 server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
+server.use('/api/restricted/', restrictAccess);
+
 
 // test api
 server.get('/', (req, res) => {
@@ -96,7 +108,17 @@ server.get('/api/logout', (req,res) => {
   }
 });
 
-// protected middleware
-// function protected = 
+server.get('/api/restricted/something', (req, res) => {
+  res.status(200).json({ message: 'You have restricted access' });
+});
+
+server.get('/api/restricted/other', (req, res) => {
+  res.status(200).json({ message: 'You have restricted access' });
+});
+
+server.get('/api/restricted/a', (req, res) => {
+  res.status(200).json({ message: 'You have restricted access' });
+});
+
 
 server.listen(8300, () => console.log('\nServer running on 8300\n'));
