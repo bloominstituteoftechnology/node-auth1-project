@@ -1,10 +1,10 @@
 const router = require('express').Router()
+const { restrictedRoute } = require('../controllers/').restrictedController
 
-//* Local Middleware
+//* Import Local Middleware
 const validateUser = require('../middleware/validateUser')
 
-router.get('/', validateUser, (req, res, next) => {
-  res.status(200).json({ msg: 'let us party 🎉 ' })
-})
+//* Restricted endpoints
+router.get('/', validateUser, restrictedRoute)
 
 module.exports = router

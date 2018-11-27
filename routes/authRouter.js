@@ -1,7 +1,7 @@
 const router = require('express').Router()
-const { loginUser, registerUser } = require('../controllers/authController')
+const { loginUser, registerUser } = require('../controllers').authController
 
-//* Local Middleware
+//* Import Local Middleware
 const checkCredentials = require('../middleware/checkCredentials')
 
 //* Auth endpoints

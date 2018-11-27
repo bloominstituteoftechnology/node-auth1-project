@@ -10,22 +10,6 @@ module.exports = server => {
   server.use(logger('dev'))
   server.use(helmet())
 
-  // //* database store
-  // server.use(
-  //   session({
-  //     name: 'tacos',
-  //     secret: process.env.SECRET,
-  //     store: store,
-  //     resave: false,
-  //     httpOnly: true,
-  //     saveUninitialized: false,
-  //     cookie: {
-  //       maxAge: 100 * 1000,
-  //       secure: true
-  //     }
-  //   })
-  // )
-
   //* memory store
   server.use(
     session({
@@ -34,7 +18,7 @@ module.exports = server => {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 12 * 60 * 60 * 1000
+        maxAge: 24 * 60 * 60 * 1000
       }
     })
   )

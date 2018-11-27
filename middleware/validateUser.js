@@ -1,5 +1,4 @@
 const validateUser = (req, res, next) => {
-  console.log('req.session', req.session)
   if (!req.session.username) {
     return res
       .status(401)
