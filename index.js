@@ -47,6 +47,14 @@ const protected = (req, res, next) => {
   }
 }
 
+const checkUser = (req, res, next) => {
+  if (req.path.includes('/restricted/')) {
+      protected(req, res, next);
+  } else {
+    next(); 
+  }
+}
+
 //sanity check
 server.get('/', (req, res) => {
   res.send({ message: 'it is alive' });
@@ -109,6 +117,9 @@ server.get('/api/logout', (req, res) => {
   }
 })
 
+server.get('/api/restricted/something', checkUser, (req, res) => {
+  res.status(200).json({ message: 'one of us!'})
+})
 server.listen(9000, () => {
   console.log('\nrunning on port 9000\n');
 })
