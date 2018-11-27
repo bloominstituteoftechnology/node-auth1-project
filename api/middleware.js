@@ -1,12 +1,24 @@
 const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
-const cookieParser = require('cookie-parser')
+const session = require('express-session');
 
 module.exports = {
   configureMiddleware: server => {
+    const sessionConfig = {
+      name: 'sessionCookie',
+      secret: 'asfjaofuwruq04r3oj;ljg049fjq30j4fdsnoiwnafpi391f',
+      cookie: {
+        maxAge: 1000 * 60 * 10,
+        secure: false, // only set it over https; in production you want this true.
+      },
+      httpOnly: true, // no js can touch this cookie
+      resave: false,
+      saveUninitialized: false,
+
+    };
     server.use(helmet());
-    server.use(cookieParser())
+    server.use(session(sessionConfig))
     server.use(express.json());
     server.use(morgan('dev'));
 
