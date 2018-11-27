@@ -31,14 +31,27 @@ module.exports = {
         bcrypt.compare(password, user.password).then(isPasswordValid => {
           if (isPasswordValid) {
             req.session.username = user.username
-            return res
-              .status(200)
-              .json({ msg: 'login successful', ...req.session })
+            res.status(200).json({ msg: 'login successful', ...req.session })
           } else {
-            return res.status(401).json({ msg: 'login failed' })
+            res.status(401).json({ msg: 'login failed' })
           }
         })
       })
       .catch(next)
+  },
+
+  logoutUser: (req, res, next) => {
+    console.log(req.session)
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.send('you can never leave')
+        } else {
+          res.send('bye')
+        }
+      })
+    } else {
+      res.end()
+    }
   }
 }

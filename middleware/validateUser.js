@@ -1,10 +1,9 @@
 const validateUser = (req, res, next) => {
-  if (!req.session.username) {
-    return res
-      .status(401)
-      .json({ message: 'user must login to access resource' })
+  if (req.session && req.session.username) {
+    next()
+  } else {
+    res.status(401).json({ message: 'user must login to access resource' })
   }
-  next()
 }
 
 module.exports = validateUser
