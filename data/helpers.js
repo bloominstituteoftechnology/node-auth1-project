@@ -5,5 +5,8 @@ module.exports = {
     return db('users')
       .where({ username: username })
       .first();
+  },
+  addUser: function(user) {
+    return db('users').insert(user);
   }
 };

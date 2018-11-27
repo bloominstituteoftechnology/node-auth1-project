@@ -19,21 +19,22 @@ server.post('/api/register', async (req, res) => {
   }
   // Check if user already exists
   try {
-    const userInDb = db.getByUsername(registrationData.username);
-    return userInDb
-      ? res.status(422).json({ message: 'That username already exists.' })
-      : null;
+    const userInDb = await db.getByUsername(registrationData.username);
+    if (userInDb) {
+      res.status(422).json({ message: 'That username already exists.' });
+    }
   } catch (error) {
-    err => res.status(500).json({ message: err });
+    err => res.status(500).json({ error: 'caught' });
   }
-  // registrationData.username
+
   // generate a hash
   const hash = bcrypt.hashSync(registrationData.password, 10);
+
   // replace plain text with hash
   registrationData.password = hash;
   // save to db
   try {
-    const newUserId = await db('users').insert(registrationData);
+    const newUserId = await db.addUser(registrationData);
     res.status(201).json(newUserId);
   } catch (error) {
     res.status(500).json({ error: 'Something went wrong with the request.' });
