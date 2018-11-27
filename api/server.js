@@ -1,17 +1,40 @@
 const express = require('express');
+const cors = require('cors');
 const knex = require('knex');
+const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 const bcrypt = require('bcryptjs');
-// yarn add bcryptjs
 
 const knexConfig = require('../knexfile.js');
 const db = knex(knexConfig.development);
 
-// const nameCheck = require('../middleware/nameCheck.js');
-
-
 const server = express();
-server.use(express.json());
 
+const sessionConfig = { 
+  name: 'anyName',  // when left blank it was connect.sid
+  secret: 'somerandom(*&*&#$#$)',
+  cookie: {
+    maxAge: 1000 * 60 * 10,  // in seconds
+    secure: false   // only set it over https (in production you want this true)
+  },
+  httpOnly: true, // no js can touch this cookie
+  resave: false,
+  saveUninitialized: false,
+  store: new KnexSessionStore({
+    tablename: 'sessions',
+    sidfilename: 'sid',
+    knex: db,
+    createtable: true,
+    clearInterval: 1000 * 60 * 60,  // clear once an hour
+  })
+}
+
+const protected = require('../middleware/protected.js');
+
+
+server.use(session(sessionConfig)); // wires up session management
+server.use(express.json());
+server.use(cors());
 
 // TABLE SCHEMA
 
@@ -44,15 +67,31 @@ server.post('/api/login', (req, res) => {
     .where({ username: creds.username })
     .first()
     .then(user => {
-      return user && bcrypt.compareSync(creds.password, user.password) 
-      ? res.status(200).json({ message: 'Logged in', user: user.username})
-      : res.status(401).json({ message: 'You shall not pass!' })
-      ;
+      if (user && bcrypt.compareSync(creds.password, user.password) ) {
+        // user exists and password match
+        req.session.userId = user.id;
+        res.status(200).json({ message: 'Logged in', user: user.username})
+      } else {
+        res.status(401).json({ message: 'You shall not pass!' });
+      }
     })
 })
 
+server.get('/api/protected', protected, (req, res) => {
+  // if (req.session && req.session.userId) {
+    db('users')
+    .select('id', 'username', 'password')
+    .where({ id: req.session.userId })
+    .first()
+    .then(user => {
+        res.status(200).json({ message: 'Logged into protected area', user: user.username})
+    })
+    .catch(err => res.send(err));
+})
 
-server.get('/api/users', (req, res) => {
+
+server.get('/api/users', protected, (req, res) => {
+  // if (req.session && req.session.userId)
   db('users')
     .select('id', 'username', 'password')
     // .select('username') to see just users
@@ -62,9 +101,17 @@ server.get('/api/users', (req, res) => {
     .catch(err => res.send(err));
 });
 
-// Write a piece of global middleware that ensures a user is logged in when accessing any route prefixed by /api/restricted/. For instance, /api/restricted/something, /api/restricted/other, and /api/restricted/a should all be protected by the middleware; only logged in users should be able to access these routes.
-// Build a React application that implements components to register, login and view a list of users. Gotta keep sharpening your React skills.
-
+server.get('api/logout', (req, res) => {
+  if(req.ession) {
+    req.ession.destroy(err => {
+      if (err) {
+        res.send('there is an issue logging out')
+      } else {
+        res.send('you have logged out')
+      }
+    })
+  }
+})
 
 server.get('/', (req, res) => {
   res.json({ api: 'auth-i up' });
