@@ -22,13 +22,22 @@ const sessionConfig = {
 server.use(express.json());
 server.use(session(sessionConfig)); // wires up session management
 
+// custom middleware
+const protected = (req, res, next) => {
+  if (req.session && req.session.userId) {
+    // user is logged in
+    next();
+  } else {
+    res.status(401).json({ message: 'You shall not pass!' });
+  }
+};
 
 // test api
 server.get('/', (_, res) => res.send('API is running...'));
 
 // ===================== ENDPOINTS =====================
 // retrieve users
-server.get('/api/users', (_, res) => {
+server.get('/api/users', protected, (_, res) => {
   db('users')
     .select('id', 'username') // exclude password col
     .then(users => {
@@ -70,10 +79,11 @@ server.post('/api/login', (req, res) => {
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
         // if the user exists and passwords match,
-        res.status(200).json({ message: 'Logged in.' })
+        req.session.userId = user.id;
+        res.status(200).json({ message: 'Logged in' })
       } else {
         // either username is invalid or password is wrong
-        res.status(401).json({ message: 'you shall not pass!!' });
+        res.status(401).json({ message: 'You shall not pass!' });
       }
     })
     .catch(err => res.status(500).json(err));
