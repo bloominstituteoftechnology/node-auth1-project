@@ -38,8 +38,27 @@ server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
 
-// endpoints
+//custome middleware (will be used globally) to restrict access if path starts with '/api/restricted'
+function restrictMiddleware(req, res, next) {
+  // if path contains '/api/restricted', no matter what follows, runs check for valid session and cookie info
+  if (req.path.includes("/api/restricted")) {
+    // verifies if user is logged in. if yes, points to next middleware (the endpoint, in this case)
+    if (req.session && req.session.userId) {
+      next();
+    } else {
+      // not logged in, kill request
+      res.status(401).json({ message: "You shall not pass!" });
+    }
+  } else {
+    // path doesn't contain '/api/restricted', so runs the next middleware(endpoint) as it's written
+    next();
+  }
+}
 
+//all server requests first pass through restrict middleware
+server.use(restrictMiddleware);
+
+// endpoints
 // create new user (register)
 server.post("/api/register", (req, res) => {
   // grab username and password from body
@@ -83,7 +102,6 @@ server.post("/api/register", (req, res) => {
 // authenticate user
 server.post("/api/login", (req, res) => {
   const creds = req.body;
-
   if (!creds.username || !creds.password) {
     res
       .status(400)
@@ -108,6 +126,7 @@ server.post("/api/login", (req, res) => {
 });
 
 // get list of all users ONLY IF user is logged in
+// MVP version (checks for session and valid cookie info userId inside code block)
 server.get("/api/users", (req, res) => {
   // check for session && userId (created upon valid login)
 
@@ -126,6 +145,22 @@ server.get("/api/users", (req, res) => {
     //not logged in, bounce 'em!
     res.status(401).json({ message: "You shall not pass!" });
   }
+});
+
+// get list of all users ONLY if user is logged in
+// stretch version (contains '/api/restricted/' in path name, so triggers a hit in restrictMiddleware)
+server.get("/api/restricted/users", (req, res) => {
+  // session & cookie check abstracted away because it is done in restrictMiddleware
+
+  db("users")
+    .select("id", "username")
+    .orderBy("id")
+    .then(users => res.status(200).json(users))
+    .catch(err =>
+      res
+        .status(500)
+        .json({ error: "Error occurred while retrieving users: ", err })
+    );
 });
 
 // manual logout
