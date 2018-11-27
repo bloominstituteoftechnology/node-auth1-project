@@ -8,6 +8,8 @@ const db = require('../data/dbConfig.js')
 
 const USERID = 'userId';
 
+router.use('/restricted', require('./restricted/restrictedRoutes.js'))
+
 router.get('/', (req, res) => {
   res.status(200).json({ message: 'api' });
 })
