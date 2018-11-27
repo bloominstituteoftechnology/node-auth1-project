@@ -55,11 +55,8 @@ server.post('/api/login', (req, res) => {
 server.get('/api/users', (req, res) => {
   db('users')
     .select('id', 'username', 'password')
+    // .select('username') to see just users
     .then(users => {
-      // users.map(user => {
-      //   res.status(201).json({ user: user.username })
-      // })
-      // res.status(201).json({ user: user })
       res.status(201).json({ users })
     })
     .catch(err => res.send(err));
