@@ -5,50 +5,64 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const db = require('./data/dbConfig.js');
 const session = require('express-session'); // brints in session library
+const knexSessionStore = require('connect-session-knex')(session);
+
+const sessionConfig = {
+	secret: `${process.env.SESSION_SECRET}`,
+	name: `${process.env.SESSION_NAME}`, // defaults to connect.sid
+	cookie: {
+		secure: false, // over http(S) in production change to true
+		maxAge: 1000 * 60 * 5
+	},
+	httpOnly: true, // JS can't access, only https
+	resave: false,
+	saveUninitialized: false, // has something to do with foreign laws
+	store: new knexSessionStore({
+		// creates memcache
+		tablename: 'sessions', // session table name
+		sidfiledname: 'sid', //session field name
+		knex: db, // what database you want to knex to use
+		createtable: true, // have the library create the table if there isn't one
+		clearInterval: 1000 * 60 * 60 // clear every hour
+	})
+};
 
 const server = express();
+server.use(session(sessionConfig)); // wires up session management
 server.use(express.json());
 server.use(cors());
 server.use(helmet());
 server.use(morgan('short'));
 
-const sessionConfig = {
-	secret: 'Random.Weird.Things.That.I.Tell.My.Dog',
-	name: 'banana', // defaults to connect.sid
-	httpOnly: true, // JS can't access, only https
-	resave: false,
-	saveUninitialized: false, // laws ?
-	cookie: {
-		secure: false, // over http(S) in production change to true
-		maxAge: 1000 * 60 * 5
-	}
-};
-
-server.use(session(sessionConfig));
+server.get('/', (req, res) => {
+	res.send('Server is running');
+});
 
 restricted = (req, res, next) => {
-	if (req.session && req.session.username) {
+	if (req.session && req.session.userId) {
 		next();
 	} else {
 		res.status(401).json({ message: 'Invalid credentials' });
 	}
 };
 
-server.get('/', (req, res) => {
-	res.send('Server is running');
-});
-
 // get all user id and usernames
-server.get('/users', (req, res) => {
+server.get('/users', restricted, (req, res) => {
 	// if logged in
-	db('students')
-		.select('id', 'username')
-		.then((student) => res.status(400).json(student))
-		.catch((err) => res.status({ message: 'error getting that data', err }));
+	if (req.session && req.session.userId) {
+		// they're logged in, go ahead and provide access
+		db('students')
+			.select('id', 'username')
+			.then((student) => res.status(400).json(student))
+			.catch((err) => res.status({ message: 'error getting that data', err }));
+	} else {
+		// bounce them
+		res.status(401).json({ message: 'You shall not pass' });
+	}
 });
 
 // register a user by username and password
-server.post('/users/register', restricted, (req, res) => {
+server.post('/users/register', (req, res) => {
 	const creds = req.body;
 	const hash = bcrypt.hashSync(creds.password, 14);
 	creds.password = hash;
@@ -67,10 +81,12 @@ server.post('/users/login', (req, res) => {
 		.first()
 		.then((user) => {
 			if (user && bcrypt.compareSync(creds.password, user.password)) {
-				req.session.username = user.username;
-				res.status(200).json({ message: `Welcome ${user.username}` });
+				// passwords match and user exists by that username
+				req.session.userId = user.id;
+				res.status(200).json({ message: 'welcome' });
 			} else {
-				res.status(401).json({ message: 'Invalid credentials!' });
+				// either username is invalid or password is wrong
+				res.status(401).json({ message: 'you shall not pass' });
 			}
 		})
 		.catch((err) => res.status(500).json({ err }));
