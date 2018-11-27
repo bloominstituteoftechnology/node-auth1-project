@@ -1,10 +1,18 @@
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
+const KnexSessionStore = require("connect-session-knex")(session);
 const knex = require("knex");
 const bcrypt = require("bcryptjs");
 
+const knexConfig = require("./knexfile.js");
+const db = knex(knexConfig.development);
+const server = express();
+server.use(express.json());
+server.use(cors());
+
 const sessionConfig = {
+  name: "demo",
   secret: "uniquesecret",
   cookie: {
     maxAge: 1000 * 60 * 10,
@@ -12,13 +20,15 @@ const sessionConfig = {
   },
   httpOnly: true,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  store: new KnexSessionStore({
+    tablename: "sessions",
+    sidfieldname: "sid",
+    knex: db,
+    createtable: true,
+    clearInterval: 1000 * 60 * 60
+  })
 };
-const knexConfig = require("./knexfile.js");
-const db = knex(knexConfig.development);
-const server = express();
-server.use(express.json());
-server.use(cors());
 server.use(session(sessionConfig));
 
 server.post("/login", (req, res) => {
@@ -66,4 +76,15 @@ server.get("/users", (req, res) => {
   }
 });
 
+server.get("/sessions", (req, res) => {
+  if (req.session && req.session.userId) {
+    db("sessions")
+      .then(users => {
+        res.json(users);
+      })
+      .catch(err => res.send(err));
+  } else {
+    res.status(401).json({ message: "login failed" });
+  }
+});
 server.listen(3300, () => console.log("\nrunning on port 3300\n"));
