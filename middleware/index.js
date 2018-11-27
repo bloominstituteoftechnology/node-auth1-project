@@ -21,7 +21,7 @@ module.exports = server => {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 5 * 1000
+        maxAge: 60 * 1000
       }
     })
   )
