@@ -29,9 +29,13 @@ const sessionConfig = {
 }
 app.use(session(sessionConfig))
 
-app.get('/', (req, res) => {
-    res.send('Test')
-})
+function protected(req, res, next) {
+    if(req.session && req.session.username) {
+        next();
+    } else {
+        res.status(401).json({message: 'Not Authorized'})
+    }
+}
 
 app.post('/api/register', (req, res) => {
  const creds = req.body;
