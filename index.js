@@ -1,12 +1,14 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const knexSessionStore = require('connect-session-knex')(session);
+const bcrypt = require('bcryptjs');
+
 const db = require('./database/dbConfig');
 
 
 
 const server = express();
+
 const sessionConfig = {
   name: 'spock',
   secret: 'live long and prosper',
@@ -23,16 +25,60 @@ const sessionConfig = {
     sidfieldname: 'sid',
     knex: db,
     createtable: true,
-    clearInterval: 1000 * 60 * 60
+    clearInterval: 1000 * 60 * 10
   })
 }
 
 server.use(session(sessionConfig))
 server.use(express.json());
 
-                                                                                                                                
-// | GET    | /api/users    | If the user is logged in, respond with an array of all the users contained in the database. If the user is not logged in repond with the correct status code and the message: 'You shall not pass!'.     
+      
 
+server.post('/api/login', (req, res) => {
+  const creds = req.body;
+
+  db('users')
+    .where({username: creds.username})
+    .first()
+    .then(user => {
+      if(user && bcrypt.compareSync(creds.password, user.password)){
+        req.session.user = user.id;
+        res.status(200).json({message: 'Logged in'})
+      } else {
+        res.status(401).json({message: 'you shall not pass!'})
+      }
+    })
+    .catch(error => res.json(error))
+})
+
+function protect(req, res, next) {
+  if (req.session && req.session.user) {
+    next();
+  } else {
+    res.status(401).json({ message: 'you shall not pass!!' });
+  }
+} 
+
+server.get('/api/users', protect, (req, res) => {
+  db('users')
+    .select('id', 'username')
+    .then(users => {
+      res.json(users);
+    })
+    .catch(error => res.send(error))
+
+})
+
+server.get('/api/restricted/other', protect, (req, res) => {
+  db('users')
+    .select('id', 'username') 
+    .where({ id: req.session.user })
+    .first()
+    .then(users => {
+      res.json(users);
+    })
+    .catch(err => res.send(err));
+});
 
 server.post('/api/register', (req,res) => {
   const creds = req.body;
@@ -47,39 +93,6 @@ server.post('/api/register', (req,res) => {
       res.status(201).json(ids);
     })
     .catch(error => json(error))
-})
-
-
-server.post('/api/login', (req, res) => {
-  const creds = req.body;
-
-  db('users')
-    .where({username: creds.username})
-    .first()
-    .then(user => {
-      if(user && bcrypt.compareSync(creds.password, user.password)){
-        req.session.userId = user.id;
-        res.status(200).json({message: 'Logged in'})
-      } else {
-        res.status(401).json({message: 'you shall not pass!'})
-      }
-    })
-    .catch(error => res.json(error))
-})
-
-
-
-server.get('/api/users', (req, res) => {
-  if(req.session && req.session.userId){
-    db('users')
-    .select('id', 'username')
-    .then(users => {
-      res.json(users);
-    })
-    .catch(error => res.send(error))
-  } else {
-    res.status(401).json({message: 'you shall not pass!'})
-  }
 })
 
 
