@@ -101,15 +101,17 @@ server.get('/api/users', protected, (req, res) => {
     .catch(err => res.send(err));
 });
 
-server.get('api/logout', (req, res) => {
-  if(req.ession) {
-    req.ession.destroy(err => {
+server.get('api/logout', protected, (req, res) => {
+  if(req.session) {
+    req.session.destroy(err => {
       if (err) {
         res.send('there is an issue logging out')
       } else {
         res.send('you have logged out')
       }
     })
+  } else {
+    res.end();
   }
 })
 
