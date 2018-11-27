@@ -44,6 +44,7 @@ server.post("/api/login", async (req, res) => {
   try{
   const user = await db('users').where({username:credentials.username}).first();
   if (user && bcrypt.compareSync(credentials.password, user.password)){
+    req.session.userId = await user.id;
     return res.status(200).json({message:'You did good'})
   }
   else{
