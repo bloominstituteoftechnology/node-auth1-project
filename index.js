@@ -1,34 +1,33 @@
-/*
-| POST   | /api/register | Creates a `user` using the 
-information sent inside the `body` of the request. 
-**Hash the password** before saving the user to the 
-database.                                                                                                                                                 |
-
-
-| POST   | /api/login    | Use the credentials sent 
-inside the `body` to authenticate the user. On 
-successful login, create a new session for the 
-user and send back a 'Logged in' 
-message and a cookie that contains the user id. 
-If login fails, respond with the correct status 
-code and the message: 'You shall not pass!' |
-
-
-| GET    | /api/users    | If the user is logged in, 
-respond with an array of all the users contained in 
-the database. If the user is not logged in repond 
-with the correct status code and the message: 
-'You shall not pass!'.            |
-*/
-
 const express = require("express");
 const cors = require("cors");
-const bcrypt = require("bcryptjs");
+const session = require("express-session");
+const KnexSessionStore = require("connect-session-knex")(session);
+const bcrypt = require("bcryptjs"); // *************************** added package and required it here
 
 const db = require("./database/dbConfig.js");
 
 const server = express();
 
+const sessionConfig = {
+  name: "monkey",
+  secret: "asfjaofuwruq04r3oj;ljg049fjq30j4jlajg40j40tjojasl;kjg",
+  cookie: {
+    maxAge: 1000 * 60 * 10,
+    secure: false // only set it over https; in production you want this true.
+  },
+  httpOnly: true, // no js can touch this cookie
+  resave: false,
+  saveUninitialized: false,
+  store: new KnexSessionStore({
+    tablename: "sessions",
+    sidfieldname: "sid",
+    knex: db,
+    createtable: true,
+    clearInterval: 1000 * 60 * 60
+  })
+};
+
+server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
 
@@ -49,13 +48,32 @@ server.post("/api/register", (req, res) => {
     });
 });
 
-server.get("/api/users", (req, res) => {
+server.post("/api/login", (req, res) => {
+  const creds = req.body;
+
   db("users")
-    .select("id", "username", "password")
-    .then(users => {
-      res.json(users);
+    .where({ username: creds.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        req.session.user = user.id;
+        res.status(200).json({ message: "Welcome! " });
+      } else {
+        res.status(401).json({ message: "can't login" });
+      }
     })
-    .catch(err => res.send(err));
+    .catch(err => res.json(err));
+});
+
+server.get("/api/users", (req, res) => {
+  if (req.session && req.session.user) {
+    db("users")
+      .select("id", "username", "password")
+      .then(users => {
+        res.json(users);
+      })
+      .catch(err => res.send(err));
+  }
 });
 
 server.listen(9000, () => console.log("running on port 9k"));

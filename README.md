@@ -23,7 +23,6 @@ You will build the solution from scratch, no starter code is provided. Feel free
 - Do your magic!
 
 ### Implement Requirements
-
 - Take the steps necessary to create a `package.json` to keep a record of all dependencies.
 - Configure an _npm script_ named _"start"_ that will execute your code using _nodemon_ so that the server restarts on changes. Make _nodemon_ be a development time dependency only, it shouldn't be deployed to production.
 - Design and build a set of endpoints listed below.
