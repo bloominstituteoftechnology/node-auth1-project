@@ -48,6 +48,18 @@ server.get('/api/users', protected, (req, res) => {
     }).catch(err => res.status(400).json(err));
 });
 
+server.get('/api/me', protected, (req, res) => {
+    db('users')
+      .select('id', 'username')
+      .where({ id: req.session.user })
+      .first()
+      .then(users => {
+        res.json(users);
+      })
+      .catch(err => res.status(400).json(err));
+  });
+  
+
 // register user
 server.post('/api/register', (req, res) => {
     const creds = req.body;
@@ -65,11 +77,27 @@ server.post('/api/login', (req, res) => {
 
     db('users').where({ username: creds.username }).first().then(user => {
         if(user && bcrypt.compareSync(creds.password, user.password)) {
-            res.status(200).json({ message: 'Logged in' });
+            req.session.user = user.id;
+            res.status(200).json({ user });
         } else {
             res.status(401).json({ message: 'Wrong username or password. Try again...' });
         }
     }).catch(err => res.status(400).json(err));
+});
+
+// logout
+server.get('/api/logout', (req, res) => {
+    if(req.session) {
+        req.session.destroy(err => {
+            if(err) {
+                res.send("Error logging out");
+            } else {
+                res.send("Logged Out");
+            }
+        });
+    } else {
+        res.end();
+    }
 });
 
 server.listen(3300, () => console.log('\nrunning on port 3300\n'));
