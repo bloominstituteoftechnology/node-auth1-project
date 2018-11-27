@@ -16,6 +16,8 @@ GET -> /api/users
 	contained in the databse. If the user is not logged in respond with
 	the correct status code and the message: 'You shall not pass!'
 
+GET -> /api/logout
+  If the user logs out, destroy the session.
 */
 
 // EXPRESS ROUTER, DEPENDENCIES
@@ -23,16 +25,18 @@ GET -> /api/users
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 
+const authMi = require('./authMiddleware');
 const config = require('./authConfig');
 const authDb = require('./authHelper');
 
-// ROUTES
+// AUTH ROUTES
 // ==============================================
 router.post(config.REGISTER, authRegister);
 router.post(config.LOGIN, login);
-router.get(config.USERS, users);
+router.get(config.USERS, authMi.protected, users);
+router.get(config.LOGOUT, logout);
 
-// ROUTES CALLBACK FUNCTIONS
+// AUTH ROUTES CALLBACK FUNCTIONS
 // ==============================================
 async function authRegister(req, res) {
   try {
@@ -56,9 +60,10 @@ async function login(req, res) {
     const raw = req.body;
     const user = await authDb.checkCredentials(raw.username);
     if (user && bcrypt.compareSync(raw.password, user.password)) {
+      req.session.user = user.id;
       res.status(200).json(config.AUTH_SUCCESS);
     } else {
-      res.status(400).json(config.AUTH_FAIL);
+      res.status(401).json(config.AUTH_FAIL);
     }
   } catch (err) {
     res.status(500).json(err);
@@ -72,6 +77,14 @@ async function users(_, res) {
   } catch (err) {
     res.status(500).json(err);
   }
+}
+
+function logout(req, res) {
+  if (req.session) {
+    req.session.destroy(err => {
+      err ? res.send('You can never leave!') : res.send('Bye!');
+    });
+  } else res.end();
 }
 
 module.exports = router;

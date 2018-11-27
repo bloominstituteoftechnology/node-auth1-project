@@ -4,6 +4,7 @@ module.exports = {
   REGISTER: '/register',
   REGISTER_SUCCESS: 'Successfully added user!',
   LOGIN: '/login',
+  LOGOUT: '/logout',
   USERS: '/users',
   USER_UNDEFINED: 'User does not exist!',
   USERNAME_UNAVAILABLE: 'Username is already taken!',
