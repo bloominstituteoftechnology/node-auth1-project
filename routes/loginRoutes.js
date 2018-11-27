@@ -24,17 +24,6 @@ route.post('/', (req, res) => {
 })
 
 
-route.get('/logout', (req, res) => {
-    if(req.session) {
-        req.session.destory(err => {
-            if (err) {
-                res.send('You can\'t leave')
-            } else {
-                res.send('Logged out.')
-            }
-        })
-    }
-})
 
 
 module.exports = route
