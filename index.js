@@ -2,7 +2,6 @@ const express = require('express')
 const bcrypt = require('bcryptjs')
 const knex = require('knex')
 const knexConfig = require('./knexfile.js')
-const cors = require('cors')
 const db = knex(knexConfig.development)
 const server = express();
 const session = require('express-session')
@@ -26,9 +25,17 @@ const sessionConfig = {
     })
 }
 
+server.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,UPDATE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+    next();
+  });
 server.use(session(sessionConfig))
 server.use(express.json())
-server.use(cors())
+
+
 
 const protected = function(req, res, next) {
     if(req.session && req.session.username) {

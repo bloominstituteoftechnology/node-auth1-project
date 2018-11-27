@@ -19,7 +19,7 @@ class Login extends Component {
   handleLoginSubmit = e => {
     const myObj = { username: this.state.username, password: this.state.password }
     Axios
-      .post('http://localhost:9000/api/register', myObj)
+      .post('http://localhost:9000/api/login', myObj, { withCredentials: true })
       .then(res => {
         console.log(res)
       })

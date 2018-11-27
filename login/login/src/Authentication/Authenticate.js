@@ -10,7 +10,10 @@ const Authenticate = App =>
       };
     }
     componentDidMount() {
-      
+      console.log(document.cookie)
+      if(document.cookie === false) {
+        this.setState({ loggedIn: true })
+      } 
     }
     render() {
       if (this.state.loggedIn) return <App />;
