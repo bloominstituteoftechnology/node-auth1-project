@@ -38,7 +38,6 @@ server.post('/api/register', (req,res) => {
 })
 
 server.post('/api/login', (req, res) => {
-    // grab username and password from body
     const creds = req.body;
 
     db('users')
