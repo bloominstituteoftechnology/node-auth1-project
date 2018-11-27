@@ -27,7 +27,9 @@ server.post('/api/register', (req, res) => {
     .then(ids => {
       res.status(201).json(ids);
     })
-    .catch(err => json(err));
+    .catch(err =>
+      res.status(400).json({ message: 'Registration failed.', error: err })
+    );
 });
 
 server.post('/api/login', (req, res) => {
@@ -37,7 +39,7 @@ server.post('/api/login', (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password)) {
-        //passwrods match and user exists by that username
+        //passwords match and user exists by that username
         res.status(200).json({ message: 'Welcome!' });
       } else {
         //either username is invalid or password is wrong
