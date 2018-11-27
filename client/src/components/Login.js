@@ -2,7 +2,13 @@ import React, { Component } from 'react'
 import axios from 'axios'
 
 export default class Login extends Component {
-    state = {}
+    state = { user: '', loggedIn: false, update: '' }
+
+    handleState = () => {
+        this.setState({
+            update : 'update state',
+        })
+    }
 
     handleInput = e => {
         this.setState({
@@ -15,20 +21,29 @@ export default class Login extends Component {
         axios
             .post('http://localhost:9000/api/register', { username, password })
             .then(res => {
-                return <div>{res.data}</div>
+                this.setState({
+                    user     : res.data,
+                    loggedIn : true,
+                })
             })
             .catch(e => {
                 console.log(e)
             })
+
+        this.handleState()
     }
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit}>
-                <input type='text' placeholder='username' name='username' onChange={this.handleInput} />
-                <input type='text' placeholder='password' name='password' onChange={this.handleInput} />
-                <input type='submit' value='submit' />
-            </form>
+            <div>
+                {!this.state.loggedIn && (
+                    <form onSubmit={this.handleSubmit}>
+                        <input type='text' placeholder='username' name='username' onChange={this.handleInput} />
+                        <input type='text' placeholder='password' name='password' onChange={this.handleInput} />
+                        <input type='submit' value='submit' />
+                    </form>
+                )}
+            </div>
         )
     }
 }
