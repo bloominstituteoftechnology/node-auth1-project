@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const bcrypt = require('bcryptjs'); // adds hash library
 
 const db = require('./database/dbConfig.js');
