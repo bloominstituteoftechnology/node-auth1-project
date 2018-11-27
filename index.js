@@ -13,7 +13,7 @@ const db = knex(knexConfig.development);
 
 const sessionConfig = {
   name: "session",
-  secret: "asdfjkl;",
+  secret: "asdfjkl;1234",
   cookie: {
     maxAge: 1000 * 60 * 5,
     secure: false
@@ -61,7 +61,15 @@ server.post("/api/login", (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
-server.get("/api/users", (req, res) => {
+const protected = (req, res, next) => {
+  if (req.session && req.session.userId) {
+    next();
+  } else {
+    res.status(401).json({ message: "You shall not pass!" });
+  }
+};
+
+server.get("/api/users", protected, (req, res) => {
   db("users")
     .select("id", "username")
     .then(users => res.status(200).json(users))
