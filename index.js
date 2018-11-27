@@ -15,10 +15,10 @@ server.get('/', (req, res) => {
     res.json('alive and well');
 })
 
-server.get('/api/users', async (req, res) => {
-    const users = await db('users')
-    res.status(200).json(users)
-})
+// server.get('/api/users', async (req, res) => {
+//     const users = await db('users').select('id', 'user');
+//     res.status(200).json(users)
+// })
 
 server.get('/api/users/:id', async (req, res) => {
     const id = req.params.id;
@@ -42,7 +42,8 @@ server.post('/api/login', async (req, res) => {
     const creds = req.body;
     const user = await db('users').where({ user: creds.user }).first();
     if (user && bcrypt.compareSync(creds.password, user.password)) {
-        res.status(200).json({ message: 'welcome'})
+        const users = await db('users').select('id', 'user');
+        res.status(200).json(users)
     } else {
         res.status(401).json({ message: 'try again' })
     }

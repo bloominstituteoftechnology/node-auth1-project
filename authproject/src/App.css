@@ -1,0 +1,14 @@
+.App {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  background-color: black;
+}
+
+.login {
+  width: 30%;
+  padding: 1.5rem;
+  background-color: darkgray;
+}
