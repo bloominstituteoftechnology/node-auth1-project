@@ -1,7 +1,7 @@
 const express = require('express');
 const knex = require('knex');
 
-const configureMiddleware = require('./middleware.js');
+const { configureMiddleware } = require('./middleware.js');
 const routes = require('./routes.js')
 const server = express();
 
