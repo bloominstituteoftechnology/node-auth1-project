@@ -2,7 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const session = require('express-session');
-
+const KnexSessionStore = require('connect-session-knex')(session);
 
 const restrictPath = (path = '/api/restricted') => (req, res, next) => {
   console.log(req.path)
@@ -29,7 +29,13 @@ module.exports = {
       httpOnly: true, // no js can touch this cookie
       resave: false,
       saveUninitialized: false,
-
+      store: new KnexSessionStore({
+        tablename: 'sessions',
+        sidfieldname: 'sid',
+        knex: db,
+        createtable: true,
+        clearInterval: 1000 * 60 * 60,
+      }),
     };
     server.use(helmet());
     server.use(session(sessionConfig))
