@@ -31,7 +31,7 @@ server.get('/', (req, res) => {
 });
 
 function protected(req, res, next) {
-    if (req.session && req.session.user) {
+    if (req.session && req.session.userId) {
         next();
     } else {
         res.status(401).send('Not AUthorized')
