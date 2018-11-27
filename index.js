@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./database/dbConfig.js');
 const bcrypt = require('bcryptjs')
+const session = require('express-session');
 
 
 //POST to /api/register
@@ -9,21 +10,37 @@ const bcrypt = require('bcryptjs')
 //GET to /api/users
 const server = express();
 
+const sessionConfig = {
+    secret : "My name is Drew",
+    cookie : {
+        maxAge : 1000 *60*10,//10 minutes
+        secure : false
+    },
+    httpOnly : false,
+    resave : false,
+    saveUninitialized : false
+}
+
 server.use(express.json());
 server.use(cors());
+server.use(session(sessionConfig));
 
 server.get('/', (req, res) => {
     res.send('Server is running properly');
 });
 
-server.get('/api/users', (req, res) => {
-    db('users')
-        .select('username','password')
+server.get('/api/users', (req,res) => {
+    if(req.session && req.session.userId){
+        db('users')
+        .select('id', 'username', 'password')
         .then(users => {
             res.json(users);
         })
         .catch(err => res.send(err));
-});//for testing purposes will be revamped
+    }else{
+        res.status(401).json({message : "you shall not pass"})
+    }
+})//for testing purposes will be revamped
 
 server.post('/api/register', (req,res) => {
     const creds = req.body;
