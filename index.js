@@ -18,13 +18,14 @@ server.post('/api/register', async (req, res) => {
       .json({ message: 'Please enter a valid username and password.' });
   }
   // Check if user already exists
-  db.getByUsername(registrationData.username)
-    .then(userInDb => {
-      return userInDb
-        ? res.status(422).json({ message: 'That username already exists.' })
-        : null;
-    })
-    .catch(err => console.log(err));
+  try {
+    const userInDb = db.getByUsername(registrationData.username);
+    return userInDb
+      ? res.status(422).json({ message: 'That username already exists.' })
+      : null;
+  } catch (error) {
+    err => res.status(500).json({ message: err });
+  }
   // registrationData.username
   // generate a hash
   const hash = bcrypt.hashSync(registrationData.password, 10);
