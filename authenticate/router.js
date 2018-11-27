@@ -56,7 +56,9 @@ function protected(request, response, next) {
         return;
     }
     // Inform user of login error
-    response.status(401).json({message: 'You need to login'});
+    response.status(401).json({
+        [config.RESPONSE_MESSAGE]: [config.MESSAGE_RESTRICTED]
+    });
 };
 
 //-- Error Handling ------------------------------

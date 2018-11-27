@@ -19,11 +19,12 @@ module.exports = {
     PORT: PORT,
     SERVER_LISTENING: `Server Listening on port ${PORT}`,
     // Route URLs
-    URL_AUTHENTICATION          : '/api'     ,
-    URL_AUTHENTICATION_REGISTER : '/register',
-    URL_AUTHENTICATION_LOGIN    : '/login'   ,
-    URL_AUTHENTICATION_LOGOUT   : '/logout'  ,
-    URL_AUTHENTICATION_USERSLIST: '/users'   ,
+    URL_RESTRICTED              : '/api/restricted',
+    URL_AUTHENTICATION          : '/api'           ,
+    URL_AUTHENTICATION_REGISTER : '/register'      ,
+    URL_AUTHENTICATION_LOGIN    : '/login'         ,
+    URL_AUTHENTICATION_LOGOUT   : '/logout'        ,
+    URL_AUTHENTICATION_USERSLIST: '/users'         ,
     // Database
     PASSWORD_HASH_DEPTH: 4,
     TABLE_CREDENTIALS: 'credentials',
@@ -37,6 +38,7 @@ module.exports = {
     RESPONSE_MESSAGE: 'message',
     MESSAGE_AUTHENTICATION_SUCCESS: 'Login Successful',
     MESSAGE_AUTHENTICATION_FAILURE: 'You shall not pass!',
+    MESSAGE_RESTRICTED            : 'You shall not pass!',
     ERROR_DATABASE_INTERNAL       : 'Internal Error',
     ERROR_AUTHENTICATION_NAMETAKEN: 'Registration failed: Username not available',
     // Session Store

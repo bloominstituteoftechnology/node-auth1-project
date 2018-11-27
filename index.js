@@ -5,6 +5,7 @@
 //-- Dependencies --------------------------------
 const express = require('express');
 const config = require('./config.js');
+const routeRestricted   = require('./restricted_router.js'  );
 const routeAuthenticate = require('./authenticate/router.js');
 const sessionManager    = require('./session_manager.js'    );
 
@@ -19,4 +20,5 @@ application.use(express.json());
 application.use(sessionManager);
 
 //-- Request Routing -----------------------------
+application.use(config.URL_RESTRICTED    , routeRestricted  );
 application.use(config.URL_AUTHENTICATION, routeAuthenticate);
