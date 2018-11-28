@@ -1,128 +1,105 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const bcrypt = require('bcryptjs'); // *************************** added package and required it here
-const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const dotenv = require('dotenv').config();
+const helmet = require('helmet');
+const morgan = require('morgan');
 const db = require('./data/dbConfig.js');
+const session = require('express-session'); // brints in session library
+const knexSessionStore = require('connect-session-knex')(session);
+
+const sessionConfig = {
+	secret: `${process.env.SESSION_SECRET}`,
+	name: `${process.env.SESSION_NAME}`, // defaults to connect.sid
+	cookie: {
+		secure: false, // over http(S) in production change to true
+		maxAge: 1000 * 60 * 5
+	},
+	httpOnly: true, // JS can't access, only https
+	resave: false,
+	saveUninitialized: false, // has something to do with foreign laws
+	store: new knexSessionStore({
+		// creates memcache
+		tablename: 'sessions', // session table name
+		sidfiledname: 'sid', //session field name
+		knex: db, // what database you want to knex to use
+		createtable: true, // have the library create the table if there isn't one
+		clearInterval: 1000 * 60 * 60 // clear every hour
+	})
+};
 
 const server = express();
-
+server.use(session(sessionConfig)); // wires up session management
 server.use(express.json());
 server.use(cors());
+server.use(helmet());
+server.use(morgan('short'));
 
-// creating a token that sends payload of information to keep in the client
-function generateToken(user) {
-	const payload = {
-		// ...user,
-		userId: user.id,
-		username: user.username,
-		roles: [ 'student', 'PM' ] // this will come from the database
-	};
-	const secret = process.env.JWT_SECRET;
-	const options = {
-		expiresIn: '1h'
-	};
-	return jwt.sign(payload, secret, options);
+server.get('/', (req, res) => {
+	res.send('Server is running');
+});
+
+function restricted(req, res, next) {
+	// if logged in
+	if (req.session && req.session.userId) {
+		// they're logged in, go ahead and provide access
+		next();
+	} else {
+		// bounce them
+		res.status(401).json({ message: 'Invalid credentials' });
+	}
 }
 
-server.post('/api/login', (req, res) => {
-	// grab username and password from body
-	const creds = req.body;
+// get all user id and usernames
+server.get('/users', restricted, (req, res) => {
+	db('students')
+		.select('id', 'username')
+		.then((student) => res.status(400).json(student))
+		.catch((err) => res.status({ message: 'error getting that data', err }));
+});
 
+// register a user by username and password
+server.post('/users/register', (req, res) => {
+	const creds = req.body;
+	const hash = bcrypt.hashSync(creds.password, 14);
+	creds.password = hash;
+	db('students')
+		.insert(creds)
+		.then((ids) => {
+			res.status(201).json(ids);
+		})
+		.catch((err) => res.status(400).json(err));
+});
+
+server.post('/users/login', (req, res) => {
+	const creds = req.body;
 	db('students')
 		.where({ username: creds.username })
 		.first()
 		.then((user) => {
 			if (user && bcrypt.compareSync(creds.password, user.password)) {
 				// passwords match and user exists by that username
-				// created a session > create a token
-				// library sent cookie automatically > we send the token manually
-				// the data for the token has to be inside of the payload property
-				const token = generateToken(user);
-				res.status(200).json({ message: 'welcome!', token });
+				req.session.userId = user.id;
+				res.status(200).json({ message: 'welcome' });
 			} else {
 				// either username is invalid or password is wrong
-				res.status(401).json({ message: 'you shall not pass!!' });
+				res.status(401).json({ message: 'you shall not pass' });
 			}
 		})
-		.catch((err) => res.json(err));
+		.catch((err) => res.status(500).json({ err }));
 });
 
-function protected(req, res, next) {
-	// token is normally sent in the authorization header
-	const token = req.headers.authorization;
-
-	if (token) {
-		// is it valid?
-		//veruft takes in a token, a secret and function to validate
-		jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+// logout
+server.get('/users/logout', (req, res) => {
+	if (req.session) {
+		req.session.destroy((err) => {
 			if (err) {
-				// token is invalid
-				res.status(401).json({ message: 'invalid token' });
+				res.send('you can never logout');
 			} else {
-				// token is valid
-				req.decodedToken = decodedToken;
-				next();
+				res.send('you have logged out');
 			}
 		});
-	} else {
-		// bounce
-		res.status(401).json({ message: 'no token provided' });
 	}
-}
-
-// protect this route, only authenticated users should see it
-server.get('/api/me', protected, (req, res) => {
-	db('students')
-		.select('id', 'username', 'password') // ***************************** added password to the select
-		.where({ id: req.session.user })
-		.first()
-		.then((users) => {
-			res.json(users);
-		})
-		.catch((err) => res.send(err));
 });
 
-server.get('/api/users', protected, checkRole('PM'), (req, res) => {
-	db('students')
-		.select('id', 'username', 'password') // ***************************** added password to the select
-		.then((users) => {
-			res.json(users);
-		})
-		.catch((err) => res.send(err));
-});
-
-function checkRole(role) {
-	return function(req, res, next) {
-		if (req.decodedToken && req.decodedToken.roles.includes(role)) {
-			next();
-		} else {
-			res.status(403).json({ message: 'Access denied' });
-		}
-	};
-}
-
-server.post('/api/register', (req, res) => {
-	// grab username and password from body
-	const creds = req.body;
-
-	// generate the hash from the user's password
-	const hash = bcrypt.hashSync(creds.password, 4); // rounds is 2^X
-
-	// override the user.password with the hash
-	creds.password = hash;
-
-	// save the user to the database
-	db('students')
-		.insert(creds)
-		.then((ids) => {
-			res.status(201).json(ids);
-		})
-		.catch((err) => json(err));
-});
-
-server.get('/', (req, res) => {
-	res.send('Its Alive!');
-});
-
-server.listen(3300, () => console.log('\nrunning on port 3300\n'));
+server.listen(9000, () => console.log('this port is over 9000!'));
