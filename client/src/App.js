@@ -4,6 +4,7 @@ import { Route, Link } from 'react-router-dom';
 import './App.css';
 import UsersList from './components/userComponents/UsersList';
 import LoginForm from './components/forms/LoginForm';
+import RegisterForm from './components/forms/RegisterForm';
 
 
 
@@ -76,12 +77,15 @@ class App extends Component {
   render() {
     if(!this.state.loggedIn){
       return (
-        <LoginForm 
-          username={this.state.username} 
-          password={this.state.password}         
-          handleChange={this.handleInputChange}
-          login={this.handleLogin} 
-        />
+        <div> 
+          <LoginForm 
+            username={this.state.username} 
+            password={this.state.password}         
+            handleChange={this.handleInputChange}
+            login={this.handleLogin} 
+          />
+          <Route exact path='/register' render={(props) => <RegisterForm {...props} />}/>
+        </div> 
       )
     }else{
       return (
@@ -90,8 +94,10 @@ class App extends Component {
             users={this.state.users} 
             logout={this.handleLogout}
           />
+          
         </div>
     )}
+    
   }
 }
 

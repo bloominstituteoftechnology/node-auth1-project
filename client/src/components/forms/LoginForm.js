@@ -1,5 +1,6 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 const LoginForm = props => {
   return (
@@ -18,7 +19,7 @@ const LoginForm = props => {
         type="password"
       />
       <button onClick={props.login}>Submit</button>
-      <button>Register</button>
+      <Link to='/register'>Register</Link>
     </form>
   )
 }
