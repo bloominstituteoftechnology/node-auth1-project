@@ -12,7 +12,7 @@ const sessionConfig = {
   name: "john galt",
   secret: "iuojewroijennocioj",
   cookie: {
-    maxAge: 1000 * 60 * 10,
+    maxAge: 1000 * 60 * 10, // ten minute timer, isn't that cleaver?
     secure: false // in production this really oughta be true
   },
   httpOnly: true, // no JS touching this cookie
@@ -81,12 +81,14 @@ function protected(req, res, next) {
   if (req.session && req.session.user) {
     next();
   } else {
-    res.status(401).json({ you: "need to get off my lawn right now" });
+    res
+      .status(401)
+      .json({ message: "sir i'm going to have to ask you to leave." });
   }
 }
 
 // U S E R   L I S T   R O U T E
-server.get("/users", protected, (req, res) => {
+server.get("/users", (req, res) => {
   db("users")
     .select("id", "username", "password")
     .then(users => {
@@ -94,6 +96,15 @@ server.get("/users", protected, (req, res) => {
     })
     .catch(err => res.send(err));
 });
+// O R I G I N A L  W /  M I D D L E W A R E
+// server.get("/users", protected, (req, res) => {
+//   db("users")
+//     .select("id", "username", "password")
+//     .then(users => {
+//       res.json(users);
+//     })
+//     .catch(err => res.send(err));
+// });
 
 // L O G O U T   R O U T E
 server.get("/logout", (req, res) => {
@@ -113,7 +124,7 @@ server.get("/logout", (req, res) => {
 // S T R E T C H :  R E S T R I C T E D   R O U T E
 
 server.get("/restricted/:anything", protected, (req, res) => {
-  res.send("you can be here");
+  res.send("you can totally be here");
 });
 
-server.listen(3000, () => console.log("\nrunning on port 3000\n"));
+server.listen(8000, () => console.log("\nrunning on port 8000\n"));
