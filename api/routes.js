@@ -14,6 +14,21 @@ router.get('/', (req, res) => {
   res.status(200).json({ message: 'api' });
 })
 
+const register = (req, res) => {
+  const { username, password } = req.body;
+  const saltLength = 14;
+  const hashedPass = bcrypt.hashSync(password, saltLength)
+  const userObj = {username, password: hashedPass}
+  db('users').insert(userObj)
+    .then(ids => {
+      res
+        .status(201)
+        .json({ids, hashedPass})
+    })
+    .catch(err => res.json(err));
+
+}
+
 const login = (req, res) => {
   const creds = req.body 
 
@@ -30,19 +45,16 @@ const login = (req, res) => {
     .catch(err => res.json(err));
 }
 
-const register = (req, res) => {
-  const { username, password } = req.body;
-  const saltLength = 14;
-  const hashedPass = bcrypt.hashSync(password, saltLength)
-  const userObj = {username, password: hashedPass}
-  db('users').insert(userObj)
-    .then(ids => {
-      res
-        .status(201)
-        .json({ids, hashedPass})
+const logOut = (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.status(500).json({err})
+      } else {
+        res.status(200).json({message: 'Good bye!'})
+      }
     })
-    .catch(err => res.json(err));
-
+  }
 }
 
 const getUsers = async (req, res) => {

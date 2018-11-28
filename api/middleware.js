@@ -4,6 +4,8 @@ const helmet = require('helmet');
 const session = require('express-session');
 const KnexSessionStore = require('connect-session-knex')(session);
 
+const db = require('../data/dbConfig')
+
 const restrictPath = (path = '/api/restricted') => (req, res, next) => {
   console.log(req.path)
   if (req.path.slice(0, path.length) === path) {
@@ -41,6 +43,8 @@ module.exports = {
     server.use(session(sessionConfig))
     server.use(restrictPath())
     server.use(express.json());
+    // set static routes 
+    server.use(express.static('./client/build'))
     server.use(morgan('dev'));
 
   },
