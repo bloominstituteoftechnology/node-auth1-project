@@ -21,6 +21,7 @@ const LoginPage = props => {
             />
             <button onClick={props.loginEvent}>Login</button>
             <button onClick={props.registerEvent}>Register</button>
+            <button onClick={props.getUsers}>Get users</button>
             </form>
         </div>
     )

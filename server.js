@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const session = require('express-session')
-const sessionConfig = require('./data/sessionConfig.js')
+const sessionConfig = require('./data/sessionConfig.js')(session)
 const morgan = require('morgan')
 
 // Route Files
@@ -17,13 +17,8 @@ const server = express();
 
 //Middleware
 server.use(express.json());
-server.use(function(req, res, next) {
-    res.header('Access-Control-Allow-Credentials', true);
-    res.header('Access-Control-Allow-Origin', req.headers.origin);
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,UPDATE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
-    next();
-  });
+server.use(cors())
+server.use(helmet())
 server.use(session(sessionConfig))
 server.use(morgan('dev'))
 

@@ -17,13 +17,6 @@ class App extends Component {
     };
   }
 
-  // const getUsers = () => {
-  //   axios
-  //   .get('http://localhost:9000/api/users')
-  //   .then(res => {
-  //     this.setState({users: res.data})
-  //   })
-  // }
 
   loginHandler = ev => {
     this.setState({
@@ -44,11 +37,9 @@ class App extends Component {
     }
     axios
       .post("http://localhost:9000/api/login", this.state.credentials)
-      .then(res => { console.log(res)
-        // axios.get("http://localhost:9000/api/users").then(res => {
-        //   this.setState({ users: res.data });
-        // });
-      });
+      .then(res => {
+        console.log(res.data)
+      })
   };
 
   registerEvent = ev => {
@@ -61,12 +52,15 @@ class App extends Component {
     }
     axios
       .post("http://localhost:9000/api/register", this.state.credentials)
-      .then(res => {
-        axios.get("http://localhost:9000/api/users").then(res => {
-          this.setState({ users: res.data });
-        });
-      });
+      
   };
+
+  getUsers = ev => {
+    ev.preventDefault()
+      axios.get("http://localhost:9000/api/users").then(res => {
+        this.setState({ users: res.data });
+      });
+  }
 
 
 
@@ -81,6 +75,7 @@ class App extends Component {
               loginHandler={this.loginHandler}
               loginEvent={this.loginEvent}
               registerEvent={this.registerEvent}
+              getUsers={this.getUsers}
 
             />
           )}
