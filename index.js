@@ -16,7 +16,9 @@ const sessionConfig = {
   },
   httpOnly: true,
   resave: false,
+
   saveUninitialized: false,
+  //this stores the cookie data on the database. So you can restart the server
   store: new KnexSessionStore({
     tablename: 'sessions',
     sidfieldname: 'sid',
