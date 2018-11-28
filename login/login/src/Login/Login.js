@@ -21,7 +21,9 @@ class Login extends Component {
     Axios
       .post('http://localhost:9000/api/login', myObj, { withCredentials: true })
       .then(res => {
+        localStorage.setItem('user', 'logged in')
         console.log(res)
+        window.location.reload();
       })
       .catch(err => {
         console.log(err)
