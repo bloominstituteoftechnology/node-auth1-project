@@ -1,0 +1,40 @@
+.note-form {
+  padding-left: 4%;
+  padding-right: 4%;
+  width: 90%;
+}
+
+.note-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+.note-form form > * {
+  margin: 5px 0 5px 0;
+  padding: .5rem 0 .5rem 0;
+}
+
+.note-form form h2 {
+  margin: 10px 0 10px 0;
+}
+
+.note-form form input {
+  padding-left: 10%;
+  width: 89%;
+  box-shadow: inset 0px 0px 8px 0px rgba(0,0,0,0.77);
+  border-radius: 4px;
+}
+
+.note-form form .title {
+  width: 50%;
+  height: 40px;
+}
+
+.note-form form .textBody {
+  height: 345px;
+}
+
+.note-form form button {
+  height: 40px;
+  max-width: 200px;
+}
