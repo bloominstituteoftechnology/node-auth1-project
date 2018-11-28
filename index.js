@@ -25,7 +25,7 @@ const sessionConfig = {
     })
 };
 server.use(session(sessionConfig));  //wires up session mgmt
-
+ 
 server.use(express.json());
 server.use(cors());
 
@@ -38,10 +38,10 @@ server.post('/api/register', (req, res) => {
         .then(ids => {
             res.status(201).json(ids);
         })
-        .catch(err => json(err));
+        .catch(err => res.status(401).json(err));
 });
 
-server.post('api/login', (req, res) => {
+server.post('/api/login', (req, res) => {
     const creds = req.body;
     db('users')
         .where({ username: creds.username })
@@ -54,7 +54,7 @@ server.post('api/login', (req, res) => {
                 res.status(401).json({ message: 'You shall not pass!' })
             }
         })
-        .catch(err => json(err));
+        .catch(err => res.status(401).json(err));
 });
 
 server.get('/api/users', protected, (req, res) =>{
@@ -64,7 +64,7 @@ server.get('/api/users', protected, (req, res) =>{
         .then(users => {
             res.json('users')
         })
-        .catch(err => json(err));
+        .catch(err => res.status(401).json(err));
 });
 
 function protected(req, res, next) {
