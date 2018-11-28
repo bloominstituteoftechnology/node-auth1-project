@@ -2,7 +2,7 @@ import React from 'react';
 
 const Register = (props) => {
     return (
-        <div onSubmit={props.submitHandler}>
+        <form onSubmit={props.registerHandler}>
             <input
                 type="text"
                 name="username"
@@ -17,8 +17,8 @@ const Register = (props) => {
                 onChange={props.changeHandler}
             />
 
-            <button onClick={props.submitHandler}>Register</button>
-        </div>
+            <button onClick={props.registerHandler}>Register</button>
+        </form>
     );
 }
 

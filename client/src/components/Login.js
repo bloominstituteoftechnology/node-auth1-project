@@ -2,7 +2,7 @@ import React from 'react';
 
 const Login = (props) => {
     return(
-        <form action={props.submitHandler} method="POST">
+        <form onSubmit={props.loginHandler}>
             <input 
                 type="text"
                 name="username"
@@ -17,7 +17,7 @@ const Login = (props) => {
                 value={props.password}
             />
 
-            <button onClick={props.submitHandler}>login</button>
+            <button onClick={props.loginHandler}>login</button>
         </form>
     );
 }
