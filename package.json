@@ -18,11 +18,14 @@
   "homepage": "https://github.com/sabrinagear/auth-i#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "connect-session-knex": "^1.4.0",
     "cors": "^2.8.5",
     "express": "^4.16.4",
+    "express-session": "^1.15.6",
     "g": "^2.0.1",
     "helmet": "^3.15.0",
     "knex": "^0.15.2",
+    "morgan": "^1.9.1",
     "sqlite3": "^4.0.4"
   },
   "devDependencies": {
