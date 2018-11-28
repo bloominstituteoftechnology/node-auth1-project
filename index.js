@@ -19,7 +19,7 @@ const sessionConfig = {
     saveUninitialized: false,
     store: new KnexSessionStore({
         tablename: 'sessions',
-        sidfieldname: 'sid',
+        sidfieldname: 'sid', 
         knex: db,
         createtable: true,
         clearInterval: 1000 * 60 * 60 //(once per hour)
@@ -31,12 +31,20 @@ server.use(express.json());
 server.use(cors());
 
 
+function protected(req, res, next){
+    if(req.session && req.session.userId){
+    next();
+} else {
+    res.status(401).json({ message: 'you are not logged in!'})
+    }
+}
+
 server.get('/', (req, res) => {
     res.send('Server is alive!');
 })
 
 
-server.get('/api/users', (req, res) => {
+server.get('/api/users', protected, (req, res) => {
     if(req.session && req.session.userId){
         //login is successfull
     db('users')
@@ -47,6 +55,18 @@ server.get('/api/users', (req, res) => {
    .catch(err => res.send(err))
     } else {
         res.status(401).json({ message: 'you are not logged in!'})
+    }
+})
+
+server.get('/api/logout', (req, res) => {
+    if(req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                res.send('error')
+            } else {
+                res.send('goodbye!')
+            }
+        })
     }
 })
 
