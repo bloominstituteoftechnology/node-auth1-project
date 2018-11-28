@@ -1,38 +1,40 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const knex = require('knex');
-
-
+const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+
 const knexConfig = require('../knexfile.js');
 const db = knex(knexConfig.development);
 
 const server = express();
 
-const protected = require('../middleware/protected.js');
-const checkRole = require('../middleware/checkRole.js');
-// protectedSession for sessions configuration
+const sessionConfig = { 
+  name: 'anyName',  // when left blank it was connect.sid
+  secret: 'somerandom(*&*&#$#$)',
+  cookie: {
+    maxAge: 1000 * 60 * 10,  // in seconds 1000 ms * 60 secs * 10 mins
+    secure: false   // only set it over https (in production you want this true)
+  },
+  httpOnly: true, // no js can touch this cookie
+  resave: false,
+  saveUninitialized: false,
+  store: new KnexSessionStore({
+    tablename: 'sessions',
+    sidfilename: 'sid',
+    knex: db,
+    createtable: true,
+    clearInterval: 1000 * 60 * 60,  // clear once an hour
+  })
+}
 
+const protected = require('../middleware/protected.js');
+
+
+server.use(session(sessionConfig)); // wires up session management
 server.use(express.json());
 server.use(cors());
-
-// TOKENS doesn't require state; session does require state (so the user has to use the same server)
-
-// more middleware
-// function checkRole(role) {
-//   return function(req, res, next) {
-//     if (req.decodedToken && req.decodedToken.roles.includes(role)) {
-//       next();
-//     } else {
-//       req.status(403).json({ message: "you don't have permission to access to this resource based on your role" })
-//     }
-//   }
-// }
-
-// e.g., checkRole('sales');
-
 
 // TABLE SCHEMA
 
@@ -57,21 +59,6 @@ server.post('/api/register', (req, res) => {
     })
 })
 
-function generateToken(user) {
-
-  const payload = {
-    userId: user.userId,
-    username: user.username,
-    roles: ['sales', 'marketing'] // this will come from database
-  }
-  // const secret = 'anySecret($&*#$%#%#$%#$)';
-  const secret = process.env.JWT_SECRET; // added to .env file
-  const options = {
-    expiresIn: '1hr',
-  }
-  return jwt.sign(payload, secret, options); // take 3 arguments
-}
-
 
 server.post('/api/login', (req, res) => {
   const creds = req.body;
@@ -82,17 +69,19 @@ server.post('/api/login', (req, res) => {
     .then(user => {
       if (user && bcrypt.compareSync(creds.password, user.password) ) {
         // user exists and password match
-        const token = generateToken(user)
-        res.status(200).json({ message: 'Logged in', user: user.username, token})
+        req.session.userId = user.id;
+        res.status(200).json({ message: 'Logged in', user: user.username})
       } else {
         res.status(401).json({ message: 'You shall not pass!' });
       }
     })
 })
 
-server.get('/api/protected', protected, checkRole('sales'), (req, res) => {
+server.get('/api/protected', protected, (req, res) => {
+  // if (req.session && req.session.userId) {
     db('users')
     .select('id', 'username', 'password')
+    .where({ id: req.session.userId })
     .first()
     .then(user => {
         res.status(200).json({ message: 'Logged into protected area', user: user.username})
@@ -101,8 +90,8 @@ server.get('/api/protected', protected, checkRole('sales'), (req, res) => {
 })
 
 
-server.get('/api/users', protected, checkRole('sales'), (req, res) => {
-
+server.get('/api/users', protected, (req, res) => {
+  // if (req.session && req.session.userId)
   db('users')
     .select('id', 'username', 'password')
     // .select('username') to see just users
@@ -112,6 +101,21 @@ server.get('/api/users', protected, checkRole('sales'), (req, res) => {
     .catch(err => res.send(err));
 });
 
+server.get('api/logout', (req, res) => {
+  if(req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.status(401).json({ message: 'there is an issue logging out' })
+      } else {
+        // res.send('you have logged out')
+        res.status(201).json({ message: 'logged out' })
+      }
+    })
+  } else {
+    // res.end();
+    res.status(404).end()
+  }
+})
 
 server.get('/', (req, res) => {
   res.json({ api: 'auth-i up' });
