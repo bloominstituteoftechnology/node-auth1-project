@@ -12,7 +12,7 @@ module.exports = {
     db('users')
       .insert(req.body)
       .then(id => {
-        req.session.username = req.body.username
+        req.session.cookie.username = req.body.username
         res
           .status(201)
           .json({ msg: 'Registration Successful!', ...req.session, id: id[0] })
@@ -30,7 +30,7 @@ module.exports = {
       .then(user => {
         bcrypt.compare(password, user.password).then(isPasswordValid => {
           if (isPasswordValid) {
-            req.session.username = user.username
+            req.session.cookie.username = user.username
             res.status(200).json({ msg: 'login successful', ...req.session })
           } else {
             res.status(401).json({ msg: 'login failed' })

@@ -23,10 +23,13 @@ class App extends Component {
     axios
       .post('http://localhost:8000/api/login', { username, password })
       .then(res => {
-        axios
-          .get('http://localhost:8000/api/users')
-          .then(res => console.log(res.data))
+        axios.get('http://localhost:8000/api/users').then(res =>
+          this.setState({
+            users: res.data
+          })
+        )
       })
+      .catch(err => console.error(err))
   }
 
   handleRegister = e => {
@@ -37,7 +40,12 @@ class App extends Component {
       .then(res => {
         axios
           .get('http://localhost:8000/api/users')
-          .then(res => console.log(res.data))
+          .then(res =>
+            this.setState({
+              users: res.data
+            })
+          )
+          .catch(err => console.error(err))
       })
   }
 
@@ -50,7 +58,7 @@ class App extends Component {
         <button onClick={this.handleLogin}>Login</button>
         <button onClick={this.handleRegister}>Register</button>
         <div>
-          {this.state.users.map(user => <div>{user.username}</div>)}
+          {this.state.users.map((user, index) => <div key={index}>{user}</div>)}
         </div>
       </div>
     )
