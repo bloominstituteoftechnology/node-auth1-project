@@ -14,7 +14,7 @@ const sessionConfig = {
   name: 'anyName',  // when left blank it was connect.sid
   secret: 'somerandom(*&*&#$#$)',
   cookie: {
-    maxAge: 1000 * 60 * 10,  // in seconds
+    maxAge: 1000 * 60 * 10,  // in seconds 1000 ms * 60 secs * 10 mins
     secure: false   // only set it over https (in production you want this true)
   },
   httpOnly: true, // no js can touch this cookie
@@ -101,17 +101,19 @@ server.get('/api/users', protected, (req, res) => {
     .catch(err => res.send(err));
 });
 
-server.get('api/logout', protected, (req, res) => {
+server.get('api/logout', (req, res) => {
   if(req.session) {
     req.session.destroy(err => {
       if (err) {
-        res.send('there is an issue logging out')
+        res.status(401).json({ message: 'there is an issue logging out' })
       } else {
-        res.send('you have logged out')
+        // res.send('you have logged out')
+        res.status(201).json({ message: 'logged out' })
       }
     })
   } else {
-    res.end();
+    // res.end();
+    res.status(404).end()
   }
 })
 
