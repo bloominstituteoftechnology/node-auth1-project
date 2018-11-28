@@ -10,6 +10,7 @@ const knexConfig = require('./knexfile');
 const db = knex(knexConfig.development);
 
 const server = express();
+server.use(cors());
 
 const sessionConfig = {
     name: "whoknows",
