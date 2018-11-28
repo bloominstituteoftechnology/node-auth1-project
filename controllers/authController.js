@@ -41,7 +41,6 @@ module.exports = {
   },
 
   logoutUser: (req, res, next) => {
-    console.log(req.session)
     if (req.session) {
       req.session.destroy(err => {
         if (err) {

@@ -1,5 +1,4 @@
 const validateUser = (req, res, next) => {
-  console.log('SESSION 🦄', req.session)
   if (req.session && req.session.username) {
     next()
   } else {

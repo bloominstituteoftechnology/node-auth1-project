@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 const server = require('express')()
 const errorHandler = require('./helpers/errorHandler')
 

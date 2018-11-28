@@ -14,7 +14,7 @@ module.exports = server => {
   server.use(express.json())
   server.use(logger('dev'))
   server.use(helmet())
-  server.use(cors())
+  server.use(cors({ origin: 'http://localhost:3000', credentials: true }))
 
   //* session config to use SQLITE3
   server.use(

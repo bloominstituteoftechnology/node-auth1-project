@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
-import logo from './logo.svg'
 import './App.css'
 import axios from 'axios'
-
+axios.defaults.withCredentials = true
 class App extends Component {
   state = {
     username: '',

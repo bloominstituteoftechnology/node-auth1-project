@@ -2,5 +2,5 @@ const db = require('../data/db.js')
 
 module.exports = {
   knex: db,
-  clearInterval: 1000 * 60
+  clearInterval: 60 * 60 * 1000
 }
