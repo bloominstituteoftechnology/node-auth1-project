@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 const bcrypt = require('bcryptjs');
+const knexSessionStore = require('connect-session-knex')(session);
 
 const session = require('express-session');
 
@@ -18,7 +19,15 @@ const sessionConfig = {
     cookie: {
         secure: false,
         maxAge: 1000*60*1
-    }
+    },
+    store: new knexSessionStore({
+        tablename: 'sessions',
+        sidfieldname: 'sid',
+        knex: db,
+        createtable: true,
+        clearInterval: 1000 * 60 * 60,
+    })
+
 }
 
 server.use(session(sessionConfig));
