@@ -1,33 +1,33 @@
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
-const session = require("express-session");
-const KnexSessionStore = require("connect-session-knex")(session);
+// const session = require("express-session");
+// const KnexSessionStore = require("connect-session-knex")(session);
 
 const db = require("./database/dbConfig.js");
 
 const server = express();
 
-const sessionConfig = {
-  name: "john galt",
-  secret: "iuojewroijennocioj",
-  cookie: {
-    maxAge: 1000 * 60 * 10, // ten minute timer, isn't that cleaver?
-    secure: false // in production this really oughta be true
-  },
-  httpOnly: true, // no JS touching this cookie
-  resave: false,
-  saveUninitialized: false,
-  store: new KnexSessionStore({
-    tablename: "sessions",
-    sidfieldname: "sid",
-    knex: db,
-    createtable: true,
-    clearInterval: 1000 * 60 * 60
-  })
-};
+// const sessionConfig = {
+//   name: "john galt",
+//   secret: "iuojewroijennocioj",
+//   cookie: {
+//     maxAge: 1000 * 60 * 10, // ten minute timer, isn't that cleaver?
+//     secure: false // in production this really oughta be true
+//   },
+//   httpOnly: true, // no JS touching this cookie
+//   resave: false,
+//   saveUninitialized: false,
+//   store: new KnexSessionStore({
+//     tablename: "sessions",
+//     sidfieldname: "sid",
+//     knex: db,
+//     createtable: true,
+//     clearInterval: 1000 * 60 * 60
+//   })
+// };
 
-server.use(session(sessionConfig)); // wires up session management
+// server.use(session(sessionConfig)); // wires up session management
 server.use(express.json());
 server.use(cors());
 
@@ -87,8 +87,8 @@ function protected(req, res, next) {
   }
 }
 
-// O R I G I N A L  W /  M I D D L E W A R E
-server.get("/users", protected, (req, res) => {
+// U S E R   L I S T   R O U T E
+server.get("/users", (req, res) => {
   db("users")
     .select("id", "username", "password")
     .then(users => {
@@ -96,12 +96,8 @@ server.get("/users", protected, (req, res) => {
     })
     .catch(err => res.send(err));
 });
-
-// U S E R   L I S T   R O U T E
-
-// E x p e r i m e n t i n g  w/  R e a c t
-//
-// server.get("/users", (req, res) => {
+// O R I G I N A L  W /  M I D D L E W A R E
+// server.get("/users", protected, (req, res) => {
 //   db("users")
 //     .select("id", "username", "password")
 //     .then(users => {
