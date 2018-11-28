@@ -23,7 +23,7 @@ const sessionStuff = {
     resave: false,
     saveUninitialized: false,
     store: new KnexSessionStore({
-        tablename: 'sessions',
+        tablename: 'keepinTabs',
         sidfieldname: 'sid',
         knex: db,
         createtable: true,
