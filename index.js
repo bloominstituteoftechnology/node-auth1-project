@@ -65,6 +65,21 @@ server.post('/api/login', (req, res) => {
     .catch((err) => res.json(err));
 });
 
+// ---- LOGOUT ----
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy((err) => {
+      if (err) {
+        res.send('could not log out');
+      } else {
+        res.send('see you later, dude!');
+      }
+    });
+  } else {
+    res.end();
+  }
+});
+
 // ----GET ALL USERS ----
 server.get('/api/users', protect, (req, res) => {
   db('user_info')
