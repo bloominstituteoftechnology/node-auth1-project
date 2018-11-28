@@ -12,7 +12,7 @@ const server = express();
 
 const sessionConfig = {
     name: 'Monster',
-    secret: 'hunter',
+    secret: 'adfkahdkfheiooeowoeo',
     cookie: {
       maxAge: 1000 * 60 * 10, // 10 minutes
       secure: false // only set it over https; in production you want this true
@@ -29,13 +29,13 @@ const sessionConfig = {
     })
 }
 
-  server.use(session(sessionConfig));
+server.use(session(sessionConfig));
 server.use(express.json());
 server.use(morgan());
 server.use(helmet());
 
 
-server.get('/', (req, res) => {
+server.get('/', async (req, res) => {
     res.send('My server can respond');
 });
 
@@ -63,11 +63,12 @@ server.post('/api/register', (req, res) => {
 server.post('/api/login', (req, res) => {
     //grabs username and password from body
         const creds = req.body;
-    db('users').where({ username: creds.username})
+    db('users')
+        .where({ username: creds.username })
         .first()
         .then(user => {
             if(user && bcrypt.compareSync(creds.password, user.password)) {
-                req.session.userId = user.id;
+                req.session.user = user.id;
          //paswords match and username exists
             res.status(200).json({message: 'Logged in'});
     
@@ -80,23 +81,28 @@ server.post('/api/login', (req, res) => {
 });
 
 function protected(req, res, next) {
+    console.log(req.session);
+    console.log(`MY USER ${req.session.user}`);
     if (req.session && req.session.user) {
-        next();
+      next();
     } else {
-        res.status(401).json({message: "You shall not pass!"})
+      res.status(401).json({ you: 'shall not pass!'})
     }
-}
-//==========GET USER INFO==========
-server.get('/api/users', protected,  (req, res) => {
-    db('users')
-      .select('id', 'username') //to get password add ", 'password' "
+  }
+  // protect this route, only authenticated users should see it
+  //==========GET USER INFO==========
+  server.get('/api/users', protected, (req, res) => {
+  
+      db('users')
+      .select('id', 'username', 'password')
+      //.where({ id: req.session.user })
       .then(users => {
         res.json(users);
       })
-      .catch(err => res.status(401).json({message: 'You shall not pass!'}));
-});
- 
-server.get('/api/logout', (req, res) => {
+      .catch(err => res.send(err));
+  });
+  
+  server.get('/api/logout', (req, res) => {
     if(req.session) {
       req.session.destroy(err => {
         if (err) {
