@@ -41,7 +41,7 @@ server.get('/', (req, res) => {
     res.send({ message: 'do not forget to add the correct url info' })
 })
 
-//middleware
+//middleware local
 function restricted(req, res, next) {
     if (req.session && req.session.user) {
         next();
@@ -49,6 +49,51 @@ function restricted(req, res, next) {
         res.status(401).json({ you: 'shall not pass!' })
     }
 }
+
+
+
+//Info for me to learn from
+
+//HOW TO CALL/USE THE LOCAL MIDDLEWARE ABOVE
+// server.get('/api/users', restricted, (req, res) => {
+//     //they're logged in, go ahead and provide access/data
+//     db('users')
+//         .select('id', 'username')
+//         .then(users => {
+//             res.json(users);
+//         })
+//         .catch(err => res.json(err));
+
+//     //bounce them
+//     res.status(401).json({ message: 'you shall not pass' })
+// });
+
+
+// //custom middleware (will be used globally) to restrict access if path starts with '/api/restricted'
+// function restrictMiddleware(req, res, next) {
+//     // if path contains '/api/restricted', no matter what follows, runs check for valid session and cookie info
+//     if (req.path.includes("/api/restricted")) {
+//       // verifies if user is logged in. if yes, points to next middleware (the endpoint, in this case)
+//       if (req.session && req.session.userId) {
+//         next();
+//       } else {
+//         // not logged in, kill request
+//         res.status(401).json({ message: "You shall not pass!" });
+//       }
+//     } else {
+//       // path doesn't contain '/api/restricted', so runs the next middleware(endpoint) as it's written
+//       next();
+//     }
+//   }
+
+//   //all server requests first pass through restrict middleware
+//   server.use(restrictMiddleware);
+
+
+
+
+
+
 
 //endpoints
 
@@ -107,6 +152,9 @@ server.get('/api/users', (req, res) => {
         res.status(401).json({ message: 'you shall not pass' })
     }
 });
+
+
+
 
 server.get('/api/logout', (req, res) => {
     if (req.session) {
