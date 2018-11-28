@@ -1,43 +1,46 @@
-const express = require("express");
-const cors = require("cors");
-const bcrypt = require("bcryptjs");
-// const session = require("express-session");
-// const KnexSessionStore = require("connect-session-knex")(session);
+// this is the original idea with SESSIONS
+// instead of JWT
 
-const db = require("./database/dbConfig.js");
+const express = require('express');
+const cors = require('cors');
+const bcrypt = require('bcryptjs');
+const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
+
+const db = require('./database/dbConfig.js');
 
 const server = express();
 
-// const sessionConfig = {
-//   name: "john galt",
-//   secret: "iuojewroijennocioj",
-//   cookie: {
-//     maxAge: 1000 * 60 * 10, // ten minute timer, isn't that cleaver?
-//     secure: false // in production this really oughta be true
-//   },
-//   httpOnly: true, // no JS touching this cookie
-//   resave: false,
-//   saveUninitialized: false,
-//   store: new KnexSessionStore({
-//     tablename: "sessions",
-//     sidfieldname: "sid",
-//     knex: db,
-//     createtable: true,
-//     clearInterval: 1000 * 60 * 60
-//   })
-// };
+const sessionConfig = {
+  name: 'john galt',
+  secret: 'iuojewroijennocioj',
+  cookie: {
+    maxAge: 1000 * 60 * 10, // ten minute timer, isn't that cleaver?
+    secure: false // in production this really oughta be true
+  },
+  httpOnly: true, // no JS touching this cookie
+  resave: false,
+  saveUninitialized: false,
+  store: new KnexSessionStore({
+    tablename: 'sessions',
+    sidfieldname: 'sid',
+    knex: db,
+    createtable: true,
+    clearInterval: 1000 * 60 * 60
+  })
+};
 
-// server.use(session(sessionConfig)); // wires up session management
+server.use(session(sessionConfig)); // wires up session management
 server.use(express.json());
 server.use(cors());
 
 // T E S T
-server.get("/", (req, res) => {
-  res.send("We up");
+server.get('/', (req, res) => {
+  res.send('We up');
 });
 
 // R E G I S T E R   R O U T E
-server.post("/register", (req, res) => {
+server.post('/api/register', (req, res) => {
   const credentials = req.body;
 
   // hash the password
@@ -45,7 +48,7 @@ server.post("/register", (req, res) => {
   credentials.password = hash;
 
   // save user
-  db("users")
+  db('users')
     .insert(credentials)
     .then(ids => {
       const id = ids[0];
@@ -59,10 +62,10 @@ server.post("/register", (req, res) => {
 });
 
 // L O G I N   R O U T E
-server.post("/login", (req, res) => {
+server.post('/api/login', (req, res) => {
   const credentials = req.body;
 
-  db("users")
+  db('users')
     .where({ username: credentials.username })
     .first()
     .then(user => {
@@ -70,7 +73,7 @@ server.post("/login", (req, res) => {
         req.session.user = user.id;
         res.status(200).json({ welcome: user.username });
       } else {
-        res.status(401).json({ message: "big problem" });
+        res.status(401).json({ message: 'big problem' });
       }
     })
     .catch(err => res.status(500).json({ err }));
@@ -87,17 +90,21 @@ function protected(req, res, next) {
   }
 }
 
-// U S E R   L I S T   R O U T E
-server.get("/users", (req, res) => {
-  db("users")
-    .select("id", "username", "password")
+// O R I G I N A L  W /  M I D D L E W A R E
+server.get('/api/users', protected, (req, res) => {
+  db('users')
+    .select('id', 'username', 'password')
     .then(users => {
       res.json(users);
     })
     .catch(err => res.send(err));
 });
-// O R I G I N A L  W /  M I D D L E W A R E
-// server.get("/users", protected, (req, res) => {
+
+// U S E R   L I S T   R O U T E
+
+// E x p e r i m e n t i n g  w/  R e a c t
+//
+// server.get("/api/users", (req, res) => {
 //   db("users")
 //     .select("id", "username", "password")
 //     .then(users => {
@@ -107,13 +114,13 @@ server.get("/users", (req, res) => {
 // });
 
 // L O G O U T   R O U T E
-server.get("/logout", (req, res) => {
+server.get('/api/logout', (req, res) => {
   if (req.session) {
     req.session.destroy(err => {
       if (err) {
         res.send("i'm really sorry about this");
       } else {
-        res.send("ok man great to see you");
+        res.send('ok man great to see you');
       }
     });
   } else {
@@ -123,8 +130,8 @@ server.get("/logout", (req, res) => {
 
 // S T R E T C H :  R E S T R I C T E D   R O U T E
 
-server.get("/restricted/:anything", protected, (req, res) => {
-  res.send("you can totally be here");
+server.get('/api/restricted/:anything', protected, (req, res) => {
+  res.send('you can totally be here');
 });
 
-server.listen(8000, () => console.log("\nrunning on port 8000\n"));
+server.listen(8000, () => console.log('\nrunning on port 8000\n'));
