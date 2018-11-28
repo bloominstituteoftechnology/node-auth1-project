@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const cors = require('cors');
 const KnexSessionStore = require('connect-session-knex')(session);
 const db = require('./data/helpers');
 const knexDb = require('./data/dbConfig');
@@ -29,6 +30,7 @@ const sessionConfig = {
 // Middleware
 server.use(session(sessionConfig));
 server.use(express.json());
+server.use(cors());
 
 // Custom Middleware
 function protected(req, res, next) {
@@ -58,7 +60,7 @@ server.post('/api/register', async (req, res) => {
       res.status(422).json({ message: 'That username already exists.' });
     }
   } catch (error) {
-    err => res.status(500).json({ error: 'caught' });
+    res.status(500).json({ error: 'caught' });
   }
 
   // generate a hash
@@ -94,6 +96,17 @@ server.post('/api/login', async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: 'Something went wrong, pal.' });
+  }
+});
+
+// LOGOUT
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      return err
+        ? res.json({ message: 'Something went wrong', err })
+        : res.status(200).json({ message: 'You are now logged out.' });
+    });
   }
 });
 
