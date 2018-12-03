@@ -41,3 +41,22 @@ You will build the solution from scratch, no starter code is provided. Feel free
 
 - Write a piece of **global** middleware that ensures a user is logged in when accessing _any_ route prefixed by `/api/restricted/`. For instance, `/api/restricted/something`, `/api/restricted/other`, and `/api/restricted/a` should all be protected by the middleware; only logged in users should be able to access these routes.
 - Build a React application that implements components to register, login and view a list of users. Gotta keep sharpening your React skills.
+
+// npm init -y
+// yarn add express knex sqlite3 helmet brcypt
+// yarn add --dev nodemon
+// create knex file: knex init
+// node index.js
+// in package.json "scipts": "server": "nodemon"
+// knex migrate:make users
+// in knex.js: 
+    connection: { filename: './database/auth.sqlite3' }, 
+    useNullAsDefault: true,
+        migrations: {
+            directory: './database/migrations',
+    },
+// knex migrate:make users
+// knex migrate:latest // to spit out db.file
+// knex seed:make 01-users
+
+

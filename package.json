@@ -4,7 +4,7 @@
   "description": "- Authentication.\r - Express Middleware.\r - Password Hashing.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "server": "nodemon"
   },
   "repository": {
     "type": "git",
@@ -16,7 +16,15 @@
   "bugs": {
     "url": "https://github.com/jaklundun/auth-i/issues"
   },
-  "homepage": "https://github.com/jaklundun/auth-i#readme"
+  "homepage": "https://github.com/jaklundun/auth-i#readme",
+  "devDependencies": {
+    "nodemon": "^1.18.7"
+  },
+  "dependencies": {
+    "brcypt": "^1.0.1",
+    "express": "^4.16.4",
+    "helmet": "^3.15.0",
+    "knex": "^0.15.2",
+    "sqlite3": "^4.0.4"
+  }
 }
-
-//npm init -y
