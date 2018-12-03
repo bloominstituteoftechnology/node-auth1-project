@@ -1,20 +1,22 @@
 {
-  "name": "auth-i",
-  "version": "1.0.0",
-  "description": "## Topics",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/RaDeleon/auth-i.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/RaDeleon/auth-i/issues"
-  },
-  "homepage": "https://github.com/RaDeleon/auth-i#readme"
+    "name": "auth-i",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/RaDeleon/auth-i.git"
+    },
+    "scripts": {
+        "server": "nodemon"
+    },
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "express": "^4.16.4",
+        "knex": "^0.15.2",
+        "sqlite3": "^4.0.4"
+    },
+    "devDependencies": {
+        "nodemon": "^1.18.6"
+    }
 }
