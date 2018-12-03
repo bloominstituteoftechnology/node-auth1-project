@@ -1,16 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs'); 
+const db = require('./data/dbConfig.js');
 
 const server = express();
 server.use(express.json());
 server.use(cors());
-
-const knex = require('knex');
-
-const knexConfig = require('./knexfile');
-
-module.exports = knex(knexConfig.development);
 
 server.post('/api/login', (req, res) => {
     const creds = req.body;
@@ -19,25 +14,27 @@ server.post('/api/login', (req, res) => {
         .where({username: creds.username})
         .first()
         .then(user => {
-            if (user && bcrypt.compareSync(creds.password, user.password)) {
-                res.status(200).json({message: 'You are going NOWHERE!!'});
-            }
+          if (user && bcrypt.compareSync(creds.password, user.password)) {
+            res.status(200).json({ message: 'Welcome my friend!' });
+          } else {
+            res.status(401).json({ message: 'You are going NOWHERE!!' });
+          }
         })
         .catch(err => res.json(err));
-});
+    });
 
-server.post('api/register', (req, res) => {
+server.post('/api/register', (req, res) => {
     const creds = req.body;
-    const hash = bcrypt.hashSync(creds.password, 4);
+    const hash = bcrypt.hashSync(creds.password, 4); 
     creds.password = hash;
-
-    db('user')
-        .insert(creds)
-        .then(ids => {
-            res.status(201).json(ids);
-        })
-        .catch(err => json(err));
-});
+  
+    db('users')
+      .insert(creds)
+      .then(ids => {
+        res.status(201).json(ids);
+      })
+      .catch(err => json(err));
+  });
 
 server.get('/api/users', (req, res) => {
     db('users')
