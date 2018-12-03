@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const bcrypt = require('bcryptjs');
 
 const knex = require('knex');
@@ -9,6 +10,7 @@ const db = knex(knexConfig.development);
 const server = express();
 
 server.use(express.json());
+server.use(cors());
 
 //ENDPOINTS
 
@@ -45,14 +47,19 @@ server.post('/register', (req,res) => {
   db('users')
     .insert(credentials)
     .then(ids => {
-      res.status(201).json(ids);
+      db('users')
+      .where({ id: ids[0]})
+      .first()
+      .then(user => {
+        res.status(201).json(user);
+      })
     })
     .catch(err => res.status(500).json(err))
 })
 
 server.get('/users', (req, res) => {
   db('users')
-    .select('id', 'username', 'password') // ***** added password to the select
+    .select('id', 'username', 'password')
     .then(users => {
       res.json(users);
     })
