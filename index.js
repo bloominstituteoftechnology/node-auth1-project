@@ -29,6 +29,13 @@ server.post('api/register', (req, res) => {
 server.post('api/login', (req, res) => {
     const logger = req.body
 
+    db('users')
+    .where({ username: creds.username }).first().then(user => {
+        if (user && bcrypt.compareSync(logger.password, user.password)){
+            res.status(200).json({ message: "Welcome User!" })
+        } else {res.status(401).json({ message: 'You Shall Not Pass!' })}
+    }).catch(error => res.status(500).json({ message: 'error', error }))
+    ;
     
     // db('users').insert(logger)
     // .then(user => res.status(201).json(user))
