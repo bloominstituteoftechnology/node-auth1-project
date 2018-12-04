@@ -1,10 +1,11 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const KnesSessionStore = require('connect-session-knex')(session);
+const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 const helmet = require('helmet');
 const knex = require('knex');
 const cors = require('cors');
-const session = require('express-session');
+
 const knexConfig = require('./knexfile');
 
 const db = knex(knexConfig.development);
@@ -22,7 +23,7 @@ server.use(session({
     httpOnly: true,
     resave: false,
     saveUninitialized:false,
-    store: new KnesSessionStore({
+    store: new KnexSessionStore({
         tablename: 'sessions',
         sidfieldname: 'sid',
         knex: db,
@@ -91,8 +92,8 @@ server.get('/api/users', protected, (req, res) => {
         .then(user => res.status(200).json(user))
         .catch(error => res.status(500).json({ message: 'Could Not Retrieve Users', error }));
 
-});
-
+}
+})
 
 
 
