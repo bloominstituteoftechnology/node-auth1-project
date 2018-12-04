@@ -1,16 +1,17 @@
 {
   "name": "auth-1",
-	"version": "1.0.0",
-	"description": "Authentication 1",
-	"main": "index.js",
-	"scripts": {
-		"server": "nodemon"
+  "version": "1.0.0",
+  "description": "Authentication 1",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon"
   },
   "keywords": [],
-	"author": "Lambda School",
-	"license": "MIT",
+  "author": "Lambda School",
+  "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "connect-session-knex": "^1.4.0",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "knex": "^0.15.2",
