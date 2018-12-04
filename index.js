@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 const bcrypt = require('bcryptjs'); 
 const db = require('./data/dbConfig.js');
 
@@ -14,12 +15,32 @@ const sessionConfig = {
     },
     httpOnly: true,
     resave: false,
-    saveUninitialized: false
-}
+    saveUninitialized: false,
+    store: new KnexSessionStore({
+        tablename: 'sessions',
+        seedfieldname: 'sid',
+        knex: db,
+        createtable: true,
+        clearInterval: 1000 * 60 * 60
+    })
+    }
+
 
 server.use(session(sessionConfig))
 server.use(express.json());
 server.use(cors());
+
+// MIDDLEWARE
+
+function protected(req, res, next) {
+  if (req.session && req.session.user) {
+    next();
+  } else {
+    res.status(401).json({ you: 'Turn around!!' });
+  }
+}
+
+// ENDPOINTS
 
 server.post('/api/login', (req, res) => {
     const creds = req.body;
@@ -38,6 +59,7 @@ server.post('/api/login', (req, res) => {
         .catch(err => res.json(err));
     });
 
+
 server.post('/api/register', (req, res) => {
     const creds = req.body;
     const hash = bcrypt.hashSync(creds.password, 4); 
@@ -51,18 +73,38 @@ server.post('/api/register', (req, res) => {
       .catch(err => json(err));
   });
 
+  server.get('/api/me', protected, (req, res) => {
+    db('users')
+    .select('id', 'username', 'password')
+    .where({ id: req.session.user })
+    .then(users => {
+        res.json(users);
+      })
+      .catch(err => res.send(err));
+});
 
-server.get('/api/users', (req, res) => {
-  if (req.session && req.session.userId) { 
+
+
+server.get('/api/users', protected, (req, res) => {
       db('users')
       .select('id', 'username', 'password')
       .then(users => {
           res.json(users);
         })
         .catch(err => res.send(err));
-} else {
     res.status(401).json({messege: 'Stop in the name of Love'})
-}
+  });
+
+  server.get('/api/logout', (req, res) => {
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.send('You cannot leave');
+        } else {
+          res.send('Adios');
+        }
+      });
+    } 
   });
 
 server.get('/', (req, res) => {
