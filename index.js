@@ -7,6 +7,10 @@ const server = express();
 server.use(express.json());
 server.use(cors());
 
+server.get('/', (req, res) => {
+  res.send('Server Running!');
+});
+
 server.get('/api/users', (req, res) => {
   db('users')
   .select('id', 'username', 'password')
@@ -15,5 +19,7 @@ server.get('/api/users', (req, res) => {
   })
   .catch(err => res.json(err));
 })
+
+
 
 server.listen(3300, () => console.log('\nrunning on port 3300\n'));
