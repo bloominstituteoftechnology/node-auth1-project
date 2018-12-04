@@ -28,17 +28,36 @@ const sessionConfig = {
   })
 };
 
+function protected(req, res, next) {
+  if (req.session && req.session.userId) {
+    next();
+  } else {
+    res.status(401).json({ you: 'shall not pass!!' });
+  }
+}
+
 server.get('/', (req, res) => {
   res.send('Server Running!');
 });
 
-server.get('/api/users', (req, res) => {
+server.get('/api/users', protected, (req, res) => {
   db('users')
   .select('id', 'username', 'password')
   .then(users => {
     res.json(users)
   })
   .catch(err => res.json(err));
+})
+
+server.get('/api/currentuser', (req, res) => {
+  db('users')
+    .select('id', 'username', 'password')
+    .where({ id: req.session.userId })
+    .first()
+    .then(users => {
+      res.json(users);
+    })
+    .catch(err => res.send(err));
 })
 
 server.post('/api/register', (req, res) => {
@@ -67,6 +86,18 @@ server.post('/api/login', (req, res) => {
       }
     })
     .catch(err => res.json(err));
+})
+
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('you cannot leave');
+      }
+    })
+  } else {
+    res.send('goodbye');
+  }
 })
 
 server.delete('/api/users/:id', (req, res) => {
