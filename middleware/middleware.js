@@ -3,8 +3,11 @@ const logger = require('morgan');
 const loginRouter = require('../middleware/loginRouter');
 const registerRouter = require('../middleware/registerRouter');
 const userRouter = require('../middleware/userRouter');
+const session = require('express-session');
+const sessionConfig = require('../data/sessionConfig')
 
 module.exports = server => {
+  server.use(session(sessionConfig));
   server.use(express.json());
   server.use(logger('combined'));
   server.use('/api/register', registerRouter);

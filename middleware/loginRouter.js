@@ -15,6 +15,7 @@ router.post('/', (req, res) => {
     .then(user => {
       if(user && bcrypt.compareSync(credentials.password, user.password)) {
         //passwords match! and user exists by that username
+        req.session.userId = user.id;
         res
           .status(200)
           .json({
