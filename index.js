@@ -62,7 +62,7 @@ server.get('/api/logout', (req, res) => {
                 res.send('bye')
             }
         });
-    }
+    } else { res.end() }
 });
 
 server.post('/api/login', (req, res) => {
