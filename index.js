@@ -31,9 +31,9 @@ server.post('/api/login', (req, res) => {
     .where({ username: creds.username })
     .first()
     .then(user => {
-        if(user && bcrypt.compareSync(creds.passwords, user.password)) {
+        if(user && bcrypt.compareSync(creds.password, user.password)) {
         
-            res.status(200).json({message: `Welcome, ${creds.username}.`})
+            res.status(200).json({message: `Welcome.`})
         
         } else {
             res.status(401).json({message: 'You shall not pass!'})
@@ -44,7 +44,7 @@ server.post('/api/login', (req, res) => {
 
 server.get('/api/users', (req, res) => {
     db('users')
-    .select('id', 'username')
+    .select('id', 'username', 'password')
     .then(users => {
         res.json(users);
     })
