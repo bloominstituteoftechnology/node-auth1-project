@@ -36,7 +36,7 @@ function protected(req, res, next) {
   if (req.session && req.session.user) {
     next();
   } else {
-    res.status(401).json({ you: 'Turn around!!' });
+    res.status(401).json({ you: 'Get out of here!!' });
   }
 }
 
@@ -107,8 +107,5 @@ server.get('/api/users', protected, (req, res) => {
     } 
   });
 
-server.get('/', (req, res) => {
-    res.send('Its Alive!');
-  });
 
 server.listen(3300, () => console.log('\nrunning on port 3300\n'));
