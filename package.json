@@ -2,6 +2,7 @@
     "name": "auth-i",
     "version": "1.0.0",
     "main": "index.js",
+    "author": "RaDeleon <rudy209@comcast.net>",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/RaDeleon/auth-i.git"
