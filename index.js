@@ -30,6 +30,13 @@ server.use(session({
         clearInterval: 1000 * 60 * 60
     })
 }));
+
+function protected(req, res, next){
+    if (req.session && req.session.userId){
+        next()
+    } else {res.status(401).json({ message: "You Shall Not Pass!!!!!!!!" })}
+}
+
 server.use(helmet());
 server.use(cors());
 
@@ -44,6 +51,18 @@ server.post('/api/register', (req, res) => {
     db('users').insert(credentials)
     .then(user => {res.status(201).json(user)})
     .catch(error => res.status(500).json({ message: "You done F'd Up", error }))
+});
+
+server.get('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err){
+                res.send('you can never leave!')
+            } else {
+                res.send('bye')
+            }
+        });
+    }
 });
 
 server.post('/api/login', (req, res) => {
@@ -65,17 +84,16 @@ server.post('/api/login', (req, res) => {
     // .catch(error => res.status(500).json({ message: "You done F'd Up", error }))
 });
 
-server.get('/api/users', (req, res) => {
+server.get('/api/users', protected, (req, res) => {
     if (req.session && req.session.userId) {
     db('users')
         .select('username', 'id', 'password')
         .then(user => res.status(200).json(user))
         .catch(error => res.status(500).json({ message: 'Could Not Retrieve Users', error }));
-    } else {
-        res.status(401).json({ You: 'shall not pass!!' })
-    }
-    
-})
+
+});
+
+
 
 
 
