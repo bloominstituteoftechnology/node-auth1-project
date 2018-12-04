@@ -1,13 +1,47 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
+const cors = require('cors');
+const KnexSessionStore = require('connect-session-knex')(session);
+const db = require('./data/helpers');
+const knexDb = require('./data/dbConfig');
+
 const server = express();
 
-const db = require('./data/helpers');
+const sessionConfig = {
+    name: 'secretmysterycookie',
+    secret: 'lasdn3039fff$#$RGfgd',
+    cookie: {
+        maxAge: 1000 * 60 * 10,
+        secure: false
+    },
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false,
+    store: new KnexSessionStore({
+        tablename: 'sessions',
+        sidfieldname: 'sid',
+        knex: knexDb,
+        createtable: true,
+        clearInterval: 1000 * 60 * 60
+    })
+};
 
+// Middleware
+server.use(session(sessionConfig));
 server.use(express.json());
+server.use(cors());
 
+// Custom Middleware
+function protected(req, res, next) {
+    if (req.session && req.session.userId) {
+        next();
+    } else {
+        res.status(401).json({ message: 'You are not logged in.' });
+    }
+}
 
-// REGISTER EndpointZ
+// REGISTER EndP01ntZ
 server.post('/api/register', async(req, res) => {
     // get form input values
     const registrationData = req.body;
@@ -44,7 +78,6 @@ server.post('/api/register', async(req, res) => {
     }
 });
 
-
 // LOGIN EndP01ntZ
 server.post('/api/login', async(req, res) => {
     // get form input values
@@ -66,9 +99,7 @@ server.post('/api/login', async(req, res) => {
     }
 });
 
-
-
-// LOGOUT Endp0intz
+// LOGOUT EndP01ntZ
 server.get('/api/logout', (req, res) => {
     if (req.session) {
         req.session.destroy(err => {
@@ -79,11 +110,20 @@ server.get('/api/logout', (req, res) => {
     }
 });
 
-
-server.get('/', (req, res) => {
-    res.send('Hi Sir!');
+// GET USERS
+server.get('/api/users', protected, async(req, res) => {
+    try {
+        const users = await db.get();
+        res.status(200).json(users);
+    } catch (error) {
+        res
+            .status(500)
+            .json({ message: 'Something went wrong getting the users.' });
+    }
 });
 
-
+server.get('/', (req, res) => {
+    res.send('Helllo there.');
+});
 
 server.listen(3300, () => console.log('Server started on port 3300'));
