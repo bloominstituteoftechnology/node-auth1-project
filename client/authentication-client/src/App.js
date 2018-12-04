@@ -9,9 +9,22 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      
+      users: []
     }
   }
+
+  componentDidMount() {
+    axios
+      .get(`${URL}/api/users`)
+      .then(response => {
+        console.log('response', response)
+        this.setState({ users: response.data })})
+      
+      .catch(error => {
+        console.error('Error getting users...', error)
+      })
+  }
+
   render() {
     return (
       <div className="App">
