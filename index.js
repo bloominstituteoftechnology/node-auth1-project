@@ -33,7 +33,7 @@ server.use(cors());
 // MIDDLEWARE
 
 function protected(req, res, next) {
-  if (req.session && req.session.user) {
+  if (req.session && req.session.userId) {
     next();
   } else {
     res.status(401).json({ you: 'Get out of here!!' });
@@ -92,7 +92,6 @@ server.get('/api/users', protected, (req, res) => {
           res.json(users);
         })
         .catch(err => res.send(err));
-    res.status(401).json({messege: 'Stop in the name of Love'})
   });
 
   server.get('/api/logout', (req, res) => {
