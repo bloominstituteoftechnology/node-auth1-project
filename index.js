@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 const bcrypt = require('bcryptjs');
-const sessionConfig = require('express-session');
 
 const knex = require('knex');
 const knexConfig = require('./knexfile.js');
@@ -28,7 +29,7 @@ const sessionConfig = {
   })
 }
 
-server.use(session(sessonConfig));
+server.use(session(sessionConfig));
 server.use(express.json());
 server.use(cors());
 
@@ -44,6 +45,7 @@ server.post('/login', (req,res) => {
     .first()
     .then(user => {
       if(user && bcrypt.compareSync(credentials.password, user.password)) { //see COMPARESYNC
+        req.session.userId = user.id;
         //passwords match and user exists by that username
         res.status(200).json({message: 'you made it!'})
       } else {
@@ -80,6 +82,29 @@ server.post('/register', (req,res) => {
 server.get('/users', (req, res) => {
   db('users')
     .select('id', 'username', 'password')
+    .then(users => {
+      res.json(users);
+    })
+    .catch(err => res.send(err));
+});
+
+//RESTRICTED
+function protected(req, res, next) {
+  // restricts access to only authenticated users
+  if (req.session && req.session.userId) {
+    next();
+  } else {
+    //bounce them
+    res.status(401).json({ message: 'not allowed'})
+  }
+}
+
+server.get('/restricted', protected, (req, res) => {
+  //if they are logged in, provide access to users
+  db('users')
+    .select('id', 'username', 'password') // added password to the select****
+    .where({ id: req.session.user })
+    .first()
     .then(users => {
       res.json(users);
     })
