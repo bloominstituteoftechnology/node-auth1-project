@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const sessionConfig = require('express-session');
 
 const knex = require('knex');
 const knexConfig = require('./knexfile.js');
@@ -8,7 +9,26 @@ const knexConfig = require('./knexfile.js');
 const db = knex(knexConfig.development);
 
 const server = express();
+const sessionConfig = {
+  name: 'authIsession',
+  secret: 'aweioh23489uj.awej8cvac-klsm',
+  cookie: {
+    maxAge: 1000 * 60 * 10,
+    secure: false,
+  },
+  httpOnly: true,
+  resave: false,
+  saveUnitialized: false,
+  store: new KnexSessionStore({
+    tablename: 'sessions',
+    sidfieldname: 'sid',
+    knex: db,
+    createtable: true,
+    clearInterval: 1000 * 60 * 60
+  })
+}
 
+server.use(session(sessonConfig));
 server.use(express.json());
 server.use(cors());
 
