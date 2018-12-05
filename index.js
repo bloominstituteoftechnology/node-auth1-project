@@ -26,6 +26,8 @@ const sessionConfig = {
     }),
   };
 
+  server.use(session(sessionConfig)); // hooks up express-session to our api
+
 const server = express();
 
 //Initialize db
@@ -49,19 +51,23 @@ server.post('/api/register', (req, res) => {
     creds.password = hash;
     
     db('users')
-    .where({ username: creds.username })
-    .then(user => {
-        if (user) {
-        res.status(409).json({ message: 'username is already taken' });
-        } else {
-        db('users')
+    // .where({ username: creds.username })
+    // .then(user => {
+    //     if (user) {
+    //     res.status(409).json({ message: 'username is already taken' });
+    //     } else {
+    //     db('users')
+    //     .insert(creds)
+    //     .then(ids => {  
+    //         res.status(201).json(ids);
+    //     })
+    //     }
+    // })
         .insert(creds)
         .then(ids => {  
-            res.status(201).json(ids);
-        })
-        }
-    })
-    .catch(err => res.json(err));
+        res.status(201).json(ids);
+        })  
+        .catch(err => res.json(err));
 });
 
 server.post('/api/login', (req, res) => {
@@ -82,8 +88,62 @@ server.post('/api/login', (req, res) => {
       })
       .catch(err => res.json(err));
   });
-  
-  
 
+    //protected GET REQUESTS
+ function protected(req, res, next) {
+    if (req.session && req.session.user) {
+      next();
+    } else {
+      res.status(401).json({ you: 'Access Denied!' });
+    }
+  }
+
+  // express-session middleware
+  function protected(req, res, next) {
+    if (req.session && req.session.user) { //verifys whether user logged-in
+      next();
+    } else {
+      // bounce them
+      res.status(401).json({ you: 'shall not pass!!' });
+    }
+  }
+
+
+  // express-session get route (protected)
+server.get('/api/go', protected, (req, res) => {
+    db('users')
+      .select('id', 'username', 'password') 
+      .where({ id: req.session.user })
+      .first()
+      .then(users => {
+        res.json(users);
+      })
+      .catch(err => res.send(err));
+  });
+  
+  
+  server.get('/api/users', protected, (req, res) => {
+    db('users')
+      .select('id', 'username', 'password') 
+      .then(users => {
+        res.json(users);
+      })
+      .catch(err => res.send(err));
+  });
+  
+  // express-session logout get route (protected)
+    server.get('/api/logout', (req, res) => {
+        if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+            res.send(`You're not going anywhere.`);
+            } else {
+            res.send('Ciao Ciao!');
+            }
+        });
+        } else {
+        res.end();
+        }
+    });
 
 server.listen(8888, () => console.log('\nrunning on port 8888\n'));
