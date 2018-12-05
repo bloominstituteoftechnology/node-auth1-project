@@ -3,6 +3,28 @@ const helmet = require('helmet');
 const knexConfig = require('./knexfile');
 const knex = require('knex');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
+
+// configure express-session
+const sessionConfig = {
+    name: 'lbbc',
+    secret: 'hare krisha. krishna krishna. Hare hare. Hare rama rama. Hare hare.',
+    cookie: {
+      maxAge: 1000 * 60 * 10,
+      secure: false, // Has to be https. In production must be set to False.
+    },
+    httpOnly: true, // view protected from js. js can't see this
+    resave: false,
+    saveUninitialized: false,
+    store: new KnexSessionStore({
+      tablename: 'sessions',
+      sidfieldname: 'sid',
+      knex: db,
+      createtable: true,
+      clearInterval: 1000 * 60 * 60,
+    }),
+  };
 
 const server = express();
 
