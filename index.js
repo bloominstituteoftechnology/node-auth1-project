@@ -40,7 +40,23 @@ server.post("/api/register", (req, res) => {
 // create a new session for the user and send back a 'Logged in' message and a cookie that
 // contains the user id. If login fails, respond with the correct status code and the message:
 // 'You shall not pass!'
-server.post("/api/login", (req, res) => {});
+server.post("/api/login", (req, res) => {
+  const credentials = req.body;
+
+  db("users")
+    .where({ username: credentials.username })
+    .first()
+    .then(user => {
+      if (user && bcyrpt.compareSync(credentials.password, user.password)) {
+        res.status(200).json({ message: "Logged in" });
+      } else {
+        res.status(401).json({ message: "You shall not pass!" });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({ err });
+    });
+});
 
 // If the user is logged in, respond with an array of all the users contained in the database.
 // If the user is not logged in repond with the correct status code and the message:
