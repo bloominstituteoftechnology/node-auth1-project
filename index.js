@@ -17,7 +17,24 @@ server.get("/", (req, res) => {
 
 // Creates a user using the information sent inside the body of the request. Hash the password
 // before saving the user to the database.
-server.post("/api/register", (req, res) => {});
+server.post("/api/register", (req, res) => {
+  // Save login credentials from body
+  const credentials = req.body;
+
+  // Hash password
+  const hash = bcyrpt.hashSync(credentials.password, 14);
+  credentials.password = hash;
+
+  db("users")
+    .insert(credentials)
+    .then(ids => {
+      const id = ids[0];
+      res.status(201).json({ newUserId: id });
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
+});
 
 // Use the credentials sent inside the body to authenticate the user. On successful login,
 // create a new session for the user and send back a 'Logged in' message and a cookie that
