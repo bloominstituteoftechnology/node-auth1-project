@@ -1,9 +1,9 @@
 exports.seed = function(knex, Promise) {
-  return knex("authentication")
+  return knex("users")
     .truncate()
     .then(function() {
       // Inserts seed entries
-      return knex("authentication").insert([
+      return knex("users").insert([
         {
           username: "cpdis",
           password:
