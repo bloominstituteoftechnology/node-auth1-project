@@ -1,6 +1,7 @@
 const express = require("express");
 
 const configureMiddleware = require("./config/middleware");
+const db = require("./data/dbConfig");
 const bcyrpt = require("bcryptjs");
 
 // Create server
