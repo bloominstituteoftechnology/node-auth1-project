@@ -1,4 +1,5 @@
 const express = require("express");
+const session = require("express-session");
 
 const configureMiddleware = require("./config/middleware");
 const db = require("./data/dbConfig");
@@ -10,6 +11,20 @@ const PORT = 3333;
 
 // Middleware
 configureMiddleware(server);
+
+server.use(
+    session({
+        name: 'authentication-session',
+        secret: 'is anyone out there?',
+        cookie: {
+            maxAge: 1 * 24 * 60 * 6 * 1000,
+            secure: true
+        },
+        httpOnly: true,
+        resave: false,
+        saveUninitialized: false
+    })
+)
 
 server.get("/", (req, res) => {
   res.send("🔑 🔑 🔑");
