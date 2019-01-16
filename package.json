@@ -1,0 +1,21 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": "git@github.com:cferrell2/auth-i.git",
+  "author": "cferrell2 <cferrell12182@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "knex": "^0.16.3",
+    "sqlite3": "^4.0.6"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}
