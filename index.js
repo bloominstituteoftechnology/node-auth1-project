@@ -2,7 +2,6 @@ const express = require('express');
 const server = express();
 const knex = require('knex');
 const bcrypt = require('bcryptjs');
-// const cors = require('cors');
 
 // const db = require('./database/dbConfig.js');
 

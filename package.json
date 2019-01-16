@@ -7,12 +7,11 @@
   "author": "Glenn-David Daniel <d2rd@outlook.com>",
   "license": "MIT",
     "scripts": {
-      "server": "start nodemon"
+      "start": "nodemon"
     },
   	"keywords": [],
     "dependencies": {
       "bcryptjs": "^2.4.3",
-      "cors": "^2.8.5",
       "express": "^4.16.4",
       "knex": "^0.15.2",
       "sqlite3": "^4.0.4"
