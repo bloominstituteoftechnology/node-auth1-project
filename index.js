@@ -29,3 +29,20 @@ server.post('/api/register', (req, res) => {
       res.status(400).json({ message: 'Registration failed.', error: err })
     })
 })
+
+server.post('/api/login', (req, res) => {
+  const credentials = req.body;
+  db('users')
+    .where({ username: credentials.username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(credentials.password, user.password)) {
+        res.status(200).json({ message: "You have successfully logged in." })
+      } else {
+        res.status(400).json({ message: "Incorrect credentials." })
+      }
+    })
+    .catch(err => {
+      res.status(500).json(err)
+    })
+})
