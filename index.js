@@ -48,6 +48,17 @@ server.post('/api/login', (req, res) => {
     })
 })
 
+// only authenticated users should see this
+server.get('/api/users', (req,res) => {
+    db.getUsers()
+    .select('id','username')
+    .then(users => {
+        res.json(users)
+    })
+    .catch(err => res.send(err));
+})
+
+
 
 server.listen(PORT, () => console.log(`running on port ${PORT}`));
 
