@@ -1,0 +1,14 @@
+username: 
+   - string
+   - must be .unique()
+password: 
+   - string
+   - 16 character minimum
+   - can be duplicated
+loggedIn:
+   - boolean
+
+one to one:
+username: password
+
+single table: users
