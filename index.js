@@ -4,6 +4,8 @@ const server = express();
 const knex = require('knex');
 const dbConfig = require('./knexfile');
 
+const bcrypt = require('bcryptjs');
+
 const db = knex(dbConfig.development)
 const PORT = process.env.PORT || 8999;
 
