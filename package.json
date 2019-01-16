@@ -1,0 +1,21 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "script": {
+    "start": "node",
+    "server": "nodemon"
+  },
+  "repository": "https://github.com/kmonique/auth-i.git",
+  "author": "Kendra Williams <kmonique.williams@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.16.4",
+    "knex": "^0.16.3",
+    "sqlite3": "^4.0.6"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}
