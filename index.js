@@ -18,7 +18,7 @@ server.post('/api/register', (req, res) => {
   if (user.username && user.password) {
     db.insertUser(user)
       .then(id => {
-        res.status(201).json({ message: 'User created' });
+        res.status(201).json({ message: `User created with the id of ${id}` });
       })
       .catch(err => {
         res.json(err);
@@ -26,6 +26,21 @@ server.post('/api/register', (req, res) => {
   } else {
     res.status(400).json({ message: 'Please enter a username and password' });
   }
+});
+
+server.post('/api/login', (req, res) => {
+  const user = req.body;
+  db.findByUsername(user.username)
+    .then(dbUser => {
+      if (dbUser[0] && bcrypt.compareSync(user.password, dbUser[0].password)) {
+        res.json({ message: 'You have successfully logged in' });
+      } else {
+        res.status(404).json({ message: 'Invalid username or password' });
+      }
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
 });
 
 const PORT = 4040;
