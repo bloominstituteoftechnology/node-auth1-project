@@ -30,6 +30,21 @@ app.post('/api/register', (req, res) => {
     });
 });
 
+app.post('/api/login', (req, res) => {
+  const userBody = req.body;
+  db('users').where('username', userBody.username)
+    .then(users => {
+      if (users.length && bcrypt.compareSync(userBody.password, users[0].password)) {
+        res.json({message: 'Logged in'});
+      } else {
+        res.status(404).json({err: 'invalid username or password'});
+      }
+    })
+    .catch(err => {
+      res.status(500).json({err});
+    });
+});
+
 app.listen(PORT, () => {
   console.log(`app is running on PORT: ${PORT}`);
 });
