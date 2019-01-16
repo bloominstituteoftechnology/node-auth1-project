@@ -12,19 +12,19 @@ const PORT = 3333;
 // Middleware
 configureMiddleware(server);
 
-server.use(
-    session({
-        name: 'authentication-session',
-        secret: 'is anyone out there?',
-        cookie: {
-            maxAge: 1 * 24 * 60 * 6 * 1000,
-            secure: true
-        },
-        httpOnly: true,
-        resave: false,
-        saveUninitialized: false
-    })
-)
+// server.use(
+//   session({
+//     name: "authentication-session",
+//     secret: "is anyone out there?",
+//     cookie: {
+//       maxAge: 1 * 24 * 60 * 6 * 1000,
+//       secure: true
+//     },
+//     httpOnly: true,
+//     resave: false,
+//     saveUninitialized: false
+//   })
+// );
 
 server.get("/", (req, res) => {
   res.send("🔑 🔑 🔑");
@@ -88,6 +88,8 @@ server.get("/api/users", (req, res) => {
 });
 
 // Start listening
+let date = Date();
 server.listen(PORT, () => {
   console.log(`\n=== API Listening on http://localhost:${PORT} ===\n`);
+  console.log(`===== Updated on ${date} =====\n`);
 });
