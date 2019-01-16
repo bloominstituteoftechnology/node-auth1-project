@@ -1,6 +1,6 @@
 const express = require('express');
 //const cors = require('cors');   //necessary for react frontend
-//const bcrypt = require('bcryptjs'); //open source Hashing
+const bcrypt = require('bcryptjs'); //open source Hashing
 
 const knex = require('knex');   // pre-Helpers
 const dbConfig = require('./knexfile'); // pre-Helpers
@@ -22,6 +22,7 @@ server.get('/', (req , res) => {
 server.post('/api/register', (req , res) => {
     const user = req.body;
     //bcrypt goes here
+    user.password = bcrypt.hashSync(user.password, 14);
     db('users').insert(user)
     .then(ids => {
         res.status(201).json({id: ids[0]});
@@ -30,6 +31,11 @@ server.post('/api/register', (req , res) => {
         res.status(500).send(err);
     });
 });
+
+// server.post('/api/login', (req, res) => {
+//     const bodyUser = req.body;
+//     .then
+// })
 
 
 server.listen(PORT, () => console.log(`running on port ${PORT}`));
