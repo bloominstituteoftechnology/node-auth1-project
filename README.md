@@ -8,7 +8,7 @@
 
 ## Assignment
 
-**Part one, due Monday**: Use Node.js, Express and Knex to build an API that provides **Register** and **Login** functionality using SQLite to store _User_ information. Make sure the password is not stored as plain text.
+**Part one, due Monday**: Use Node.js, Express and Knex to build an API that provides **Register** and **Login** functionality using SQLite to store _User_ information. Make sure the password is not stored as plain text.-
 
 **Part two, due Tuesday**: Use **sessions** and **cookies** to keep a record of logged in users across requests.
 
