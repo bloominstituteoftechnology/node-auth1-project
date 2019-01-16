@@ -6,6 +6,9 @@
   "repository": "https://github.com/d2rd/auth-i.git",
   "author": "Glenn-David Daniel <d2rd@outlook.com>",
   "license": "MIT",
+    "scripts": {
+      "server": "start nodemon"
+    },
   	"keywords": [],
     "dependencies": {
       "bcryptjs": "^2.4.3",
@@ -16,5 +19,5 @@
     },
     "devDependencies": {
       "nodemon": "^1.18.6"
-    }
+  }
 }
