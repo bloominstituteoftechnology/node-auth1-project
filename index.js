@@ -9,6 +9,8 @@ const dbConfig = require('./knexfile');
 const db = knex(dbConfig.development);
 const PORT = 5454;
 
+server.use(express.json());
+
 
 /* ---------- Endpoints ---------- */
 
@@ -17,7 +19,25 @@ const PORT = 5454;
 // - /api/register 	
 // - Creates a user using the information sent inside the body of the request. 
 // - Hash the password before saving the user to the database.
-
+server.post('/api/register', (req,res) => {
+  
+  const newUser = req.body;
+  
+  // Only proceed for non-empty name & password
+  if( newUser.name && newUser.password ) {
+    newUser.password = bcrypt.hashSync(newUser.password, 12);
+    db('users').insert(newUser)
+      .then( (newId) => {
+        res.status(201).json(newId);
+      })
+      .catch( (err) => {
+        res.status(500).json({ error: "Could not register a new user."});
+      })
+    // end-db
+  } else {
+    res.status(400).json({error: "Please provide a name and a password."})
+  }
+});
 
 // -----
 // POST:
@@ -26,7 +46,7 @@ const PORT = 5454;
 // - successful login, create a new session for the user and send back a 'Logged 
 // - in' message and a cookie that contains the user id. If login fails, respond 
 // - with the correct status code and the message: 'You shall not pass!'
-
+// if(users.length && bcrypt.compareSync(bodyUser.password, users[0].password))
 
 // -----
 // GET:
