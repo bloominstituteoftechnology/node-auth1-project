@@ -1,8 +1,8 @@
 username: 
-   - string
+   - required string
    - must be .unique()
 password: 
-   - string
+   - required string
    - 16 character minimum
    - can be duplicated
 loggedIn:
