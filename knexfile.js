@@ -5,9 +5,14 @@ module.exports = {
   development: {
     client: 'sqlite3',
     connection: {
-      filename: './dev.sqlite3'
+      filename: './LambdaAuthentication'
+    },
+    useNullAsDefault: true,
+    migrations: {
+      directory: './data/migrations'
     }
   },
+  
 
   staging: {
     client: 'postgresql',
