@@ -46,7 +46,23 @@ server.post('/api/register', (req,res) => {
 // - successful login, create a new session for the user and send back a 'Logged 
 // - in' message and a cookie that contains the user id. If login fails, respond 
 // - with the correct status code and the message: 'You shall not pass!'
-// if(users.length && bcrypt.compareSync(bodyUser.password, users[0].password))
+
+server.post('/api/login', (req,res) => {
+  const login = req.body;
+
+  db('users').where('name', login.name).limit(1)
+    .then( (user) => {
+      if( user.length && bcrypt.compareSync(login.password, user[0].password)) {
+        res.json({ info: "Logged in" });
+      } else {
+        res.status(201).json({ error: "You shall not pass!" });
+      }
+    })
+    .catch( (err) => {
+      res.status(500).json({error: err });
+    });
+});
+
 
 // -----
 // GET:
