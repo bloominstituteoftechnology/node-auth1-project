@@ -13,6 +13,24 @@ server.use(express.json());
 
 //POST	/api/register
 
+server.post('/api/register', (req, res) => {
+    const user = req.body;
+    if(user.username && user.password){
+        user.password = bcrypt.hashSync(user.password);
+        db('users').insert(user)
+        .then( ids => {
+            res
+            .status(201)
+            .json({id: ids[0]})
+        })
+        .catch(err => {
+            res.status(500).send(err)
+        })
+    } else {
+        
+    }
+})
+
 //POST	/api/login
 
 //GET	/api/users
