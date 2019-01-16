@@ -1,14 +1,13 @@
 const express = require('express');
 const server = express();
 
-const knex = require('knex');
-const dbConfig = require('./knexfile');
-const db = knex(dbConfig.development);
+const loginRouter = require('./routes/loginRoutes');
 
 const PORT = process.env.PORT || 3500;
 
 server.use(express.json());
 
+server.use('/api', loginRouter);
 
 //SERVER
 
