@@ -12,6 +12,6 @@
     "sqlite3": "^4.0.6"
   },
   "scripts": { 
-    "server": "nodemon" 
+    "start": "nodemon" 
   }
 }
