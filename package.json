@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "server": "nodemon"
+    "start": "nodemon"
   },
   "repository": "https://github.com/bcabanayan/auth-i.git",
   "license": "MIT",
