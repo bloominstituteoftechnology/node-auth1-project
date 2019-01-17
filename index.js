@@ -29,7 +29,7 @@ server.post('/api/register', (req, res) => {
   if (user.username > 5 && user.password > 5)
     db.insertUser(user)
       .then(id => {
-        res.status(201).json({ id: ids[0] })
+        res.status(201).json({ id: id[0] })
       })
       .catch(err => {
         res.status(500).json({ error: 'Please Try Again' })
