@@ -3,10 +3,6 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const morgan = require('morgan');
 
-// const knex = require('knex');
-// const knexConfig = require('./knexfile.js');
-// const db = knex(knexConfig.development);
-
 const db = require('./data/dbHelpers.js');
 const server = express();
 const PORT = 4500;
@@ -31,8 +27,24 @@ server.post('/api/register', (req,res) => {
             .catch(err => {
                 res.status(500).json({ errorMessage: 'Failed to add user '});
             });
-        };
-    });
+    };
+});
+
+server.post('/api/login', (req, res) => {
+    const bodyUser = req.body;
+    db.findByUsername(bodyUser.username)
+        .then(users => {
+            if(users.length && bcrypt.compareSync(bodyUser.password, users[0].password))
+                {
+                    res.status(200).json({ info: 'correct' });
+                } else {
+                    res.status(404).json({ errorMessage: 'Invalid username or password. '});
+                }
+        })
+        .catch(err => {
+            res.status(500).json({ errorMessage: 'I iz broken. '});
+        });
+});
 
 
 server.listen(PORT, () => {
