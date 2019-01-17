@@ -9,6 +9,6 @@ module.exports = {
     },
 
     get: function(user) {
-        db('users').where('username', user.username)
+        return db('users').where('username', user.username)
     }
 }
