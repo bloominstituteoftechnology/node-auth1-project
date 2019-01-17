@@ -7,6 +7,10 @@ server.use(express.json());
 const cors = require('cors');
 server.use(cors());
 
+//Access route handlers/endpoints
+const usersRoutes = require('./Routers/usersRouter')
+server.use('/api/', usersRoutes);
+
 //endpoint to test server
 server.get('/', (req,res) =>{
     res.json("Success");
