@@ -36,9 +36,9 @@ server.post('/api/register', (req, res) => {
 
 server.post('/api/login', (req, res) => {
   const bodyUser = req.body;
-  db.findByUsername(bodyUser)
-    .then(user => {
-      if (user.length && bcrypt.compareSync(bodyUser.password, uses[0].password)) {
+  db.findByUsername(bodyUser.username)
+    .then(users => {
+      if (users.length && bcrypt.compareSync(bodyUser.password, users[0].password)) {
         res.json({ info: 'Success' })
       } else {
         res.status(404).json({ err: 'invalid password or username' })
