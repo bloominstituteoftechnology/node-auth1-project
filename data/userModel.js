@@ -1,15 +1,25 @@
 const knex = require('knex');
 const dbConfig = require('../knexfile');
-const db = knex(dbConfig.development);
+const dbOne = knex(dbConfig.development);
 
 function add(user){
-    return db('users').insert(user)
+    return dbOne('Users').insert(user)
 }
 
 function find(id){
-    return db('users').where('Username', id)
+    return dbOne('Users').where('Username', id)
 }
 
-modeul.exports = {
-    add, find,
+function fetch(){
+    return dbOne('Users')
+        .then(response => {
+            const mapped = response.map( x => {
+                return x.Username
+            })
+            return mapped
+        })
+}
+
+module.exports = {
+    add, find, fetch
 };
