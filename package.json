@@ -6,9 +6,12 @@
   "author": "<willieino@hotmail.com>",
   "license": "MIT",
   "scripts": {
-    "server": "nodemon"
+    "start": "node index.js",
+    "server": "nodemon index.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "express": "^4.16.4",
     "knex": "^0.16.3",
     "sqlite3": "^4.0.6"
