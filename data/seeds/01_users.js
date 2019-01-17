@@ -13,7 +13,7 @@ exports.seed = function(knex, Promise) {
         },
         {
           username: "admin",
-          emails: "['admin@thompsoncodesign.com','joseph@josephmt.com']",
+          emails: "['admin@thompsoncodesign.com','kimberly@josephmt.com']",
           password:
             "$2a$14$Yfb/25Io3edfeLhP9uTov.m59WgWsaGzW7DvBWfON/SeEWpp5xrTK"
         }
