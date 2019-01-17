@@ -28,8 +28,26 @@ server.post('/api/register', (req, res) => {
 });
 
 server.post('/api/login', (req, res) => {
-    const user = req.body;
-
+    const userFromBody = req.body;
+    if (userFromBody.username && userFromBody.password) {
+        dbhelpers.getUser(userFromBody.username)
+        .then((user) => {
+            if (user.length && 
+                bcrypt.compareSync(userFromBody.password, user[0].password)) {
+                    res.status(200).json({message: `User ${user[0].username} logged in...`});
+                }
+            else {
+                // I'm a teapot status code!
+                res.status(418).json({message: 'Username or password not recognized.'});
+            }
+        })
+        .catch((error) => {
+            res.status(500).json({error: `Server sent an error of: ${error}`});
+        })
+    }
+    else {
+        res.status(400).json({message: 'Logging in requires both a username and password'});
+    }
 });
 
 server.listen(PORT, () => {
