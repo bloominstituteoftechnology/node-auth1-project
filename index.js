@@ -1,7 +1,7 @@
 const express = require('express');
-const server = express();
+const server = express()
+const cors = require('cors')
 const db = require('./database/dbHelpers.js')
-const cors = require('cors');
 const bcrypt = require('bcryptjs');
 server.use(express.json());
 server.use(cors());
@@ -15,8 +15,7 @@ server.get('/', (req, res) => {
 
 //this route should be protected, only authenticated users should be able to see it
 server.get('/api/users', (req, res) => {
-  db('users')
-    .select('id', 'username')
+    db.getUsers()
     .then(users => {
       res.json(users);
     })
