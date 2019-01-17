@@ -27,6 +27,20 @@ server.post("/api/register", (req, res) => {
   }
 });
 
+server.post("/api/login", (req, res) => {
+  const user = req.body;
+  db.findByUsername(user.username)
+    .then(dbUser => {
+      if (dbUser[0] && bcrypt.compareSync(user.password, dbUser[0].password)) {
+        res.json({ message: "You have successfully logged in" });
+      } else {
+        res.status(404).json({ message: "You shall not pass!" });
+      }
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
+});
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}.`);

@@ -3,7 +3,8 @@ const db = require("./dbConfig");
 
 module.exports = {
   insertUser,
-  findByUsername
+  findByUsername,
+  findUsers
 };
 
 function insertUser(user) {
@@ -12,4 +13,12 @@ function insertUser(user) {
 
 function findByUsername(username) {
   return db("users").where("username", username);
+}
+function findUsers() {
+  return db("users").then(response => {
+    const mapped = response.map(x => {
+      return x.username;
+    });
+    return mapped;
+  });
 }
