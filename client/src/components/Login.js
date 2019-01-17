@@ -48,7 +48,7 @@ class Login extends Component {
                     <TextField autoComplete="off" {...fieldProps} />
                     {!error && (
                       <HelperMessage>
-                        You can use letters, numbers & periods.
+                        You can use letters, numbers & symbols.
                       </HelperMessage>
                     )}
                     {error && (
