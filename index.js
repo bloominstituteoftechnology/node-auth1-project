@@ -1,15 +1,24 @@
 const express = require('express');
 const knex = require('knex');
-const dbConfig = require('./knexfile');
+const bcrypt = require('bcryptjs');
 
+const dbConfig = require('./knexfile');
 const db = knex(dbConfig.development);
 
 const server = express();
-const bcrypt = require('bcryptjs');
-
-
-
 server.use(express.json());
+
+server.get('/api/users', (req, res) =>{
+    db('users') 
+        .select('id', 'username')
+        .then(users => {
+            res.json(users);
+        })
+    .catch(() =>{
+        res.status(500).json({message: 'You shall not pass'})
+    })    
+})
+
 
 server.listen(5000, () =>{
     console.log('Server is up and running!');
