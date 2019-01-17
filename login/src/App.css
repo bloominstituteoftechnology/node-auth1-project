@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  margin: 0 auto;
+  max-width: 800px;
+  min-width: 800px;
 }
 
 .navlink{
@@ -21,4 +24,32 @@
   margin: 30px auto;
   display: flex;
   justify-content: space-around;
+}
+
+.user{
+  margin: 15px auto;
+  border: 2px solid rgb(48, 7, 161);
+  width: 150px;
+  height: 30px;
+  background-color: rgb(226, 116, 193);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user:hover{
+  border: 2px solidrgb(226, 116, 193);
+  background: rgb(48, 7, 161);
+}
+
+.header{
+  text-align: center;
+}
+
+.outerdiv{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-left: -5%;
 }

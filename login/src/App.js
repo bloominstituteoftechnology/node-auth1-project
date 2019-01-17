@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import { Route, Link, NavLink } from 'react-router-dom';
+import { Route, NavLink } from 'react-router-dom';
 import Register from './components/register';
 import Home from './components/home';
 import Login from './components/login';
@@ -53,6 +53,7 @@ class App extends Component {
   }
 
   render() {
+    console.log(this.state.users);
     return (
       <div className="App">
         <nav className="navBar">
