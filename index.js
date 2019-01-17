@@ -12,9 +12,11 @@ const port = 3300;
 server.listen(port, function() {
   console.log(`\n=== Web API Listening on http://localhost:${port} ===\n`);
 });
+
 server.post('/api/register',    (req, res)  =>  {
     const user = req.body;
     user.password = bcrypt.hashSync(user.password);
+    user.username = user.username.toUpperCase();
     db('users').insert(user)
         .then(ids   =>  {
             res.status(201).json({id: ids[0]});
@@ -26,7 +28,7 @@ server.post('/api/register',    (req, res)  =>  {
 
 server.post('/api/login',   (req, res)  =>  {
     const bodyUser  =   req.body;
-    db('users').where('username', bodyUser.username)
+    db('users').where('username', bodyUser.username.toUpperCase())
         .then(users =>  {
             if(users.length && bcrypt.compareSync(bodyUser.password, users[0].password))    {
                 res.json({ info: "correct"});
