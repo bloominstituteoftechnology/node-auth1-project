@@ -27,6 +27,9 @@ server.post('/api/register', (req, res) => {
             res.status(500).send(err)
         })
     } else {
+        res
+        .status(400)
+        .json({errorMessage: "Please provide a username and password"})
         
     }
 })
