@@ -1,9 +1,10 @@
 const express = require('express');
 const server = express();
 const knex = require('knex');
+const knexConfig = require('./knexfile.js');
 const bcrypt = require('bcryptjs');
 
-// const db = require('./database/dbConfig.js');
+const db = knex(knexConfig.development);
 
 const PORT = process.env.PORT || 3300;
 
@@ -17,10 +18,10 @@ server.get('/', (req, res) => {
 server.post('/api/register', (req, res) => {
 console.log("POST register is working")
   const user = req.body;
-  user.password = bcrypt.hash(user.password);
+  // user.password = bcrypt.hash(user.password);
   db('users').insert(user)
     .then(ids => {
-      res.status(201)({ id: ids[0] });
+      res.status(201).json({ id: ids[0] });
     })
     .catch(err => {
       res.status(500).send(err);
@@ -47,6 +48,12 @@ server.post('/api/login', (req, res) => {
 
 server.get('/api/users', (req, res) => {
   console.log("GET users is working")
+    db('users')
+      .select('id', 'username')
+      .then(users => {
+        res.json(users);        
+      })
+      .catch(err => res.send(err));
 });
 
 
