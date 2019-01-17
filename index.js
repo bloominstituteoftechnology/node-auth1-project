@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const logger = require('morgan');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const db = require('./data/dbConfig');
 
@@ -12,6 +13,7 @@ const PORT = 8080;
 app.use(express.json());
 app.use(helmet());
 app.use(logger('dev'));
+app.use(session({cookie: {}}));
 
 app.get('/', (req, res) => {
   res.json({message: 'your app is running!'});
@@ -35,7 +37,8 @@ app.post('/api/login', (req, res) => {
   db('users').where('username', userBody.username)
     .then(users => {
       if (users.length && bcrypt.compareSync(userBody.password, users[0].password)) {
-        res.json({message: 'Logged in'});
+        req.session.cookie = {userId: users[0].id}
+        res.json({message: 'Logged in', cookie: req.session.cookie});
       } else {
         res.status(404).json({err: 'invalid username or password'});
       }
