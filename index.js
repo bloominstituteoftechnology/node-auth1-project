@@ -14,6 +14,18 @@ server.get('/', (req, res) => {
   res.send('Its Alive!');
 });
 
+server.post('/api/register', (req, res) => {
+  const user =  req.body;
+  user.password = bcrypt.hashSync(user.password);
+  db('users').insert(user)
+  .then(ids => {
+    res.status(201).json({id: ids[0]})
+  })
+  .catch(err => {
+    res.status(500).send(err)
+  })
+})
+
 
 
 
