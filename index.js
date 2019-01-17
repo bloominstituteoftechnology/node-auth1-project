@@ -34,15 +34,15 @@ function hashPassword(req,res,next) {
 }
 
 function findUser(req,res,next) {
-    const user = req.body;
-    const username = user.username;
+    const username = req.body.username;
     db('clients')
     .where('username', username)
     .then( userFromDb=> {
-        if(!userFromDb) {
+         console.log(userFromDb[0])
+        if(!userFromDb[0]) {
             res.status(404).json({Message:`${username} is not registered`})
        } else {
-            req.body.userDb = userFromDb;
+            req.userFromDb = userFromDb[0];
            next();
        }
 
@@ -55,20 +55,21 @@ function findUser(req,res,next) {
 function checkPassword(req,res,next) {
       const user = req.body;
       const password = user.password;
-      const hashPassword = req.body.userDb.password;
+      const hashPassword = req.userFromDb.password;
       console.log('password', password);
       console.log('hash',hashPassword);
-      bcrypt.compare(password, hashPassword, function(err, isMyPasswordCorrect) {
-        // res === true
-        if(err) {
-             res.status(500).json({error: `Not matching now`})
-        } else if( isMyPasswordCorrect) {
-             next();
-        } else {
-             res.status(500).json({Message: `password is incorrect`})
-        } 
-    });
+      bcrypt.compare("password", hashPassword, function(err, correctPassword) {
+           if(err) { res.status(404).json({Message: `Not matching`})}
+           else if (correctPassword) {
+                 res.json({Message: `Password Matching`})
+           } else {
+                 res.status(500).json({Message: `Failed to loging..something went wrong`});
+           }
+      });
 }
+server.get('/', findUser, (req,res) => {
+     res.json({Message: 'working now'});
+})
 server.post('/api/register',
             validateRegistration,
             hashPassword,
