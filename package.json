@@ -6,7 +6,7 @@
   "author": "Alex Martin <atonymartin20@yahoo.com>",
   "license": "MIT",
   "scripts": {
-    "server": "nodemon"
+    "start": "nodemon"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
