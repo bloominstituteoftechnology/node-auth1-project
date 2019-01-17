@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
 import { Route, Link } from 'react-router-dom';
+import Register from './components/register';
+import Home from './components/home';
+import Login from './components/login';
+import Users from './components/users';
 
 
 class App extends Component {
@@ -9,15 +13,15 @@ class App extends Component {
       <div className="App">
         <nav className="navBar">
           <Link to="/" cstyle={{textDecoration: 'none', color: 'black'}}>Home</Link>
-          <Link to="/smurfs" className="navlink">The Village</Link>
-          <Link to="/create" className="navlink">Add a Smurf</Link>
+          <Link to="/register" className="navlink">Register</Link>
+          <Link to="/login" className="navlink">Login</Link>
+          <Link to='/users' className="navlink">Users</Link>
         </nav>
 
-        <Route path="/create" render={ props => <div><AddSmurf/> <SmurfList /></div>} />
+        <Route path="/register" render={ props => <Register/>} />
         <Route exact path="/" component={Home} />
-        <Route exact path="/smurfs" component={SmurfList} />
-        <Route path="/smurfs/:id" render={ props => <SmurfProfile {...props} /> } />
-        <Route path="/smurfs/:id/update" component={UpdateSmurf} />
+        <Route exact path="/login" component={Login} />
+        <Route path="/users" component={Users} />
 
       </div>
     );
