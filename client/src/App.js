@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import "./App.css";
+import Login from "./components/Login";
 
 import { Route, withRouter } from "react-router-dom";
-import axios from "axios";
 
 class App extends Component {
   constructor(props) {
@@ -18,7 +17,7 @@ class App extends Component {
   render() {
     return (
       <div>
-        <p>Hi 👋🏼</p>
+        <Login />
       </div>
     );
   }
