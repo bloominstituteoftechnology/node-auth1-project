@@ -42,6 +42,16 @@ server.post("/api/login", (req, res) => {
     });
 });
 
+server.get("/api/users", (req, res) => {
+  db.findUsers()
+      .then(users => {
+          res.json(users)
+      })
+      .catch(err => {
+          res.status(500).json({ message: "Unable to fetch users" })
+      })
+})
+
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}.`);
 });
