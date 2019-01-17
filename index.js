@@ -42,11 +42,11 @@ server.post('/api/login', (req, res) => {
         db('users').where('username', checkUser.username)
         .then(users => {
             if(users.length && bcrypt.compareSync(checkUser.password, users[0].password)){
-                res.json({info: "correct"})
+                res.json({info: "Logged In"})
             } else {
                 res
                 .status(404)
-                .json({error: 'Invalid username or password'})
+                .json({error: 'You shall not pass!'})
             }
         })
         .catch(err => {
