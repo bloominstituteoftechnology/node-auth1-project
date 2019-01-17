@@ -2,7 +2,7 @@
   "name": "auth-i",
   "version": "1.0.0",
   "main": "index.js",
-  "script": {
+  "scripts": {
     "server": "nodemon"
   },
   "repository": "https://github.com/BryceEvans/auth-i.git",
