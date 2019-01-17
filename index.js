@@ -32,9 +32,35 @@ server.post('/api/register', (req, res) => {
         .json({errorMessage: "Please provide a username and password"})
         
     }
-})
+});
 
 //POST	/api/login
+
+server.post('/api/login', (req, res) => {
+    const checkUser = req.body;
+    if(user.username && user.password){
+        db('users').where('username', checkUser.username)
+        .then(users => {
+            if(users.length && bcrypt.compareSync(checkUser.password, users[0].password)){
+                res.json({info: "correct"})
+            } else {
+                res
+                .status(404)
+                .json({error: 'Invalid username or password'})
+            }
+        })
+        .catch(err => {
+            res
+            .status(500)
+            .send(err)
+        })
+    } else {
+        res
+        .status(400)
+        .json({errorMessage: "Please provide your username and password"})
+    }
+
+}); 
 
 //GET	/api/users
 
