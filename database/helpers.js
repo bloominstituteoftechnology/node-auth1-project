@@ -7,3 +7,7 @@ module.exports = {
     return db('users').insert(user)
   }
 }
+
+findByUsername: (username) => {
+    return db('users').where('username', username); 
+}
