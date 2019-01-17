@@ -6,7 +6,7 @@ function add(user){
     return dbOne('Users').insert(user)
 }
 
-function find(id){
+function login(id){
     return dbOne('Users').where('Username', id)
 }
 
@@ -21,5 +21,5 @@ function fetch(){
 }
 
 module.exports = {
-    add, find, fetch
+    add, login, fetch
 };
