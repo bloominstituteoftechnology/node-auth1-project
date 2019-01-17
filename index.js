@@ -2,7 +2,6 @@ const express = require('express');
 const knex = require('knex');
 const helmet = require('helmet');
 const bcrypt = require('bcryptjs');
-const dbConfig = require('./knexfile');
 
 const server = express();
 const db = knex(dbConfig.development);
