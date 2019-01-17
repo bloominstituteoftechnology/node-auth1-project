@@ -2,6 +2,9 @@
   "name": "auth-i",
   "version": "1.0.0",
   "main": "index.js",
+  "scripts": {
+    "server": "nodemon"
+  },
   "repository": "https://github.com/alasalle/auth-i.git",
   "author": "alasalle <angela.lasalle91@gmail.com>",
   "license": "MIT",

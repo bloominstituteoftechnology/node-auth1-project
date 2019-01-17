@@ -10,7 +10,7 @@ server.use(express.json());
 server.use(helmet());
 server.use(morgan("dev"));
 
-server.use("/api/users", usersRouter);
+server.use("/api", usersRouter);
 
 const PORT = 4000;
 server.listen(PORT, () => {
