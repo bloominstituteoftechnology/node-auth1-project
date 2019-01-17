@@ -2,9 +2,10 @@ import React from 'react';
 import '../App.css';
 
 
-const Users = () => {
+const Users = (props) => {
     return(
         <div>
+            map users
         </div>
     )
 }
