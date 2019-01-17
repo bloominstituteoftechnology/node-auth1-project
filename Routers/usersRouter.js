@@ -7,10 +7,6 @@ router = express.Router();
 //grab encryption library 
 const bcrypt = require('bcryptjs');
 
-//user registration
-// router.get('/', (req, res) =>{
-//     res.json("hello there")
-// })
 
 router.post('/register', (req, res) =>{
     const newUser = req.body;
