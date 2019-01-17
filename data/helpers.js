@@ -1,7 +1,7 @@
 //**HELPER FUNCTIONS FOR USERS TABLE */
 const db = require('./dbConfig');
 
-module.export = {
+module.exports = {
 
     //Add User
     addUser: function(newUser){
@@ -10,8 +10,14 @@ module.export = {
     },
 
     //Get User by ID
-    getUserById: function(id){
+    getUserByName: function(userName){
         return db('users')
-        .where('users.id', id)
+        .where('users.username', userName)
+        .first()
+    },
+
+    //Get all users
+    getUsers: function(){
+        return db('users')
     }
 }
