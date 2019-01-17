@@ -1,8 +1,6 @@
 const express = require('express');
 const server = express();
-const knex = require('knex');
-const knexConfig = require('./knexfile.js');
-const db = knex(knexConfig.development);
+const db = require('./database/dbHelpers.js')
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 server.use(express.json());
@@ -28,7 +26,7 @@ server.get('/api/users', (req, res) => {
 server.post('/api/register', (req, res) => {
   const user = req.body;
   user.password = bcrypt.hashSync(user.password, 16) // 16 denotes how many times its hashes
-  db('users').insert(user)
+  db.insertUser(user)
     .then(id => {
       res.status(201).json({ id: id[0] })
     })
@@ -39,7 +37,7 @@ server.post('/api/register', (req, res) => {
 
 server.post('/api/login', (req, res) => {
   const bodyUser = req.body;
-  db('users').where('username', username).insert(bodyUser)
+  db.findByUsername(bodyUser)
     .then(user => {
       if (user.length && bcrypt.compareSync(bodyUser.password, uses[0].password)) {
         res.json({ info: 'Success' })
