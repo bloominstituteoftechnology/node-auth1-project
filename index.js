@@ -56,6 +56,17 @@ server.get('/api/users', (req, res) => {
       .catch(err => res.send(err));
 });
 
+server.get('/api/userByID', (req, res) => {
+  db('users')
+  .select('id', 'username')
+  .then(users => {
+    res.json(users);        
+  })
+  .catch(err => {
+    res.status(500).send(err);
+  })
+  console.log("GET userByID is working")
+});
 
 
 // server.listen(3300, () => console.log('I live therefore I AM running on port 3300'));
