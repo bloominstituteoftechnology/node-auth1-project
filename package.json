@@ -1,0 +1,20 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/chillingtonbillington/auth-i.git",
+  "author": "Robert Billington <chillingtonbillington@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "server": "nodemon"
+  },
+  "dependencies": {
+    "3": "^2.1.0",
+    "bcryptjs": "^2.4.3",
+    "express": "^4.16.4",
+    "knex": "^0.16.3",
+    "nodemon": "^1.18.9",
+    "sqlite": "^3.0.0",
+    "sqlite3": "^4.0.6"
+  }
+}
