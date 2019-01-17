@@ -23,6 +23,22 @@ server.post('/api/register', (req, res) => {
         }) 
 });
 
+server.post('/api/login', (req, res) => {
+   const user = req.body;
+   
+   db('users').where('username', user.username)
+    .then(users => {
+        if(users.length && bcrypt.compareSync(user.password, users[0].password)) {
+            res.json({ message: 'Logged in' });
+        } else {
+            res.status(404).json({ message: 'You shall not pass' })
+        }
+    })
+    .catch(err => {
+        res.status(500).json({ errorMessage: 'Failed to verify. Please try again.' })
+    });
+});
+
 const port = 3300;
 server.listen(port, function() {
   console.log(`\n=== Web API Listening on http://localhost:${port} ===\n`);
