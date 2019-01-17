@@ -1,17 +1,19 @@
 const DB = require("../dbConfig");
 
 module.exports = {
-  loginUser: () => {},
+  loginUser: username => {
+    return DB("users")
+      .where("username", username)
+      .first();
+  },
   registerUser: user => {
     return DB("users").insert(user);
-  },
-  getUsers: () => {
-    return DB("users");
   },
   getUser: id => {
     return DB("users")
       .where("id", id)
-      .select("username", "emails");
+      .select("username", "emails")
+      .first();
   },
   checkForUniqueUser: username => {
     return DB("users").where("username", username);

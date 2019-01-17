@@ -1,9 +1,8 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
-const DB = require("../../data/helpers/auth");
+const Auth = require("../../data/helpers/auth");
+const Users = require("../../data/helpers/users");
 const router = express.Router();
-
-router.post("/login", (req, res) => {});
 
 router.post("/register", (req, res) => {
   const { newUser } = req.body;
@@ -11,7 +10,7 @@ router.post("/register", (req, res) => {
   if (newUser.username.length && newUser.password.length) {
     const username = newUser.username.toLowerCase();
     // check if username exists already in the DB
-    DB.checkForUniqueUser(username)
+    Auth.checkForUniqueUser(username)
       .then(result => {
         // check if a username is returned
         if (result.length) {
@@ -24,12 +23,12 @@ router.post("/register", (req, res) => {
           // replace password with new hash
           newUser.password = bcrypt.hashSync(newUser.password, salt);
           // finally register user in our DB
-          DB.registerUser(newUser)
+          Auth.registerUser(newUser)
             .then(result => {
               const id = result[0];
               // ONLY if typeof id is a number can we attempt to get user from db
               if (typeof id === "number") {
-                DB.getUser(id)
+                Auth.getUser(id)
                   .then(user => {
                     res.status(201).json({ user });
                   })
@@ -55,6 +54,41 @@ router.post("/register", (req, res) => {
       error: "Please enter the correctly formatted information to create a user"
     });
   }
+});
+
+router.post("/login", (req, res) => {
+  const { clientUser } = req.body;
+  // check if username and password are present in clientUser
+  if (clientUser.username.length && clientUser.password.length) {
+    Auth.loginUser(clientUser.username)
+      .then(result => {
+        const dbPass = result.password;
+        const clientPass = clientUser.password;
+        // check if passwords match
+        if (bcrypt.compareSync(clientPass, dbPass)) {
+          res.json({ message: "Authentication Passed!" });
+        } else {
+          res.status(401).json({
+            error: "Check the username/password combination and try again"
+          });
+        }
+      })
+      .catch(err => {
+        res.status(500).json({ error: "Check your login credentials" });
+      });
+  } else {
+    res.status(401).json({ error: "Please enter a username and password" });
+  }
+});
+
+router.get("/users", (req, res) => {
+  Users.getUsers()
+    .then(users => {
+      res.json({ users });
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
 });
 
 module.exports = router;
