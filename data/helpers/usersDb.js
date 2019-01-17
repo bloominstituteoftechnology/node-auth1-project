@@ -4,12 +4,12 @@ module.exports = {
   get: () => {
     return db("users");
   },
-  insert: (user) => {
+  insert: user => {
     return db("users")
-    .insert(user)
-    .then(ids => ({id: ids[0]}))
+      .insert(user)
+      .then(ids => ({ id: ids[0] }));
   },
-  findByUsername: (username) => {
-    return db('users').where('username', username);
+  findByUsername: username => {
+    return db("users").where("username", username);
   }
-}
+};

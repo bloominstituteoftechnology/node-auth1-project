@@ -1,11 +1,10 @@
 // Update with your config settings.
 
 module.exports = {
-
   development: {
-    client: 'sqlite3',
+    client: "sqlite3",
     connection: {
-      filename: './data/lamdba.sqlite3'
+      filename: "./data/lamdba.sqlite3"
     },
     useNullAsDefault: true,
     migrations: {
@@ -15,5 +14,4 @@ module.exports = {
       directory: "./data/seeds"
     }
   }
-
 };

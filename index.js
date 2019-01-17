@@ -14,5 +14,5 @@ server.use("/api", usersRouter);
 
 const PORT = 4000;
 server.listen(PORT, () => {
-  console.log(`server is now running on port ${PORT}`)
-})
+  console.log(`server is now running on port ${PORT}`);
+});
