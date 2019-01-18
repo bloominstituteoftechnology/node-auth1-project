@@ -13,7 +13,7 @@ server.get('/', (req, res) => {
 
 server.post('/api/register', (req, res) => {
     const user = req.body;
-    user.password = bcrypt.hashSync(user.password, 14);
+    user.password = bcrypt.hashSync(user.password, 16);
     db.insertUser(user)
         .then(ids => {
             res.status(201).json({ id: ids[0] });
