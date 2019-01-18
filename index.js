@@ -1,11 +1,24 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
+
+const authenticate = require('./middleware/authenticate');
 const db = require('./data/dbHelpers.js');
 
 const server = express();
+const PORT = 5000;
 
 server.use(express.json());
-const PORT = 5000;
+server.use(session({
+    name: 'notsession',
+    secret: 'Monkey see, monkey do',
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000
+    },
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false,
+}));
 
 server.get('/', (req, res) => {
     res.send('API is Active');
@@ -28,9 +41,10 @@ server.post('/api/login', (req, res) => {
     db.findByUsername(user.username)
         .then(users => {
             if (users.length && bcrypt.compareSync(user.password, users[0].password)) {
-                res.json({ info: "correct" });
+                req.session.userId = users[0].id;
+                res.json({info: "Logged in"});
             } else {
-                res.status(404).json({ err: "Invalid username or password" });
+                res.status(404).json({err: "Invalid username or password"});
             }
         })
         .catch(err => {
@@ -38,12 +52,24 @@ server.post('/api/login', (req, res) => {
         });
 });
 
-server.get('/api/users', (req, res) => {
+server.get('/api/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      res.status(500).send({err: 'Failed to logout'});
+    } else {
+      res.send({info: 'Logged out'});
+    }
+  });
+});
+
+server.get('/api/users', authenticate, (req, res) => {
     db.getUsers()
         .then(users => {
             res.json(users);
         })
-        .catch(err => res.send(err));
+        .catch(err => {
+            res.status(500).send(err);
+        });
 });
 
 server.listen(PORT, () => console.log(`\nServer running on port ${PORT}\n`));
