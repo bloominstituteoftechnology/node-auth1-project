@@ -26,6 +26,9 @@ server.use(express.json(), cors(), session({
          saveUninitialized: false,
 }));
 
+function protect(req, res, next) {
+   req.session && req.session.userId ? next() : res.status(400).send("You shall not pass!");
+}
 server.get("/", (req, res) => {
    res.send("Homepage");
 });
@@ -51,9 +54,10 @@ server.post("/api/login", (req, res) => {
    if (login.username && login.password) {
       db.findByUsername(login.username)
          .then(users => {
-            users.length && bcrypt.compareSync(login.password, users[0].password) ?
-            res.send("login correct")
-            : res.status(404).json({err: "invalid username or password"});
+            if(users.length && bcrypt.compareSync(login.password, users[0].password)) {
+            req.session.userId = users[0].id
+            res.send("Logged in")
+             } else { res.status(404).send("You shall not pass!");}
          })
          .catch(err => {
             res.status(500).send(err);
@@ -62,8 +66,10 @@ server.post("/api/login", (req, res) => {
 });
 
 /*If the user is logged in, respond with an array of all the users contained in the database. If the user is not logged in repond with the correct status code and the message: 'You shall not pass!'.*/
-server.get("/api/users", (req, res) => {
-
+server.get("/api/users", protect, (req, res) => {
+   db.findUsers()
+      .then(users => {res.json(users)})
+      .catch(err => {res.json(err)});
 });
 
 //allow incoming request to server
