@@ -4,6 +4,8 @@ const bcrypt = require('bcrypt');
 const knex = require('knex');
 const knexConfig = require('./knexfile');
 const db = knex(knexConfig.development);
+const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 
 const server = express();
 server.use(express.json());
