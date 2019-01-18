@@ -23,6 +23,7 @@ router.post('/login', (req, res) => {
    userDB.get(user)
     .then(users => {
         if(users.length && bcrypt.compareSync(user.password, users[0].password)) {
+            req.session.username = users[0].username;
             res.json({ message: 'Logged in' });
         } else {
             res.status(404).json({ message: 'You shall not pass' })
@@ -31,6 +32,20 @@ router.post('/login', (req, res) => {
     .catch(err => {
         res.status(500).json({ errorMessage: 'Failed to verify. Please try again.' })
     });
+});
+
+router.get('/users', (req, res) => {
+    if(req.session && req.session.username) {
+        userDB.findUsers()
+            .then(users => {
+                res.json(users);
+            })
+            .catch(err => {
+                res.status(500).send(err);
+            })
+    } else {
+        res.status(400).json({ message: 'You shall not pass' });
+    }
 });
 
 module.exports = router;
