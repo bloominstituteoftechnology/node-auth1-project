@@ -13,7 +13,16 @@ const PORT = 8080;
 app.use(express.json());
 app.use(helmet());
 app.use(logger('dev'));
-app.use(session({cookie: {}}));
+app.use(session({
+    name: 'notsession', // default is connect.sid
+    secret: 'nobody tosses a dwarf!',
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000
+    }, // 1 day in milliseconds
+    httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
+    resave: false,
+    saveUninitialized: false,
+  }));
 
 app.get('/', (req, res) => {
   res.json({message: 'your app is running!'});
@@ -33,12 +42,13 @@ app.post('/api/register', (req, res) => {
 });
 
 app.post('/api/login', (req, res) => {
-  const userBody = req.body;
-  db('users').where('username', userBody.username)
+  const creds = req.body;
+  db('users').where('username', creds.username)
     .then(users => {
-      if (users.length && bcrypt.compareSync(userBody.password, users[0].password)) {
-        req.session.cookie = {userId: users[0].id}
-        res.json({message: 'Logged in', cookie: req.session.cookie});
+      if (users.length && bcrypt.compareSync(creds.password, users[0].password)) {
+        req.session.userId = users[0].id;
+        console.log('session', req.session);
+        res.json({message: 'Logged in'});
       } else {
         res.status(404).json({err: 'invalid username or password'});
       }
