@@ -59,6 +59,18 @@ server.post("/api/login", (req, res) => {
     }
 });
 
+server.get("/api/users", (req, res) => {
+    if (req.session && req.session.userId) {
+        db("users").then(dbUsers => {
+            res.status(200).json(dbUsers);
+        }).catch(error => {
+            res.status(500).json({message: "Error getting users", error: error});
+        });
+    } else {
+        res.status(401).json({message: "You need to be logged in to access this"});
+    }
+});
+
 const port = 3300;
 server.listen(port, function() {
   console.log(`\n=== Web API Listening on http://localhost:${port} ===\n`);
