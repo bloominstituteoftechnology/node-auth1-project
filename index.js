@@ -15,7 +15,6 @@ server.use(
         secret: "original secret do not steal",
         cookie: {
             maxAge: 1 * 24 * 60 * 60 * 1000,
-            secure: true,
         },
         httpOnly: true,
         resave: false,
@@ -52,6 +51,7 @@ server.post("/api/login", (req, res) => {
                     } else {
                         res.status(422).json({ error: "Incorrect username or password" })
                     }
+                    console.log(req.session);
             }).catch(error => {
                 res.status(500).json({message: "Error logging in", error: error});
             });
@@ -61,6 +61,7 @@ server.post("/api/login", (req, res) => {
 });
 
 server.get("/api/users", (req, res) => {
+    console.log(req.session);
     if (req.session && req.session.userId) {
         db("users").then(dbUsers => {
             res.status(200).json(dbUsers);
