@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 const db = require('./data/dbHelpers.js');
 
@@ -7,6 +8,18 @@ const server = express();
 const PORT = 4400;
 
 server.use(express.json());
+
+server.use(session({
+    name: 'notsession', 
+    secret: 'secret verbiage',
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000
+    }, 
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false,
+}));
+  
 
 // register new user with hashed password
 
