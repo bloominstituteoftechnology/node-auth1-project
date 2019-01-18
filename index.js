@@ -47,11 +47,11 @@ server.post("/api/register", (req, res) => {
 
 /*Use the credentials sent inside the body to authenticate the user. On successful login, create a new session for the user and send back a 'Logged in' message and a cookie that contains the user id. If login fails, respond with the correct status code and the message: 'You shall not pass!'*/
 server.post("/api/login", (req, res) => {
-   const user = req.body;
-   if (user.username && user.password) {
-      db.findByUsername(user.username)
+   const login = req.body;
+   if (login.username && login.password) {
+      db.findByUsername(login.username)
          .then(users => {
-            users.length && bcrypt.compareSync(users.password, users[0].password) ?
+            users.length && bcrypt.compareSync(login.password, users[0].password) ?
             res.send("login correct")
             : res.status(404).json({err: "invalid username or password"});
          })
