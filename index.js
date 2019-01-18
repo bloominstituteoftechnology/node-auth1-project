@@ -3,10 +3,24 @@ const knex = require('knex');
 const knexConfig = require('./knexfile.js');
 const db = knex(knexConfig.development);
 const bcrypt = require("bcryptjs");
+const session = require('express-session');
 
 const server = express();
 
 server.use(express.json());
+
+server.use(
+    session({
+        name: 'newsession',
+        cookie: {
+            maxAge: 1 * 24 * 60 * 60 * 1000,
+            secure: true,
+        },
+        httpOnly: true,
+        resave: false,
+        saveUninitialized: false,
+    })
+);
 
 server.post("/api/register", (req, res) => {
     if (req.body.username && req.body.password && typeof req.body.username === "string" && typeof req.body.password === "string") {
@@ -32,7 +46,8 @@ server.post("/api/login", (req, res) => {
             .then(dbUsers => {
                 if (dbUsers.length 
                     && bcrypt.compareSync(user.password, dbUsers[0].password)) {
-                        res.status(200).json({ message: "Logged In Successfully" });
+                        req.session.userId = dbUsers[0].id;
+                        res.status(200).json({ message: "Logged in successfully", userId: req.session.userId });
                     } else {
                         res.status(422).json({ error: "Incorrect username or password" })
                     }
