@@ -5,6 +5,8 @@ const session = require('express-session');
 const authenticate = require('./middleware/authenticate');
 const db = require('./data/dbHelpers.js');
 
+const restrictedRouter = require('./routers/restrictedRouter');
+
 const server = express();
 const PORT = 5000;
 
@@ -19,6 +21,8 @@ server.use(session({
     resave: false,
     saveUninitialized: false,
 }));
+
+server.use('/api/restricted', restrictedRouter);
 
 server.get('/', (req, res) => {
     res.send('API is Active');
