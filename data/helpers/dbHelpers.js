@@ -19,5 +19,5 @@ function authorize(user) {
 }
 
 function getUsers() {
-  return db.select('username').from('users');
+  return db.select('id', 'username').from('users');
 }

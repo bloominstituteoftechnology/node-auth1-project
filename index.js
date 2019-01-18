@@ -23,7 +23,7 @@ const sessionConfig = {
 
 server.use(
   express.json(),
-  cors(),
+  // cors(),
   session(sessionConfig)
 )
 
@@ -47,7 +47,7 @@ server.post('/api/login', (req, res) => {
   db.authorize(userCreds.username)
     .then(user => {
       if(user.length && bcrypt.compareSync(userCreds.password, user[0].password)) {
-        req.session.auth = userCreds.username;
+        req.session.userId = userCreds.username;
         res.json({message: "you are logged in. Welcome"});
       } else {
         res.status(404).json({errorMessage: "You shall not pass"});
@@ -68,8 +68,18 @@ server.get('/api/users', autho, (req, res) => {
     })
 })
 
+server.post('/api/logout', (req, res) => {
+  req.session.destroy( err => {
+    if(err) {
+      res.status(500).json({errorMessage: 'did not successfully lof out'})
+    } else {
+      res.json({message: 'properly logged out'})
+    }
+  })
+})
+
 function autho(req, res, next) {
-  if(req.session && req.session.auth) {
+  if(req.session && req.session.userId) {
     next();
   }else {
     res.status(401).json({errorMessage: 'you do not have access'})
