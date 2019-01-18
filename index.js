@@ -1,26 +1,43 @@
 //set requires
 const express = require("express");
-const knex = require("knex");
 const cors = require("cors");
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
+const session = require("express-session");
 
-const dbConfig = require("./knexfile");
-const db = knex(dbConfig.development);
+const db = require("./helpers/dbHelpers");
 
 //set port #
 const PORT = 8000;
 
 const server = express();
-server.use(express.json(), cors());
+server.use(express.json(), cors(), session({
+      //allows us to encrypt and unencrypt default is connect.sid
+         name: 'notsession',
+      //cookie encryption key: allows us to open cookie
+         secret: 'nobody tosses a dwarf!',
+      //cookie age 1 day in milliseconds
+         cookie: {
+           maxAge: 1 * 24 * 60 * 60 * 1000
+         },
+      // don't let JS code access cookies. Browser extensions run JS code on your browser!
+         httpOnly: true,
+         resave: false,
+      //cookie consent
+         saveUninitialized: false,
+}));
+
+server.get("/", (req, res) => {
+   res.send("Homepage");
+});
 
 /*Creates a user using the information sent inside the body of the request. Hash the password before saving the user to the database.*/
 server.post("/api/register", (req, res) => {
    const user = req.body;
    if (user.username && user.password) {
    user.password = bcrypt.hashSync(user.password, 14);
-   db("users").insert(user)
+   db.insert(user)
       .then(ids => {
-         res.status(201).json({ids: ids})
+         res.status(201).json({id: ids[0]});
       })
       .catch(err => {
          res.status(500).send(err);
@@ -32,16 +49,15 @@ server.post("/api/register", (req, res) => {
 server.post("/api/login", (req, res) => {
    const user = req.body;
    if (user.username && user.password) {
-      user.password = bcrypt.hashSync(user.password, 14);
-      db("users").where("username", user.username)
+      db.findByUsername(user.username)
          .then(users => {
             users.length && bcrypt.compareSync(users.password, users[0].password) ?
-            res.json({info: "login correct"})
+            res.send("login correct")
             : res.status(404).json({err: "invalid username or password"});
          })
          .catch(err => {
             res.status(500).send(err);
-         })
+         });
    } else  res.status(400).json({err: "please provide a username and password"});
 });
 
