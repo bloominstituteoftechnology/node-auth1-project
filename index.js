@@ -2,7 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+
 const db = require('./dbHelpers');
+const restrictedRoutes = require('./restrictedRoutes');
 
 const server = express();
 
@@ -12,6 +14,14 @@ const protect = (req, res, next) => {
     next();
   } else {
     res.status(400).send('Access denied');
+  }
+};
+
+const restrict = (req, res, next) => {
+  if (req.session && req.session._id) {
+    next();
+  } else {
+    res.status(400).send('YOU SHALL NOT PASS!');
   }
 };
 
@@ -34,6 +44,8 @@ server.use(
 server.get('/', (req, res) => {
   res.send('Live server!');
 });
+
+server.use('/api/restricted', restrict, restrictedRoutes);
 
 server.post('/api/register', (req, res) => {
   const user = req.body;
