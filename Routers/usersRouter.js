@@ -48,7 +48,6 @@ router.post('/login', (req, res) =>{
 
 //Get all users - verify session before allowing access
 router.get('/users',verify.checkSession, (req,res) =>{
-    console.log(req.session);
     userDb.getUsers()
     .then(users =>{
         res.status(200).json(users)
