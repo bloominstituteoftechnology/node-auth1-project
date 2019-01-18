@@ -13,11 +13,13 @@ const verify = require('../middleware');
 //Register user
 router.post('/register', (req, res) =>{
     const newUser = req.body;
-    const hash = bcrypt.hashSync(newUser.password, 14);
+    const hash = bcrypt.hashSync(newUser.password, 8);
     newUser.password = hash;
 
     userDb.addUser(newUser)
     .then(ids =>{
+        //clear any previous userId off session object
+        req.session.userId = '';
         res.status(201).json({newUserId: ids[0]})
     })
     .catch(err =>{
@@ -46,6 +48,7 @@ router.post('/login', (req, res) =>{
 
 //Get all users - verify session before allowing access
 router.get('/users',verify.checkSession, (req,res) =>{
+    console.log(req.session);
     userDb.getUsers()
     .then(users =>{
         res.status(200).json(users)
