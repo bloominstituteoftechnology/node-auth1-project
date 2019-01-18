@@ -11,14 +11,10 @@ const db = knex(dbConfig.development);
 const PORT = 5454;
 
 /* ---------- Middleware ---------- */
-// Protect an endpoint or directory:
-function protect( req, res, next ) {
-  if( req.session && req.session.userId ) {
-    next();
-  } else {
-    res.status(201).send("Unauthorized.");
-  }
-}
+const mw = require('./middleware.js');
+
+// Route require:
+const restRouter = require('./routes/restricted');
 
 
 server.use(express.json());
@@ -34,6 +30,7 @@ server.use(session({
 }));
 
 /* ---------- Endpoints ---------- */
+server.use('/api/restricted', restRouter);
 
 // -----
 // POST:
@@ -92,7 +89,7 @@ server.post('/api/login', (req,res) => {
 // - If the user is logged in, respond with an array of all the users contained in 
 // - the database. If the user is not logged in repond with the correct status 
 // - code and the message: 'You shall not pass!'.
-server.get('/api/users', protect, (req,res) => {
+server.get('/api/users', mw.protect, (req,res) => {
   db('users').select('id', 'username')
     .then( (users) => {
       res.json(users);
