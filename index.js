@@ -2,6 +2,7 @@
 const express = require('express');
 const knex = require('knex');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 
 // Server requirements
 const server = express();
@@ -9,8 +10,28 @@ const dbConfig = require('./knexfile');
 const db = knex(dbConfig.development);
 const PORT = 5454;
 
-server.use(express.json());
+/* ---------- Middleware ---------- */
+// Protect an endpoint or directory:
+function protect( req, res, next ) {
+  if( req.session && req.session.userId ) {
+    next();
+  } else {
+    res.status(201).send("Unauthorized.");
+  }
+}
 
+
+server.use(express.json());
+server.use(session({
+  name: 'auth1-session',
+  secret: 'something not in this file or hardcoded here',
+  cookie: {
+    maxAge: 86400000
+  },
+  httpOnly: true,
+  resave: false,
+  saveUninitialized: false
+}));
 
 /* ---------- Endpoints ---------- */
 
@@ -20,7 +41,6 @@ server.use(express.json());
 // - Creates a user using the information sent inside the body of the request. 
 // - Hash the password before saving the user to the database.
 server.post('/api/register', (req,res) => {
-  
   const newUser = req.body;
   
   // Only proceed for non-empty name & password
@@ -53,6 +73,8 @@ server.post('/api/login', (req,res) => {
   db('users').where('name', login.name).limit(1)
     .then( (user) => {
       if( user.length && bcrypt.compareSync(login.password, user[0].password)) {
+        // Set session cookie's userId
+        req.session.userId = user[0].id;
         res.json({ info: "Logged in" });
       } else {
         res.status(201).json({ error: "You shall not pass!" });
@@ -70,8 +92,8 @@ server.post('/api/login', (req,res) => {
 // - If the user is logged in, respond with an array of all the users contained in 
 // - the database. If the user is not logged in repond with the correct status 
 // - code and the message: 'You shall not pass!'.
-server.get('/api/users', (req,res) => {
-  db('users')
+server.get('/api/users', protect, (req,res) => {
+  db('users').select('id', 'username')
     .then( (users) => {
       res.json(users);
     })
