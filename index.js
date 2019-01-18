@@ -8,6 +8,15 @@ const db = require('./data/dbConfig');
 
 const app = express();
 
+// custom middleware
+function protect(req, res, next) {
+  if (req.session && req.session.userId) {
+    next();
+  } else {
+    res.status(400).send('You Shall not pass!');
+  }
+}
+
 const PORT = 8080;
 
 app.use(express.json());
@@ -55,6 +64,16 @@ app.post('/api/login', (req, res) => {
     })
     .catch(err => {
       res.status(500).json({err});
+    });
+});
+
+app.get('/api/users', protect, (req, res) => {
+  db('users').select('id', 'username')
+    .then(users => {
+      res.json(users);
+    })
+    .catch(err => {
+      res.status(500).send(err);
     });
 });
 
