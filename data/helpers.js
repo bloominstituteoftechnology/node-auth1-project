@@ -9,7 +9,7 @@ module.exports = {
             .insert(newUser)
     },
 
-    //Get User by ID
+    //Get User by name
     getUserByName: function(userName){
         return db('users')
         .where('users.username', userName)

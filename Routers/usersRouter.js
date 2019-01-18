@@ -7,10 +7,13 @@ router = express.Router();
 //grab encryption library 
 const bcrypt = require('bcryptjs');
 
+//grab checkSession middleware function
+const verify = require('../middleware');
 
+//Register user
 router.post('/register', (req, res) =>{
     const newUser = req.body;
-    const hash = bcrypt.hashSync(newUser.password, 5);
+    const hash = bcrypt.hashSync(newUser.password, 14);
     newUser.password = hash;
 
     userDb.addUser(newUser)
@@ -22,7 +25,7 @@ router.post('/register', (req, res) =>{
     })
 })
 
-//user login
+//User login
 router.post('/login', (req, res) =>{
     const loginUser = req.body;  //user provided
 
@@ -41,8 +44,8 @@ router.post('/login', (req, res) =>{
     })
 })
 
-//Get all users
-router.get('/users', (req,res) =>{
+//Get all users - verify session before allowing access
+router.get('/users',verify.checkSession, (req,res) =>{
     userDb.getUsers()
     .then(users =>{
         res.status(200).json(users)
