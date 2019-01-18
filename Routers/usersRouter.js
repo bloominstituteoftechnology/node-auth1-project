@@ -1,5 +1,5 @@
 const userDb = require('../data/helpers');
-console.log(userDb);
+
 //create router
 const express = require('express');
 router = express.Router();
@@ -29,9 +29,11 @@ router.post('/login', (req, res) =>{
     userDb.getUserByName(loginUser.username)
     .then(user =>{  //returned from database
         if(user && bcrypt.compareSync(loginUser.password, user.password)){
+            //add userId to session for use in verification
+            req.session.userId = user.id;
             res.status(200).json(`Welcome, ${loginUser.username}`)
         }else{
-            res.status(401).json({error: "Unable to verify user"})
+            res.status(401).json({error: "You shall not pass!"})
         }
     })
     .catch(err =>{
