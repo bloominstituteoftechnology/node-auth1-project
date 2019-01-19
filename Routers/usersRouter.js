@@ -18,8 +18,8 @@ router.post('/register', (req, res) =>{
 
     userDb.addUser(newUser)
     .then(ids =>{
-        //clear any previous userId off session object
-        req.session.userId = '';
+        //Automatically set registered user as logged in...session has a username
+        req.session.username = newUser.username;
         res.status(201).json({newUserId: ids[0]})
     })
     .catch(err =>{
