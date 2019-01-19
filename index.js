@@ -89,4 +89,19 @@ server.post('/api/login', (req, res) => {
     }
 });
 
+// get all users in database
+
+server.get('/api/users', checkSession, (req, res) => {
+    db.findUsers()
+        .then(users => {
+            res
+                .json(users);
+        })
+        .catch(err => {
+            res
+                .status(500)
+                .send({message: `The users' information could not be returned at this time.`})
+        });
+});
+
 server.listen(PORT, () => console.log(`Running on ${PORT}`));
