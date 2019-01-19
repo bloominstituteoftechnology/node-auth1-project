@@ -12,7 +12,7 @@ function protect (req, res, next) {
   if (req.session && req.session.userID) {
     next();
   } else {
-    res.status(400).send('access denied.');
+    res.status(400).send('You shall not pass!');
   }
 }
 
@@ -85,6 +85,16 @@ server.get('/api/users', protect, (req, res) => {
   // } else {
   //   res.status(400).send('access denied.');
   // }
+});
+
+server.post('/api/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.send('logout seccessful');
+    }
+  });
 });
 
 server.listen(3300, () => 
