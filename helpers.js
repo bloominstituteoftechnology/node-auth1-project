@@ -12,5 +12,9 @@ module.exports = {
 
     getUser: function(username) {
         return db('users').where('username', username);
+    },
+
+    getUsernames: function() {
+        return db('users').select('username');
     }
 }
