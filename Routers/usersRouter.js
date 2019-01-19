@@ -18,7 +18,8 @@ router.post('/register', (req, res) =>{
 
     userDb.addUser(newUser)
     .then(ids =>{
-        //Automatically set registered user as logged in...session has a username
+        //Automatically set registered user as logged in...associates user to session, effectively
+        //loggin in the user
         req.session.username = newUser.username;
         res.status(201).json({newUserId: ids[0]})
     })
@@ -28,7 +29,8 @@ router.post('/register', (req, res) =>{
 })
 
 //User login
-router.post('/login', (req, res) =>{
+router.post('/login', (req, res) =>{ //Automatically set registered user as logged in...associates user to session, effectively
+    //loggin in the user
     const loginUser = req.body;  //user provided
 
     userDb.getUserByName(loginUser.username)
@@ -55,6 +57,20 @@ router.get('/users',verify.checkSession, (req,res) =>{
     .catch(err =>{
         res.status(500).json({error:"Unable to retrieve users"})
     })
+})
+
+//Log out user
+router.get('/logout', (req,res) =>{
+    console.log(req.session);
+    if(req.session){
+        req.session.destroy(err =>{
+            if(err){
+                res.json({error: 'Error logging out'})
+            }else {
+                res.json('Goodbye!')
+            }
+        })
+    }
 })
 
 module.exports = router;
