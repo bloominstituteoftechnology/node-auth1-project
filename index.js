@@ -1,98 +1,57 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
+const bcrypt =  require('bcryptjs');
+const db = require('./data/dbHelpers.js');
+// const middleware = require('./data/middleware/custom_middleware.js');
 const cors = require('cors');
 
-const PORT = 4400;
+//PORT
+const PORT = 8000;
+//Service
+const service = express();
+//Middleware
+service.use(express.json());
+service.use(cors());
 
-const knex = require('knex');
-const dbConfig = require('./knexfile.js');
-const db = knex(dbConfig.development);
-
-const server = express();
-server.use(express.json());
-server.use(cors());
-
-server.get('/', (req,res) => {
-    res.status(200).json({Message: `Server is up and running now.`})
+service.get('/', (req,res) => {
+    res.status(200).json(`We are live now here.`);
 });
-function validateRegistration(req,res,next) {
-   const user = req.body;
-   if(!user.username) res.status(400).json({errorMessage: `Username is missing`});
-   if(!user.password) res.status(400).json({errorMessage:`Please enter a valid password`});
-   next();
-}
-function hashPassword(req,res,next) {
+
+service.post('/api/register', (req,res) => {
     const user = req.body;
-    const password = user.password;
-    bcrypt.genSalt(10, function(err, salt) {
-        bcrypt.hash("password", salt, function(err, hash) {
-            if(err) res.status(500).json({Message:err});
-            req.body.password = hash;
-            next();
-        });
-    });
-}
+    console.log(user);
+    if(!user) res.status(400).json({errorMessage: `Please enter valid credentials`});
+    if(!user.username) res.status(400).json({errorMessage: `Please enter a valid username`});
+    if(!user.password) res.status(400).json({errorMessage: `Please choose a valid password`});
+    user.password = bcrypt.hashSync(user.password, 5);   
+    if(user.username && user.password) {
+    db.insertUser(user)
+      .then( userIds => {
+         res.status(201).json({id:userIds[0]});
+      })
+      .catch(err => {
+         res.status(500).json({err: `Failed to register at this time`});
+      })
+    }  
+});
 
-function findUser(req,res,next) {
-    const username = req.body.username;
-    db('clients')
-    .where('username', username)
-    .then( userFromDb=> {
-         console.log(userFromDb[0])
-        if(!userFromDb[0]) {
-            res.status(404).json({Message:`${username} is not registered`})
-       } else {
-            req.userFromDb = userFromDb[0];
-           next();
-       }
-
-    })
-    .catch(err => {
-        res.status(500).send('Something went wrong..');
-    });
-}
-
-function checkPassword(req,res,next) {
-      const user = req.body;
-      const password = user.password;
-      const hashPassword = req.userFromDb.password;
-      console.log('password', password);
-      console.log('hash',hashPassword);
-      bcrypt.compare("password", hashPassword, function(err, correctPassword) {
-           if(err) { res.status(404).json({Message: `Not matching`})}
-           else if (correctPassword) {
-                 res.json({Message: `Password Matching`})
-           } else {
-                 res.status(500).json({Message: `Failed to loging..something went wrong`});
-           }
-      });
-}
-server.get('/', findUser, (req,res) => {
-     res.json({Message: 'working now'});
+service.post('/api/login', (req,res) => {
+     const credentials = req.body;
+     
+     db.findByUsername(credentials.username)
+       .then( users => {
+          if(users.length > 0 && bcrypt.compareSync(credentials.password, users[0].password)) {
+               res.status(200).json({Message: `You are logged in now.`});
+          } else {
+               res.status(404).json({errorMessage:`Invalid username or password`})
+          }
+       })
+       .catch(err => {
+          res.status(500).json({err: `Failed to login at this time`});
+       })
 })
-server.post('/api/register',
-            validateRegistration,
-            hashPassword,
-        (req,res) => {
-        const user = req.body;        
-        db('clients')
-        .insert(user)
-        .then( ids => {
-            console.log(ids[0]);
-            res.json(ids[0]);
-        })
-        .catch(err => {
-            res.status(500).json({errorMessage:err});
-        });
-});
 
-server.post('/api/login', 
-             findUser,
-             checkPassword,
-            (req,res) => {
-                 res.status(201).json({Message: `You are logged in now`});
-            });
 
-server.listen(PORT, ()=> {
-   console.log(`Server is running at localhost://${PORT}`);
-});
+
+service.listen(PORT, () => {
+   console.log(`Server is running at http://localhost${PORT}`);
+})
