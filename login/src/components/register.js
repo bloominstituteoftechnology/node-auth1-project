@@ -27,7 +27,7 @@ class Register extends React.Component {
         }
         this.props.register(newUser);
 
-        
+        this.props.history.push('/login');        
     }
 
     render(){
@@ -55,7 +55,7 @@ class Register extends React.Component {
                     ></input>
                 </div>
 
-                <div class="button">
+                <div className="button">
                     <button type="submit">Submit</button>
                 </div>
             </form>

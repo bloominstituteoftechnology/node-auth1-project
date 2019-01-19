@@ -42,7 +42,7 @@ class App extends Component {
   }
 
 
-  login = (obj) => {
+  loginUser = (obj) => {
     axios.post('http://localhost:3800/api/login', obj)
       .then(response => {
         this.setState({
@@ -65,7 +65,7 @@ class App extends Component {
 
         <Route path="/register" render={ props => <Register {...props} register={this.registerUser} />} />
         <Route exact path="/" component={Home} />
-        <Route path="/login" render={props => <Login {...props} login={this.state.login} /> } />
+        <Route path="/login" render={props => <Login {...props} login={this.loginUser} /> } />
         <Route path="/users" render={props => <Users {...props} users={this.state.users}/>}/>
 
       </div>
