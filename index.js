@@ -12,6 +12,14 @@ const PORT = 3333;
 // Middleware
 configureMiddleware(server);
 
+function restricted(req, res, next) {
+  if (req.session && req.session.user) {
+    next();
+  } else {
+    res.status(400).json({ message: "Access denied." });
+  }
+}
+
 server.use(
   session({
     name: "authentication-session",
@@ -89,6 +97,17 @@ server.get("/api/users", (req, res) => {
   } else {
     res.status(400).json({ message: "You shall not pass!" });
   }
+});
+
+// Log out endpoint
+server.post("api/logout", (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      res.status(500).json({ message: "Could not log out." });
+    } else {
+      res.json({ message: "Succesfully logged out." });
+    }
+  });
 });
 
 // Start listening
