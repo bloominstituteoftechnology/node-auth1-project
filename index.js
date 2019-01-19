@@ -1,6 +1,4 @@
 const express = require('express');
-
-// const middleware = require('./data/middleware/custom_middleware.js');
 const cors = require('cors');
 
 //PORT

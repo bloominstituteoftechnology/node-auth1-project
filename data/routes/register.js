@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const bcrypt =  require('bcryptjs');
 const db = require('../dbHelpers.js');
+const middleware = require('../middleware/custom_middleware');
 
-router.post('/api/register', (req,res) => {
+router.post('/api/register', 
+             middleware.validateRegistration,
+             middleware.hashPassword, (req,res) => {
   const user = req.body;
-  console.log(user);
-  if(!user) res.status(400).json({errorMessage: `Please enter valid credentials`});
-  if(!user.username) res.status(400).json({errorMessage: `Please enter a valid username`});
-  if(!user.password) res.status(400).json({errorMessage: `Please choose a valid password`});
-  user.password = bcrypt.hashSync(user.password, 5);   
+  // user.password = bcrypt.hashSync(user.password, 5);  
+  console.log(user.password);
   if(user.username && user.password) {
   db.insertUser(user)
     .then( userIds => {
