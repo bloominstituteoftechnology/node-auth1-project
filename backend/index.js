@@ -12,7 +12,7 @@ const server = express();
 const PORT = 5000;
 
 server.use(express.json());
-server.use(cors);
+server.use(cors());
 server.use(session({
     name: 'notsession',
     secret: 'Monkey see, monkey do',
