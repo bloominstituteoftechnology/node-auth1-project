@@ -9,11 +9,26 @@ class Login extends React.Component {
         }
     }
 
+    inputHandler = (e) => {
+        this.setState({ [e.target.name]: e.target.value })
+    };
+
+    submitHandler = (e) => {
+        e.preventDefault();
+        this.props.loginUser(this.state.username, this.state.password);
+        this.setState({ username: '', password: ''});
+        this.props.history.push('/')
+    }
+
 
     render() {
         return (
             <div>
-                I'm the Login page
+                <form onSubmit={this.submitHandler}>
+                    <p><input type="text" placeholder="username" className="textField" name="username" value={this.state.username} onChange={this.inputHandler}></input></p>
+                    <p><input type="password" placeholder="password" className="textField" name="password" value={this.state.password} onChange={this.inputHandler}></input></p>
+                    <p><input type='submit' value='Submit'></input></p>
+                </form>
             </div>
         )
     }

@@ -66,7 +66,7 @@ server.post('/api/login', (req, res) => {
     db.findUser(user.username)
     .then(userInfo => {
         if(userInfo.length && bcrypt.compareSync(user.password, userInfo[0].password)) {
-                req.session.userId = userInfo.id[0];
+                req.session.userId = userInfo[0].id;
                 res.json({message: 'Logged in'})
             } else {
                 res.status(404).json({err: 'username or password incorrect'})
