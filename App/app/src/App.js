@@ -1,26 +1,16 @@
 import React, { Component } from 'react';
 import './App.css';
+import Login from './components/login/login';
+import { Route, Link } from "react-router-dom";
+
 
 class App extends Component {
-  state = {
-    users: []
-  }
-
-  componentDidMount() {
-    fetch('/api/users')
-      .then(res => res.json())
-      .then(users => this.setState({ users}));
-  }
   render() {
     return (
       <div className="App">
         <h1>Users</h1>
-        <ul>
-          {this.state.users.map(user =>
-            <li key={user.id}>{user.username}</li>
-            )}
-        </ul>
-         
+        <Link to="/login">Login</Link>
+        <Route path="/login" exact component={Login} />
       </div>
     );
   }
