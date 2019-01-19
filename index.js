@@ -4,6 +4,8 @@ const knexConfig = require('./knexfile');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
 
+const restrictedRoutes = require('./restrictedRoutes');
+
 const server = express();
 const db = knex(knexConfig.development);
 
@@ -18,6 +20,8 @@ server.use(session({
     resave: false,
     saveUninitialized: false
 }));
+
+server.use('/api/restricted', restrictedRoutes);
 
 server.post('/api/register', (req, res)=>{
     const user = req.body;
