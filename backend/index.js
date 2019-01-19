@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const cors = require('cors');
 const session = require('express-session');
 
 const authenticate = require('./middleware/authenticate');
@@ -11,6 +12,7 @@ const server = express();
 const PORT = 5000;
 
 server.use(express.json());
+server.use(cors);
 server.use(session({
     name: 'notsession',
     secret: 'Monkey see, monkey do',
