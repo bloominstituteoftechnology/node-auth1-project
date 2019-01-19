@@ -14,10 +14,10 @@ server.listen(port, function() {
 });
 
 server.post('/api/register',    (req, res)  =>  {
-    const user = req.body;
-    user.password = bcrypt.hashSync(user.password);
-    user.username = user.username.toUpperCase();
-    db('users').insert(user)
+    const creds = req.body;
+    creds.password = bcrypt.hashSync(creds.password);
+    creds.username = creds.username.toUpperCase();
+    db('users').insert(creds)
         .then(ids   =>  {
             res.status(201).json({id: ids[0]});
         })
@@ -27,10 +27,10 @@ server.post('/api/register',    (req, res)  =>  {
 })
 
 server.post('/api/login',   (req, res)  =>  {
-    const bodyUser  =   req.body;
-    db('users').where('username', bodyUser.username.toUpperCase())
+    const creds  =   req.body;
+    db('users').where('username', creds.username.toUpperCase())
         .then(users =>  {
-            if(users.length && bcrypt.compareSync(bodyUser.password, users[0].password))    {
+            if(users.length && bcrypt.compareSync(creds.password, users[0].password))    {
                 res.json({ info: "correct"});
             }   else {
                 res.status(404).json({err: "invalid username or password"});
