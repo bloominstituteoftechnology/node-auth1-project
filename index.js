@@ -5,6 +5,8 @@ const session = require("express-session");
 const cors = require("cors")
 const helmet = require("helmet");
 const morgan = require("morgan");
+const customMw = require("./customMiddleware");
+const auth = customMw.auth;
 
 const usersRouter = require("./routers/usersRouter");
 
@@ -26,6 +28,7 @@ server.use(
 );
 
 server.use("/api", usersRouter);
+server.use("/api/restricted", auth)
 
 const PORT = 4000;
 server.listen(PORT, () => {

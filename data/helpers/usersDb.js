@@ -4,6 +4,9 @@ module.exports = {
   get: () => {
     return db("users").select("id", "username");
   },
+  getAll: () => {
+    return db("users");
+  },
   insert: user => {
     return db("users")
       .insert(user)

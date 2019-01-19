@@ -5,6 +5,9 @@ const customMw = require("../customMiddleware");
 const express = require("express");
 const router = express.Router();
 const protect = customMw.protect;
+const auth = customMw.auth;
+
+// router.use("/restricted", auth())
 
 router.post("/register", (req, res) => {
   const user = req.body;
@@ -68,6 +71,16 @@ router.post("/login", (req, res) => {
       });
   }
 });
+router.get("/restricted/users", protect, (req, res) => {
+  usersDb
+  .getAll()
+  .then(users => {
+    res.send(users)
+  })
+  .catch(err => {
+    res.status(500).json({message: "trouble getting users"})
+  })
+})
 router.get("/users", protect, (req, res) => {
   usersDb
   .get()
@@ -75,7 +88,7 @@ router.get("/users", protect, (req, res) => {
     res.send(users)
   })
   .catch(err => {
-    res.status(500).json({message: "You shall not pass!"})
+    res.status(500).json({message: "trouble getting users"})
   })
 })
 
