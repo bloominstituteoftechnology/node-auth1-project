@@ -15,6 +15,6 @@ module.exports = {
     },
 
     getUsers: () => {
-        return db('users');
+        return db('users').select('id', 'username');
     },
 };
