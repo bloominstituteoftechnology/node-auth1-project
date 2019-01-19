@@ -29,7 +29,7 @@
 .user{
   margin: 15px auto;
   border: 2px solid rgb(48, 7, 161);
-  width: 150px;
+  width: 175px;
   height: 30px;
   background-color: rgb(226, 116, 193);
   display: flex;
@@ -39,7 +39,9 @@
 
 .user:hover{
   border: 2px solidrgb(226, 116, 193);
-  background: rgb(48, 7, 161);
+  background: rgb(102, 66, 202);
+  color: white;
+  font-weight: bold;
 }
 
 .header{

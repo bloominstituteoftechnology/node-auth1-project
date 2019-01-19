@@ -20,16 +20,16 @@ class App extends Component {
     }
   }
 
-  componentDidMount = () => {
-    axios.get('http://localhost:3800/api/users')
-      .then(response => {
-        if(typeof response.data.message === 'string'){
-          Promise.reject("Error: users are missing!")
-        }
-        this.setState({ users: response.data })
-      })
-      .catch(err => console.log(err))
-  }
+  // componentDidMount = () => {
+  //   axios.get('http://localhost:3800/api/users')
+  //     .then(response => {
+  //       if(typeof response.data.message === 'string'){
+  //         Promise.reject("Error: users are missing!")
+  //       }
+  //       this.setState({ users: response.data })
+  //     })
+  //     .catch(err => console.log(err))
+  // }
 
   registerUser = (obj) => {
     axios.post('http://localhost:3800/api/register', obj)

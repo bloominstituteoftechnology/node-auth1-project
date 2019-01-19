@@ -57,7 +57,7 @@ router.post('/register', (req, res) => {
     }
 })
 
-.get('/users', protect, (req, res) => {    
+.get('/users', (req, res) => {    
     dbLogin.fetch()
         .then(users => {
             res.json(users)
