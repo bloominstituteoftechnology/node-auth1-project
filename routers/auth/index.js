@@ -1,11 +1,32 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
+const session = require("express-session");
 const Auth = require("../../data/helpers/auth");
 const Users = require("../../data/helpers/users");
 const router = express.Router();
 
+router.use(
+  session({
+    name: process.env.NAME || "Admin",
+    secret: process.env.SECRET || "this is a secret",
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000
+    },
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false
+  })
+);
+
+const protected = (req, res, next) => {
+  req.session && req.session.userId
+    ? next()
+    : res.status(400).json({ error: "Please login" });
+};
+
 router.post("/register", (req, res) => {
   const { newUser } = req.body;
+  console.log("session", req.session);
   // check if newUser is in the req.body
   if (newUser.username.length && newUser.password.length) {
     const username = newUser.username.toLowerCase();
@@ -66,10 +87,11 @@ router.post("/login", (req, res) => {
         const clientPass = clientUser.password;
         // check if passwords match
         if (bcrypt.compareSync(clientPass, dbPass)) {
-          res.json({ message: "Authentication Passed!" });
+          req.session.userId = result.id;
+          res.json({ message: "Logged in" });
         } else {
           res.status(401).json({
-            error: "Check the username/password combination and try again"
+            error: "You shall not pass!"
           });
         }
       })
@@ -81,7 +103,16 @@ router.post("/login", (req, res) => {
   }
 });
 
-router.get("/users", (req, res) => {
+//LOGOUT
+router.post("/logout", (req, res) => {
+  req.session.destroy(err => {
+    err
+      ? res.status(500).json({ error: "failed logout" })
+      : res.json({ message: "logged out" });
+  });
+});
+
+router.get("/users", protected, (req, res) => {
   Users.getUsers()
     .then(users => {
       res.json({ users });
