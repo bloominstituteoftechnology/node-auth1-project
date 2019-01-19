@@ -25,6 +25,16 @@ session({
     })
 );
 
+/* Stretch middleware */
+server.use('/api/restricted/', (req, res, next) => {
+    if (req.session && req.session.userID) {
+        next();
+    }
+    else {
+        res.status(403).json({message: 'You need to login to get access to this resource.'});
+    }
+});
+
 /* Endpoints */
 server.post('/api/register', (req, res) => {
     const user = req.body;
@@ -69,19 +79,15 @@ server.post('/api/login', (req, res) => {
     }
 });
 
-server.get('/api/users', (req, res) => {
-    if (req.session && req.session.userID) {
-        dbhelpers.getUsernames()
-        .then((usernames) => {
-            res.status(200).json({usernameList: usernames});
-        })
-        .catch((error) => {
-            res.status(500).json({message: `Server sent an error of: ${error}`});
-        })
-    }
-    else {
-        res.status(403).json({message: 'You need to login to get access to this resource.'});
-    }
+// Refactored this to go through the restricted middleware
+server.get('/api/restricted/users', (req, res) => {
+    dbhelpers.getUsernames()
+    .then((usernames) => {
+        res.status(200).json({usernameList: usernames});
+    })
+    .catch((error) => {
+        res.status(500).json({message: `Server sent an error of: ${error}`});
+    })
 })
 
 /* Listening post */
