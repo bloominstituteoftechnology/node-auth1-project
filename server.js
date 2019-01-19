@@ -1,16 +1,13 @@
-const ENV = 'development';
 const express = require('express');
-const knex = require('knex');
-const dbCONFIG = require('./knexfile.js');
 const bcrypt = require('bcryptjs')
 const server = express();
-const db = knex(dbCONFIG[ENV])
+const DB = require('./data/dbHELPER.js')
 server.use(express.json())
 
 const PORT = 4444;
 
 server.get('/api/users', (req, res) => {
-    db('users')
+    DB.get()
     .then(info => {
         res.json(info)})
         .catch(err => {
@@ -21,10 +18,10 @@ server.get('/api/users', (req, res) => {
 server.post('/api/register', (req,res) => {
     const user = req.body;
 
-    user.password = '2#38&y4'+bcrypt.hashSync(user.password) 
+    user.password = '2#38&y4'+ bcrypt.hashSync(user.password) 
     const missing = ['username', 'password', 'registered'].filter(item => {return user.hasOwnProperty(item) === false})
     if(missing.length===0)
-    {db('users').insert(user)
+    {DB.insert(user)
     .then(ids => {
         res.status(201).json(res.json({message: `user ${user.username} added`}))})
     .catch(err => {
@@ -38,7 +35,7 @@ server.post('/api/register', (req,res) => {
     server.post('/api/login', (req,res) => {
         const user = req.body;
         
-        db('users').where('username', user.username)
+        DB.findByUsername(user.username)
         .then(users => {
             if (users.length && '2#38&y4' + bcrypt.compareSync(user.password, users[0].password)){
                 res.json({message: `Success!`})}
