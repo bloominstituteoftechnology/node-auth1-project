@@ -4,8 +4,8 @@ const db = knex(dbconfig.development);
 
 registerUser = (newUser) => {
     return db('users')
-        .insert(newUser).
-        then(ids => ({ id: ids[0] }))
+        .insert(newUser)
+        .then(ids => ({ id: ids[0] }))
 };
 
 findByUser = (username) => {
@@ -13,8 +13,14 @@ findByUser = (username) => {
         .where('username', username)
 };
 
+findUsers = () => {
+    return db('users').select('id','username')
+    
+};
+
 
 module.exports = {
     findByUser,
-    registerUser
+    registerUser,
+    findUsers
 }
