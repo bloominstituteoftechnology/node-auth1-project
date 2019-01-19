@@ -1,10 +1,10 @@
+// this file contains my helpers which is basically the knex logic.
+
 const knex = require('knex');
 
 const knexConfig = require('../knexfile');
 
 const db = knex(knexConfig.development);
-
-// this file contains my helpers which is basically the knex logic.
 
 module.exports = {
   insert: (user) => {
@@ -13,5 +13,9 @@ module.exports = {
 
   findByUserName: (username) => {
     return db('users').where('username', username);
+  },
+
+  findUsers: () => {
+    return db('users').select('id', 'username', 'password');
   }
 }
