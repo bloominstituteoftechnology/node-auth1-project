@@ -55,6 +55,7 @@ server.post('/api/login', (req, res) => {
         db.findByUsername(user.username)
             .then(users => {
                 if (users.length && bcrypt.compareSync(user.password, users[0].password)) {
+                    req.session.userID = users[0].id;
                     res.json({message: `Logged in.`});
                 }
                 else {
