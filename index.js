@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const cors = require("cors");
 const session = require("express-session");
+const bodyParser = require("body-parser");
 
 const PORT = 3300;
 const db = require("./data/dbConfig.js");
@@ -30,6 +31,8 @@ server.use(
     saveUninitialized: false
   })
 );
+server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({ extended: true }));
 
 server.post("/api/register", (req, res) => {
   const newUser = req.body;
@@ -54,6 +57,7 @@ server.post("/api/login", (req, res) => {
         bcrypt.compareSync(user.password, users[0].password)
       ) {
         req.session.userId = users[0].id;
+        console.log(req.session);
         res.status(202).send("login successful");
       } else {
         res.status(401).send("You shall not pass!");
@@ -80,7 +84,7 @@ server.post("/api/logout", (req, res) => {
     if (err) {
       res.status(500).send(err);
     } else {
-      res.status(200).send("login successful");
+      res.status(200).send("logout successful");
     }
   });
 });
