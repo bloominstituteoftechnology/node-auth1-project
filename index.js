@@ -19,7 +19,19 @@ server.use(session({
     resave: false,
     saveUninitialized: false,
 }));
-  
+
+// custom middleware to check session and user ID
+
+function checkSession(req, res, next) {
+    if(req.session && req.session.userID) {
+        next();
+    }
+    else {
+        res
+            .status(400)
+            .json({message: 'You shall not pass!!!'})
+    }
+};
 
 // register new user with hashed password
 
