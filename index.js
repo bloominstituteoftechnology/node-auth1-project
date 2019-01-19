@@ -27,7 +27,6 @@ server.use(session({
 
 server.post('/api/register', (req, res) => {
     const user = req.body;
-    console.log('session', req.session)
     if(user.username && user.password){
         user.password = bcrypt.hashSync(user.password);
         db('users').insert(user)
@@ -76,6 +75,23 @@ server.post('/api/login', (req, res) => {
 }); 
 
 //GET	/api/users
+
+server.get('/api/users', (req, res) =>{
+    console.log(req.session)
+    if(req.session && req.session.id){
+        db('users')
+        .select('id', 'username')
+        .then(users =>{
+            res
+            .json(users);
+        })
+        .catch(err => res.send(err));
+    } else {
+        res
+        .status(400)
+        .send('You shall not pass!')
+    }
+});
 
 server.listen(PORT, () =>{
     console.log(`Server is listening on ${PORT}`)
