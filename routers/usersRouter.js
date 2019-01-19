@@ -1,8 +1,10 @@
 const usersDb = require("../data/helpers/usersDb");
 const bcrypt = require("bcryptjs");
+const customMw = require("../customMiddleware");
 
 const express = require("express");
 const router = express.Router();
+const protect = customMw.protect;
 
 router.post("/register", (req, res) => {
   const user = req.body;
@@ -55,7 +57,8 @@ router.post("/login", (req, res) => {
       .findByUsername(user.username)
       .then(users => {
         if (users[0] && bcrypt.compareSync(user.password, users[0].password)) {
-          res.status(200).json({ message: "Logged In" });
+          req.session.userId = users[0].id;
+          res.status(200).json({session: req.session, message: "Logged In" });
         } else {
           res.status(404).json({ message: "You shall not pass!" });
         }
@@ -65,9 +68,15 @@ router.post("/login", (req, res) => {
       });
   }
 });
-
-// router.get("/users", (req, res) => {
-
-// })
+router.get("/users", protect, (req, res) => {
+  usersDb
+  .get()
+  .then(users => {
+    res.send(users)
+  })
+  .catch(err => {
+    res.status(500).json({message: "You shall not pass!"})
+  })
+})
 
 module.exports = router;

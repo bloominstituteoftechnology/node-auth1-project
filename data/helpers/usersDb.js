@@ -2,7 +2,7 @@ const db = require("../dbConfig");
 
 module.exports = {
   get: () => {
-    return db("users");
+    return db("users").select("id", "username");
   },
   insert: user => {
     return db("users")

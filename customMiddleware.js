@@ -2,7 +2,7 @@ const protect = (req, res, next) => {
   if (req.session && req.session.userId) {
     next();
   } else {
-    res.status(400).send("Access Denied");
+    res.status(400).send("You shall not pass!");
   }
 };
 
