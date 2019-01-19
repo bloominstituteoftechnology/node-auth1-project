@@ -6,15 +6,28 @@ const dbConfig = require('./knexfile');
 
 const bcrypt = require('bcryptjs');
 
+const session = require('express-session')
+
 const db = knex(dbConfig.development)
 const PORT = process.env.PORT || 8999;
 
 server.use(express.json());
+server.use(session({
+    name: 'asession', 
+    secret: 'speak elvish for friend',
+    cookie: {
+        maxAge: 1 * 24 * 60 * 60 * 1000,
+    },
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false,
+}))
 
 //POST	/api/register
 
 server.post('/api/register', (req, res) => {
     const user = req.body;
+    console.log('session', req.session)
     if(user.username && user.password){
         user.password = bcrypt.hashSync(user.password);
         db('users').insert(user)
@@ -38,7 +51,7 @@ server.post('/api/register', (req, res) => {
 
 server.post('/api/login', (req, res) => {
     const checkUser = req.body;
-    if(user.username && user.password){
+    if(checkUser.username && checkUser.password){
         db('users').where('username', checkUser.username)
         .then(users => {
             if(users.length && bcrypt.compareSync(checkUser.password, users[0].password)){
