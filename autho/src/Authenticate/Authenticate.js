@@ -1,5 +1,7 @@
 import React from "react";
-import Login from "../Login/login";
+import Register from "../Register/register";
+// import Login from '../Login/login'
+// import axios from 'axios';
 
 
 const Authenticate = App =>
@@ -11,18 +13,13 @@ const Authenticate = App =>
             };
         }
         componentDidMount = () => {
-            if (!localStorage.getItem("user")) {
-                this.setState({ loggedIn: false });
-            } else {
-                setTimeout(() => { localStorage.clear() }, 300000)
-                this.setState({ loggedIn: true });
-            }
+
         };
 
         render() {
             // return <App />
             if (this.state.loggedIn) return <App />;
-            return <Login />;
+            return <Register />;
 
         }
     };

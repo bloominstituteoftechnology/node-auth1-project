@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import Authenticate from './Authenticate/Authenticate'
+import Users from "./Users/users";
 
 
 const App = (
@@ -17,8 +18,7 @@ const App = (
       return (
         <div className='App'>
 
-          <h1>Users</h1>
-
+<Users />
         </div>
       );
     }

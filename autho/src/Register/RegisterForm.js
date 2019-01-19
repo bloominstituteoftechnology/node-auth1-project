@@ -2,34 +2,33 @@ import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
 import { FormGroup } from "../Styles/styles";
 
-class Login extends Component {
-  constructor(props) {
-    super(props);
+class RegisterForm extends Component {
+    constructor(props) {
+        super(props);
 
-    this.state = {
-      username: "",
-      password: ""
-    };
+        this.state = {
+            username: "",
+            password: ""
+        };
     }
     handleInputChange = e => {
-        this.setState({ [e.target.name]: e.target.value });
+      this.setState({ [e.target.name]: e.target.value });
     };
-    handleLogin = event => {
-        event.preventDefault();
-        const signIn = {
-            username: this.state.username,
-            password: this.state.password
-        };
-        this.props.login(signIn);
-        this.props.history.push('/users')
+    handleRegister = event => {
+    event.preventDefault();
+      const addUser = {
+        username: this.state.username,
+        password: this.state.password
+      };
+      this.props.register(addUser);
+      this.props.history.push('/login')
     };
-
 
   render() {
     return (
       <div>
         <FormGroup>
-                <h4>Please Login</h4>
+          <h4>Please Register</h4>
           <input
             type="text"
             placeholder="Username"
@@ -45,14 +44,13 @@ class Login extends Component {
             onChange={this.handleInputChange}
           />
           <Button
-            onClick={this.handleLogin}
+            onClick={this.handleRegister}
           >
-            Login
+            Register
           </Button>
         </FormGroup>
       </div>
     );
   }
 }
-
-export default Login;
+export default RegisterForm;
