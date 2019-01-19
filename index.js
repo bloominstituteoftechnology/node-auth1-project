@@ -4,6 +4,7 @@ const cors = require('cors')
 const db = require('./database/dbHelpers.js')
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const middleWare = require('./middleware.js')
 server.use(express.json());
 server.use(cors());
 server.use(session({
@@ -17,13 +18,7 @@ server.use(session({
   saveUninitialized: false,
 }));
 
-function protect(req, res, next) {
-  if (req.session && req.session.userID) {
-    next();
-  } else {
-    res.status(400).send('access denied')
-  }
-}
+
 // basic get request to test if server is up 
 
 server.get('/', (req, res) => {
@@ -31,7 +26,7 @@ server.get('/', (req, res) => {
 });
 
 //this route should be protected, only authenticated users should be able to see it
-server.get('/api/users', protect, (req, res) => {
+server.get('/api/users',middleWare.protect, (req, res) => {
   db.getUsers()
     .then(users => {
       res.json(users);
