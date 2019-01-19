@@ -10,20 +10,48 @@ class Register extends Component {
         };
     };
 
+    registerNewUser = e => {
+        e.preventDefault();
+        axios
+            .post(`http://localhost:4400/api/register`, {
+                username: this.state.username,
+                password: this.state.password
+            })
+            .then(response => {
+                console.log(response);
+            })
+            .catch(err => console.log(err));
+        this.setState({
+            username: '',
+            password: ''
+        });
+    }
+
+    handleInput = e => {
+        this.setState({[e.target.name]: e.target.value});
+    };
+
     render() {
         return (
-            <form>
+            <div>
+                <h2>Register a new user!</h2>
+                <form onSubmit={this.registerNewUser}>
                 <input
-                    placeholder='username'
+                    onChange={this.handleInput}
+                    placeholder='Username'
                     value={this.state.username}
                     name='username'
                 />
                 <input
-                    placeholder='password'
+                    onChange={this.handleInput}
+                    placeholder='Password'
                     value={this.state.password}
                     name='password'
                 />
-            </form>
+                <button type='submit'>Register!</button>
+                </form>
+            </div>
+            
         )
     }
 }

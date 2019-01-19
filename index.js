@@ -1,13 +1,14 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const cors = require('cors');
 
 const db = require('./data/dbHelpers.js');
 
 const server = express();
 const PORT = 4400;
 
-server.use(express.json());
+server.use(express.json(), cors());
 
 server.use(session({
     name: 'notsession', 
