@@ -8,14 +8,14 @@ function insertUser(user){
   return db('users').insert(user)
 }
 
-function getUser(res){
-  return db('users');
- }
+function findUsers(){
+  return db('users').select('id', 'email');
+}
 
-function findByUsername(username){
-  return db('users').where('username', username);
+function findByUsername(email){
+  return db('users').where('email', email);
 }
 
 module.exports = {
-   insertUser, findByUsername, getUser
+   insertUser, findByUsername, findUsers
 }
