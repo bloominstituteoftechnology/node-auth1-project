@@ -9,7 +9,7 @@ module.exports = {
   findByUsername: (username) => {
     return db('users').where('username', username);
   },
-  getUsers: users => {
+  getUsers: (users) => {
     return db('users').select('id', 'username')
   }
 }

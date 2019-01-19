@@ -61,7 +61,7 @@ server.post('/api/login', (req, res) => {
     });
 });
 
-server.post('api/logout', (req, res) => {
+server.post('/api/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
       res.status(500).send('not logged out');
