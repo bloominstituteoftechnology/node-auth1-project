@@ -21,7 +21,7 @@ server.get('/api/users', (req, res) => {
 server.post('/api/register', (req,res) => {
     const user = req.body;
 
-    user.password = bcrypt.hashSync(user.password) 
+    user.password = '2#38&y4'+bcrypt.hashSync(user.password) 
     const missing = ['username', 'password', 'registered'].filter(item => {return user.hasOwnProperty(item) === false})
     if(missing.length===0)
     {db('users').insert(user)
@@ -40,7 +40,7 @@ server.post('/api/register', (req,res) => {
         
         db('users').where('username', user.username)
         .then(users => {
-            if (users.length && bcrypt.compareSync(user.password, users[0].password)){
+            if (users.length && '2#38&y4' + bcrypt.compareSync(user.password, users[0].password)){
                 res.json({message: `Success!`})}
             else {
                 res.status(404).json({message: `invalid username or password`})
