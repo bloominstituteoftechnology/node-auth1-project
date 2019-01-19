@@ -1,9 +1,11 @@
 const express = require('express');
-//const cors = require('cors');   //necessary for react frontend
+const cors = require('cors');   //necessary for react frontend
 const bcrypt = require('bcryptjs'); //open source Hashing
+const session = require('express-session');
 
 // const knex = require('knex');   // pre-Helpers
 // const dbConfig = require('./knexfile'); // pre-Helpers
+//const db = knex(dbConfig.development); // pre-Helpers
 
 //add helpers later
 const db = require('./database/dbHelpers.js');
@@ -19,9 +21,11 @@ function protect(req, res, next) {
     }
 }
 
-//const db = knex(dbConfig.development); // pre-Helpers
+server.use(express.json());
+server.use(cors());
 
-const session = require('express-session');
+
+
 
 
 // Session on server side
