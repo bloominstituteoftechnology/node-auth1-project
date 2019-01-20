@@ -5,7 +5,7 @@ module.exports = {
   development: {
     client: 'sqlite3',
     connection: {
-      filename: './LambdaAuthentication'
+      filename: './lambda_authentication'
     },
     useNullAsDefault: true,
     migrations: {
