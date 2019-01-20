@@ -13,13 +13,13 @@ const db = require('./database/dbHelpers.js');
 const server = express();
 
 // MIDDLEWARE TO RESTRICT ACCESS TO PROTECTED ROUTES
-function protect(req, res, next) {
-    if (req.session && req.session.userId){
-        next();
-    } else {
-        res.status(400).send({ message: 'you shall not pass!!'});
-    }
-}
+// function protect(req, res, next) {
+//     if (req.session && req.session.userId){
+//         next();
+//     } else {
+//         res.status(400).send({ message: 'you shall not pass!!'});
+//     }
+// }
 
 server.use(express.json());
 server.use(cors());
@@ -97,7 +97,8 @@ server.post('/api/login', (req, res) => {
 
 
 // only authenticated users should see this
-server.get('/api/users', protect, (req,res) => {
+// server.get('/api/users', protect, (req,res) => {
+server.get('/api/users', (req,res) => {
     db.getUsers()
     .then(users => {
         res.json(users)

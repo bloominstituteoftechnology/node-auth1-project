@@ -9,6 +9,7 @@
   "author": "paulapivat <paul.apivat@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.18.0",
     "bcrypt": "^3.0.3",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
