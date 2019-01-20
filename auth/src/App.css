@@ -1,0 +1,56 @@
+.App {
+    text-align: center;
+    background-color: black;
+    color: white;
+
+}
+
+.main-header {
+   /*  border: 2px solid blue; */
+    width: 500px;
+}
+
+.title {
+    /* border: 2px solid green; */
+    width: 100%;
+    background-color: gray;
+    color: black;
+    font-size: 24px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.container-1 {
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+   /*  border: 2px solid red; */
+}
+
+.text {
+  padding-top: 10px;
+  width: 100%;
+   /*  border: 2px solid yellow; */
+height: 70px;
+  }
+
+.main-form {
+  width: 100%;
+  padding-top: 6px;
+  background-color: gray;
+height: 120px;
+   /*  border: 2px solid orange; */
+}
+
+button {
+  color: black;
+  background-color: darkgray;
+  height: 30px;
+  width: 75px;
+}
+
+.user-list {
+  width: 100%;
+  height: 399px;
+   /*  border: 2px solid purple; */
+}

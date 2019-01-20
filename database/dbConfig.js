@@ -2,18 +2,6 @@ const knex = require('knex');
 const knexConfig = require('../knexfile.js');
 const db = knex(knexConfig.development);
 
-
- /* module.exports = {
-    insert: (user) => {
-        return db('users').insert(user);
-    },
-
-    findByUsername: (username) => {
-        return db('users').where('username', username)
-
-    }
-};  */
-
  module.exports = {
     find,
     findByUsername,
@@ -23,10 +11,10 @@ const db = knex(knexConfig.development);
   };
   
   function find() {
-    return db('users');
+    return db('users').select('id', 'username');
   }
   
-  function findByUsername(username) {
+ function findByUsername(username) {
     return db('users').where({ 'username': username });
   }
   
@@ -49,6 +37,6 @@ const db = knex(knexConfig.development);
       .del();
   } 
   
-/******************************************************* */
+
 
   
