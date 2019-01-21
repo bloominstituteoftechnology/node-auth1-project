@@ -61,15 +61,6 @@ class Register extends Component {
         console.log("Err", err);
       });
   };
-    getUsers = e => {
-
-      axios
-        .get("http://localhost:4300/api/users")
-        .then(res => this.setState({ users: res.data }))
-        .catch(err => {
-          console.log("Error:", err);
-        });
-    };
 
   render() {
     return (
