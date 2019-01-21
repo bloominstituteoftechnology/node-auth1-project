@@ -2,28 +2,34 @@ const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
+// const KnexSessionStore = require('connect-session-knex')(session)
 
 const server = express();
 const port = process.env.PORT || 4300;
 const db = require("./database/helpers/userHelpers");
+
 // Cookie and New Session
 server.use(
   session({
-    name: "mehsession", // default is connect.sid
+    name: "session", // default is connect.sid
     secret: "1h4hs7u3nsaskMsdhw23NW1@#s9",
     cookie: {
-      maxAge: 1 * 24 * 60 * 60 * 1000
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      secure: false
     }, // 1 day in milliseconds
     httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+
+
   })
 );
 
 server.use(express.json());
-server.use(cors());
+server.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 //custom middleware
+
 function protect(req, res, next) {
   if (req.session && req.session.userId) {
     next();
@@ -36,9 +42,8 @@ server.get("/", (req, res) => {
   res.send("The Sever is alive");
 });
 
-
 // protect this route, only authenticated users should see it
-server.get('/api/users', protect, (req, res) => {
+server.get("/api/users", protect, (req, res) => {
   db.find()
     .then(users => {
       res.json(users);

@@ -2,12 +2,11 @@ import React from 'react'
 
 
 
-const User = user => {
+const User = props => {
     return (
 
         <div>
-            <h2>{user.id}</h2>
-            <h2>{user.username}</h2>
+            <h2>{props.id} : {props.user}</h2>
         </div>
     )
 }

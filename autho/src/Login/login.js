@@ -2,15 +2,18 @@ import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
 import { FormGroup } from "../Styles/styles";
 
+
 class Login extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       username: "",
-      password: ""
+      password: "",
+      login: false
     };
-    }
+  }
+
     handleInputChange = e => {
         this.setState({ [e.target.name]: e.target.value });
     };
@@ -18,7 +21,8 @@ class Login extends Component {
         event.preventDefault();
         const signIn = {
             username: this.state.username,
-            password: this.state.password
+          password: this.state.password,
+          login: true
         };
         this.props.login(signIn);
         this.props.history.push('/users')
@@ -49,7 +53,9 @@ class Login extends Component {
           >
             Login
           </Button>
+
         </FormGroup>
+
       </div>
     );
   }
