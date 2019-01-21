@@ -61,3 +61,9 @@ export const Navigation = styled.div`
     color: black;
   }
 `;
+
+export const UserCard = styled.div`
+
+display: flex;
+justify-content:center;
+`

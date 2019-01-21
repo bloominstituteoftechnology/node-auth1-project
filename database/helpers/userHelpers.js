@@ -6,7 +6,7 @@ const db = knex(knexConfig.development);
 
 module.exports = {
   find: () => {
-    return db("users").select("id", "username");
+    return db("users").select("id", "username").orderBy('id');
   },
   insert: (user) => {
     return db("users").insert(user);

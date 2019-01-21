@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 
 import User from "./user";
+import { UserCard } from "../Styles/styles";
 
 class Users extends Component {
   render() {
-    console.log(this.props.users);
+
     return (
-      <div className="Users">
+      <UserCard>
         <h1>Users currently</h1>
         <ul>
           {this.props.users.map(user => {
@@ -19,7 +20,7 @@ class Users extends Component {
             );
           })}
         </ul>
-      </div>
+      </UserCard>
     );
   }
 }
