@@ -2,6 +2,30 @@ const express = require('express');
 const router = express.Router();
 const bcrypt =  require('bcryptjs');
 const db = require('../dbHelpers.js');
+const session = require('express-session');
+
+router.use(
+   session({
+     name: 'notsession', // default is connect.sid
+     secret: 'nobody tosses a dwarf!',
+     cookie: {
+       maxAge: 1 * 24 * 60 * 60 * 1000,
+       secure: true, // only set cookies over https. Server will not send back a cookie over http.
+     }, // 1 day in milliseconds
+     httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
+     resave: false,
+     saveUninitialized: false,
+   })
+ );
+
+
+const protect = (req,res,next) => {
+   if(session && session.userId) {
+        next();
+   } else {
+      res.status(404).json({errorMessage: `Access Denied`});
+   }
+} 
 
 router.post('/api/login', (req,res) => {
   const credentials = req.body;
@@ -27,6 +51,18 @@ router.post('/api/logout', (req,res) => {
           res.json({Message:`Logout successful`});
        }
    })
+});
+ 
+
+router.get('/api/users', protect, (req,res) => {
+     console.log(req.session)
+     db.findUsers()
+       .then( users => {
+          res.status(200).json(users)
+       })
+       .catch(err => {
+          res.status(500).json({err:`Failed to get the all users now.`});
+       })
 });
 
 

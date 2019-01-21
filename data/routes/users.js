@@ -14,6 +14,7 @@ const protect = (req,res,next) => {
 }  
 
 route.get('/api/users', protect, (req,res) => {
+     console.log(req.session)
      db.findUsers()
        .then( users => {
           res.status(200).json(users)
