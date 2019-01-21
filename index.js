@@ -3,7 +3,7 @@ const helmet = require('helmet');
 const knex = require('knex');
 const knexConfig = require('./knexfile');
 const register = require('./api/register')
-//const login = require('./api/login');
+const login = require('./api/login');
 
 //connection to the data base
 const db = knex(knexConfig.development);
@@ -27,6 +27,6 @@ server.get('/api/users', async (req, res) => {
   });
 
 server.use('/api/register', register);
-//server.use('/api/login', login);
+server.use('/api/login', login);
 
 server.listen(9000, () => console.log('\n Api is running \n'));
