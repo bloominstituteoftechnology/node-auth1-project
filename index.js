@@ -27,7 +27,6 @@ const Port = 3300;
 // store a username and password
 server.post('/api/register', (req, res) => {
     const user = req.body;
-    console.log('session', req.session)
     user.password = bcrypt.hashSync(user.password)
     db('users').insert(user)
     .then(ids => {
@@ -40,7 +39,8 @@ server.post('/api/register', (req, res) => {
 
 server.post('/api/login', (req, res) => {
    const user = req.body;
-   db('user').where('username' ,user.username)
+   console.log(user)
+   db('users').where('username' ,user.username)
    .then(users => {
      //username validation, client password validation from db
      if(users.length && bcrypt.compareSync(bodyUser.password, users[0].password, 12)) {
