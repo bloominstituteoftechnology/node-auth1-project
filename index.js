@@ -7,6 +7,32 @@ const db = require('./dbConfig.js');
 
 const server = express();
 
+
+
+//MIDDLEWARE
+function protect(res, req, next) {
+  if (req.session && req.session.userId) {
+    next()
+  } else (
+    res.status(400).send('access denied')
+  )
+}
+
+//TO USE MIDDLEWARE
+// server.use(protect)
+
+// server.get('/api/users', protect, (req, res) => {
+//   console.log('session', req.session);
+//   if (req.session && req.session.userId) {
+//     db('users')
+//       .then(users => {
+//       res.json(users)
+//     })
+//   } else {
+//     res.status(400).send('You shall not pass!');
+//   }
+// });
+
 server.use(express.json());
 server.use(cors());
 server.use(session({
@@ -72,7 +98,17 @@ server.get('/api/users', (req, res) => {
   } else {
     res.status(400).send('You shall not pass!');
   }
-  });
+});
+  
+server.post('/api/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      res.status(500).send('failed to logout');
+    } else {
+      res.send('logout successful');
+    }
+  })
+})
 
 
 server.get('api/messages', (req, res) => {
@@ -83,3 +119,5 @@ server.get('api/messages', (req, res) => {
   server.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`)
   })
+
+
