@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-//import styled from 'styled-components';
 import User from './components/User';
 import { Input } from 'reactstrap';
 import './App.css';
@@ -21,7 +20,6 @@ class App extends Component {
 
   handleInputChange = e => {
     this.setState({ [e.target.name]: e.target.value });
-    console.log('the state', this.state);
   };
 
   // ********* USER LOGIN **************************
@@ -33,7 +31,6 @@ class App extends Component {
         username: this.state.username,
         password: this.state.password
       };
-      console.log('userInfo', userInfo);
       axios
         .post('http://localhost:3300/api/login', userInfo)
         .then(response => {
@@ -59,8 +56,6 @@ class App extends Component {
         username: this.state.username,
         password: this.state.password
       };
-
-      console.log('userInfo', userInfo);
       axios
         .post('http://localhost:3300/api/register', userInfo)
         .then(response => {
@@ -68,7 +63,6 @@ class App extends Component {
           let passWord = "";
           let userName = "";
           this.setState(() => ({ username: userName, password: passWord }))
-
         })
         .catch(error => {
           console.error('Server Error', error);
@@ -84,21 +78,15 @@ class App extends Component {
     axios
       .get('http://localhost:3300/api/users/')
       .then(response => {
-        console.log("response.data:", response.data);
         let tmpArray = [];
-
         for (let x = 0; x < response.data.length; x++) {
           tmpArray.push(response.data[x].username)
         }
-        //const test = response.data[0].username;
-        console.log("tmpArray:", tmpArray);
-
         this.setState(() => ({ userList: tmpArray }));
       })
       .catch(error => {
         console.error('Server Error', error);
       });
-
   }
 
   // ***************** USER LOGOUT **************************
@@ -107,7 +95,6 @@ class App extends Component {
     axios
       .post('http://localhost:3300/api/logout')
       .then(response => {
-        console.log("response:", response)
         alert('logout successful')
         this.setState(() => ({ userList: [], display: true, disabled: true }));
       })
@@ -116,14 +103,13 @@ class App extends Component {
       });
   }
 
+  // **** USER MESSAGE JUST SOME HUMOR *****
   message = () => {
     alert("Sorry, we dont know it either... #BestSecurityEver");
   }
 
   render() {
-   // let newUserList = localStorage.getItem('test1')
-
-   // *** CODE TO CHANGE THE LOGOUT AND USERLIST BUTTONS TEXT COLOR ****
+     // *** CODE TO CHANGE THE LOGOUT AND USERLIST BUTTONS TEXT COLOR ****
      let classNames = require('classnames');
 
     let btnClass = classNames({
