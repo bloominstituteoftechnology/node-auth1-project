@@ -12,6 +12,8 @@ class App extends Component {
     this.state = ({
       username: "",
       password: "",
+      display: true,
+      disabled: true,
       userList: [],
       userInfo: []
     })
@@ -22,51 +24,23 @@ class App extends Component {
     console.log('the state', this.state);
   };
 
+  // ********* USER LOGIN **************************
   login = (e) => {
     e.preventDefault();
     if (this.state.username && this.state.password) {
-      let userInfo = 
-        { 
-          username: this.state.username,
+      let userInfo =
+      {
+        username: this.state.username,
         password: this.state.password
-        };
-   console.log('userInfo', userInfo);
-      axios
-      .post('http://localhost:3300/api/login', userInfo)
-      .then(response => {
-        alert('Login successful...')
-        let passWord = "";
-        let userName = "";
-        this.setState(() => ({username: userName, password: passWord})) 
-        //  this.setState(() => ({ TripTbl: newTripRec }));
-      })
-      .catch(error => {
-        console.error('Server Error', error);
-      });
-    } else {
-      alert('Please enter a username and password')
-    }
-  }
-
-  register = (e) => {
-    e.preventDefault();
-    if (this.state.username && this.state.password) {
-      let userInfo = 
-        { 
-          username: this.state.username,
-        password: this.state.password
-        };
-    
+      };
       console.log('userInfo', userInfo);
       axios
-        .post('http://localhost:3300/api/register', userInfo)
+        .post('http://localhost:3300/api/login', userInfo)
         .then(response => {
-alert('registration complete...')
-        let passWord = "";
-        let userName = "";
-        this.setState(() => ({username: userName, password: passWord})) 
-
-//  this.setState(() => ({ TripTbl: newTripRec }));
+          alert('Login successful...')
+          let passWord = "";
+          let userName = "";
+          this.setState(() => ({ username: userName, password: passWord, display: false, disabled: false }))
         })
         .catch(error => {
           console.error('Server Error', error);
@@ -76,22 +50,50 @@ alert('registration complete...')
     }
   }
 
+  // ************ USER REGISTER ***************************
+  register = (e) => {
+    e.preventDefault();
+    if (this.state.username && this.state.password) {
+      let userInfo =
+      {
+        username: this.state.username,
+        password: this.state.password
+      };
+
+      console.log('userInfo', userInfo);
+      axios
+        .post('http://localhost:3300/api/register', userInfo)
+        .then(response => {
+          alert('registration complete...')
+          let passWord = "";
+          let userName = "";
+          this.setState(() => ({ username: userName, password: passWord }))
+
+        })
+        .catch(error => {
+          console.error('Server Error', error);
+        });
+    } else {
+      alert('Please enter a username and password')
+    }
+  }
+
+  // ************ GET USER LIST *******************
   userList = (e) => {
     e.preventDefault();
     axios
       .get('http://localhost:3300/api/users/')
       .then(response => {
-console.log("response.data:", response.data);
-let tmpArray = [];
+        console.log("response.data:", response.data);
+        let tmpArray = [];
 
-for (let x = 0; x < response.data.length; x++) {
-tmpArray.push(response.data[x].username)
-}
-//const test = response.data[0].username;
-console.log("tmpArray:", tmpArray);
-//localStorage.setItem('test1', test);
+        for (let x = 0; x < response.data.length; x++) {
+          tmpArray.push(response.data[x].username)
+        }
+        //const test = response.data[0].username;
+        console.log("tmpArray:", tmpArray);
 
-this.setState(() => ({ userList: tmpArray }));
+        this.setState(() => ({ userList: tmpArray }));
       })
       .catch(error => {
         console.error('Server Error', error);
@@ -99,25 +101,35 @@ this.setState(() => ({ userList: tmpArray }));
 
   }
 
+  // ***************** USER LOGOUT **************************
   logout = (e) => {
     e.preventDefault();
     axios
       .post('http://localhost:3300/api/logout')
       .then(response => {
-alert('logout successful')
-        this.setState(() => ({ userList: [] }));
+        console.log("response:", response)
+        alert('logout successful')
+        this.setState(() => ({ userList: [], display: true, disabled: true }));
       })
       .catch(error => {
         console.error('Server Error', error);
       });
   }
 
+  message = () => {
+    alert("Sorry, we dont know it either... #BestSecurityEver");
+  }
 
   render() {
-let newUserList =  localStorage.getItem('test1')
+   // let newUserList = localStorage.getItem('test1')
 
+   // *** CODE TO CHANGE THE LOGOUT AND USERLIST BUTTONS TEXT COLOR ****
+     let classNames = require('classnames');
 
-
+    let btnClass = classNames({
+      btnLogout: true,
+      'btnNoWork': this.state.display
+    }) 
     return (
       <div className="App">
         <header className="main-header">
@@ -133,13 +145,14 @@ let newUserList =  localStorage.getItem('test1')
 
             <button className="btn-register" value="register" onClick={this.register} name="viewHome">Register</button>
             <button className="btn-login" value="login" onClick={this.login} name="viewHome">Login</button>
-            <button className="btn-get-user-list" value="user-list" onClick={this.userList} name="viewHome">User List</button>
-            <button className="btn-logout" value="logout" onClick={this.logout} name="viewHome">Logout</button>
+            <button className={btnClass} disabled={this.state.disabled} value="user-list" onClick={this.userList} name="viewHome">User List</button>
+            <button className={btnClass} disabled={this.state.disabled} value="logout" onClick={this.logout} name="viewHome">Logout</button>
 
           </form>
+          <div className="message" onClick={this.message}><p>Click Here if you forgot your password.</p> </div>
           <div className="user-list">New User List:{this.state.userList.map((user, index) => {
-				return <User user={user} key={index} />;
-			})}
+            return <User user={user} key={index} />;
+          })}
           </div>
         </div>
       </div>

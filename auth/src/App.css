@@ -2,12 +2,19 @@
     text-align: center;
     background-color: black;
     color: white;
+    width: 100%;
 
+}
+
+body {
+  background-color: black;
 }
 
 .main-header {
    /*  border: 2px solid blue; */
     width: 500px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .title {
@@ -24,6 +31,8 @@
     display: flex;
     flex-direction: column;
     width: 500px;
+    margin-left: auto;
+    margin-right: auto;
    /*  border: 2px solid red; */
 }
 
@@ -32,12 +41,14 @@
   width: 100%;
    /*  border: 2px solid yellow; */
 height: 70px;
+border-left: 2px solid gray;
+border-right: 2px solid gray;
   }
 
 .main-form {
   width: 100%;
   padding-top: 6px;
-  background-color: gray;
+  background-color: rgb(110, 110, 110);
 height: 120px;
    /*  border: 2px solid orange; */
 }
@@ -51,6 +62,39 @@ button {
 
 .user-list {
   width: 100%;
-  height: 399px;
-   /*  border: 2px solid purple; */
+  height: auto;
+   border: 2px solid gray;
+}
+
+.btnLogout {
+  color: white;
+  border: 0px solid blue;
+  border-left: 1px solid gray;
+  background-color: rgb(36, 61, 199);
+}
+
+.btn-register, .btn-login {
+  border: 0px solid blue;
+  border-right: 1px solid gray;
+  color: white;
+  background-color: rgb(36, 61, 199);
+
+}
+
+.message {
+font-size: 12px;
+border-left: 2px solid gray;
+border-right: 2px solid gray;
+background-color: rgb(110, 110, 110);
+cursor: pointer;
+}
+
+
+.btnNoWork {
+color: gray;
+}
+
+.disable {
+display: inline;
+
 }

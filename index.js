@@ -73,13 +73,17 @@ server.post('/api/login', (req, res) => {
 
 
 server.post('/api/logout', (req, res) => {
-  req.session.destroy(err => {
+  if (req.session && req.session.userId) {
+    res.status(500).send('Not logged in.');
+  } else {
+    req.session.destroy(err => {
     if (err) {
       res.status(500).send('failed to logout.');
     } else {
       res.send('logout successful.')
     }
-  })
+ 
+  })}
 });
 
 server.listen(3300, () => console.log('\nrunning on port 3300\n'));
