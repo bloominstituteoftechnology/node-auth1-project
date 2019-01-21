@@ -39,7 +39,7 @@ class Register extends Component {
       .post("http://localhost:4300/api/register", users)
       .then(response => {
         this.setState({
-          users: response.data,
+
           completed: true
         });
       })
@@ -53,7 +53,7 @@ class Register extends Component {
       .post("http://localhost:4300/api/login", users)
       .then(response => {
         this.setState({
-          users: response.data,
+
           loggedIn: true
         });
       })
