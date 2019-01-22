@@ -21,6 +21,11 @@ class App extends Component {
       })
   }
 
+  handleLogOut = event => {
+    localStorage.setItem('user', '')
+    window.location.reload();
+  }
+
 
   render() {
     return (
@@ -29,12 +34,15 @@ class App extends Component {
           <p>
             Edit <code>src/App.js</code> and save to reload.
           </p>
+          <div onClick={this.handleLogOut}>
+            Logout
+          </div>
         </header>
         <div>
           BODY
           {this.state.data.map(e => {
               return (
-                <p>{e.username}</p>
+                <p>{e.id} {e.username}</p>
               )
           })}
         </div>
