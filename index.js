@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs')
 const db = require('./data/dbHelpers');
-const session = require('express-session');
+const session = require('express-session'); //add sessions using yarn add express sessions
 
 const server = express();
 
@@ -66,6 +66,19 @@ server.get('/api/users', (req, res) => {
     res.status(400).send('access denied');
   }
  });
+
+ server.post('/api/logout', (req, res) => {
+   req.session.destroy( err => {
+    if(err){
+      res.status(500).send('failed to logout');
+  }
+    else { 
+    res.status(200).send('logout successful')
+  }
+   })
+    
+    
+ })
 
 server.listen(Port, () =>
  console.log(`running on port ${Port}`));
