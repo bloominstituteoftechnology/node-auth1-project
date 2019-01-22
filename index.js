@@ -40,10 +40,10 @@ server.post('/api/register', (req, res) => {
 server.post('/api/login', (req, res) => {
    const user = req.body;
    console.log(user)
-   db('users').where('username' ,user.username)
+   db('users').where('user_name' ,user.user_name)
    .then(users => {
      //username validation, client password validation from db
-     if(users.length && bcrypt.compareSync(bodyUser.password, users[0].password, 12)) {
+     if(users.length && bcrypt.compareSync(user.password, users[0].password, 12)) {
         res.json({ info: "Logged in"})
      }
      else {
