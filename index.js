@@ -1,6 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs')
-const db = require('./data/dbConfig');
+const db = require('./data/dbHelpers');
 const session = require('express-session');
 
 const server = express();
@@ -10,7 +10,7 @@ server.use(session({
   name: 'notSession',
   secret: 'nobody tosses a dwarf!',
     cookie: {
-      maxAge: 864000000 // sets the expiration date in milliseconds
+      maxAge: 1 * 24 * 60 * 60 *1000 // sets the expiration date in milliseconds
     },
     httpOnly: true,
     resave: false,
@@ -28,7 +28,7 @@ const Port = 3300;
 server.post('/api/register', (req, res) => {
     const user = req.body;
     user.password = bcrypt.hashSync(user.password)
-    db('users').insert(user)
+    db.insert(user)
     .then(ids => {
       res.status(201).json({id: ids[0]})
     })
@@ -40,10 +40,11 @@ server.post('/api/register', (req, res) => {
 server.post('/api/login', (req, res) => {
    const user = req.body;
    console.log(user)
-   db('users').where('user_name' ,user.user_name)
+   db.findByUsername(user.user_name)
    .then(users => {
      //username validation, client password validation from db
-     if(users.length && bcrypt.compareSync(user.password, users[0].password, 12)) {
+     if(users.length && bcrypt.compareSync(user.password, users[0].password, 10)) {
+        req.session.userId = users[0].id;
         res.json({ info: "Logged in"})
      }
      else {
@@ -54,9 +55,9 @@ server.post('/api/login', (req, res) => {
 
 // protect this route, only authenticated users should see it
 server.get('/api/users', (req, res) => {
+  console.log('session', req.session)
   if(req.session && req.session.userId){
-  db('users')
-    .select('id', 'username')
+  db.findUsers()
     .then(users => {
       res.json(users);
     })
