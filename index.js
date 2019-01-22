@@ -80,12 +80,16 @@ server.post('/api/login', (req, res) => {
 })
 
 server.get('/logout', (req, res) => {
-    if(req.session) {
-        req.session.destroy();
-    } else {
-        res.json({ message: 'logged out already' })
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.send('error logging out');
+        } else {
+          res.send('good bye');
+        }
+      });
     }
-})
+  });
 
 const port = 3300;
 server.listen(port, function(){
