@@ -19,6 +19,11 @@ server.use(session({
   saveUninitialized: false,
 }));
 
+function protect(req, res, next) {
+  if (req.session && req.session.userId) next();
+  else res.status(401).json({ error: 'You shall not pass!' });
+}
+
 server.post('/api/register', (req, res) => {
   const user = req.body;
   user.password = bcrypt.hashSync(user.password);
@@ -41,14 +46,20 @@ server.post('/api/login', (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
-server.get('/api/users', (req, res) => {
-  if (req.session && req.session.userId) {
-    dbHelper.findUsers()
-      .then(users => res.json(users))
-      .catch(err => res.status(500).json(err));
-  } else {
-    res.status(401).json({ error: 'You shall not pass!' });
-  }
+server.get('/api/users', protect, (req, res) => {
+  dbHelper.findUsers()
+    .then(users => res.json(users))
+    .catch(err => res.status(500).json(err));
+});
+
+server.post('/api/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      res.status(500).json(err);
+    } else {
+      res.json({ message: 'Logout successful' });
+    }
+  });
 });
 
 server.listen(port, console.log(`\nWeb API running on http://localhost:${port}\n`));
