@@ -119,24 +119,25 @@ class App extends Component {
     return (
       <div className="App">
         <header className="main-header">
-          <div className="title">Auth-i Application
+          <div className="title">Auth-i Application/Lambda School
           </div>
         </header>
         <div className="container-1">
-          <div className="text"><p>Click Login. If you are new please click the register button</p>
-            <p>first then Login. To view the list of users, select the User List button.</p> </div>
+          <div className="text"><p>This is a sample app written to demonstrate the use of cookies
+         for handling login's. You must first register. When complete use your registration info 
+         to login. To view the list of users, select the User List button. Click logout when you are finished</p> </div>
           <form className="main-form">
             <Input type="text" id="username" value={this.state.username} name='username' className="form-control" placeholder="Enter Username" onChange={this.handleInputChange} />
             <Input type="text" id="password" value={this.state.password} name='password' className="form-control" placeholder="Enter Password" onChange={this.handleInputChange} />
 
-            <button className="btn-register" value="register" onClick={this.register} name="viewHome">Register</button>
-            <button className="btn-login" value="login" onClick={this.login} name="viewHome">Login</button>
-            <button className={btnClass} disabled={this.state.disabled} value="user-list" onClick={this.userList} name="viewHome">User List</button>
-            <button className={btnClass} disabled={this.state.disabled} value="logout" onClick={this.logout} name="viewHome">Logout</button>
+            <button className="btn-register" value="register" onClick={this.register} name="viewHome" id="register">Register</button>
+            <button className="btn-login" value="login" onClick={this.login} name="viewHome" id="login">Login</button>
+            <button className={btnClass} disabled={this.state.disabled} value="user-list" id="user-list" onClick={this.userList} name="viewHome">User List</button>
+            <button className={btnClass} disabled={this.state.disabled} value="logout" id="logout" onClick={this.logout} name="viewHome">Logout</button>
 
           </form>
           <div className="message" onClick={this.message}><p>Click Here if you forgot your password.</p> </div>
-          <div className="user-list">New User List:{this.state.userList.map((user, index) => {
+          <div className={btnClass}>New User List:{this.state.userList.map((user, index) => {
             return <User user={user} key={index} />;
           })}
           </div>
