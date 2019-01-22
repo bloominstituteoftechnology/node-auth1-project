@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const session = require('express-session');
 
 const dbHelper = require('./data/helpers/dbHelpers.js');
+const restrictedRoutes = require('./data/routes/restrictedRoutes.js');
 
 const server = express();
 const port = 8000;
@@ -61,5 +62,7 @@ server.post('/api/logout', (req, res) => {
     }
   });
 });
+
+server.use('/api/restricted', restrictedRoutes);
 
 server.listen(port, console.log(`\nWeb API running on http://localhost:${port}\n`));
