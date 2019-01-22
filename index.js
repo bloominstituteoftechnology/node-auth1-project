@@ -14,6 +14,16 @@ server.get('/', (req, res) => {
     res.send('api working')
 });
 
+server.get('/users', (req, res) => {
+    db.getUsers()
+    .then(u => {
+        res.status(200).json(u)
+    })
+    .catch(err => {
+        res.status(500).json(err)
+    })
+})
+
 server.post('/api/register', (req, res) => {
     const user = req.body;
     //Hashes the password input
