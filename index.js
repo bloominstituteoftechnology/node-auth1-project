@@ -4,17 +4,42 @@ const bcrypt = require('bcryptjs');
 
 const db = require('./dbHelpers.js')
 
+const session = require('express-session');
+
+const sessionConfig = {
+    name: 'sessionName',
+    secret: 'blahblahblahblahblahblahblah',
+    cookie: {
+        maxAge: 1000 * 60 * 10,
+        secure: false // only send the cookie over https, should be true in production
+    },
+    httpOnly: true, // js can't touch this
+    resave: false,
+    saveUninitialized: false
+}
+
 const server = express();
 
 //this step is critical to post requests
 //the json that is needed to post
 server.use(express.json());
+server.use(session(sessionConfig));
 
 server.get('/', (req, res) => {
     res.send('api working')
 });
 
-server.get('/users', (req, res) => {
+//protect application to only authenticated 
+function protected(req, res, next) {
+    if(req.session && req.session.user) {
+        next();
+    } else{
+        res.status(401).json({ message: 'you shall not pass, not authenticated'});
+    }
+}
+
+//protect this endpoint so only logged in users can see it
+server.get('/users', protected, (req, res) => {
     db.getUsers()
     .then(u => {
         res.status(200).json(u)
@@ -42,6 +67,8 @@ server.post('/api/login', (req, res) => {
     .then(u => {
         //username valid password from client == password from db
         if(u.length && bcrypt.compareSync(userInput.password, u[0].password)){
+            req.session.user = u;
+
             res.json({ info: 'correct' });
         } else {
             res.status(404).json({err: 'invalid username or password'})
@@ -50,6 +77,14 @@ server.post('/api/login', (req, res) => {
     .catch(err => {
         res.status(500).send(err);
     })
+})
+
+server.get('/logout', (req, res) => {
+    if(req.session) {
+        req.session.destroy();
+    } else {
+        res.json({ message: 'logged out already' })
+    }
 })
 
 const port = 3300;
