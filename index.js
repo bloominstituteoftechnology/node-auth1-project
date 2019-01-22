@@ -66,6 +66,22 @@ server.get('/api/logout', (req, res) => {
 	}
 });  
 
+//Resctricted 
+function protected(req, res, next) {
+	// if the use is logged in next()
+	if (req.session && req.session.compared) {
+		next();
+	} else {
+		res.status(401).json({ message: 'You are not authorized to see this page dude' });
+	}
+}
+
+// protect this endpoint so only logged in users can see it
+server.get('/api/restricted', protected, async (req, res) => {
+
+	res.status(200).json({message: "Hi hi Lidiia, you are a cool girl"});
+});
+
 server.use('/api/register', register);
 server.use('/api/login', login);
 
