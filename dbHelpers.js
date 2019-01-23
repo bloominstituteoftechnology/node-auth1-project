@@ -15,5 +15,7 @@ module.exports = {
 
     getUsers: (user) => {
         return db('users')
-    }
+    }, 
+
+    db
 }

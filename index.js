@@ -2,9 +2,13 @@ const express = require('express');
 
 const bcrypt = require('bcryptjs');
 
-const db = require('./dbHelpers.js')
-
 const session = require('express-session');
+
+const KnexSessionStore = require('connect-session-knex')(session);
+
+const { db, insert, findByUsername, getUsers }= require('./dbHelpers.js');
+
+const server = express();
 
 const sessionConfig = {
     name: 'sessionName',
@@ -15,10 +19,15 @@ const sessionConfig = {
     },
     httpOnly: true, // js can't touch this
     resave: false,
-    saveUninitialized: false
-}
-
-const server = express();
+    saveUninitialized: false,
+    store: new KnexSessionStore({
+        tablename: 'session',
+        sidfieldname: 'sid',
+        knex: db,
+        createtable: true,
+        clearInterval: 1000 * 60 * 10,
+    }),
+};
 
 //this step is critical to post requests
 //the json that is needed to post
@@ -40,20 +49,20 @@ function protected(req, res, next) {
 
 //protect this endpoint so only logged in users can see it
 server.get('/users', protected, (req, res) => {
-    db.getUsers()
+    getUsers()
     .then(u => {
         res.status(200).json(u)
     })
     .catch(err => {
         res.status(500).json(err)
     })
-})
+});
 
 server.post('/api/register', (req, res) => {
     const user = req.body;
     //Hashes the password input
     user.password = bcrypt.hashSync(user.password);
-    db.insert(user)
+    insert(user)
     .then(u => {
         res.status(200).json({ id: u[0] })
     })
@@ -63,7 +72,7 @@ server.post('/api/register', (req, res) => {
 server.post('/api/login', (req, res) => {
     //check that username exists AND passwords match
     const userInput = req.body;
-    db.findByUsername(userInput.username)
+    findByUsername(userInput.username)
     .then(u => {
         //username valid password from client == password from db
         if(u.length && bcrypt.compareSync(userInput.password, u[0].password)){
