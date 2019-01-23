@@ -88,7 +88,7 @@ router.post("/login", (req, res) => {
         // check if passwords match
         if (bcrypt.compareSync(clientPass, dbPass)) {
           req.session.userId = result.id;
-          res.json({ message: "Logged in" });
+          res.json({ message: "Logged in", session: req.session });
         } else {
           res.status(401).json({
             error: "You shall not pass!"
