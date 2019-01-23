@@ -20,7 +20,7 @@ body {
 .title {
     /* border: 2px solid green; */
     width: 100%;
-    background-color: gray;
+    background-color: #9e3a41;
     color: black;
     font-size: 24px;
     padding-top: 10px;
@@ -44,6 +44,7 @@ body {
     width: 100%;
     /*  border: 2px solid yellow; */
     height: 100px;
+    background-color: black;
     border-left: 2px solid gray;
     border-right: 2px solid gray;
 }
@@ -51,7 +52,7 @@ body {
 .main-form {
     width: 100%;
     padding-top: 6px;
-    background-color: rgb(110, 110, 110);
+    background-color: #9e3a41;
     height: 120px;
 }
 
@@ -69,30 +70,30 @@ button {
 }
 
 .btnLogout {
-    color: white;
+   /*  color: black; */
     border: 0px solid blue;
     border-left: 1px solid gray;
-    background-color: rgb(36, 61, 199);
-}
+     background-color: #9e9b3a;
+} 
 
 .btn-register,
 .btn-login {
     border: 0px solid blue;
     border-right: 1px solid gray;
     color: white;
-    background-color: rgb(36, 61, 199);
+    background-color: #3a499e;
 }
 
 .message {
     font-size: 12px;
     border-left: 2px solid gray;
     border-right: 2px solid gray;
-    background-color: rgb(110, 110, 110);
+    background-color: #9e3a41;
     cursor: pointer;
 }
 
 .btnNoWork {
-    color: gray;
+    color: black;
 }
 
 .disable {
@@ -104,3 +105,13 @@ button {
     background-color: blue;
 
 }
+
+ #logout, #user-list {
+    background-color: #3a499e;
+
+} 
+
+#logout:hover, #user-list:hover {
+    background-color: blue;
+    
+} 
