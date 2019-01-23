@@ -43,27 +43,30 @@ server.post('/api/register', (req, res) => {
 });
 
 server.post('/api/login', (req, res) => {
-    const user = req.body;
-    db.findByUsername(user.username)
+    const creds = req.body;
+    db.findByUsername(creds.username)
         .then(users => {
-            if (users.length && bcrypt.compareSync(user.password, users[0].password)) {
+            if (users.length && bcrypt.compareSync(creds.password, users[0].password)) {
                 req.session.userId = users[0].id;
-                res.json({info: "Logged in"});
+                req.session.save(data => res.send(data));
+                console.log(req.session);
+                res.json({username: users[0].username});
+                //res.send(users[0].username);
             } else {
                 res.status(404).json({err: "Invalid username or password"});
             }
         })
         .catch(err => {
-            res.status(500).send(err);
+            res.status(500).json({err: "Server error"});
         });
 });
 
 server.get('/api/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
-      res.status(500).send({err: 'Failed to logout'});
+      res.status(500).json({err: 'Failed to logout'});
     } else {
-      res.send({info: 'Logged out'});
+      res.json({info: 'Logged out'});
     }
   });
 });
@@ -74,7 +77,7 @@ server.get('/api/users', authenticate, (req, res) => {
             res.json(users);
         })
         .catch(err => {
-            res.status(500).send(err);
+            res.status(500).send();
         });
 });
 
