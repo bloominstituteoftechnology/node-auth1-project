@@ -56,6 +56,7 @@ server.post("/api/login", (req, res) => {
         users.length &&
         bcrypt.compareSync(creds.password, users[0].password)
       ) {
+        req.session.userID = users[0].id;
         res.json({ info: "correct" });
       } else {
         res.status(404).json({ err: "You shall not pass!" });
@@ -76,10 +77,10 @@ server.get("/api/users", (req, res) => {
         res.json(users);
       })
       .catch(err => {
-        res.status(500).json({ err: `err: ${err}`})
+        res.status(500).json({ err: `err: ${err}` });
       });
   } else {
-    res.status(400).send('You shall not pass!')
+    res.status(400).send("You shall not pass!");
   }
 });
 
