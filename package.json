@@ -2,6 +2,9 @@
   "name": "auth-i",
   "version": "1.0.0",
   "main": "index.js",
+  "scripts": {
+    "start": "nodemond index.js"
+  },
   "repository": "https://github.com/CheapCharlie/auth-i.git",
   "author": "Chris Juelfs <CRJuelfs24@comcast.net>",
   "license": "MIT",
