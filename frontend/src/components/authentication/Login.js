@@ -24,17 +24,14 @@ class Login extends React.Component {
         } else {
             this.setState({ message: "Logging in..." });
             const creds = {username: this.state.username, password: this.state.password};
-            axios.post('http://localhost:5000/api/login', creds)
+            axios.post('http://localhost:5000/api/login', creds, {withCredentials: true})
             .then(response => {
-                console.log(response.data);
                 localStorage.setItem("username", response.data.username);
-                
-            }).then(() => {
                 this.props.history.push("/users");
             })
             .catch(err => {
                 this.setState({message: err.message});
-            })
+            });
         }
     };
 

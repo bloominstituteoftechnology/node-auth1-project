@@ -12,7 +12,10 @@ const server = express();
 const PORT = 5000;
 
 server.use(express.json());
-server.use(cors());
+server.use(cors({
+    origin: ['http://localhost:3000'],
+    credentials: true // enable set cookie
+}));
 server.use(session({
     name: 'notsession',
     secret: 'Monkey see, monkey do',
@@ -48,10 +51,7 @@ server.post('/api/login', (req, res) => {
         .then(users => {
             if (users.length && bcrypt.compareSync(creds.password, users[0].password)) {
                 req.session.userId = users[0].id;
-                req.session.save(data => res.send(data));
-                console.log(req.session);
                 res.json({username: users[0].username});
-                //res.send(users[0].username);
             } else {
                 res.status(404).json({err: "Invalid username or password"});
             }

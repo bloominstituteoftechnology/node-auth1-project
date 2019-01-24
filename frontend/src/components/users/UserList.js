@@ -17,13 +17,11 @@ class UserList extends React.Component {
 
     componentDidMount() {
         this.setState({...this.state, loading: true});
-        axios.get('http://localhost:5000/api/users')
+        axios.get('http://localhost:5000/api/users', {withCredentials: true})
             .then(response => {
-                console.log(response.data);
                 this.setState({error: null, loading: false, users: response.data});
             })
             .catch(err => {
-                console.log(err);
                 this.setState({error: "Unable to retrieve users from server", loading: false, users: []});
             })
 
