@@ -18,7 +18,7 @@ server.post('/api/register', (req, res) =>{
     const hash = bcrypt.hashSync(user.password, 14);
     user.password = hash;
     if(!user.username || !user.password){res.status(400).json({message:'Please provide username and password!'})}
-    db('users').insert(user)
+    db.insertUser(user)
     .then(ids =>{
         const id = ids[0]
         res.json({newUserId: id})
@@ -30,7 +30,7 @@ server.post('/api/register', (req, res) =>{
 
 server.post('/api/login', (req, res)=>{
     const creds = req.body;
-    db('users').where({username:creds.username}).first()
+    db.findByUsername(creds.username)
     .then(user =>{
         if(user && bcrypt.compareSync(creds.password, user.password)){
             res.json({welcome:user.username})
@@ -46,8 +46,7 @@ server.post('/api/login', (req, res)=>{
 })
 
 server.get("/api/users", (req, res) => {
-    db("users")
-      .select("id", "username")
+    db.getUsers()
       .then(users => {
         res.json(users);
       })
