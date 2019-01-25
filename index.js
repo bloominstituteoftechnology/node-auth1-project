@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const knex = require('knex');
+const session = require('express-session');
 
 const dbConfig = require('./knexfile');
 const db = knex(dbConfig.development);
@@ -11,6 +12,16 @@ const port = 5555;
 
 server.use(express.json());
 server.use(cors());
+server.use(session({
+    name: 'notsession', // default is connect.sid
+    secret: 'nobody tosses a dwarf!',
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day IN MILLISECONDS 
+    },
+    httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
+    resave: false,
+    saveUninitialized: false,
+  }));
 
 //to create a new user account:
 server.post('/api/register', (req, res) => {
@@ -32,6 +43,7 @@ server.post('./api/login', (req, res) => {
     db.findByUsername(bodyUser.username)
         .then(response => {
             if(response.length && bcrypt.compareSync(bodyUser.password, response[0].password)) {
+                req.session.userID = users[0].id;
                 res.status(200).json({info: 'correct'});
             } else {
                 res.status(404).json({error: "incorrect username OR password. Please try again."});
@@ -45,7 +57,7 @@ server.post('./api/login', (req, res) => {
 
 //page that loads AFTER a successful login has been completed:
 server.get('./api/accounts', (req, res) => {
-    db.select('users')
+    db('users').select()
         .then(response => {
             res.json(response);
         })
