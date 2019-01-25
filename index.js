@@ -1,11 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
-const knex = require('knex');
 const session = require('express-session');
 
-const dbConfig = require('./knexfile');
-const db = knex(dbConfig.development);
+// const knex = require('knex');
+// const dbConfig = require('./knexfile');
+// const db = knex(dbConfig.development);
+
+const db = require('./data/dbHelpers.js');
+
 const server = express();
 
 const port = 5555;
@@ -57,17 +60,22 @@ server.post('./api/login', (req, res) => {
 
 //page that loads AFTER a successful login has been completed:
 server.get('./api/accounts', (req, res) => {
-    db('users').select()
-        .then(response => {
-            res.json(response);
-        })
-        .catch(error => {
-            console.log(error);
-            res.json({error: 'unable to load accounts. please try again.'});
-        });
+    if (req.session && req.session.userID) {
+        db('accounts').select('username', 'password')
+            .then(response => {
+                console.log(response);
+                res.json(response);
+            })
+            .catch(error => {
+                console.log(error);
+                res.json({error: 'unable to load accounts. please try again.'});
+            });
+    } else {
+        res.status(400).json({ERROR: 'access denied'})
+    }
 });
 
 
-server.listen(Port, () => {
+server.listen(port, () => {
     console.log(`Server at Port ${port} is up an running!`)
 });
