@@ -12,6 +12,10 @@ module.exports = {
 
   findByUsername: (username) => {
     return db('accounts').where('username', username);
+  },
+
+  findUsers: () => {
+    return db('accounts').select('id', 'username');
   }
   
 };

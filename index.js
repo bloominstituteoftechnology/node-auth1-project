@@ -41,12 +41,13 @@ server.post('/api/register', (req, res) => {
 });
 
 //to login into current user account:
-server.post('./api/login', (req, res) => {
+server.post('/api/login', (req, res) => {
     const bodyUser = req.body;
     db.findByUsername(bodyUser.username)
         .then(response => {
+            // username valid   hash from client == hash from db
             if(response.length && bcrypt.compareSync(bodyUser.password, response[0].password)) {
-                req.session.userID = users[0].id;
+                req.session.userID = response[0].id;
                 res.status(200).json({info: 'correct'});
             } else {
                 res.status(404).json({error: "incorrect username OR password. Please try again."});
@@ -59,9 +60,9 @@ server.post('./api/login', (req, res) => {
 });
 
 //page that loads AFTER a successful login has been completed:
-server.get('./api/accounts', (req, res) => {
+server.get('/api/accounts', (req, res) => {
     if (req.session && req.session.userID) {
-        db('accounts').select('username', 'password')
+        db.findUsers('accounts')
             .then(response => {
                 console.log(response);
                 res.json(response);
