@@ -5,7 +5,7 @@ const session = require('express-session');
 const protects = require('./middleware.js')
 const KnexSessionStore = require('connect-session-knex')(session)
 
-const db = require('./database/dbConfig.js')
+const { db } = require('./database/dbConfig.js')
 
 const server = express();
 const PORT = 5050;
@@ -20,14 +20,13 @@ const sessionConfig = {
         secure:false,
         maxAge: 1000 * 60 *01
     },
-    //does not work when added
-    // store: new KnexSessionStore({
-    //     tablename: "sessions",
-    //     sidfieldname: "sid",
-    //     knex: db,
-    //     createtable: true,
-    //     clearInterval: 1000 * 60 * 60,
-    //   })
+    store: new KnexSessionStore({
+        tablename: "sessions",
+        sidfieldname: "sid",
+        knex: db,
+        createtable: true,
+        clearInterval: 1000 * 60 * 60,
+      })
 }
 
 server.use(session(sessionConfig))

@@ -7,7 +7,8 @@ const db = knex(knexConfig.development);
 module.exports = {
     getUsers,
     insertUser,
-    findByUsername
+    findByUsername,
+    db
 }
 
 function getUsers(){
