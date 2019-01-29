@@ -1,0 +1,22 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "## Topics",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon server.js",
+    "start": "yarn server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TraiLynne/auth-i.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TraiLynne/auth-i/issues"
+  },
+  "homepage": "https://github.com/TraiLynne/auth-i#readme"
+}
