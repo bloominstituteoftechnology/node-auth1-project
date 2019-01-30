@@ -7,7 +7,11 @@ module.exports = {
     connection: {
       filename: './database/auth.sqlite3'
     },
-    useNullAsDefault: true
+    useNullAsDefault: true,
+    migrations: {
+      directory: './database/migrations',
+      tableName: 'dbMigrations'
+    }
   },
 
   staging: {
