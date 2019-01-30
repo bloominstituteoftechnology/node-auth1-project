@@ -47,8 +47,4 @@ server.post('/api/login', (req, res) => {
     .catch(err => {res.status(500).send(err)})
 })
 
-
-server.post('/api/login', (req, res) => {
-})
-
 server.listen(2525, () => console.log(`I'm alive!`))
