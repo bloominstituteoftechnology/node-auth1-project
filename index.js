@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs')
 
+const db = require('./database/dbConfig');
+
 const server = express();
 
 server.use(express.json());
@@ -31,6 +33,20 @@ server.post('/api/register', (req, res) => {
         res.status(500).send(error)
     })
 })
+
+server.post('/api/login', (req, res) => {
+    const userBody = req.body;
+    db('users').where('username', userBody.username)
+    .then(users => {
+        if(users.length && bcrypt.compareSync(userBody.password, users[0].password)){
+            res.json(`Correct`)
+        } else {
+            res.staatus(404).json(`Wrong username or password, but I'm not certain which.`)
+        }
+    })
+    .catch(err => {res.status(500).send(err)})
+})
+
 
 server.post('/api/login', (req, res) => {
 })
