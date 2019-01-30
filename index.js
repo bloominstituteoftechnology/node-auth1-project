@@ -19,7 +19,7 @@ server.get('/api/users', (req, res) => {
     .then(users => {
         res.json(users)
     })
-    .catch(err => res.send(err))
+    .catch(err => res.send(`You shall not pass!`))
 })
 
 server.post('/api/register', (req, res) => {
@@ -30,7 +30,7 @@ server.post('/api/register', (req, res) => {
         res.status(201).json({id: ids[0]})
     })
     .catch(error => {
-        res.status(500).send(error)
+        res.status(500).send(`You shall not pass!`)
     })
 })
 
@@ -41,7 +41,7 @@ server.post('/api/login', (req, res) => {
         if(users.length && bcrypt.compareSync(userBody.password, users[0].password)){
             res.json(`Correct`)
         } else {
-            res.staatus(404).json(`Wrong username or password, but I'm not certain which.`)
+            res.status(404).json(`You shall not pass!`)
         }
     })
     .catch(err => {res.status(500).send(err)})
