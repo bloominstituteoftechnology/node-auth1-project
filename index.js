@@ -66,4 +66,15 @@ server.post('/api/login', (req, res) => {
     .catch(err => {res.status(500).send(err)})
 })
 
+server.post('/api/logout', (req, res) => {
+    req.session.destroy(err => {
+        if(err){
+            res.status(500).send(`failed to log you out`)
+        } else {
+            res.status(201).send('successfully logged you out')
+        }
+    })
+
+})
+
 server.listen(2525, () => console.log(`I'm alive!`))
