@@ -3,6 +3,7 @@
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
+    "express-session": "^1.15.6",
     "knex": "^0.16.3",
     "nodemon": "^1.18.9",
     "sqlite3": "^4.0.6"
