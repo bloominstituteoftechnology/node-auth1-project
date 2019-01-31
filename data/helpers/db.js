@@ -10,5 +10,9 @@ module.exports = {
 
   login: (user_name) => {
     return db('users').where('user_name', user_name)
+  },
+
+  getUsers: () => {
+    return db('users').select('id', 'user_name')
   }
 }
