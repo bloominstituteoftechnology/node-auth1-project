@@ -28,8 +28,7 @@ server.get('/', (req, res) => {
 
 server.get('/api/users', (req, res) => {
     if(req.session && req.session.userId){
-        db('users').get()
-        .select('id', 'username')
+        db.get()
         .then(users => {
             res.json(users)
         })
