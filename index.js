@@ -11,8 +11,14 @@ server.use(cors())
 
 const PORT = 4400;
 
-server.get('/', (req, res) => {
-    res.send('Hello there!');
+server.get('/api/users', (req, res) => {
+    db.getUsers()
+        .then(users => {
+            res.json(users)
+        })
+        .catch(err => {
+            res.send(err)
+        });
 });
 
 server.post('/api/register', (req, res) => {
