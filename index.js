@@ -3,7 +3,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs')
 const session = require('express-session')
 
-const db = require('./database/dbConfig');
+const db = require('./database/dbHelpers');
 
 const server = express();
 
@@ -28,8 +28,8 @@ server.get('/', (req, res) => {
 
 server.get('/api/users', (req, res) => {
     if(req.session && req.session.userId){
-        db('users')
-        .select('id', 'username', 'password')
+        db('users').get()
+        .select('id', 'username')
         .then(users => {
             res.json(users)
         })
@@ -43,7 +43,7 @@ server.post('/api/register', (req, res) => {
     const user = req.body;
     console.log(`Tommy's session in the register post req:`, req.session)
     user.password = bcrypt.hashSync(user.password, 14)
-    db('users').insert(user)
+    db.insert(user)
     .then(ids => {
         res.status(201).json({id: ids[0]})
     })
@@ -54,7 +54,7 @@ server.post('/api/register', (req, res) => {
 
 server.post('/api/login', (req, res) => {
     const userBody = req.body;
-    db('users').where('username', userBody.username)
+    db.findByUsername(userBody.username)
     .then(users => {
         if(users.length && bcrypt.compareSync(userBody.password, users[0].password)){
             req.session.userId = users[0].id
