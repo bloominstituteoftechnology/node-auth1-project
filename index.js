@@ -31,8 +31,6 @@ server.post('/api/login', (req, res) => {
     const bodyUser = req.body;
     db.findByUsername(bodyUser.username)
         .then(users => {
-            console.log('body user', bodyUser);
-            console.log('db user', users[0]);
             if (users.length && bcrypt.compareSync(bodyUser.password, users[0].password)) {
                 res.json({ info: 'correct' })
             } else {
