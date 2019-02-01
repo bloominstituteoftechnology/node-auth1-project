@@ -30,7 +30,7 @@ server.post('/api/login', (req, res) => {
     .first()
     .then(user => {
         if (user && bcrypt.compareSync(creds.password, user.password)) {
-            res.status(200).json({ message: 'Logged in' })
+            res.status(200).json({ message: `${user.username} is logged in` })
         } else {
             res.status(401).json({ message: 'You shall not pass!' })
         }
