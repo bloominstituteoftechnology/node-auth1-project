@@ -45,7 +45,7 @@ server.get('/api/users', (req, res) => {
         res.json(users)
       })
       .catch(() => {
-          res.status(401).json({ message: 'You shall not pass!'})
+          res.status(500).json({ message: 'You shall not pass!'})
       })
   })
 
