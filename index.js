@@ -23,13 +23,30 @@ server.post('/api/register', (req, res) => {
     })
 })
 
+server.post('/api/login', (req, res) => {
+    const creds = req.body
+    db('users')
+    .where({ username: creds.username })
+    .first()
+    .then(user => {
+        if (user && bcrypt.compareSync(creds.password, user.password)) {
+            res.status(200).json({ message: 'Logged in' })
+        } else {
+            res.status(401).json({ message: 'You shall not pass!' })
+        }
+    })
+    .catch(err => res.json(err))
+})
+
 server.get('/api/users', (req, res) => {
     db('users')
       .select('id', 'username', 'password') //<----NEVER EVER SEND THE PASSWORD BACK TO THE CLIENT, THIS IS WHAT NOT TO DO!!!
       .then(users => {
         res.json(users)
       })
-      .catch(err => res.send(err))
+      .catch(() => {
+          res.status(401).json({ message: 'You shall not pass!'})
+      })
   })
 
 
