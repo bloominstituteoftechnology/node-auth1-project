@@ -38,7 +38,7 @@ server.post('/api/login', (req, res) => {
     db.findByUsername(bodyUser.username)
         .then(users => {
             if (users.length && bcrypt.compareSync(bodyUser.password, users[0].password)) {
-                res.json({ info: 'correct' })
+                res.json({ info: 'Logged in' })
             } else {
                 res.status(404).json({ err: 'You shall not pass!' })
             }
@@ -48,4 +48,4 @@ server.post('/api/login', (req, res) => {
         })
 })
 
-server.listen(4400, () => console.log(`Listening on port ${PORT}`));
+server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
