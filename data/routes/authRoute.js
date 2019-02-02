@@ -1,8 +1,22 @@
 const express = require('express')
 const bcrypt = require('bcryptjs')
 const router = express.Router()
+const session = require('express-session')
 
 const db = require('../helpers/db')
+
+const sessionConfig = {
+  name: 'cookie',
+  secret: 'slkjdnvwireufnlse89r3qghpq39erhq[weif',
+  cookie: {
+    maxAge: 1000 * 60 * 5,
+    secure: false, // should be true in production
+  },
+  httpOnly: true,
+  resave: false,
+  saveUninitialize: false,
+} 
+
 
 //endpoints
 router.post('/register', (req, res) => {
