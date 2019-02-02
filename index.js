@@ -1,7 +1,6 @@
 const express = require("express") ;
 const helmet = require('helmet') ;
 const logger = require('morgan') ;
-const bcrypt = require('bcryptjs') ;
 const loginRouter = require('./data/routes/loginRoute') ;
 const registerRouter = require('./data/routes/registerRoute') ; 
 const port = process.env.port || 3254 ;
