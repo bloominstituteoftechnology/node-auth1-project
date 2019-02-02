@@ -13,6 +13,6 @@ module.exports = {
     },
 
     findByUsername: (username) => {
-        return db('users').where('username', username);
+        return db('users').where({ username });
     }
 };

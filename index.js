@@ -17,7 +17,7 @@ server.get('/api/users', (req, res) => {
             res.json(users)
         })
         .catch(err => {
-            res.send(err)
+            res.status(500).send(err)
         });
 });
 
@@ -25,8 +25,8 @@ server.post('/api/register', (req, res) => {
     const user = req.body;
     user.password = bcrypt.hashSync(user.password, 14);
     db.insertUser(user)
-        .then(ids => {
-            res.status(201).json({ id: ids[0] });
+        .then(([id]) => {
+            res.status(201).json({ id });
         })
         .catch(err => {
             res.status(500).send(err);
