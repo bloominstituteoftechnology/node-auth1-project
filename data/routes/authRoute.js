@@ -1,29 +1,21 @@
 const express = require('express')
 const bcrypt = require('bcryptjs')
 const router = express.Router()
-const session = require('express-session')
+const middleWare = require('../middleware/middleware')
 
 const db = require('../helpers/db')
 
-const sessionConfig = {
-  name: 'cookie',
-  secret: 'slkjdnvwireufnlse89r3qghpq39erhq[weif',
-  cookie: {
-    maxAge: 1000 * 60 * 5,
-    secure: false, // should be true in production
-  },
-  httpOnly: true,
-  resave: false,
-  saveUninitialize: false,
-} 
+
+router.use(middleWare.useSession)
 
 
 //endpoints
 router.post('/register', (req, res) => {
   const creds = req.body //grab username/password
-  const hash = bcrypt.hashSync(creds.user_name, 14) // hash password
+  console.log(creds)
+  const hash = bcrypt.hashSync(creds.password, 12) // hash password
   creds.password = hash
-  
+  console.log(creds)
   db.register(creds)
     .then(id => {
       res
@@ -39,9 +31,12 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
   const creds = req.body
+  console.log(creds)
+
   db.login(creds.user_name)
     .then(user => {
       if(user && bcrypt.compareSync(creds.password, user.password)) {
+        req.session.user = user;
         res
           .status(201)
           .json({message: 'Welcome'})
@@ -58,6 +53,26 @@ router.post('/login', (req, res) => {
     })
 })
 
+module.exports = {
+  protected: (req, res, next) => {
+    if(req.session && req.session.user) {
+      next()
+    } else {
+      res
+        .status(401)
+        .json({message: 'Not logged in'})
+    }
+  }
+}
 
 
-module.exports = router;
+
+module.exports = router,{protected: (req, res, next) => {
+  if(req.session && req.session.user) {
+    next()
+  } else {
+    res
+      .status(401)
+      .json({message: 'Not logged in'})
+  }
+},};

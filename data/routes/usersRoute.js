@@ -4,7 +4,7 @@ const router = express.Router()
 const db = require('../helpers/db')
 
 //endpoints
-route.get('/', (req, res) => {
+router.get('/', (req, res) => {
   db.getUsers()
     .then(users => {
       res

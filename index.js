@@ -5,7 +5,7 @@ server.use(express.json())
 
 //Route
 const authRoute = require('./data/routes/authRoute')
-const usersRoute = require('./data/routes/authRoute')
+const usersRoute = require('./data/routes/usersRoute')
 
 server.use('/api/', authRoute)
 server.use('/api/users', usersRoute)
