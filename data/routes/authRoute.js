@@ -12,10 +12,8 @@ router.use(middleWare.useSession)
 //endpoints
 router.post('/register', (req, res) => {
   const creds = req.body //grab username/password
-  console.log(creds)
   const hash = bcrypt.hashSync(creds.password, 12) // hash password
   creds.password = hash
-  console.log(creds)
   db.register(creds)
     .then(id => {
       res
@@ -31,7 +29,6 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
   const creds = req.body
-  console.log(creds)
 
   db.login(creds.user_name)
     .then(user => {
@@ -53,26 +50,7 @@ router.post('/login', (req, res) => {
     })
 })
 
-module.exports = {
-  protected: (req, res, next) => {
-    if(req.session && req.session.user) {
-      next()
-    } else {
-      res
-        .status(401)
-        .json({message: 'Not logged in'})
-    }
-  }
-}
 
 
 
-module.exports = router,{protected: (req, res, next) => {
-  if(req.session && req.session.user) {
-    next()
-  } else {
-    res
-      .status(401)
-      .json({message: 'Not logged in'})
-  }
-},};
+module.exports = router;
