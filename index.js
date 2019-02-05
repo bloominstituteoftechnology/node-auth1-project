@@ -1,6 +1,7 @@
 const express = require("express") ;
 const helmet = require('helmet') ;
 const logger = require('morgan') ;
+const session = require("express-session") ;
 const knex = require('knex') ;
 const bcrypt = require("bcryptjs") ;
 const config = require('./knexfile') ;
@@ -13,7 +14,7 @@ const server = express() ;
 server.use(
  helmet(),
  logger('dev'),
- express.json()
+ express.json(),
 ) ;
 
 server.get('/api/register', (req, res) => {
