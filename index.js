@@ -6,27 +6,27 @@ const knex = require('knex') ;
 const bcrypt = require("bcryptjs") ;
 const config = require('./knexfile') ;
 const DB = knex(config.development)
-// const loginRouter = require('./data/routes/loginRoute') ;
-// const registerRouter = require('./data/routes/registerRoute') ; 
+const loginRouter = require('./data/routes/loginRoute') ;
+const registerRouter = require('./data/routes/registerRoute') ; 
 const port = process.env.port || 3254 ;
 const server = express() ;
 
-const sessionConfig = session({
+const sessionConfig = {
  name: 'gensym',
- secret: "O'Doyle rules!",
+ secret: "megalomaniacal scientifically quantifiable viable style.",
  cookie: {
   maxAge: 1 * 24 * 60 * 60 * 1000,
-  secure: true,
+  secure: false,
  },
  httpOnly: true,
  resave: false,
  saveUninitialized: false
-})
+}
 server.use(
  helmet(),
  logger('dev'),
  express.json(),
- sessionConfig
+ session(sessionConfig)
 ) ;
 
 server.get('/api/register', (req, res) => {
@@ -39,6 +39,7 @@ server.post('/api/login', (req, res) => {
    .where('username', reqUser.username)
    .then((users) => {
     if (users.length && bcrypt.compareSync(reqUser.password, users[0].password)) {
+     req.session.reqUser = reqUser ;
      res
       .json({info: "You're in."})
     }

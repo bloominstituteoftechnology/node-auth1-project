@@ -59,18 +59,33 @@ Cookies are *not* accessible and are encrypted for security purposes.
  * `Good for development due to simplicity.`
 
  ### 4. Using Cookies to transfer session data.
- * A cookie is a key value pair passed between the client and server, and is housed in the browser.
- * The server uses it to store client info.
- * Workflow for using cookies as session storage:
+ * `A cookie is a key value pair passed between the client and server, and is housed in the browser.`
+ * `The server uses it to store client info.`
+ * `Workflow for using cookies as session storage:`
    
-   * The server issues a cookie with an expiry time.
-   * Browsers store the cookie and send it on every request.
-   * The server can alter the cookie and send it back.
+   * `The server issues a cookie with an expiry time.`
+   * `Browsers store the cookie and send it on every request.`
+   * `The server can alter the cookie and send it back.`
 
 `express-session` uses cookies for session management. 
 
-### Drawbacks when using cookies"
- * Small size, at ~4KB.
- * Sent in every request, and can alter size of request.
- * If the private key is compromised, cookies can be decrypted.
- 
+### Drawbacks when using cookies
+ * `Small size, at ~4KB.`
+ * `Sent in every request, and can alter size of request.`
+ * `If the private key is compromised, cookies can be decrypted.`
+
+### Storing session data in Memory Cache.
+ * `Stored as key value pair data in separate server.`
+ * `Server uses cookie, but it only contains session id.`
+ * `The memory cache server uses id to find session data.`
+
+#### Advantages: 
+ * `Quick lookups.`
+ * `Decoupled from api server.`
+ * `A single memory cache server can server many apps.`
+ * `Automatically remove old session data.`
+
+#### Disadvantages: 
+ * `Requires managing an extra server.`
+ * `Extra complexity for small apps.`
+ * `Hard to reset the cache without losing all data.`
