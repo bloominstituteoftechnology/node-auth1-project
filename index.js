@@ -11,10 +11,22 @@ const DB = knex(config.development)
 const port = process.env.port || 3254 ;
 const server = express() ;
 
+const sessionConfig = session({
+ name: 'gensym',
+ secret: "O'Doyle rules!",
+ cookie: {
+  maxAge: 1 * 24 * 60 * 60 * 1000,
+  secure: true,
+ },
+ httpOnly: true,
+ resave: false,
+ saveUninitialized: false
+})
 server.use(
  helmet(),
  logger('dev'),
  express.json(),
+ sessionConfig
 ) ;
 
 server.get('/api/register', (req, res) => {
