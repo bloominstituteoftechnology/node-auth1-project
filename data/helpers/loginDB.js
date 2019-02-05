@@ -5,8 +5,13 @@ const config = require('../../knexfile')
 const DB = knex(config.development)
 
 module.exports = {
- post: () => {
+ place: (user) => {
   return DB('users')
-           .where('username', user.username)
+           .insert(user)
+ },
+
+ getByUser: (username) => {
+  return DB('users')
+           .where('username', username)
  }
 }
