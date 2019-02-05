@@ -21,13 +21,17 @@ server.get('/api/register', (req, res) => {
 })
 
 server.post('/api/login', (req, res) => {
- const user = req.body
+ const reqUser = req.body
  DB('users')
-   .where('username', user.username)
+   .where('username', reqUser.username)
    .then((users) => {
-    if (users.length && user.password === user[0].password) {
+    if (users.length && bcrypt.compareSync(reqUser.password, users[0].password)) {
      res
       .json({info: "You're in."})
+    }
+    else {
+     res.
+      json({error: "Invalid username or password."})
     }
    })
    .catch(() => {
@@ -39,30 +43,23 @@ server.post('/api/login', (req, res) => {
 
 server.post('/api/register', (req, res) => {
  const user = req.body ;
- user.password = bcrypt.hashSync(user.password)
- // req.body = hashedPW ;
- console.log(user.password)
-  DB('users')
-    .insert(user)
-    .then((users) => {
-     if (users.length && user.password === users[0].password) {
-      console.log(users.password)
-      res
-       .json({info: "You're in."})
-     }
-     else {
-      res
-       .status(404)
-       .json({err: "Invalid user or password"})
-     }
+ user.password = bcrypt.hashSync(user.password, 8)
+ DB('users')
+   .insert(user)
+   .then((ids) => {
+    res
+     .status(201)
+     .json({id: ids[0]})
     })
-    .catch(() => {
-     res
-      .status(500)
-      .json({error: "There was an error."})
-    })
-
+   .catch(() => {
+    res
+     .status(500)
+     .json({error: "There was an error."})
+   })
 })
+
+
+
 
 server.listen(port, () => {
  console.log(`Server is running live on ${port}`)
