@@ -63,7 +63,8 @@ function protected(req, res, next) {
 }
 
 //protect this endpoint so only logged in users can see the data
-server.get('/users', protected, (req, res) => { //  add : async -----if uncomment the below code
+server.get('/users', protected, (req, res) => {
+  //  add : async -----if uncomment the below code
   // const users = await db('users')
   db('users')
     .select('id', 'username', 'password') //<----NEVER EVER SEND THE PASSWORD BACK TO THE CLIENT, THIS IS WHAT NOT TO DO!!!
@@ -73,6 +74,20 @@ server.get('/users', protected, (req, res) => { //  add : async -----if uncommen
     .catch(() => {
       res.status(500).json({ message: 'You shall not pass!' })
     })
+})
+
+server.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy((err) => {
+      if (err) {
+        res.status(500).json({ message: 'you can never leave...'})
+      } else {
+        res.status(200).json({ message: 'bye bye' })
+      }
+    })
+  } else {
+    res.json({ message: 'You are logged out' })
+  }
 })
 
 server.listen(PORT, () => {
