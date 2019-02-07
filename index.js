@@ -28,8 +28,8 @@ const sessionConfig = {
 
 const PORT = 5100
 const server = express()
-// server.use(express.json())
-// server.use(session(sessionConfig))
+server.use(express.json())
+server.use(session(sessionConfig))
 mwConfig(server)
 
 server.post('/register', (req, res) => {
