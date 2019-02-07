@@ -73,7 +73,7 @@ function protected(req, res, next) {
 }
 
 //protect this endpoint so only logged in users can see the data
-server.get('/users', protected, (req, res) => {
+server.get('/restricted/users', protected, (req, res) => {
   //  add : async -----if uncomment the below code
   // const users = await db('users')
   db('users')
