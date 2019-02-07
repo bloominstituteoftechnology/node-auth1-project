@@ -2,19 +2,29 @@ const express = require('express')
 const bcrypt = require('bcryptjs')
 const mwConfig = require('./data/mwConfig')
 const db = require('./data/dbConfig.js')
-// const session = require('express-session')
+const session = require('express-session')
+const knexSessionStore = require('connect-session-knex')(session) //currying
 
-// const sessionConfig = {
-//   name: 'notsession', // default is connect.sid, change it to something else
-//   secret: 'nobody tosses a dwarf!',
-//   cookie: {
-//     maxAge: 1 * 15, // 1 day in milliseconds 1 * 24 * 60 * 60 * 1000
-//     secure: false //set to true during production, false during development // only set cookies over https. Server will not send back a cookie over http.
-//   },
-//   httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
-//   resave: false, //for compliance with US law
-//   saveUninitialized: true
-// }
+
+
+const sessionConfig = {
+  name: 'notsession', // default is connect.sid, change it to something else
+  secret: 'nobody tosses a dwarf!',
+  cookie: {
+    maxAge: 1 * 15, // 1 day in milliseconds 1 * 24 * 60 * 60 * 1000
+    secure: false //set to true during production, false during development // only set cookies over https. Server will not send back a cookie over http.
+  },
+  httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
+  resave: false, //for compliance with US law
+  saveUninitialized: false,
+  store: new knexSessionStore ({ //manually store sessions on db
+    tablename: 'sessions',
+    sidfieldname: 'sid',
+    knex: db,
+    createtable: true, //if table doesn't exist, create a new one
+    clearInterval: 1000 * 60 * 60, //automatically clears out any expired sessions for you
+}),
+}
 
 const PORT = 5100
 const server = express()
