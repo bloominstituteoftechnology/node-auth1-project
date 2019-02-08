@@ -5,6 +5,8 @@ const helmet = require('helmet') ;
 const logger = require('morgan') ;
 const session = require("express-session") ;
 const knex = require('knex') ;
+const KnexSessionStore = require('connect-session-knex')(session)
+
 const bcrypt = require("bcryptjs") ;
 const config = require('./knexfile') ;
 const loginRouter = require('./data/routes/loginRoute') ;
@@ -18,12 +20,19 @@ const sessionConfig = {
  name: 'gensym',
  secret: "megalomaniacal scientifically quantifiable viable style.",
  cookie: {
-  maxAge: 1000 * 15,
+  maxAge:  1 * 24 * 60 * 60 * 1000,
   secure: false,
  },
  httpOnly: true,
  resave: false,
- saveUninitialized: false
+ saveUninitialized: false,
+ store: new KnexSessionStore({
+  tablename: "sessions",
+  sidfieldname: "sid",
+  knex: DB,
+  createtable: true,
+  clearinterval: 1000 * 60 * 5
+ })
 }
 server.use(
  helmet(),
@@ -33,7 +42,7 @@ server.use(
 ) ;
 
 const gatekeeper = (req, res, next) => {
- if (req.session.reqUser) {
+ if (req.session.id) {
  next()
  }
  else {
@@ -50,6 +59,16 @@ server.get('/api/users', gatekeeper, async (req, res) => {
   .json(users)
 })
 
+server.get('/api/logout', (req, res) => {
+ if (req.session) {
+  req.session.destroy()
+ }
+ else {
+  res
+   .json({message: 'You are logged out.'})
+ }
+})
+
 server.post('/api/login', (req, res) => {
  const reqUser = req.body
  console.log("login user pw:", reqUser.password)
@@ -57,9 +76,8 @@ server.post('/api/login', (req, res) => {
    .where('username', reqUser.username)
    .then((users) => {
     if (users.length && bcrypt.compareSync(reqUser.password, users[0].password)) {
-     req.session.reqUser = reqUser ;
-     res
-      .json({info: `You're in.`})
+     req.session.id = reqUser.id ;
+     res.json({info: `You're in.`, cookie: req.session.cookie})
     }
     else {
      res.
