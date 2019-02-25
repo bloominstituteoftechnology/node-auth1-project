@@ -3,8 +3,7 @@ const authConst = require('../data/helpers/authConst');
 const db = require('../data/helpers/authDb');
 
 // Middleware added to routes that checks for authorization.
-// If the user is authorized, continues to the request.
-// Otherwise, return 403.
+// Changes req.isAuthorized to whether it is authorized or not.
 const authorize = permission => (req, res, next) => {
 
 };
