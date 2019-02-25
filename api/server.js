@@ -35,8 +35,25 @@ server.post('/api/register', async (req, res) => {
   } else {
     res.status(400).json({ message: "Please provide username and password." });
   }
+});
 
-
+// endpoint to login a user
+server.post('/api/login', async (req, res) => {
+  const loginData = req.body;
+  try {
+    console.log("loginData.username: ", loginData.username);
+    const userData = await db('users')
+      .where({ username: loginData.username })
+      .first();
+    console.log("userData: ", userData);
+    if (userData && bcrypt.compareSync(loginData.password, userData.password)) {
+      res.status(200).json({ message: `Welcome ${userData.username}!`});
+    } else {
+      res.status(401).json({ message: `Invalid login, try again.` });
+    }    
+  } catch (error) {
+    res.status(500).json(error);
+  }
 });
 
 module.exports = server;
