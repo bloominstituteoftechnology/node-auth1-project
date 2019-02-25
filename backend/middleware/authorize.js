@@ -1,11 +1,22 @@
 // Local imports
-const authConst = require('../data/helpers/authConst');
 const db = require('../data/helpers/authDb');
 
 // Middleware added to routes that checks for authorization.
-// Changes req.isAuthorized to whether it is authorized or not.
-const authorize = permission => (req, res, next) => {
+// Calls next(req, res) if the user is authenticated, otherwise returns 403.
+// Checks req.body.sessionKey
+const authorize = (requirement, next) => (req, res) => {
+    if (!req.body || !req.body.sessionKey) {
+        res.status(403).json({ error: 'You shall not pass!' });
+        return;
+    }
 
+    db.isAuthorized(sessionKey, requirement)
+        .then(_ => {
+            next(req, res);
+        })
+        .catch(_ => {
+            res.status(403).json({ error: 'You shall not pass!' });
+        });
 };
 
 // Module export
