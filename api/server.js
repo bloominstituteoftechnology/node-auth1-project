@@ -49,7 +49,7 @@ server.post('/api/login', async (req, res) => {
     if (userData && bcrypt.compareSync(password, userData.password)) {
       res.status(200).json({ message: `Welcome ${userData.username}!`});
     } else {
-      res.status(401).json({ message: `Invalid login, try again.` });
+      res.status(401).json({ message: `You shall not pass!` });
     }    
   } catch (error) {
     res.status(500).json(error);

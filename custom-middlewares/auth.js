@@ -11,7 +11,7 @@ async function restricted(req, res, next) {
       if (userData && bcrypt.compareSync(password, userData.password)) {
         next();
       } else {
-        res.status(401).json({ message: 'Invalid credentials.' });
+        res.status(401).json({ message: 'You shall not pass!' });
       }
     } else {
       res.status(400).json({ message: 'No credentials provided.' });
