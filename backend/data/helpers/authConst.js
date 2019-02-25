@@ -1,6 +1,7 @@
 // Package imports
 const moment = require('moment');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 // Represents a route/resource that only requires a valid session key.
 const ANY = 0;
