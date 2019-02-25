@@ -3,7 +3,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 
-const db = require('../data/dbConfig.js');
+const Users = require('../users/users-module.js');
 const errors = {
   '19': 'Username taken, pick a different one.'
 }
@@ -11,28 +11,10 @@ const errors = {
 const server = express();
 
 server.use(helmet());
+server.use(cors());
 server.use(express.json());
 
-// check if user is logged in
-async function restricted(req, res, next) {
-  let { username, password } = req.headers;
-  try {
-    if (username && password) {
-      const userData = await db('users')
-        .where({ username })
-        .first();
-      if (userData && bcrypt.compareSync(password, userData.password)) {
-        next();
-      } else {
-        res.status(401).json({ message: 'Invalid credentials.' });
-      }
-    } else {
-      res.status(400).json({ message: 'No credentials provided.' });
-    }    
-  } catch (error) {
-    res.status(500).json({ error });
-  }
-}
+const restricted = require('../custom-middlewares/auth.js');
 
 server.get('', (req, res) => {
   res.status(200).json({ message: "Server up!" });
@@ -47,7 +29,7 @@ server.post('/api/register', async (req, res) => {
     // replace password with hash
     userData.password = hash;
     try {
-      const [userId] = await db('users').insert(userData);
+      const userId = await Users.addUser(userData);
       res.status(201).json({ userId });
     } catch (error) {
       const msg = errors[error.errno] || error;
@@ -62,9 +44,7 @@ server.post('/api/register', async (req, res) => {
 server.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   try {
-    const userData = await db('users')
-      .where({ username })
-      .first();
+    const userData = await Users.findUserBy({ username });
     console.log("userData: ", userData);
     if (userData && bcrypt.compareSync(password, userData.password)) {
       res.status(200).json({ message: `Welcome ${userData.username}!`});
@@ -79,7 +59,7 @@ server.post('/api/login', async (req, res) => {
 // endpoint to get user data IF user is logged in
 server.get('/api/users', restricted, async (req, res) => {
   try {
-    const usersData = await db('users');
+    const usersData = await Users.getUsers();
     res.status(200).json(usersData);
   } catch (error) {
     res.status(500).json(error);
