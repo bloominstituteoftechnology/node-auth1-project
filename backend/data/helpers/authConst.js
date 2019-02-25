@@ -1,5 +1,6 @@
 // Package imports
 const moment = require('moment');
+const bcrypt = require('bcrypt');
 
 // Represents a route/resource that only requires a valid session key.
 const ANY = 0;
@@ -16,6 +17,19 @@ const ADMIN = 100;
 // Represents the default permissions given to a user upon registration.
 const DEFAULT_ACCOUNT_PERMS = USER;
 
+// Represents the number of rounds (exponential) for bcrypt cost.
+const DEFAULT_BCRYPT_ROUNDS = 16;
+
+// Generates a hash of a password.
+const generatePasswordHash = password => {
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(DEFAULT_BCRYPT_ROUNDS));
+}
+
+// Checks a password guess against its hashed form.
+const checkPassword = (passwordTry, hashed) => {
+    return bcrypt.compareSync(passwordTry, hashed);
+}
+
 // Checks if a permission level is authorized against a specific requirement.
 const permsAuthorized = (perms, requirement) => {
     return perms >= requirement;
@@ -31,6 +45,16 @@ const getExpireDate = date => {
         return moment.utc(date).add(5, 'minutes').toDate();
 }
 
+// Checks an expire_date to see if it is expired.
+const isDateExpired = date => {
+    return moment.utc(date).isBefore(moment.utc());
+}
+
+// Generates a new session key.
+const generateSessionKey = _ => {
+    return crypto.randomBytes(96).toString('hex');
+}
+
 // Export the consts for use in other files
 module.exports = {
     ANY,
@@ -38,6 +62,11 @@ module.exports = {
     TRUSTED_USER,
     ADMIN,
     DEFAULT_ACCOUNT_PERMS,
+    DEFAULT_BCRYPT_ROUNDS,
+    generatePasswordHash,
+    checkPassword,
     permsAuthorized,
-    getExpireDate
+    getExpireDate,
+    isDateExpired,
+    generateSessionKey
 };
