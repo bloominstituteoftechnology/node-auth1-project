@@ -6,6 +6,7 @@ const db = (knex(knexConfig.development));
 module.exports = {
     getUsers,
     addUser,
+    findUser
 }
 
 function getUsers() {
@@ -14,4 +15,8 @@ function getUsers() {
 
 function addUser(newUser) {
     return db('users').insert(newUser)
+}
+
+function findUser(filter) { 
+    return db('users').where({username: filter}).first()
 }

@@ -30,7 +30,6 @@ router.post('/register', checkRegisterInfo, async (req, res) => {
     const hash = bcrypt.hashSync(password, 14)
     password = hash;
     const user = {username, password};
-    console.log(user)
     try{
         const newUser = await db.addUser(user);
         if(newUser.length > 0){
@@ -44,5 +43,20 @@ router.post('/register', checkRegisterInfo, async (req, res) => {
     }
 })
 
+router.post('/login', async (req, res) => {
+    const {username, password} = req.body;
+    
+    try{
+        const user = await db.findUser(username)   
+        if(user && bcrypt.compareSync(password, user.password)) {
+            res.status(200).json({message: 'Credentials verified!'})
+        } else{
+            res.status(401).json({message: 'Invalid Credentials! Please try again!'})
+        }
+    } 
+    catch(error){
+        res.status(500).json('There is an issue and we are working on it!');
+    }
+})
 
 module.exports = router;
