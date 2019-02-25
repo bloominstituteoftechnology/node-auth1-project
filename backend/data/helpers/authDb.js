@@ -1,4 +1,5 @@
 // Local imports
+const db = require('../dbConfig');
 const authConst = require('./authConst');
 
 // Attempts to create a new user entry in the database.
