@@ -4,6 +4,8 @@
   "description": "## Topics",
   "main": "index.js",
   "dependencies": {
+    "bcrypt": "^3.0.4",
+    "bcryptjs": "^2.4.3",
     "express": "^4.16.4",
     "helmet": "^3.15.1",
     "knex": "^0.16.3",
