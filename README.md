@@ -11,11 +11,9 @@
 ## Description
 Use `Node.js`, `Express` and `Knex` to build an API that provides **Register** and **Login** functionality using `SQLite` to store _User_ information. Make sure the password is not stored as plain text.
 
-You will build the solution from scratch, no starter code is provided. Feel free to structure your API anyway you want, but aim at making it easy to maintain in the future.
-
 ## Assignment
 
-### Design and build the following endpoints:
+### Complete the following endpoints:
 
 | Method | Endpoint      | Description                                                                                                                                                                                                                                                                                 |
 | ------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
