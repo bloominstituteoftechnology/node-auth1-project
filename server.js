@@ -5,13 +5,17 @@ const bcrypt = require('bcryptjs');
 
 const db = require('./database/dbConfig.js');
 const Users = require('./users/users-module.js');
+const restrictedRouter = require('./routes/restricted');
 
-// const Authenticate = require('./Auth/authenticate');
+const { authenticate } = require('./Auth/authenticate');
+
 const server = express();
 
 server.use(helmet());
 server.use(express.json());
 server.use(cors());
+
+server.use('/api/restricted', authenticate, restrictedRouter);
 
 server.get('/', (req, res) => {
   res.send("It's alive!");
@@ -42,27 +46,6 @@ server.post('/api/login', (req, res) => {
       }
     });
 });
-
-function authenticate(req, res, next) {
-  const { username, password } = req.headers;
-
-  if (username && password) {
-    Users.findBy({ username })
-      .first()
-      .then(user => {
-        if (user && bcrypt.compareSync(password, user.password)) {
-          next();
-        } else {
-          res.status(401).json({ message: 'Invalid Credentials' });
-        }
-      })
-      .catch(err => {
-        res.status(500).json({ message: ' Server Error' });
-      });
-  } else {
-    res.status(400).json({ message: 'No credentials Provided' });
-  }
-}
 
 server.get('/api/users', authenticate, (req, res) => {
   Users.find()

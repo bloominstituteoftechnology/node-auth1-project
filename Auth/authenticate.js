@@ -1,3 +1,12 @@
+const User = require('../users/users-module');
+const bcrypt = require('bcryptjs');
+
+module.exports = {
+  authenticate,
+};
+
+const Users = require('../users/users-module');
+
 function authenticate(req, res, next) {
   const { username, password } = req.headers;
 
@@ -18,7 +27,3 @@ function authenticate(req, res, next) {
     res.status(400).json({ message: 'No credentials Provided' });
   }
 }
-
-module.exports = {
-  authenticate,
-};
