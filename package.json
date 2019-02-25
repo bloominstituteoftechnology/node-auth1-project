@@ -1,0 +1,27 @@
+{
+	"name": "auth-i",
+	"version": "1.0.0",
+	"description": "## Topics",
+	"main": "index.js",
+	"scripts": {
+		"server": "nodemon"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Phoenixrr2113/auth-i.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/Phoenixrr2113/auth-i/issues"
+	},
+	"homepage": "https://github.com/Phoenixrr2113/auth-i#readme",
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"express": "^4.16.4",
+		"helmet": "^3.15.1",
+		"knex": "^0.16.3",
+		"sqlite3": "^4.0.6"
+	}
+}
