@@ -3,6 +3,7 @@ const express = require('express');
 
 // Local imports
 const authConst = require('../data/helpers/authConst');
+const authorize = require('../middleware/authorize');
 const db = require('../data/helpers/userDb');
 
 // Router initialization

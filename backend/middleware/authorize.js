@@ -10,11 +10,12 @@ const authorize = (requirement, next) => (req, res) => {
         return;
     }
 
-    db.isAuthorized(sessionKey, requirement)
+    db.isAuthorized(req.body.sessionKey, requirement)
         .then(_ => {
             next(req, res);
         })
-        .catch(_ => {
+        .catch(err => {
+            console.error(err);
             res.status(403).json({ error: 'You shall not pass!' });
         });
 };

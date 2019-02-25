@@ -94,9 +94,15 @@ const isAuthorized = (sessionKey, requirement) => {
     return db('sessions').where({ session_key: sessionKey }).first()
         .then(session => {
             return db('users').where({ id: session.user_id }).select('permission').first()
-                .then(perm => {
-                    return authConst.permsAuthorized(perm, requirement) ? Promise.resolve() : Promise.reject();
+                .then(user => {
+                    return authConst.permsAuthorized(user.permission, requirement) ? Promise.resolve() : Promise.reject('Unauthorized');
+                })
+                .catch(err => {
+                    return Promise.reject(`Could not load user permission! [${err}]`);
                 });
+        })
+        .catch(err => {
+            return Promise.reject(`Could not load user session key! [${err}]`);
         });
 };
 
