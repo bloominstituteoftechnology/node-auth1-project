@@ -11,7 +11,7 @@ exports.up = function(knex, Promise) {
         table.increments();
         table.string('email', 320);
         table.string('username', 128);
-        table.binary('password', 60);
+        table.string('password', 60);
         table.integer('permission');
         table.unique('email');
         table.unique('username');
