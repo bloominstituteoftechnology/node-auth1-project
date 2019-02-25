@@ -1,0 +1,25 @@
+{
+    "name": "authorization-api",
+    "version": "1.0.0",
+    "description": "Authorization API Project",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "server": "nodemon index.js",
+        "knex": "knex"
+    },
+    "author": "Lambda School",
+    "license": "ISC",
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^6.2.0",
+        "express": "^4.16.4",
+        "helmet": "^3.15.1",
+        "knex": "^0.16.3",
+        "moment": "^2.24.0",
+        "sqlite3": "^4.0.6"
+    },
+    "devDependencies": {
+        "nodemon": "^1.18.10"
+    }
+}
