@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "express": "^4.16.4",
+    "knex": "^0.16.3",
+    "nodemon": "^1.18.10",
+    "sqlite3": "^4.0.6"
+  },
+  "name": "auth-i",
+  "description": "## Topics",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattbasile/auth-i.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattbasile/auth-i/issues"
+  },
+  "homepage": "https://github.com/mattbasile/auth-i#readme"
+}
