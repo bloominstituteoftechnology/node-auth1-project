@@ -1,0 +1,27 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "## Topics",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kjohna/auth-i.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kjohna/auth-i/issues"
+  },
+  "homepage": "https://github.com/kjohna/auth-i#readme",
+  "dependencies": {
+    "dotenv": "^6.2.0",
+    "express": "^4.16.4",
+    "helmet": "^3.15.1",
+    "node": "^11.10.0",
+    "nodemon": "^1.18.10"
+  }
+}
