@@ -14,7 +14,7 @@ const errors = {
 const server = express();
 
 const sessionConfig = {
-  name: 'newSession',
+  name: 'animalName',
   secret: 'some big secret here',
   cookie: {
     maxAge: 1000 * 60,
@@ -26,8 +26,9 @@ const sessionConfig = {
   store: new KnexSessionStore({
     knex: db,
     tablename: 'sessions',
+    sidfieldname: 'sid',
     createtable: true,
-    clearInterval: 1000 * 60 * 60,
+    clearInterval: 1000 * 60 * 5,
   }),
 };
 
