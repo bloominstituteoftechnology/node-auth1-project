@@ -2,6 +2,27 @@ const express = require('express');
 const db = require('../data/helpers/usersModel');
 const router = express();
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
+const KnexSessionStore =require('connect-session-knex')(session);
+
+const sessionConfig = {
+    name: '__sess',
+    secret: 'you are awesome!',
+    cookie: {
+        maxAge: 1000 * 60 * 60,
+        secure: false
+    },
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false,
+    store: new KnexSessionStore({
+        knex: db,
+        tablename: 'session',
+        createTable: true,
+        clearInterval: 1000 * 60 * 60
+    })
+}
+
 
 const checkRegisterInfo = (req, res, next) =>{
     if(req.body.username && req.body.password) {
