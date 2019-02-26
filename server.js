@@ -1,5 +1,6 @@
 const express = require('express');
 const helmet = require('helmet');
+const cors = require('cors');
 const session = require('express-session');
 const KnexSessionStore = require('connect-session-knex')(session);
 
@@ -23,7 +24,7 @@ const sessionConfig = {
 
     store: new KnexSessionStore({
         knex: db,
-        tablename: 'sessions',
+        tablename: 'user_sessions',
         sidfieldname: 'sid',
         createtable: true,
         clearInterval: 1000 * 60 * 60,
@@ -32,6 +33,7 @@ const sessionConfig = {
 };
 
 server.use(helmet());
+server.use(cors());
 server.use(express.json());
 server.use(session(sessionConfig));
 
@@ -78,7 +80,7 @@ server.post('/api/login', (req, res) => {
 });
 
 
-//function that restricts a users access if they are not logged in/authorized
+//middleware that restricts a users access if they are not logged in/authorized
 function restricted(req, res, next) {
     if (req.session && req.session.user) {
         next();
@@ -96,5 +98,7 @@ server.get('/api/users', restricted, (req, res) => {
       })
       .catch(error => res.send(error));
 });
+
+
 
 module.exports = server;
