@@ -5,7 +5,7 @@ const server = express();
 const authRoutes = require('./routes/authRoutes');
 const session = require('express-session');
 const KnexSessionStore =require('connect-session-knex')(session);
-const db = require('./data/helpers/usersModel');
+const db = require('./data/dbConfig');
 
 const sessionConfig = {
     name: '__cookiee',
@@ -16,9 +16,15 @@ const sessionConfig = {
     },
     httpOnly: true,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: new KnexSessionStore({
+        knex: db,
+        tablename: 'sessions',
+        sidfieldname: 'sid',
+        createtable: true,
+        clearInterval: 1000 * 60 * 60
+    })
 }
-
 server.use(logger());
 server.use(helmet());
 server.use(express.json());

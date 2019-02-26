@@ -2,23 +2,7 @@ const express = require('express');
 const db = require('../data/helpers/usersModel');
 const router = express();
 const bcrypt = require('bcryptjs');
-
-const checkRegisterInfo = (req, res, next) =>{
-    if(req.body.username && req.body.password) {
-        next()
-    }else{
-        res.status(404).json({message: "Please enter a valid username and password"})
-    }
-}
-
-const restricted = (req, res, next) =>{
-    console.log(req.session.username)
-    if(req.session.username){
-        next()
-    } else {
-        res.status(404).json({message: "Please login!"})
-    }
-}
+const {checkRegisterInfo, restricted} = require('../middleware');
 
 router.get('/users', restricted, async (req, res) => {
     try{
