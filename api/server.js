@@ -81,6 +81,21 @@ server.post('/api/login', async (req, res) => {
   }
 });
 
+// endpoint to logout a user
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy( err => {
+      if (err) {
+        res.send('error encountered logging out');
+      } else {
+        res.send('come back soon!');
+      }
+    });
+  } else {
+    res.end();
+  }
+})
+
 // endpoint to get user data IF user is logged in
 server.get('/api/users', restricted, async (req, res) => {
   try {
