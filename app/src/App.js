@@ -1,25 +1,43 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Axios from 'axios';
+
+import LoginForm from './components/LoginForm';
+import RegisterForm from './components/RegisterForm';
+
+const dbURL = 'http://localhost:5000';
 
 class App extends Component {
+  state = {
+    loggedIn: false,
+    data: [],
+  };
+
+  registerUser = (e, user) => {
+    e.preventDefault();
+    Axios.post(`${dbURL}/api/register`, user)
+      .then(res => {})
+      .catch(err => console.log(err));
+  };
+  loginUser = (e, user) => {
+    e.preventDefault();
+    Axios.post(`${dbURL}/api/login`, user)
+      .then(res => {
+        this.setState({ data: res.data, loggedIn: true });
+      })
+      .catch(err => console.log(err));
+  };
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        {this.state.loggedIn ? (
+          <h1>Welcome to the app!</h1>
+        ) : (
+          <>
+            <LoginForm loginUser={this.loginUser} />
+            <RegisterForm registerUser={this.registerUser} />
+          </>
+        )}
       </div>
     );
   }
