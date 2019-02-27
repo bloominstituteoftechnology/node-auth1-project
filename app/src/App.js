@@ -15,7 +15,15 @@ class App extends Component {
             {context => (
               <>
                 {context.state.loggedIn ? (
-                  <h1>Welcome to the app!</h1>
+                  <>
+                    {context.state.data.map(user => (
+                      <>
+                        <p>
+                          {user.id} {user.username}
+                        </p>
+                      </>
+                    ))}
+                  </>
                 ) : (
                   <>
                     <LoginForm />

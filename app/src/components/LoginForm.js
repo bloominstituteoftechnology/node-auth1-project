@@ -4,7 +4,9 @@ import { Context } from '../Context/Provider';
 function Form(props) {
   const [username, setFirstName] = useState('');
   const [password, setPassword] = useState('');
+
   let user = { username: username, password: password };
+  console.log(user);
   return (
     <Context.Consumer>
       {context => (
