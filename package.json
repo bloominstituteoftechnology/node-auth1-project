@@ -1,0 +1,29 @@
+{
+  "name": "auth-i",
+  "version": "1.0.0",
+  "description": "- Authentication.\r - Express Middleware.\r - Password Hashing.\r - Sessions\r - Cookies",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/umbur/auth-i.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/umbur/auth-i/issues"
+  },
+  "homepage": "https://github.com/umbur/auth-i#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "helmet": "^3.15.1",
+    "knex": "^0.16.3",
+    "nodemon": "^1.18.10",
+    "sqlite3": "^4.0.6"
+  }
+}
