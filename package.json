@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "helmet": "^3.15.1",
+    "nodemon": "^1.18.10"
+  },
+  "name": "auth-i",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts":{
+    "server": "nodemon index.js",
+    "start": "node index.js"
+  },
+
+  "repository": "https://github.com/s-hopper01110/auth-i.git",
+  "author": "Sheila <s.hopper01110@gmail.com>",
+  "license": "MIT"
+}
