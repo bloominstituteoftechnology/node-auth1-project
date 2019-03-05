@@ -1,4 +1,4 @@
-const db = require('./helpers/model.js');
+const db = require('./model.js');
 
 module.exports = {
   add,

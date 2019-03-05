@@ -3,8 +3,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const bcrypt = require('bcryptjs')
 
-const db = require('./helpers/users-model');
-
+const db = require('./helpers/model.js');
+const Users = require('./helpers/users-model')
 const server = express();
 
 server.use(express.json());
@@ -56,7 +56,7 @@ server.post("/api/login", (req, res) => {
     const { username, password } = req.headers
   
     if ( username && password ) {
-      db('users').findBy({ username })
+      Users.findBy({ username })
       .first()
       .then(user => {
         //here user is the object being passed in which is why you use user dot password to check it.
@@ -75,8 +75,8 @@ server.post("/api/login", (req, res) => {
   }
 
 server.get("/api/users", restricted, (req, res) => {
-  db("users")
-    .select("id", "username", "password")
+  Users
+    .find()
     .then(users => {
       if (users) {
         res.status(200).json(users);
