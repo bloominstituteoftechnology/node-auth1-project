@@ -1,0 +1,16 @@
+{
+  "name": "webauth-i-challenge",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/theiseja/webauth-i-challenge",
+  "author": "Jesse Theisen <theiseja@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "*",
+    "cors": "*",
+    "express": "*",
+    "helmet": "*",
+    "knex": "*",
+    "sqlite3": "*"
+  }
+}
