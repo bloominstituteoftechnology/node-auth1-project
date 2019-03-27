@@ -7,10 +7,19 @@
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "*",
+    "connect-session-knex": "*",
     "cors": "*",
     "express": "*",
+    "express-session": "*",
     "helmet": "*",
     "knex": "*",
-    "sqlite3": "*"
+    "sqlite3": "*",
+    "morgan": "*"
+  },
+  "scripts": {
+    "server": "nodemon"
+  },
+  "devDependencies": {
+    "nodemon": "*"
   }
 }
