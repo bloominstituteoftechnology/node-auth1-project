@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const mwConfig = require("./data/mwConfig");
 const db = require("./data/dbConfig.js");
 const session = require("express-session");
-const knexSessionStore = require("connect-session-knex");
+const knexSessionStore = require("connect-session-knex")(session);
 
 const sessionConfig = {
     name: "notsession",
