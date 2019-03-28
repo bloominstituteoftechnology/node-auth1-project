@@ -7,7 +7,7 @@ const knexSessionStore = require("connect-session-knex")(session);
 
 const sessionConfig = {
   name: "notsession",
-  secret: "nobody tosses a dwarf!",
+  secret: "Keep it secret, keep it safe.",
   cookie: {
     maxAge: 1 * 15,
     secure: false
@@ -62,6 +62,28 @@ server.post("/login", (req, res) => {
     })
     .catch(() => {
       res.status(500).json({ message: "Please try logging in again." });
+    });
+});
+
+function gatekeeper(req, res, next) {
+  if (req.session.id) {
+    next();
+  } else {
+    res
+      .status(401)
+      .json({ message: "You shall not pass, not an authorized user." });
+  }
+}
+
+// protect this endpoint so only logged in users can see the data
+server.get("/restricted/users", gatekeeper, (req, res) => {
+  db("users")
+    .select("id", "username")
+    .then(users => {
+      res.json(users);
+    })
+    .catch(() => {
+      res.status(500).json({ message: "You shall not pass!" });
     });
 });
 
