@@ -71,13 +71,15 @@ function restricted(req, res, next){
         res.status(500).json(err);
       })
      }else{
-  res.status(400).json({message:'You shall not pass'})
+  //res.status(400).json({message:'You shall not pass'})
       }
   };
   
+  //GET option
   server.get('/api/users', restricted, (req, res) => {
 
-    Users.find()
+    Users
+      .find()
       .then(users => {
         res.json(users);
       })
