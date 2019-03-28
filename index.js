@@ -46,6 +46,25 @@ server.post("/register", (req,res) => {
       })
 });
 
+server.post("/login", (req, res) => {
+    const credentials = req.body;
+
+    db("users")
+      .where({ username: credentials.username })
+      .first()
+      .then(user => {
+          if (user && bcrypt.compareSync(credentials.password, user.password)) {
+              req.session.userId = user.id
+              res.status(200).json({ message: `${user.username} is logged in`})
+          } else {
+              res.status(401).json({ message: "You shall not pass!"})
+          }
+      })
+      .catch(() => {
+          res.status(500).json({ message: "Please try logging in again."})
+      })
+})
+
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
