@@ -72,8 +72,8 @@ function gatekeeper(req, res, next) {
     res
       .status(401)
       .json({ message: "You shall not pass, not an authorized user." });
-  }
-}
+  };
+};
 
 // protect this endpoint so only logged in users can see the data
 server.get("/restricted/users", gatekeeper, (req, res) => {
