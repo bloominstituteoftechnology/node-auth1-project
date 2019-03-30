@@ -6,13 +6,13 @@ const session = require("express-session");
 const knexSessionStore = require("connect-session-knex")(session);
 
 const sessionConfig = {
-  name: "notsession",
+  name: "webauth1", // default name is connect.sid
   secret: "Keep it secret, keep it safe.",
   cookie: {
     maxAge: 1 * 15,
-    secure: false
+    secure: false // only set cookies over https. Server will not send back a cookie over http. Set to true during production and false during development.
   },
-  httpOnly: true,
+  httpOnly: true, // don't let JS code access cookies. Browser extensions run JS coded on your browser
   resave: false,
   saveUninitialized: false,
   store: new knexSessionStore({
@@ -53,7 +53,8 @@ server.post("/login", (req, res) => {
     .where({ username: credentials.username })
     .first()
     .then(user => {
-      if (user && bcrypt.compareSync(credentials.password, user.password)) { // varifies credentials
+      if (user && bcrypt.compareSync(credentials.password, user.password)) {
+        // varifies credentials
         req.session.userId = user.id;
         res.status(200).json({ message: `${user.username} is logged in` });
       } else {
@@ -72,11 +73,11 @@ function gatekeeper(req, res, next) {
     res
       .status(401)
       .json({ message: "You shall not pass, not an authorized user." });
-  };
-};
+  }
+}
 
 // protect this endpoint so only logged in users can see the data
-server.get("/restricted/users", gatekeeper, (req, res) => {
+server.get("/api/restricted/users", gatekeeper, (req, res) => {
   db("users")
     .select("id", "username")
     .then(users => {
@@ -85,6 +86,18 @@ server.get("/restricted/users", gatekeeper, (req, res) => {
     .catch(() => {
       res.status(500).json({ message: "You shall not pass!" });
     });
+});
+
+server.get("/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send(`Error logging ${user.username} out`);
+      } else {
+        res.send(`Good bye ${user.username}`);
+      }
+    });
+  }
 });
 
 server.listen(PORT, () => {
