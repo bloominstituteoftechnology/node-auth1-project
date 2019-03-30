@@ -92,9 +92,9 @@ server.get("/logout", (req, res) => {
   if (req.session) {
     req.session.destroy(err => {
       if (err) {
-        res.send(`Error logging ${user.username} out`);
+        res.send("Error logging out");
       } else {
-        res.send(`Good bye ${user.username}`);
+        res.send("Good bye!");
       }
     });
   }
