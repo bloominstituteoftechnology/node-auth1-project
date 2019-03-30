@@ -53,7 +53,7 @@ server.post("/login", (req, res) => {
     .where({ username: credentials.username })
     .first()
     .then(user => {
-      if (user && bcrypt.compareSync(credentials.password, user.password)) {
+      if (user && bcrypt.compareSync(credentials.password, user.password)) { // varifies credentials
         req.session.userId = user.id;
         res.status(200).json({ message: `${user.username} is logged in` });
       } else {
