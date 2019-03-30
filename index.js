@@ -31,7 +31,7 @@ mwConfig(server);
 
 // endpoints
 
-server.post("/register", (req, res) => {
+server.post("/api/register", (req, res) => {
   const credentials = req.body;
   const hash = bcrypt.hashSync(credentials.password, 14);
   credentials.password = hash;
@@ -46,7 +46,7 @@ server.post("/register", (req, res) => {
     });
 });
 
-server.post("/login", (req, res) => {
+server.post("/api/login", (req, res) => {
   const credentials = req.body;
 
   db("users")
@@ -88,7 +88,7 @@ server.get("/api/restricted/users", gatekeeper, (req, res) => {
     });
 });
 
-server.get("/logout", (req, res) => {
+server.get("/api/logout", (req, res) => {
   if (req.session) {
     req.session.destroy(err => {
       if (err) {
