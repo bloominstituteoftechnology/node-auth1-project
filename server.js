@@ -39,12 +39,12 @@ server.post("/api/register", async (req, res) => {
   }
 });
 
-server.post("/api/login", (req, res) => {
+server.post("/api/login", async (req, res) => {
   let { username, password } = req.body;
 
   try {
     if (username && password) {
-      // const user = await Users.findBy({ username });
+      const user = await Users.findBy({ username: username });
       if (user && bcrypt.compareSync(password, user.password)) {
         res.status(200).json({ message: `Welcome ${user.username}` });
       } else {
@@ -60,22 +60,23 @@ server.post("/api/login", (req, res) => {
 
 // This endpoint needs to be restricted unless user provides
 // the right credentials in the headers
-// server.get("/api/users", restricted, (req, res) => {
-//   try {
-//     users = Users.find()
-//     res.status(200).json(users);
-//   } catch (error) {
-//     res.status(500).json(error);
-//   }
-// });
-
-server.get('/api/users', restricted, (req, res) => {
-  Users.find()
-    .then(users => {
-      res.json(users);
-    })
-    .catch(err => res.send(err));
+server.get("/api/users", restricted, async (req, res) => {
+  console.log('test')
+  try {
+    const users = Users.find()
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json(error);
+  }
 });
+
+// server.get('/api/users', restricted, (req, res) => {
+//   Users.find()
+//     .then(users => {
+//       res.json(users);
+//     })
+//     .catch(err => res.send(err));
+// });
 
 // AUTHORIZATION MIDDLEWARE
 function restricted(req, res, next) {
