@@ -1,6 +1,6 @@
 const express = require("express");
 const helmet = require("helmet");
-const encrypt = require("bcryptjs");
+const bcrypt = require("bcryptjs");
 
 const server = express();
 
@@ -22,7 +22,7 @@ server.get("/", (req, res) => {
 server.post("/api/register", async (req, res) => {
   let credentials = req.body;
 
-  const hash = encrypt.hashSync(credentials.password, 14);
+  const hash = bcrypt.hashSync(credentials.password, 14);
   credentials.password = hash;
 
   try {
@@ -43,7 +43,7 @@ server.post("/api/login", (req, res) => {
   try {
     if (username && password) {
       // const user = await Users.findBy({ username });
-      if (user && encrypt.compareSync(password, user.password)) {
+      if (user && bcrypt.compareSync(password, user.password)) {
         res.status(200).json({ message: `Welcome ${user.username}` });
       } else {
         res.status(401).jason({ message: "Invalid credentials" });
@@ -67,23 +67,35 @@ server.get("/api/users", restricted, (req, res) => {
   }
 });
 
-// RESTRICTED MIDDLEWARE
+// AUTHORIZATION MIDDLEWARE
+// function only(username) {
+//   return function(req, res, next) {
+//     if (req.headers.username === username) {
+//       next();
+//     } else {
+//       res.status(403).json({ message: `you are not ${username}` });
+//     }
+//   };
+// }
+
 function restricted(req, res, next) {
   const { username, password } = req.headers;
 
-  try {
-    if (username && password) {
-      // const user = await Users.findBy({ username });
-      if (user && encrypt.compareSync(password, user.password)) {
-        next();
-      } else {
-        res.status(401).jason({ message: "Invalid credentials" });
-      }
-    } else {
-      res.status(400).json({ error: "Please include a username and password" });
-    }
-  } catch (error) {
-    res.status(500).json(error);
+  if (username && password) {
+    Users.findBy({ username })
+      .first()
+      .then(user => {
+        if (user && bcrypt.compareSync(password, user.password)) {
+          next();
+        } else {
+          res.status(401).jason({ message: "Invalid credentials" });
+        }
+      })
+      .catch(error => {
+        res.status(500).json(error);
+      });
+  } else {
+    res.status(401).json({ error: "Please include a username and password" });
   }
 }
 
@@ -91,7 +103,7 @@ function restricted(req, res, next) {
 server.use(function(req, res) {
   res
     .status(404)
-    .send("This route does not exist! Return to the main directory");
+    .send("This route does not exist. Return to the main directory");
 });
 
 module.exports = server;
