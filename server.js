@@ -15,18 +15,14 @@ server.use(function(req, res, next) {
 
 // ENDPOINTS
 server.get("/", (req, res) => {
-  res.send("Welcome to Web Authorization I Challenge API.");
+  res.send("Welcome to Web Authorization I Challenge API");
 });
-
-server.use("/api/cohorts", cohortsRouter);
-server.use("/api/students", studentsRouter);
-
 
 // DNE MIDDLEWARE
 server.use(function(req, res) {
   res
     .status(404)
-    .send("This route does not exist! Return to the main directory..");
+    .send("This route does not exist! Return to the main directory");
 });
 
 module.exports = server;

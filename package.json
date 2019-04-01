@@ -6,7 +6,7 @@
   "repository": "https://github.com/sapinspys/webauth-i-challenge.git",
   "author": "Guillermo Arria-Devoe <garri009@fiu.edu>",
   "license": "MIT",
-  "script": {
+  "scripts": {
     "server": "nodemon index.js",
     "start": "node index.js"
   },
