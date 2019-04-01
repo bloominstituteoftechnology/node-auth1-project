@@ -25,11 +25,29 @@ server.post("/api/register", async (req, res) => {
   const hash = encrypt.hashSync(credentials.password, 14);
   credentials.password = hash;
 
-  // DB HELPER FILE HERE (Users.add(user))
   try {
     if (credentials.username && credentials.password) {
       // const newUser = await Users.add(credentials);
       res.status(201).json(credentials);
+    } else {
+      res.status(400).json({ error: "Please include a username and password" }) 
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+server.post("/api/login", (req, res) => {
+  let { username, password } = req.body;
+
+  try {
+    if (username && password) {
+      // const user = await Users.findBy({ username });
+      if (user && encrypt.compareSync(password, user.password)) {
+        res.status(200).json({ message: `Welcome ${user.username}`});
+      } else {
+        res.status(401).jason({ message: "Invalid credentials"})
+      }
     } else {
       res.status(400).json({ error: "Please include a username and password." }) 
     }
@@ -38,9 +56,27 @@ server.post("/api/register", async (req, res) => {
   }
 });
 
-server.post("/api/login", (req, res) => {});
+// This endpoint needs to be restricted unless user provides
+// the right credentials in the headers
+server.get("/api/users", restricted, (req, res) => {
+  try {
+    // users = Users.find()
 
-server.get("/api/users", (req, res) => {});
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+// RESTRICTED MIDDLEWARE
+function restricted(req, res, next) {
+  const { username, password } = req.headers;
+
+  if( username && password) {
+    next();
+  } else {
+    res.status(401).json({ message: "Invalid credentials"})
+  }
+}
 
 // DNE MIDDLEWARE
 server.use(function(req, res) {
