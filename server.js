@@ -2,6 +2,8 @@ const express = require("express");
 const helmet = require("helmet");
 const bcrypt = require("bcryptjs");
 
+const Users = require('./users/users-model.js');
+
 const server = express();
 
 server.use(express.json());
@@ -22,18 +24,18 @@ server.get("/", (req, res) => {
 server.post("/api/register", async (req, res) => {
   let credentials = req.body;
 
-  const hash = bcrypt.hashSync(credentials.password, 14);
-  credentials.password = hash;
-
   try {
     if (credentials.username && credentials.password) {
-      // const newUser = await Users.add(credentials);
+      const hash = bcrypt.hashSync(credentials.password, 14);
+      credentials.password = hash;
+
+      const newUser = await Users.add(credentials);
       res.status(201).json(credentials);
     } else {
       res.status(400).json({ error: "Please include a username and password" });
     }
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json({ error: "Username already exists or failed to connect to server"});
   }
 });
 
@@ -60,7 +62,7 @@ server.post("/api/login", (req, res) => {
 // the right credentials in the headers
 server.get("/api/users", restricted, (req, res) => {
   try {
-    // users = Users.find()
+    users = Users.find()
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json(error);
@@ -68,16 +70,6 @@ server.get("/api/users", restricted, (req, res) => {
 });
 
 // AUTHORIZATION MIDDLEWARE
-// function only(username) {
-//   return function(req, res, next) {
-//     if (req.headers.username === username) {
-//       next();
-//     } else {
-//       res.status(403).json({ message: `you are not ${username}` });
-//     }
-//   };
-// }
-
 function restricted(req, res, next) {
   const { username, password } = req.headers;
 
