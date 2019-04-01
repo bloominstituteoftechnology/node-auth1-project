@@ -30,7 +30,7 @@ server.post("/api/register", async (req, res) => {
       // const newUser = await Users.add(credentials);
       res.status(201).json(credentials);
     } else {
-      res.status(400).json({ error: "Please include a username and password" }) 
+      res.status(400).json({ error: "Please include a username and password" });
     }
   } catch (error) {
     res.status(500).json(error);
@@ -44,12 +44,12 @@ server.post("/api/login", (req, res) => {
     if (username && password) {
       // const user = await Users.findBy({ username });
       if (user && encrypt.compareSync(password, user.password)) {
-        res.status(200).json({ message: `Welcome ${user.username}`});
+        res.status(200).json({ message: `Welcome ${user.username}` });
       } else {
-        res.status(401).jason({ message: "Invalid credentials"})
+        res.status(401).jason({ message: "Invalid credentials" });
       }
     } else {
-      res.status(400).json({ error: "Please include a username and password." }) 
+      res.status(400).json({ error: "Please include a username and password" });
     }
   } catch (error) {
     res.status(500).json(error);
@@ -61,7 +61,7 @@ server.post("/api/login", (req, res) => {
 server.get("/api/users", restricted, (req, res) => {
   try {
     // users = Users.find()
-
+    res.status(200).json(users);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -71,10 +71,19 @@ server.get("/api/users", restricted, (req, res) => {
 function restricted(req, res, next) {
   const { username, password } = req.headers;
 
-  if( username && password) {
-    next();
-  } else {
-    res.status(401).json({ message: "Invalid credentials"})
+  try {
+    if (username && password) {
+      // const user = await Users.findBy({ username });
+      if (user && encrypt.compareSync(password, user.password)) {
+        next();
+      } else {
+        res.status(401).jason({ message: "Invalid credentials" });
+      }
+    } else {
+      res.status(400).json({ error: "Please include a username and password" });
+    }
+  } catch (error) {
+    res.status(500).json(error);
   }
 }
 
