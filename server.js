@@ -18,6 +18,17 @@ server.get("/", (req, res) => {
   res.send("Welcome to Web Authorization I Challenge API");
 });
 
+server.post("/api/register", async (req, res) => {
+  let user = req.body;
+
+  // DB HELPER FILE HERE (Users.add(user))
+
+});
+
+server.post("/api/login", (req, res) => {});
+
+server.get("/api/users", (req, res) => {});
+
 // DNE MIDDLEWARE
 server.use(function(req, res) {
   res
