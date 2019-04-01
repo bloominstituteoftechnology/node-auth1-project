@@ -1,6 +1,6 @@
 const express = require("express");
 const helmet = require("helmet");
-const bcrypt = require("bcrypt.js");
+const encrypt = require("bcryptjs");
 
 const server = express();
 
@@ -20,10 +20,22 @@ server.get("/", (req, res) => {
 });
 
 server.post("/api/register", async (req, res) => {
-  let user = req.body;
+  let credentials = req.body;
+
+  const hash = encrypt.hashSync(credentials.password, 14);
+  credentials.password = hash;
 
   // DB HELPER FILE HERE (Users.add(user))
-
+  try {
+    if (credentials.username && credentials.password) {
+      // const newUser = await Users.add(credentials);
+      res.status(201).json(credentials);
+    } else {
+      res.status(400).json({ error: "Please include a username and password." }) 
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
 });
 
 server.post("/api/login", (req, res) => {});
