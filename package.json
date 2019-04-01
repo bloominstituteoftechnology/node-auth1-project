@@ -1,0 +1,9 @@
+{
+  "name": "webauth-i-challenge",
+  "version": "1.0.0",
+  "description": "Day 1 of Web Authorization",
+  "main": "index.js",
+  "repository": "https://github.com/sapinspys/webauth-i-challenge.git",
+  "author": "Guillermo Arria-Devoe <garri009@fiu.edu>",
+  "license": "MIT"
+}
