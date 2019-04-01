@@ -1,0 +1,123 @@
+const express = require('express')
+const bcrypt = require('bcryptjs')
+const knex = require('knex');
+const session = require('express-session')
+const knexSessionStore = require('connect-session-knex')(session)
+const db_config = require('./knexfile');
+const db = knex(db_config.development);
+
+const sessionConfig = {
+  name: 'notsession', // default is connect.sid, change it to something else
+  secret: 'nobody tosses a dwarf!',
+  cookie: {
+    maxAge: 1 * 15, // 1 day in milliseconds 1 * 24 * 60 * 60 * 1000
+    secure: false //set to true during production, false during development // only set cookies over https. Server will not send back a cookie over http.
+  },
+  httpOnly: true, // don't let JS code access cookies. Browser extensions run JS code on your browser!
+  resave: false, //for compliance with US law
+  saveUninitialized: false,
+  store: new knexSessionStore({ //manually store sessions on db
+    tablename: 'sessions',
+    sidfieldname: 'sid',
+    knex: db,
+    createtable: true, //if table doesn't exist, create a new one
+    clearInterval: 1000 * 60 * 60, //automatically clears out any expired sessions for you
+  }),
+}
+
+const PORT = 9999
+const server = express()
+server.use(express.json())
+server.use(session(sessionConfig))
+
+server.post('/register', (req, res) => {
+  const creds = req.body
+  const hash = bcrypt.hashSync(creds.password, 14)
+  creds.password = hash
+  db('users')
+    .insert(creds)
+    .then(ids => {
+      res.status(201).json(ids)
+    })
+    .catch(() => {
+      res.status(500).json({
+        error: 'Unable to register user.'
+      })
+    })
+})
+
+server.post('/login', (req, res) => {
+  const creds = req.body
+  db('users')
+    .where({
+      username: creds.username
+    })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(creds.password, user.password)) {
+        req.session.userId = user.id
+        res.status(200).json({
+          message: `${user.username} is logged in`
+        })
+      } else {
+        res.status(401).json({
+          message: 'You shall not pass!'
+        })
+      }
+    })
+    .catch(() =>
+      res.status(500).json({
+        message: 'Please try logging in again.'
+      })
+    )
+})
+
+function protected(req, res, next) {
+  if (req.session && req.session.userId) {
+    next()
+  } else {
+    res.status(401).json({
+      message: 'You shall not pass, not authenticated.'
+    })
+  }
+}
+
+//protect this endpoint so only logged in users can see the data
+server.get('/restricted/users', protected, (req, res) => {
+  //  add : async -----if uncomment the below code
+  // const users = await db('users')
+  db('users')
+    .select('id', 'username', 'password') //<----NEVER EVER SEND THE PASSWORD BACK TO THE CLIENT, THIS IS WHAT NOT TO DO!!!
+    .then(users => {
+      res.json(users)
+    })
+    .catch(() => {
+      res.status(500).json({
+        message: 'You shall not pass!'
+      })
+    })
+})
+
+server.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy((err) => {
+      if (err) {
+        res.status(500).json({
+          message: 'you can never leave...'
+        })
+      } else {
+        res.status(200).json({
+          message: 'bye bye'
+        })
+      }
+    })
+  } else {
+    res.json({
+      message: 'You are logged out'
+    })
+  }
+})
+
+server.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`)
+})
