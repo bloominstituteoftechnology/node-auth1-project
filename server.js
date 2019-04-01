@@ -1,5 +1,6 @@
 const express = require("express");
 const helmet = require("helmet");
+const bcrypt = require("bcrypt.js");
 
 const server = express();
 
