@@ -57,15 +57,4 @@ router.get('/logout', (req, res) => {
   }
 });
 
-// This endpoint needs to be restricted unless user provides
-// the right credentials in the headers
-// router.get("/api/users", restricted, async (req, res) => {
-//   try {
-//     const users = await Users.find();
-//     res.status(200).json(users);
-//   } catch (error) {
-//     res.status(500).json(error);
-//   }
-// });
-
 module.exports = router;
