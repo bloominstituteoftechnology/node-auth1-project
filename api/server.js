@@ -1,32 +1,12 @@
 const express = require("express");
 const helmet = require("helmet");
 const session = require("express-session");
-const KnexSessionStore = require('connect-session-knex')(session);
 
 const authRouter = require("../auth/auth-router.js");
 // const usersRouter = require('../users/users-router.js');
-const configuredKnex = require('../database/dbConfig.js');
+const sessionConfig = require('../auth/session-config.js');
 
 const server = express();
-
-const sessionConfig = {
-  name: "cookie monster", // session name to increase security
-  secret: "mellon",
-  cookie: {
-    maxAge: 1000 * 60 * 10, // milliseconds, 10 min
-    secure: false, // use cookie over https (development)
-    httpOnly: true // false means JS can access the cookie on the client
-  },
-  resave: false, // avoid recreating unchanged sessions
-  saveUninitialized: true, // GDPR complicance, if user does not want cookies, then false
-  store: new KnexSessionStore({
-    knex: configuredKnex,
-    tablename: 'session',
-    sidfieldname: 'sid',
-    createtable: true,
-    clearInterval: 1000 * 60 * 30, // deletes expired sessions every 30 min
-  })
-};
 
 server.use(express.json());
 server.use(helmet());
