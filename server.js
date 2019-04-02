@@ -7,6 +7,18 @@ const Users = require('./users/users-model.js');
 
 const server = express();
 
+const sessionConfig = {
+  name: "cookie monster", // session name to increase security
+  secret: "mellon",
+  cookie: {
+    maxAge: 1000 * 60 * 10, // milliseconds, 10 min
+    secure: false, // use cookie over https (development)
+    httpOnly: true, // false means JS can access the cookie on the client
+  },
+  resave: false, // avoid recreating unchanged sessions
+  saveUninitialized: true, // GDPR complicance, if user does not want cookies, then false
+}
+
 server.use(express.json());
 server.use(helmet());
 server.use(session(sessionConfig))
