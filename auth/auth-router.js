@@ -1,6 +1,9 @@
+const router = require('express').Router();
+const bcrypt = require('bcryptjs');
+
 const Users = require('./users/users-model.js');
 
-router.post("/api/register", async (req, res) => {
+router.post("/register", async (req, res) => {
   let credentials = req.body;
 
   try {
@@ -18,7 +21,7 @@ router.post("/api/register", async (req, res) => {
   }
 });
 
-router.post("/api/login", async (req, res) => {
+router.post("/login", async (req, res) => {
   let { username, password } = req.body;
 
   try {
@@ -47,3 +50,5 @@ router.get("/api/users", restricted, async (req, res) => {
     res.status(500).json(error);
   }
 });
+
+module.exports = router;
