@@ -5,6 +5,9 @@ const bcrypt = require("bcryptjs");
 
 const Users = require('./users/users-model.js');
 
+const authRouter = require('/auth/auth-router.js');
+const usersRouter = require('/users/users-router.js');
+
 const server = express();
 
 const sessionConfig = {
