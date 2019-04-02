@@ -1,5 +1,6 @@
 const express = require("express");
 const helmet = require("helmet");
+const session = require('express-session');
 const bcrypt = require("bcryptjs");
 
 const Users = require('./users/users-model.js');
@@ -8,6 +9,7 @@ const server = express();
 
 server.use(express.json());
 server.use(helmet());
+server.use(session(sessionConfig))
 
 // LOGGER MIDDLEWARE
 server.use(function(req, res, next) {
