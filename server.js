@@ -4,7 +4,8 @@ const session = require('express-session');
 const KnexSessionStore = require('connect-session-knex')(session);
 
 const authRoute = require('./routers/authRouter.js');
-const configuredKnex = require('./data/dbConfig.js');
+const userRoute = require('./routers/userRouter')
+const configuredKnex = require('./data/dbConfig');
 
 const server = express();
 
@@ -31,6 +32,7 @@ server.use(helmet());
 server.use(session(sessionConfig));
 
 server.use('/api/auth', authRoute);
+server.use('/api/users', userRoute);
 
 server.get('/', (req, res) => {
   res.send(`
