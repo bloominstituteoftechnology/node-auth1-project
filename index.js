@@ -8,7 +8,7 @@ const cors = require('cors');
 // const bcrypt = require('bcryptjs');
 
 //database model
-// const Users = require('./data/users/users-model.js');
+const Users = require('./data/users/users-model.js');
 
 //server initialize
 const server = express();
