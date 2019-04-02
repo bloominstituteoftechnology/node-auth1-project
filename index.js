@@ -2,7 +2,7 @@
 const express = require('express');
 //security module
 const helmet = require('helmet');
-
+//cors?
 const cors = require('cors');
 //password cryptography
 // const bcrypt = require('bcryptjs');
