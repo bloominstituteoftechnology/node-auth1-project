@@ -23,6 +23,16 @@ Use `Node.js`, `Express` and `Knex` to build an API that provides **Register** a
 
 ### After we cover the lecture on **sessions** and **cookies**, use them to keep a record of logged in users across requests.
 
+## Workflow: Authentication with __cookies__ and __sessions__
+
+- client sends credentials.
+- server verify credentials.
+- server creates a session for the client.
+- server produces and sends back cookie.
+- client stores the cookie.
+- client sends cookie on every request.
+- server verifies that cookie is valid.
+- server provides access to resource. 
 
 ## Stretch Problem
 
