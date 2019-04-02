@@ -44,16 +44,16 @@ router.post("/login", async (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
-  if (req.session) {
+  if (req.session.user) {
     req.session.destroy(error => {
       if(error) {
         res.status(500).json({ message: "Server error" })
       } else {
-        res.status(200).json({ message: "Logged out successfully"})    
+        res.status(200).json({ message: "Logged out successfully" })    
       }
     })
   } else {
-    res.status(200).json({ message: "You are not logged in!"})    
+    res.status(200).json({ message: "You are not logged in!" })    
   }
 });
 
