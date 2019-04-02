@@ -1,7 +1,6 @@
 const express = require("express");
 const helmet = require("helmet");
 const session = require('express-session');
-const bcrypt = require("bcryptjs");
 
 const authRouter = require('/auth/auth-router.js');
 const usersRouter = require('/users/users-router.js');
@@ -37,8 +36,9 @@ server.get("/", (req, res) => {
 });
 
 // ROUTE HANDLERS
-server.use("/api/register", authRouter);
-server.use("/api/login", authRouter);
+server.use("/api/auth", authRouter);
+server.use('/api/users', usersRouter);
+
 
 // DNE MIDDLEWARE
 server.use(function(req, res) {
