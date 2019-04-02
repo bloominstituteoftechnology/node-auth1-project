@@ -53,7 +53,7 @@ router.get('/logout', (req, res) => {
       }
     })
   } else {
-    res.status(200).json({ message: "You are not logged in!" })    
+    res.status(400).json({ message: "You are not logged in!" })    
   }
 });
 
