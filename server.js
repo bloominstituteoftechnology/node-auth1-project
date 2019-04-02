@@ -1,14 +1,14 @@
 const express = require('express');
 const helmet = require('helmet');
 
-const aRoute = require('./routers/apiRouter');
+const authRoute = require('./routers/authRouter')
 
 const server = express();
 
 server.use(express.json());
 server.use(helmet());
 
-server.use('/api', apiRoute);
+server.use('/api/auth', authRoute);
 
 server.get('/', (req, res) => {
   res.send(`
