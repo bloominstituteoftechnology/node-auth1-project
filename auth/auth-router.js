@@ -43,6 +43,20 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(error => {
+      if(error) {
+        res.status(500).json({ message: "Server error" })
+      } else {
+        res.status(200).json({ message: "Logged out successfully"})    
+      }
+    })
+  } else {
+    res.status(200).json({ message: "You are not logged in!"})    
+  }
+});
+
 // This endpoint needs to be restricted unless user provides
 // the right credentials in the headers
 // router.get("/api/users", restricted, async (req, res) => {
