@@ -58,18 +58,19 @@ server.post('/api/register', async (req, res) => {
 
 //put to login = /api/login 
   //return logged in and user id
-  //not working?
 server.put('/api/login', async (req, res) => {
   const { username, password } = req.body;
   try {
-    const user = await db('user')
+    const user = await db('users')
     .where({ username })
     .first()
   if(user && bcrypt.compareSync(password, user.password)){
+    // console.log(password, user.password);
     const id = user.id;
     res.status(200).json({ msg: `welcome ${username}!`, id})
+  } else {
+    res.status(401).json({msg: 'incorrect password'})
   }
-  res.status(401).json({msg: 'incorrect password'})
   } catch (err) {
     res.status(500).json({ msg: 'user not found'});
   }
