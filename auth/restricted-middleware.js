@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const secret = require('../api/secrets').jwtSecret;
 
 module.exports = (req, res, next) => {
   try {
@@ -15,5 +16,7 @@ module.exports = (req, res, next) => {
 const token = req.headers.authorization;
 
 if (token) {
-  jwt.verify(token, secret, )
+  jwt.verify(token, secret)
+} else {
+  res.status(401).json({ message: "Invalid credentials" });
 }
