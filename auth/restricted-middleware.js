@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken");
+
 module.exports = (req, res, next) => {
   try {
     if (req && req.session && req.session.user) {
@@ -9,3 +11,9 @@ module.exports = (req, res, next) => {
     res.status(500).json({ message: 'Server error' })
   }
 };
+
+const token = req.headers.authorization;
+
+if (token) {
+  jwt.verify(token, secret, )
+}
