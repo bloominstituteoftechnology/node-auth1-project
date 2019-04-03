@@ -1,6 +1,5 @@
 module.exports = (req, res, next) => {
   try {
-    // if this throws, please don't crash my app
     if (req && req.session && req.session.user) {
       next();
     } else {
@@ -10,6 +9,8 @@ module.exports = (req, res, next) => {
     res.status(500).json({ message: "Ouch, now it's broken" });
   }
 };
+
+//cleaner
 
 //old functions used in server CRUD when no routers--------------------------------------------------------------------
 //ONLY function for GET users

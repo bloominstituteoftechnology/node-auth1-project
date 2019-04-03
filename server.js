@@ -11,8 +11,16 @@ const authRouter = require('./database/authentication/auth-router.js');
 const usersRouter = require('./database/users/users-router.js');
 // const sessionConfig = require('./database/authentication/session-config.js');
 const sessionConfig = {
-    
-}
+    name: 'excalibur',
+    secret: 'sword of destiny',
+    resave: false, //avoid recreating unchanged sessions
+    saveUninitialized: false, //GDPR compliance
+    cookie: {
+        maxAge: 1000 * 60 * 10, //milliseconds
+        secure: false, //use for https
+        httpOnly:  true, //can JS access the cookie on the client
+    },
+};
 //server initialize
 const server = express();
 //middleware
