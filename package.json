@@ -1,0 +1,22 @@
+{
+  "name": "webauth-1-challenge",
+  "version": "1.0.0",
+  "description": "Authentication Challenge Project",
+  "main": "index.js",
+  "repository": "https://github.com/marcthuo/webauth-i-challenge.git",
+  "scripts": {
+    "server": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Marc Thiongo",
+  "devDependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "helmet": "^3.16.0",
+    "knex": "^0.16.5",
+    "nodemon": "^1.18.11",
+    "sqlite3": "^4.0.6"
+  }
+}
