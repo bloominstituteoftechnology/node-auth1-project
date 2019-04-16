@@ -37,7 +37,7 @@ function restricted(req, res, next) {
     }
   }
 
-server.get('/api/users', restricted, (req, res) => {
+  server.get('/api/users', restricted, (req, res) => {
     userModel.find()
       .then(users => {
         res.json(users);
