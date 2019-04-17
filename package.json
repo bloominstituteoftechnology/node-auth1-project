@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": "https://github.com/marcthuo/webauth-i-challenge.git",
   "scripts": {
-    "server": "nodemon index.js",
+    "server": "nodemon",
     "start": "node index.js"
   },
   "keywords": [],
