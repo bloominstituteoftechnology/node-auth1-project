@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import StarWars from './starwars';
+import { Button } from 'reactstrap';
 
 class Starwars extends Component {
   constructor() {
@@ -27,10 +28,20 @@ class Starwars extends Component {
       });
   };
 
+  
+  Logout = e => {
+    e.preventDefault();
+    const user = this.state.username;
+    localStorage.removeItem('user', user);
+    window.location.reload();
+  }
+
   render() {
     return (
       <div className="starwars">
-        <h1 className="Header">React Wars</h1>
+        <h1 className="Header">Welcome To React Wars Young Padawan! </h1>
+        <h3>The Force may still be strong with this one!</h3>
+        <Button onClick={this.Logout}>Log Out</Button>
         <StarWars sith={this.state.starwarsChars}/>
       </div>
     );

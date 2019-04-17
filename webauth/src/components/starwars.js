@@ -29,7 +29,7 @@ const StarWars = props => {
         <CardContainer>
         {props.sith.map(char => {
             return (
-                <Card key = {char.title}>
+                <Card key = {char.name}>
                     <h2> {char.title}</h2>
                     <p>Name: {char.name}</p>
                     <p>Birth Year: {char.birth_year}</p>

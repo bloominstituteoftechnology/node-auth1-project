@@ -29,12 +29,6 @@ Login = e => {
     window.location.reload();
 }
 
-Logout = e => {
-    e.preventDefault();
-    const user = this.state.username;
-    localStorage.removeItem('user', user);
-    window.location.reload();
-}
 
 render() {
     return (
@@ -64,7 +58,7 @@ render() {
             </FormGroup>
 
             <Button onClick={this.Login}>Log In</Button>
-            <Button onClick={this.Logout}>Log Out</Button>
+            
         </Form>
         </EntryPage>
     );

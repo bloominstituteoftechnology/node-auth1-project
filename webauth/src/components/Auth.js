@@ -14,7 +14,7 @@ const Authenticate = App => Login =>
                 console.log('Homepage')
                 this.setState({ loggedIn: false });
             } else {
-                console.log('You sre logged in')
+                console.log('You are logged in')
                 this.setState({ loggedIn: true })
             }
         }
