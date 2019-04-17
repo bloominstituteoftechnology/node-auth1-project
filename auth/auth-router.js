@@ -4,9 +4,9 @@ const bcrypt = require('bcryptjs');
 const userModel = require('../users/users-model.js');
 
 router.post('/register', (req, res) => {
-    let owner = req.body;
-    const hash = bcrypt.hashSync(owner.password, 10)
-    owner.password = hash
+    let user = req.body;
+    const hash = bcrypt.hashSync(user.password, 10)
+    user.password = hash
   
     userModel.add(user)
       .then(made => {
