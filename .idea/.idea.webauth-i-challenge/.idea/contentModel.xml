@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\seanw\.Rider2018.3\config\javascript\nodejs\10.15.0\core-modules" t="IncludeRecursive" />
+    <e p="C:\Users\seanw\.Rider2018.3\config\javascript\nodejs\10.15.0\node-typings\node_modules\@types" t="IncludeRecursive" />
+    <e p="C:\Users\seanw\.Rider2018.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\seanw\.Rider2018.3\system\resharper-host\local\Transient\ReSharperHost\v183\SolutionCaches\_webauth-i-challenge.-726963953.00" t="ExcludeRecursive" />
+    <e p="C:\Users\seanw\Desktop\Lambda School\12_Authentication\webauth-i-challenge" t="IncludeFlat">
+      <e p="node_modules" t="ExcludeRecursive">
+        <e p="@types" t="IncludeRecursive" />
+        <e p="bcrypt" t="IncludeRecursive" />
+        <e p="express" t="IncludeRecursive" />
+        <e p="knex" t="IncludeRecursive" />
+        <e p="nodemon" t="IncludeRecursive" />
+        <e p="sqlite3" t="IncludeRecursive" />
+      </e>
+    </e>
+  </component>
+</project>
