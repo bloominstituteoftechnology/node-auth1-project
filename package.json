@@ -1,0 +1,25 @@
+{
+  "name": "webauth-i-challenge",
+  "version": "1.0.0",
+  "description": "login",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "repository": "https://github.com/LambdaSchool/webauth-i-challenge",
+  "author": "Irving Duran <ijd.irving@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^1.19.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^8.0.0",
+    "express": "^4.16.4",
+    "helmet": "^3.18.0",
+    "knex": "^0.16.5",
+    "sqlite3": "^4.0.6"
+  }
+}
