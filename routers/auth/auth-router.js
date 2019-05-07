@@ -1,17 +1,14 @@
 const router = require("express").Router();
-const Users = require("./user-model");
-const db = require("../../database/dbConfig");
+const Auth = require("./auth-model");
 const bcrypt = require("bcryptjs");
-const protected = require("../../auth/protected-middleware");
 
 router.post("/register", (req, res) => {
   let user = req.body;
-
   const hash = bcrypt.hashSync(user.password, 8);
 
   user.password = hash;
 
-  Users.add(user)
+  Auth.add(user)
     .then(saved => {
       res.status(201).json(saved);
     })
@@ -23,10 +20,11 @@ router.post("/register", (req, res) => {
 router.post("/login", (req, res) => {
   let { username, password } = req.body;
 
-  Users.findBy({ username })
+  Auth.findBy({ username })
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
+        req.session.username = user.username; // added
         res.status(200).json({ mess: `welcome ${user.username}` });
       } else {
         res.status(401).json({ mess: " invalid creds" });
@@ -37,11 +35,18 @@ router.post("/login", (req, res) => {
     });
 });
 
-router.get("/users", protected, (req, res) => {
-  Users.find()
-    .then(users => {
-      res.json(users);
-    })
-    .catch(err => res.send(err));
+// added
+router.get("/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send("error logging you out");
+      } else {
+        res.send("bye");
+      }
+    });
+  } else {
+    res.end();
+  }
 });
 module.exports = router;

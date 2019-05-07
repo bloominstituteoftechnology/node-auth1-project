@@ -18,6 +18,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.0.0",
     "express": "^4.16.4",
+    "express-session": "^1.16.1",
     "helmet": "^3.18.0",
     "knex": "^0.16.5",
     "sqlite3": "^4.0.6"
