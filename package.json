@@ -1,0 +1,33 @@
+{
+  "name": "webauth-i-challenge",
+  "version": "1.0.0",
+  "description": "## Topics",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.17.0",
+    "helmet": "^3.18.0",
+    "knex": "^0.16.5",
+    "morgan": "^1.9.1",
+    "nodemon": "^1.19.0",
+    "sqlite3": "^4.0.8"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MaxGunter99/webauth-i-challenge.git"
+  },
+  "keywords": [],
+  "author": "Michael Gunter",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MaxGunter99/webauth-i-challenge/issues"
+  },
+  "homepage": "https://github.com/MaxGunter99/webauth-i-challenge#readme"
+}
