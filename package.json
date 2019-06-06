@@ -1,0 +1,19 @@
+{
+  "name": "webauth-i-challenge",
+  "version": "1.0.0",
+  "scripts": {
+    "server": "nodemon index.js"
+  },
+  "main": "index.js",
+  "repository": "https://github.com/raberin/webauth-i-challenge.git",
+  "author": "raberin <rmvaberin@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.17.1",
+    "helmet": "^3.18.0",
+    "knex": "^0.17.3",
+    "nodemon": "^1.19.1",
+    "sqlite3": "^4.0.8"
+  }
+}
