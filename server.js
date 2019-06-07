@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const knex = require("knex");
 const knexConfig = require("./knexfile.js");
 const db = knex(knexConfig.development);
-const users = require("./data/users/users-model.js");
+const Users = require("./data/users/users-model.js");
 
 const server = express();
 
@@ -54,15 +54,15 @@ server.post("/api/register", (req, res) => {
   }
 });
 
-//THIS DOESNT WORK FOR SOME REASON
-// server.get("/api/users", async (req, res) => {
-//   try {
-//     const users = await users.find();
-//     res.status(200).json(users);
-//   } catch (err) {
-//     res.status(500).json(err);
-//   }
-// });
+// THIS DOESNT WORK FOR SOME REASON
+server.get("/api/users", async (req, res) => {
+  try {
+    const users = await Users.find();
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
 // server.get("/api/users", async (req, res) => {
 //   try {
@@ -75,17 +75,17 @@ server.post("/api/register", (req, res) => {
 //   }
 // });
 
-server.get("/api/users", async (req, res) => {
-  try {
-    const getUsers = await users.find();
-    if (getUsers) {
-      res.status(200).json(getUsers);
-    } else {
-      res.status(400).json({ message: "cant get users" });
-    }
-  } catch (err) {
-    res.status(500).json({ message: "Error." });
-  }
-});
+// server.get("/api/users", async (req, res) => {
+//   try {
+//     const getUsers = await users.find();
+//     if (getUsers) {
+//       res.status(200).json(getUsers);
+//     } else {
+//       res.status(400).json({ message: "cant get users" });
+//     }
+//   } catch (err) {
+//     res.status(500).json({ message: "Error." });
+//   }
+// });
 
 module.exports = server;
