@@ -5,10 +5,11 @@
 		"start": "node index.js"
 	},
 	"dependencies": {
-		"bcrypt": "^3.0.6",
 		"bcryptjs": "^2.4.3",
+		"connect-session-knex": "^1.4.0",
 		"cors": "^2.8.5",
 		"express": "^4.16.4",
+		"express-session": "^1.16.1",
 		"helmet": "^3.18.0",
 		"knex": "^0.16.5",
 		"sqlite3": "^4.0.6"
