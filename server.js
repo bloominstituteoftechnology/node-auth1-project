@@ -54,26 +54,16 @@ server.post("/api/register", (req, res) => {
   }
 });
 
-// THIS DOESNT WORK FOR SOME REASON
 server.get("/api/users", async (req, res) => {
   try {
-    const users = await Users.find();
+    const users = await db("users");
     res.status(200).json(users);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({
+      message: "Error in retrieving users"
+    });
   }
 });
-
-// server.get("/api/users", async (req, res) => {
-//   try {
-//     const users = await db("users");
-//     res.status(200).json(users);
-//   } catch (err) {
-//     res.status(500).json({
-//       message: "Error in retrieving users"
-//     });
-//   }
-// });
 
 // server.get("/api/users", async (req, res) => {
 //   try {
@@ -87,5 +77,25 @@ server.get("/api/users", async (req, res) => {
 //     res.status(500).json({ message: "Error." });
 //   }
 // });
+
+server.post("/api/login", async (req, res) => {
+  let { username, password } = req.body;
+
+  //Grabs the value of the username sent to db
+  Users.findBy({ username })
+    .first()
+    .then(user => {
+      //Compares the password sent by the client to the hashed password in db  (client password, hashed pass in db)
+      const isValidPass = bcrypt.compareSync(password, user.password);
+      if (user && isValidPass) {
+        res.status(200).json({ message: `Welcome ${user.username}!` });
+      } else {
+        res.status(401).json({ message: "You shall not pass!" });
+      }
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
+});
 
 module.exports = server;
