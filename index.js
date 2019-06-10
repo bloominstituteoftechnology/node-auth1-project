@@ -18,14 +18,14 @@ server.listen(port, function() {
 
 
 server.get("/api/users/:id",
-  (req,res) => db.find(req.body.username, req.body.token, req.params.id)
+  (req,res) => { db.find(req.headers.username, req.headers.token, req.params.id)
   .then(result => res.status(200).json(result))
-  .catch(err => res.status(400).json({error: err, message: "could not gather from database"}))
+  .catch(err => res.status(400).json({error: err, message: "could not gather from database"}))}
 );
 
 server.get("/api/users/",
 (req,res) => 
-db.find(req.body.username, req.body.token)
+db.find(req.headers.username, req.headers.token)
 .then(result => res.status(200).json(result))
 .catch(err => res.status(400).json({error: err, message: "could not gather from database"}))
 );
@@ -49,7 +49,7 @@ server.post("/api/login",
   (req,res,next) => 
   db.login(req.body.username, req.body.password)
   .then(result => res.status(201).json(result))
-  //.catch(err => res.status(400).json({error: err, message: "incorrect username or password"}))
+  .catch(err => res.status(400).json({error: err, message: "incorrect username or password"}))
 );
 
 
