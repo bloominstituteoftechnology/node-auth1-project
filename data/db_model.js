@@ -36,6 +36,7 @@ function createToken(user)
 
 async function userExists(username)
 {
+  if(!username) throw "username must be defined"
   let flag = await db('users')
   .where("username", username);
   if(flag.length > 0 ) throw "this username already exists"
