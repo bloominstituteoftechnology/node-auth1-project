@@ -1,5 +1,6 @@
 const db = require('./dbConfig');
 const bcrypt = require('bcryptjs');
+const salt = bcrypt.genSaltSync(10);
 
 module.exports = {
   login,
@@ -10,10 +11,10 @@ module.exports = {
 
 async function find(username, token, id=0)
 {
-  /* if(!username || !token) throw "unauthorized access to database, please login"
+  if(!username || !token) throw "unauthorized access to database, please login"
   let user = await db('users')
   .where({ username }).first();
-  if(createToken(user) !== token ) throw "unauthorized access to database, please login" */
+  if(token !== user.authentication) throw "unauthorized access to database, please login"
   if(id > 0) return db('users')
   .where({id}).first();
   return db('users');
@@ -22,15 +23,15 @@ async function find(username, token, id=0)
 async function login(username, password) 
 {
   let user = await db('users')
-  .where({ username }).first();
-  if(user.authentication === (bcrypt.hashSync(password,14)))
-    return createtoken(user);
-  return success;
+  .where("username", username).first();
+  //console.log(bcrypt.hashSync(password,salt) + "        :        ", user.authentication);
+  if(bcrypt.compareSync(password, user.authentication)) return {token: user.authentication}
+  throw "username and password do not match";
 }
 
 function createToken(user)
 {
-  return bcrypt.hashSync(user.authentication+user.username+user.id, 8);
+  return bcrypt.hashSync(`${user.authentication}|${user.username}|${user.id}`, 8);
 }
 
 async function userExists(username)
@@ -42,10 +43,8 @@ async function userExists(username)
 
 async function register(username, password)
 {
-  let passwordhash = bcrypt.hashSync(password,14);
-  let user = await db("users")
+  let passwordhash = bcrypt.hashSync(password,salt);
+  await db("users")
   .insert({username: username, authentication: passwordhash});
-  let token = createToken(user);
-  console.log(user);
-  return {username: user.username, token: token};
+  return {token: passwordhash};
 }

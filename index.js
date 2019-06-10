@@ -38,7 +38,7 @@ server.post("/api/register",
     //check password here
     db.register(req.body.username, req.body.password)
         .then(result => res.status(201).json(result))
-        .catch(err => res.status(500).json({error: err, message: "interal error"}))
+        //.catch(err => res.status(500).json({error: err, message: "interal error"}))
   }
   )
   .catch(err => res.status(400).json({error: err, message: "username is already in use"}))
@@ -49,7 +49,7 @@ server.post("/api/login",
   (req,res,next) => 
   db.login(req.body.username, req.body.password)
   .then(result => res.status(201).json(result))
-  .catch(err => res.status(400).json({error: err, message: "Zoo must have a unique name"}))
+  //.catch(err => res.status(400).json({error: err, message: "incorrect username or password"}))
 );
 
 
