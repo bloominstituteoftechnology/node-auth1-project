@@ -3,7 +3,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 
-const Users = require("./users/users-model.js");
+const Users = require("./users-model.js");
 
 const server = express();
 
@@ -26,7 +26,7 @@ server.get("/users", async (req, res) => {
 
 function checkCredentials(req, res, next) {
   if (req.body.username && req.body.password) {
-    req.body.password= bcrypt.hashSync(req.body.password, 12);
+    req.body.password = bcrypt.hashSync(req.body.password, 12);
     next();
   } else if (!req.body.password) {
     return res.status(400).json({ message: "Missing password" });
@@ -35,10 +35,10 @@ function checkCredentials(req, res, next) {
   }
 }
 
-async function authUser(req, res, next){
-  try{
-    const user = Users.findUserByName(req.body.name)
-  }
+async function authUser(req, res, next) {
+  try {
+    const user = Users.findUserByName(req.body.name);
+  } catch (err) {}
 }
 
 server.post("/register", async (req, res) => {
