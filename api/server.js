@@ -10,7 +10,6 @@ const server = express();
 
 server.use(express.json());
 server.use(helmet());
-server.use(session(sessionConfig));
 
 // LOGGER MIDDLEWARE
 server.use(function(req, res, next) {
