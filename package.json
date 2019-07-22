@@ -1,0 +1,32 @@
+{
+  "name": "webauth-i-challenge",
+  "version": "1.0.0",
+  "description": "- Authentication.\r - Express Middleware.\r - Password Hashing.\r - Sessions\r - Cookies",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EmilyAbrahart/webauth-i-challenge.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EmilyAbrahart/webauth-i-challenge/issues"
+  },
+  "homepage": "https://github.com/EmilyAbrahart/webauth-i-challenge#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "helmet": "^3.19.0",
+    "knex": "^0.19.0",
+    "md5": "^2.2.1",
+    "nodemon": "^1.19.1",
+    "sqlite3": "^4.0.9"
+  },
+  "devDependencies": {
+    "eslint": "^6.1.0"
+  }
+}
