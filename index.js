@@ -35,19 +35,13 @@ function checkCredentials(req, res, next) {
   }
 }
 
-async function authUser(req, res, next) {
+server.post("/register", checkCredentials, async (req, res) => {
   try {
-    const user = Users.findUserByName(req.body.name);
-  } catch (err) {}
-}
-
-server.post("/register", async (req, res) => {
-  try {
-    const newUser = await Users.registerUser(
-      req.body.username,
-      req.body.password
-    );
-    if (user) {
+    const newUser = await Users.registerUser({
+      username: req.body.username,
+      password: req.body.password
+    });
+    if (newUser) {
       return res.status(201).json({ message: "registration successful" });
     } else {
       return res.status(400).json({ message: "registration failed" });
@@ -57,13 +51,26 @@ server.post("/register", async (req, res) => {
   }
 });
 
-server.post("/login", async (req, res) => {
+async function authUser(req, res, next) {
   try {
-    const userID = await Users.findUserByName(req.body.username);
-    if (userID > 0) {
+    const user = Users.findUserByName(req.body.name);
+    if (user && bcrypt.compareSync(user.password, req.body.password)) {
+      req.user = user;
+      next();
+    } else {
+      return res.status(400).json({ message: "You shall not pass!" });
+    }
+  } catch (err) {
+    return res.status(500).json({ error: "server error" });
+  }
+}
+
+server.post("/login", checkCredentials, authUser, async (req, res) => {
+  try {
+    if (req.user) {
       return res
         .status(200)
-        .json({ message: "login successful", cookie: userID });
+        .json({ message: "login successful", cookie: req.user.id });
     } else {
       return res.status(400).json({ message: "login failed" });
     }
