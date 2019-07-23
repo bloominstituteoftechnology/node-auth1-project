@@ -27,6 +27,6 @@ router.get("/", restricted, async (req, res) => {
 //       res.status(403).json({ message: `Must be a ${role} to access this` });
 //     }
 //   };
-}
+// }
 
 module.exports = router;

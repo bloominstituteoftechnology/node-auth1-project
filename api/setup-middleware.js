@@ -3,8 +3,8 @@ const session = require("express-session");
 const helmet = require('helmet')
 const cors = require("cors");
 
-const KnexSessionStore = require('connect-session-knex')(session);
 // used to persist data in DB even after server restarts
+const KnexSessionStore = require('connect-session-knex')(session); // pass in session using currying
 const configuredKnex = require('../database/dbConfig.js');
 
 module.exports = server => {
@@ -30,17 +30,11 @@ module.exports = server => {
     server.use(helmet());
     server.use(express.json());
     server.use(cors());
-    server.use(sessionConfig);
+    server.use(session(sessionConfig));
 
     server.use(function(req, res, next) {
       console.log(`[${new Date().toISOString()}] ${req.method} to ${req.url}`);
     
       next();
-    });
-
-    server.use(function(req, res) {
-      res
-        .status(404)
-        .send("This route does not exist. Return to the main directory");
     });
 }
