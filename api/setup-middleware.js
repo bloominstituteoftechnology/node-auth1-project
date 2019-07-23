@@ -28,7 +28,7 @@ module.exports = server => {
   }
   
     server.use(helmet());
-    server.use(express.json();
+    server.use(express.json());
     server.use(cors());
     server.use(sessionConfig);
 

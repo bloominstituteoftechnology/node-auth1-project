@@ -2,7 +2,7 @@ const express = require("express");
 
 const authRouter = require("../auth/auth-router.js");
 const usersRouter = require('../users/users-router.js');
-const setupGlobalMiddleware = require('./setup-middleware');
+const setupGlobalMiddleware = require('./setup-middleware.js');
 
 const server = express();
 
