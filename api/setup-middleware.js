@@ -10,7 +10,7 @@ const configuredKnex = require('../database/dbConfig.js');
 module.exports = server => {
   const sessionConfig = {
     name: "cookie monster", // session name to increase security
-    secret: "mellon",
+    secret: process.env.SESSION_SECRET || "mellon",
     cookie: {
       maxAge: 1000 * 60 * 10, // milliseconds, 10 min
       secure: false, // use cookie over https (development)
