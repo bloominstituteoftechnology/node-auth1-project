@@ -1,0 +1,26 @@
+{
+  "name": "webauth-i-challenge",
+  "version": "1.0.0",
+  "description": "## Topics",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"nodemon run server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bryce-Soghigian/webauth-i-challenge.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Bryce-Soghigian/webauth-i-challenge/issues"
+  },
+  "homepage": "https://github.com/Bryce-Soghigian/webauth-i-challenge#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "knex": "^0.19.1",
+    "sqlite3": "^4.1.0"
+  }
+}
