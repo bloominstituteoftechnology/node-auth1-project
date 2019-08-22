@@ -12,6 +12,7 @@ server.use(helmet());
 // ROUTES
 server.get('/api/users', validate, async (req, res) => {
   try {
+    // Get all users
     const users = await db('users');
 
     if (users) {
@@ -33,8 +34,7 @@ server.post('/api/register', async (req, res) => {
       const hash = bcrypt.hashSync(user.password, 5);
       user.password = hash;
 
-      console.log(user);
-
+      // Insert User into db
       const userReg = await db('users').insert(user);
 
       if (userReg) {
@@ -56,8 +56,28 @@ server.post('/api/register', async (req, res) => {
   }
 })
 
-server.post('/api/login', (req, res) => {
+server.post('/api/login', async (req, res) => {
+  const userTry = req.body;
 
+  try {
+    // Get user hashed password
+    const user = await db('users').where('username', userTry.username).first();
+
+    // Hash password check
+    const attempt = bcrypt.compareSync(userTry.password, user.password);
+
+    if (attempt) {
+      res.send('<h1>Logged In</h1>');
+    } else {
+      res.status(404).json({
+        message: 'You shall not pass!'
+      })
+    }
+  } catch (err) {
+    res.status(500).json({
+       error: err.message
+    })
+  }
 })
 
 // FALLBACK
@@ -73,7 +93,6 @@ async function validate(req, res, next) {
     if (userTry.username && userTry.password) {
       // Get user hashed password
       const user = await db('users').where('username', userTry.username).first();
-      console.log(user);
 
       // Hash password check
       const attempt = bcrypt.compareSync(userTry.password, user.password);
@@ -82,7 +101,7 @@ async function validate(req, res, next) {
         next();
       } else {
         res.status(404).json({
-          message: 'The username or password is incorrect. Please try again.'
+          message: 'You shall not pass!'
         })
       }
     } else {
