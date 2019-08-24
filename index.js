@@ -35,7 +35,7 @@ server.post('/api/login', validate, (req, res) => {
     res.status(200).json({ message: `Welcome ${username}!` });
 });
 
-server.get('/api/users', validate, (req, res) => {
+server.get('/api/restricted/users', validate, (req, res) => {
     Users.find()
         .then(users => {
             res.json(users);
