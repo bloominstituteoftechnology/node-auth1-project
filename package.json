@@ -1,0 +1,26 @@
+{
+  "name": "webauth-i-challenge",
+  "version": "1.0.0",
+  "description": "## Topics",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sweyome/webauth-i-challenge.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sweyome/webauth-i-challenge/issues"
+  },
+  "homepage": "https://github.com/sweyome/webauth-i-challenge#readme",
+  "dependencies": {
+    "core-js": "^3.2.1",
+    "helmet": "^3.21.0",
+    "knex": "^0.19.3",
+    "sqlite3": "^4.1.0"
+  }
+}
