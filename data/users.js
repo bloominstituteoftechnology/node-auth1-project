@@ -1,4 +1,4 @@
-const db = require('../database/dbConfig.js');
+const db = require('./dbConfig.js');
 
 module.exports = {
   add,
@@ -8,7 +8,7 @@ module.exports = {
 };
 
 function find() {
-  return db('authentication').select('id', 'username', 'password');
+  return db('authentication').select('id', 'username');
 }
 
 function findBy(filter) {

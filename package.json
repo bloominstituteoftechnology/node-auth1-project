@@ -1,0 +1,21 @@
+{
+  "name": "webauth-i-challenge",
+  "version": "1.0.0",
+  "description": "webauth-i-challenge",
+  "main": "index.js",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-session-knex": "^1.4.0",
+    "express": "^4.17.1",
+    "express-session": "^1.16.2",
+    "knex": "^0.19.3",
+    "sqlite3": "^4.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.2"
+  },
+  "scripts": {
+    "server": "nodemon",
+    "start": "node server.js"
+  }
+}
