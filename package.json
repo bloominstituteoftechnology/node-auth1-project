@@ -1,0 +1,32 @@
+{
+  "name": "webauth-i-challenge",
+  "version": "1.0.0",
+  "description": "10/14/19 NodeJS project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WebWallen/webauth-i-challenge.git"
+  },
+  "keywords": [
+    "Lambda",
+    "School"
+  ],
+  "author": "Daniel Wallen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WebWallen/webauth-i-challenge/issues"
+  },
+  "homepage": "https://github.com/WebWallen/webauth-i-challenge#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "helmet": "^3.21.1",
+    "knex": "^0.19.5",
+    "knex-cleaner": "^1.3.0",
+    "nodemon": "^1.19.3",
+    "sqlite3": "^4.1.0"
+  }
+}
