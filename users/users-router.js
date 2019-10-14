@@ -48,6 +48,12 @@ router.get('/', protected, (req, res) => {
         .catch(err => res.send(err))
 })
 
+router.get('/protected', protected, (req, res) => {
+    Users.protectedPage()
+    .then(secret => res.json('You accessed the secret page'))
+    .catch(err => res.status(500).json({ message: 'You are not allowed in here' }))
+})
+
 function protected (req, res, next) {
     const { username, password } = req.headers;
 
