@@ -53,6 +53,15 @@ router.get('/protected', protected, (req, res) => {
     .catch(err => res.status(500).json({ message: 'You are not allowed in here' }))
 })
 
+router.get('/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy();
+        res.status(200).json({ message: 'Successfully logged out' })
+    } else {
+        res.status(200).json({ message: 'You are already logged out' })
+    }
+})
+
 function protected (req, res, next) {
     const { username, password } = req.headers;
 
