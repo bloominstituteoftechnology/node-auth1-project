@@ -4,26 +4,21 @@
   "description": "- Authentication.\r - Express Middleware.\r - Password Hashing.\r - Sessions\r - Cookies",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "nodemon index.js",
-    "start": "node index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/zpallday/webauth-i-challenge.git"
+    "server": "nodemon index.js"
+    
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/zpallday/webauth-i-challenge/issues"
-  },
-  "homepage": "https://github.com/zpallday/webauth-i-challenge#readme",
+  "author": "Lambda School",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-session": "^1.17.0",
     "helmet": "^3.21.1",
     "knex": "^0.19.5",
     "sqlite3": "^4.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.2"
   }
 }
