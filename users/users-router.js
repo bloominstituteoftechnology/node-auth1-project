@@ -10,7 +10,7 @@ const router = express.Router();
 router.use(helmet());
 router.use(express.json());
 
-router.get('/', restricted, (req, res) => {
+router.get('/', (req, res) => {
     console.log('Username from users-router ', req.session.username)
     Users.find()
         .then(users => res.json(users))
