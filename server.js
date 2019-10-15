@@ -24,7 +24,7 @@ const server = express();
 server.use(sessions(sessionConfig));
 server.use(helmet());
 server.use(express.json());
-sessionConfig.use(cors());
+server.use(cors());
 
 server.use('/api/users', UsersRouter)
 
