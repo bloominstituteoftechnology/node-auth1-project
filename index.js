@@ -76,6 +76,20 @@ server.get("/api/users", protected, (req, res) => {
     .catch(err => res.send(err));
 });
 
+server.get('/api/logout', (req, res) => {
+  if(req.session) {
+    req.session.destroy(err => {
+      if(err) {
+        res.json({message: 'logout does not work at this time'})
+      } else {
+        res.status(200).json({message: 'logout succesful'})
+      }
+    })
+  } else {
+    res.status(200).json({message: 'you are not logged in'})
+  }
+})
+
 function protected(req, res, next) {
   let { username, password } = req.headers;
 
