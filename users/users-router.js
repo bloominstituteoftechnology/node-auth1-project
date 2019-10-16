@@ -1,155 +1,82 @@
 const express = require('express');
-
+const router = express.Router();
+const App = require('./users-model.js');
 const bcrypt = require('bcryptjs');
 
-
-
-const Users = require('./users-model.js');
-
-
-
-const router = express.Router();
+const restricted = require('../users/restricted-middleware.js');
 
 
 
-router.get('/', (req, res) => {
-
-    res.send('API working!');
-
-});
-
-
-
-router.get('/users', restricted, (req, res) => {
-
-    //console.log(req.session);
-
-        Users.find()
-
-        .then(users => {
-
-            res.status(200).json(users)
-
-        })
-
-        .catch(error => res.send(error));       
-
-});
 
 
 
 router.post('/register', (req, res) => {
-
-    let user = req.body;
-
-    const hash = bcrypt.hashSync(user.password, 10);
-
+    const user = req.body;
+    const hash = bcrypt.hashSync(user.password, 8)
     user.password = hash;
-
-    Users.add(user)
-
-        .then(saved => {
-
-            res.status(201).json(saved);
-
+    App.add(user)
+        .then(newUser => {
+            res.status(201).json(req.body)
         })
-
-        .catch(error => {
-
-            res.status(500).json(error);
-
-        });    
-
+        .catch(err => {
+            res.status(500).json(err);
+        });
 });
 
 
 
 router.post('/login', (req, res) => {
+    let { username, password } = req.body;
+    console.log('session', req.session);
+    App.findBy({ username })
+      .first()
+      .then(user => {
+        if (user && bcrypt.compareSync(password, user.password)) {
+          req.session.username = user.username;
+  
+          console.log('session', req.session);
+          res.status(200).json({
+            message: `Welcome ${user.username}!`,
+          });
+        } else {
+          res.status(401).json({ message: 'Invalid Credentials' });
+        }
+      })
+      .catch(error => {
+        res.status(500).json(error);
+      });
+  });
 
-    let {username, password} = req.body;
 
-    Users.findBy({ username })
 
-        .first()
-
-        .then(user => {
-
-            if (user && bcrypt.compareSync(password, user.password)) {
-
-                req.session.user = user;
-
-                console.log('login:', req.session);
-
-                res.status(200).json({ message: `Welcome ${user.username}!` });
-
-              } else {
-
-                res.status(401).json({ message: 'You shall not pass!' });
-
-              }
-
-        })
-
-        .catch(error => {
-
-            res.status(500).json(error);
-
-        });
-
-});
+  router.get('/', restricted, (req, res) => {
+    console.log('username', req.session.username)
+    Users.find()
+      .then(users => {
+        res.json(users);
+        console.log(username)
+      })
+      .catch(err => res.send(err));
+  });
 
 
 
 router.get('/logout', (req, res) => {
-
     if(req.session) {
-
-        console.log('logout:', req.session);
-
-        req.session.destroy(error => {
-
-            if (error) {
-
-                res.status(500).json({ message: 'Unable to log user out.' })
-
+        req.session.destroy(err => {
+            if(err) {
+                res.json({ message: "could not log user out"})
             } else {
-
-                console.log('logged out:', req.session);
-
-                res.status(200).json({ message: 'User successfully logged out.' });
-
+                res.status(200).json({ message: "logout was successful" })
             }
-
-        });
-
-    } else {
-
-        res.status(200).json({ message: 'User already logged out.' });
-
-    }
-
-});
-
-
-
-//custom middleware
-
-function restricted (req, res, next) {
-
-    console.log('request:', req.session);
-
-    if (req.session && req.session.user) {
-
-      next();
+        })
 
     } else {
 
-      res.status(401).json({ message: 'You shall not pass!' })
+        res.status(200).json({ message: "App session ended successfully" })
 
     }
 
-  };
-
-
+})
 
 module.exports = router;

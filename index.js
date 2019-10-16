@@ -1,6 +1,10 @@
-const server = require('./server')
+const server = require('./server.js');
 
 
 
-const port = 8500
-server.listen(port, () => console.log('server running'))
+const port = 4000;
+
+server.listen(port, () => {
+    console.log(`$$ server is running on port number ${port} $$`)
+
+})

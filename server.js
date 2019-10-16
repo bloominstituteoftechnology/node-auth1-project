@@ -5,7 +5,7 @@ const sessions = require('express-session')
 const authRouter = require('./users/users-router.js');
 
 
-const server = express();
+const router = express();
 
 const sessionConfiguration ={
   name: 'ohfosho',
@@ -19,17 +19,17 @@ const sessionConfiguration ={
   saveUninitialized: false,
 }
 
-server.use(sessions(sessionConfiguration));
+router.use(sessions(sessionConfiguration));
 
-server.use(helmet());
-server.use(express.json());
-server.use(cors());
+router.use(helmet());
+router.use(express.json());
+router.use(cors());
 
-server.use('/api/auth', authRouter);
+router.use('/api/auth', authRouter);
 
 
-server.get('/', (req, res) => {
+router.get('/', (req, res) => {
   res.json({ api: 'up' });
 });
 
-module.exports = server;
+module.exports = router;
