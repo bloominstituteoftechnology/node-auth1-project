@@ -49,9 +49,9 @@ router.post('/login', (req, res) => {
 
 
 
-  router.get('/', restricted, (req, res) => {
+  router.get('/', (req, res) => {
     console.log('username', req.session.username)
-    Users.find()
+    App.find()
       .then(users => {
         res.json(users);
         console.log(username)
