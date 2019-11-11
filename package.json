@@ -21,6 +21,9 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
-    "nodemon": "^1.19.4"
+    "express": "^4.17.1",
+    "knex": "^0.20.1",
+    "nodemon": "^1.19.4",
+    "sqlite3": "^4.1.0"
   }
 }
