@@ -41,24 +41,11 @@ router.post("/login", (req, res) => {
 })
 
 const protected = (req, res, next) => {
-    // const { username, password } = req.headers;
-
-        // Users.findBy({username})
-        // .first()
-        // .then(user => {
-        //     if(user && bcrypt.compareSync(password, user.password)) {
-        //         req.session.user = user.username;
-        //         next()
-        //     } else {
-        //         res.status(401).json({ message: "We don't recognize your secret handshake."})
-        //     }
-        // })
-        console.log(req.session)
-        if (req.session && req.session.user) {
-            next();
-        } else {
-            res.status(401).json({ message: "Invalid credentials."})
-        }
+    if (req.session && req.session.user) {
+        next();
+    } else {
+        res.status(401).json({ message: "Invalid credentials."})
+    }
 }
 
 router.get("/users", protected, (req, res) => {
