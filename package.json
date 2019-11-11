@@ -4,8 +4,8 @@
   "description": "- Authentication.\r - Express Middleware.\r - Password Hashing.\r - Sessions\r - Cookies",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "server": "nodemon index.js",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -17,5 +17,14 @@
   "bugs": {
     "url": "https://github.com/mpvn30/webauth-i-challenge/issues"
   },
-  "homepage": "https://github.com/mpvn30/webauth-i-challenge#readme"
+  "homepage": "https://github.com/mpvn30/webauth-i-challenge#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.17.1",
+    "helmet": "^3.21.2",
+    "knex": "^0.20.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.4"
+  }
 }
