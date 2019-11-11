@@ -1,11 +1,14 @@
 const express = require('express')
 
-const accountRouter = require('./api.router')
+const apiRouter = require('./api.router')
+const configureMiddleware = require('./middleware')
 
 const server = express()
 
-server.use(express.json())
-server.use('/api', accountRouter)
+configureMiddleware(server)
+
+server.use('/api', apiRouter)
+
 server.use('/', (req, res) => {
     {res.status(200).json('Its Alive')}
 })
