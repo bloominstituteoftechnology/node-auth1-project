@@ -79,5 +79,5 @@ server.get('/hash', (req, res)=>{
 }
 });
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 6000;
 server.listen(port, () => console.log(`\n** Running in the ${port} with my woes **\n`));
