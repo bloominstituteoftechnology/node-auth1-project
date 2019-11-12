@@ -1,6 +1,7 @@
 const express = require('express');
 const helmet = require('helmet')
 const server = express();
+const sessions = require('express-session')
 
 server.use(express.json());
 server.use(helmet());
