@@ -9,7 +9,6 @@ router.get('/', (req, res) => {
 router.post('/register', (req, res) => {
     let credentials = req.body
   
-
     //hash password
     const hash = bcrypt.hashSync(credentials.password, 8)
     credentials.password = hash
