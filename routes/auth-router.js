@@ -9,8 +9,9 @@ router.post('/register', (req,res) => {
     user.password = hash
 
     Users.add(user)
-        .then(user => {
-            res.status(201).json(user)
+        .then(newuser => {
+            req.session.username = newuser.username
+            res.status(201).json(newuser)
         })
         .catch(error => {
             console.log(error)
@@ -23,6 +24,7 @@ router.post('/login', (req,res) => {
     Users.searchBy({username})
         .then(userValid => {
             if(userValid && bcrypt.compareSync(password, userValid.password)){
+                req.session.username = userValid.username; 
                 res.status(200).json({messsage: `Welcome, ${userValid.username}, You are Logged In.`})
 
             }
