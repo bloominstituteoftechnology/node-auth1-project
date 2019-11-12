@@ -13,7 +13,6 @@ function get(){
 async function add(newUser){
   try{
     [id] = await db('users').insert(newUser, "id") 
-
     addedUser = await db('users').getById(id)
     return addedUser
   }
