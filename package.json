@@ -1,0 +1,34 @@
+{
+    "name": "webauth-i-challenge",
+    "version": "1.0.0",
+    "description": "- Authentication.\r - Express Middleware.\r - Password Hashing.\r - Sessions\r - Cookies",
+    "main": "index.js",
+    "scripts": {
+        "server": "nodemon index.js",
+        "start": "node index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/CandaceRossi/webauth-i-challenge.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/CandaceRossi/webauth-i-challenge/issues"
+    },
+    "homepage": "https://github.com/CandaceRossi/webauth-i-challenge#readme",
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "helmet": "^3.21.2",
+        "knex": "^0.20.1",
+        "sqlite3": "^4.1.0"
+    },
+    "devDependencies": {
+        "nodemon": "^1.19.4"
+    }
+}
