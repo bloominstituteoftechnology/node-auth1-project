@@ -26,5 +26,8 @@
     "helmet": "^3.21.2",
     "knex": "^0.20.1",
     "sqlite3": "^4.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.6.0"
   }
 }
