@@ -23,7 +23,7 @@ async function add(newUser){
 }
 
 function getById(id){
-    return get().where({ id }).first()
+    return db('users').where({ id }).first()
 }
 
 async function searchBy(thisData){
