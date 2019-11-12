@@ -13,7 +13,7 @@ module.exports = {
   
   function findBy(filter) {
     return db('users')
-      .select('id', 'username')
+    
       .where(filter);
   }
   
@@ -28,7 +28,7 @@ module.exports = {
   
   function findById(id) {
     return db('users')
-      .select('id', 'username')
+      
       .where({ id })
       .first();
   }
