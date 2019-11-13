@@ -16,7 +16,7 @@ const server = express()
 server.use(helmet())
 server.use(cors({
     credentials: true,
-    origin: 'http://localhost:5000',
+    origin: 'http://localhost:4000',
 }))
 server.use(express.json())
 server.use(session({
