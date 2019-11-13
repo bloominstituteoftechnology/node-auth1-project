@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs')
 const router = require('express').Router()
 const Users = require('../users/users-model')
 
+// not done with cookies
+
 router.get('/', protected, (req, res) => {
     Users.find()
       .then(users => {
@@ -12,6 +14,7 @@ router.get('/', protected, (req, res) => {
 
   
   //middleware takes req, res, next
+  //ensure user is logged in
   function protected(req, res, next){
     let {username, password} = req.headers
      if 

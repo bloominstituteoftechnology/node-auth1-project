@@ -14,7 +14,7 @@ router.use('/users', usersRouter)
 router.use('/restricted', restrictRouter)
 
 router.get('/', (req, res) => {
-    res.json({ api: "api router" });
+    res.json({ api: "api router", session: req.session });
   });
 
 
