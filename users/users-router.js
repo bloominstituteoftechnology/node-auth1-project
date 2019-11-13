@@ -13,14 +13,4 @@ router.get("/", requiresAuth, (req, res) => {
     });
 });
 
-router.post("/", (req, res) => {
-  const usersData = req.body;
-  Users.add(usersData)
-    .then(users => {
-      res.status(201).json(users);
-    })
-    .catch(err => {
-      res.status(500).json({ message: "Failed to create new users" });
-    });
-});
 module.exports = router;

@@ -27,6 +27,7 @@ router.post("/login", (req, res) => {
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
         //check that the password is valid
+        req.session.user = user;
         res.status(200).json({ message: `Welcome ${user.username}!` });
       } else {
         res.status(401).json({ message: "Invalid Credentials" });
@@ -35,6 +36,20 @@ router.post("/login", (req, res) => {
     .catch(error => {
       res.status(500).json(error);
     });
+});
+
+router.get("/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.json({ message: "error logging out" });
+      } else {
+        res.status(200).jsonp({ message: "you are logged out" });
+      }
+    });
+  } else {
+    res.status(200).json({ message: "you were not logged in" });
+  }
 });
 
 module.exports = router;
