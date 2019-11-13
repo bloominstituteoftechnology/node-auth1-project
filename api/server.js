@@ -16,7 +16,7 @@ const server = express()
 server.use(helmet())
 server.use(cors({
     credentials: true,
-    origin: 'http://localhost:3000',
+    origin: 'http://localhost:5000',
 }))
 server.use(express.json())
 server.use(session({
@@ -29,7 +29,7 @@ server.use(session({
         secure: process.env.SECRET ? true : false,
     },
     store: new SessionStore({
-        knex: require('../database/db'),
+        knex: require('../database/dbConfig'),
         clearInterval: 1000 * 60 * 60 * 2, // 2 hours
     })
 }))
