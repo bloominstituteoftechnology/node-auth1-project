@@ -14,7 +14,7 @@ function findBy(filter) {
   return db("users").where(filter);
 }
 function add(task) {
-  return db("task")
+  return db("users")
     .insert(task, "id")
     .then(ids => {
       const [id] = ids;
