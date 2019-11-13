@@ -16,6 +16,6 @@ function findByUser(username) {
 }
 
 function find() {
-    return db('users').select();
+    return db('users').select('id', 'username');
 }
   

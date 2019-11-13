@@ -28,6 +28,7 @@ router.post('/login', (req, res) => {
         .first()
         .then(user => {
             if (user && bcrypt.compareSync(password, user.password)) {
+                req.session.username = user.username;
                 res.status(200).json({ message: `Hello, ${user.username}!` });
             } else {
                 res.status(401).json({ message: 'User credentials invalid!'});
@@ -38,6 +39,22 @@ router.post('/login', (req, res) => {
         });
 });
 
+router.get('/users', validateSession, (req, res) => {
+    Users.find()
+        .then(users => {
+            res.status(200).json(users);
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        });
+});
+
+function validateSession (req, res, next) {
+    if(req.session && req.session.username) {
+        next();
+    } else {
+      res.status(401).json({ message: 'Please log in' });
+    }  }
 
 
 module.exports = router;
