@@ -1,0 +1,26 @@
+{
+  "name": "webauth-i-challenge",
+  "version": "1.0.0",
+  "description": "Set up security measures with Middleware using bycryptjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/calebredd/webauth-i-challenge.git"
+  },
+  "author": "Caleb Redd",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/calebredd/webauth-i-challenge/issues"
+  },
+  "homepage": "https://github.com/calebredd/webauth-i-challenge#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.17.1",
+    "knex": "^0.20.2",
+    "nodemon": "^1.19.4",
+    "sqlite3": "^4.1.0"
+  }
+}
