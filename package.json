@@ -20,6 +20,7 @@
   "homepage": "https://github.com/calebredd/webauth-i-challenge#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "client-sessions": "^0.8.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "knex": "^0.20.2",
