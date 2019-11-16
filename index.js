@@ -3,11 +3,28 @@ const express = require("express"),
   cors = require("cors"),
   Users = require("./data/db-helpers"),
   bcrypt = require("bcryptjs"),
+  sessions = require("client-sessions"),
   server = express();
 
 server.use(express.json());
 server.use(cors());
-
+server.use(
+  sessions({
+    cookieName: "authSession",
+    secret: "honeypot",
+    duration: 1 * 24 * 60 * 60 * 1000
+  })
+);
+// server.use((req, res, next) => {
+//   if (req.authSession.seenYou) {
+//     res.setHeader("X-seen-you", "true");
+//     next();
+//   } else {
+//     req.authSession.seenYou = true;
+//     res.setHeader("X-seen-you", "false");
+//     next();
+//   }
+// });
 server.get("/api", (req, res) => {
   res.status(200).send("<h1>Welcome to the Authentication API</h1>");
 });
@@ -19,6 +36,8 @@ server.post("/api/register", (req, res) => {
 
   Users.insert(user)
     .then(newUser => {
+      req.authSession.seenYou = true;
+      res.setHeader("X-seen-you", "true");
       res.status(200).json({
         message: `Successfully created account for ${user.username}`,
         id: newUser[0]
@@ -35,6 +54,8 @@ server.post("/api/login", (req, res) => {
   Users.findByUser(username)
     .then(user => {
       if (bcrypt.compareSync(password, user.password)) {
+        req.authSession.seenYou = true;
+        res.setHeader("X-seen-you", "true");
         res.status(200).json({
           message: "Welcome!",
           id: user.id,
@@ -51,7 +72,7 @@ server.post("/api/login", (req, res) => {
     });
 });
 
-server.get("/api/users", (req, res) => {
+server.get("/api/users", authThisSession, (req, res) => {
   Users.find()
     .then(users => {
       res.status(200).json(users);
@@ -63,3 +84,15 @@ server.get("/api/users", (req, res) => {
 server.listen(port, () => {
   console.log("Server listening on port:" + port);
 });
+
+function authThisSession(req, res, next) {
+  if (req.authSession.seenYou) {
+    next();
+  } else {
+    res
+      .status(404)
+      .json({
+        errorMessage: "You aren't logged in due to Cookies Middleware!"
+      });
+  }
+}
