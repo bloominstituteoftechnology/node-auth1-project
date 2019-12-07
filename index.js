@@ -1,3 +1,6 @@
+//? s55
+require('dotenv').config()
+
 //? s1
 const server = require('./api/server.js')
 

@@ -5,11 +5,16 @@ const router = require('express').Router();
 const Users = require('./users-model.js');
 
 // ? s40 
-const authRequired = require('../auth/auth-required-middleware.js');
+// const authRequired = require('../auth/auth-required-middleware.js');
+
+//? s59 import
+const restricted = require('../auth/restricted-middleware.js');
 
 // protect me 
 //? s41
-router.get('/', authRequired, (req, res) => {
+// router.get('/', authRequired, (req, res) => {
+  //? s59a restricted
+router.get('/', restricted, (req, res) => {
   Users.find()
     .then(users => {
       res.json(users);
