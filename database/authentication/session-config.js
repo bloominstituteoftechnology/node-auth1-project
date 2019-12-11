@@ -13,7 +13,7 @@ module.exports = {
   cookie: {
     maxAge: 1000 * 60 * 10, //milliseconds, session time
     secure: false, //use for https
-    httpOnly: true //can JS access the cookie on the client
+    httpOnly: true //can JS access the cookie on the client?
   },
   //store is using session-express to be transferred to Knexsessionstore
   store: new KnexSessionStore({
