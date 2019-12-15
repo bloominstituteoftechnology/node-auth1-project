@@ -1,13 +1,9 @@
-const db = require("../db-config");
+const bcryptjs = require("bcryptjs");
+const db = require("../db-config.js");
 
 module.exports = {
-  getAllUsers,
   findUser
 };
-
-function getAllUsers() {
-  return db("users");
-}
 
 function findUser(user) {
   return db("users")
