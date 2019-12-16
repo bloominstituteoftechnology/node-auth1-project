@@ -14,7 +14,7 @@ Use `Node.js`, `Express` and `Knex` to build an API that provides **Register** a
 
 ## Assignment
 
-This is a **Two part project** you will work on it over two days.
+This project will be completed over two days.
 
 ## Part 1, due after completing the first module.
 
