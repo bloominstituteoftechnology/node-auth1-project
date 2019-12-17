@@ -9,7 +9,7 @@ configureMiddleware(server);
 
 //server.use(express.json())
 server.get('/', (req, res) => {
-    res.json({ message: `still stuck `})
+    res.json({ message: `day 1 works `})
 })
 
 server.use('/api', apiRouter);
