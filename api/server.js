@@ -7,6 +7,11 @@ const server = express();
 
 configureMiddleware(server);
 
+//server.use(express.json())
+server.get('/', (req, res) => {
+    res.json({ message: `still stuck `})
+})
+
 server.use('/api', apiRouter);
 
 module.exports = server;

@@ -10,13 +10,13 @@ exports.up = function(knex) {
       users.string('password', 128)
             .notNullable()
 
-      users.integer('role_id')
-      .unsigned()
-      .notNullable()
-      .references('id')
-      .inTable('roles')
-      .onUpdate("CASCADE")
-      .onDelete('RESTRICT')
+      // users.integer('role_id')
+      // .unsigned()
+      // .notNullable()
+      // .references('id')
+      // .inTable('roles')
+      // .onUpdate("CASCADE")
+      // .onDelete('RESTRICT')
   })
 };
 
