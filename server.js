@@ -1,4 +1,6 @@
 const express = require("express");
+const server = express();
+const session = require("express-session");
 
 // Users Router
 const usersRouter = require("./users/usersrouter.js");
@@ -9,12 +11,29 @@ const registerRouter = require("./register/registerRouter");
 // Login User
 const loginRouter = require("./login/loginRouter.js");
 
-server = express();
+// Logout User
+const logout = require("./logout/logoutRouter.js");
+
 server.use(express.json());
+
+server.use(
+  session({
+    name: "notsession",
+    secret: "nobody tosses a dwarf!",
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      secure: false,
+      httpOnly: true
+    },
+    resave: false,
+    saveUninitialized: false
+  })
+);
 
 server.use("/api/users", usersRouter);
 server.use("/api/register", registerRouter);
 server.use("/api/login", loginRouter);
+server.use("/api/logout", logout);
 
 server.get("/", (req, res) => {
   res.send("<h1>Welcome</h1>");

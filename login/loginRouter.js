@@ -10,9 +10,10 @@ router.post("/", (req, res) => {
   if (username && password) {
     Loginuser.findUser(req.body)
       .then(user => {
-        if (user && bcryptjs.compareSync(req.body.password, user.password))
+        if (user && bcryptjs.compareSync(req.body.password, user.password)) {
+          req.session.user = user;
           res.status(200).json({ message: "user Logged In", user });
-        else {
+        } else {
           res.status(401).json({
             message: "You shall not pass!"
           });

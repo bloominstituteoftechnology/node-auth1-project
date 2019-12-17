@@ -12,7 +12,6 @@ function addUser(user) {
 }
 
 // Check validate Reg.
-
 function validateReg(req, res, next) {
   if (req.body.username && req.body.password) {
     db("users")
@@ -31,7 +30,7 @@ function validateReg(req, res, next) {
         });
       });
   } else {
-    res.status(402).json({
+    res.status(404).json({
       message: "please Provide username and password"
     });
   }
