@@ -1,6 +1,7 @@
 const express = require("express");
 const server = express();
 const session = require("express-session");
+const cors = require("cors");
 
 // Users Router
 const usersRouter = require("./users/usersrouter.js");
@@ -15,6 +16,7 @@ const loginRouter = require("./login/loginRouter.js");
 const logout = require("./logout/logoutRouter.js");
 
 server.use(express.json());
+server.use(cors());
 
 server.use(
   session({
