@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import axios from "axios";
 
 function Login(props) {
+  console.log(props);
   const [values, setValues] = useState({
     username: "",
     password: ""
@@ -28,6 +29,7 @@ function Login(props) {
   const onSubmit = event => {
     event.preventDefault();
     props.loginReq(values);
+    props.history.push("/users");
   };
   return (
     <div>

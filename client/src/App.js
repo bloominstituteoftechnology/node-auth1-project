@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import { Route } from "react-router-dom";
 import Login from "./components/Login";
 import axios from "axios";
-
+import Users from "./components/Users";
 function App() {
   useEffect(() => {
     axios
@@ -18,7 +19,8 @@ function App() {
   console.log("wefewf");
   return (
     <div className="App">
-      <Login />
+      <Route path="/" render={props => <Login {...props} />} />
+      <Route path="/users" render={() => <Users />} />
     </div>
   );
 }

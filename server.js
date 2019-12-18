@@ -24,7 +24,7 @@ server.use(
     secret: "nobody tosses a dwarf!",
     cookie: {
       maxAge: 1 * 24 * 60 * 60 * 1000,
-      secure: false,
+      secure: true,
       httpOnly: true
     },
     resave: false,

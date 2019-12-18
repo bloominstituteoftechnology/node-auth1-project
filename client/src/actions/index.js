@@ -8,6 +8,9 @@ export const loginReq = values => dispatch => {
     .post("https://nodewithsession.herokuapp.com/api/login", values)
     .then(res => {
       console.log(res);
+      axios.get("https://nodewithsession.herokuapp.com/api/users").then(res => {
+        console.log(res.cookies);
+      });
     })
     .catch(error => {
       console.log(error);
