@@ -13,3 +13,14 @@ export const loginReq = values => dispatch => {
       console.log(error);
     });
 };
+
+export const allUsers = () => dispatch => {
+  axios
+    .get("https://nodewithsession.herokuapp.com/api/users")
+    .then(res => {
+      console.log(res);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+};

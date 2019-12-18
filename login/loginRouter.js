@@ -12,13 +12,11 @@ router.post("/", (req, res) => {
       .then(user => {
         if (user && bcryptjs.compareSync(req.body.password, user.password)) {
           req.session.user = user;
-          res
-            .status(200)
-            .json({
-              message: "user Logged In",
-              user,
-              cookie: req.session.user
-            });
+          res.status(200).json({
+            message: "user Logged In",
+            user,
+            cookie: req.session.cookie
+          });
         } else {
           res.status(404).json({
             message: "You shall not pass!"

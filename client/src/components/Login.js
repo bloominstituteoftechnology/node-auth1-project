@@ -1,13 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { loginReq } from "../actions";
 import { connect } from "react-redux";
+import axios from "axios";
 
 function Login(props) {
   const [values, setValues] = useState({
     username: "",
     password: ""
   });
-
+  useEffect(() => {
+    console.log("qeewqr");
+    axios
+      .get("https://nodewithsession.herokuapp.com/api/users")
+      .then(res => {
+        console.log(res);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, []);
   const onChange = event => {
     setValues({
       ...values,
