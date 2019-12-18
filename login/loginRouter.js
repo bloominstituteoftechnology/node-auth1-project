@@ -14,7 +14,7 @@ router.post("/", (req, res) => {
           req.session.user = user;
           res.status(200).json({ message: "user Logged In", user });
         } else {
-          res.status(401).json({
+          res.status(404).json({
             message: "You shall not pass!"
           });
         }

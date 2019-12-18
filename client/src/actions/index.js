@@ -4,7 +4,12 @@ export const LOGIN_FETCH = "LOGIN_FETCH";
 export const LOGIN_FAILED = "LOGIN_FAILED";
 
 export const loginReq = values => dispatch => {
-  axios.get("https://nodewithsession.herokuapp.com/api/login").then(res => {
-    console.log(res);
-  });
+  axios
+    .post("https://nodewithsession.herokuapp.com/api/login", values)
+    .then(res => {
+      console.log(res);
+    })
+    .catch(error => {
+      console.log(error);
+    });
 };
