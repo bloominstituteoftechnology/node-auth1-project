@@ -3,7 +3,6 @@ import axios from "axios";
 
 function Users() {
   useEffect(() => {
-    console.log("qeewqr");
     axios
       .get("https://nodewithsession.herokuapp.com/api/users")
       .then(res => {
@@ -13,7 +12,7 @@ function Users() {
         console.log(error);
       });
   }, []);
-  return <div>Hmoe</div>;
+  return <div>Home</div>;
 }
 
 export default Users;

@@ -16,10 +16,9 @@ function App() {
         console.log(error);
       });
   }, []);
-  console.log("wefewf");
   return (
     <div className="App">
-      <Route path="/" render={props => <Login {...props} />} />
+      <Route eaxct path="/" render={props => <Login {...props} />} />
       <Route path="/users" render={() => <Users />} />
     </div>
   );

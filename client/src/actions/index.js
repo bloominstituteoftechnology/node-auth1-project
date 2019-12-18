@@ -9,7 +9,7 @@ export const loginReq = values => dispatch => {
     .then(res => {
       console.log(res);
       axios.get("https://nodewithsession.herokuapp.com/api/users").then(res => {
-        console.log(res.cookies);
+        console.log(res);
       });
     })
     .catch(error => {
