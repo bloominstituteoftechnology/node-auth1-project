@@ -1,5 +1,5 @@
-const express = requreire("express");
-const db = require("../../data/dbconfig");
+const express = require("express");
+// const db = require("../../data/dbconfig");
 // SERVER
 const server = express();
 
@@ -9,7 +9,7 @@ server.get("/", (req, res) => {
     message: "web auth1 project api says hi."
   });
 });
-// SERVER GET ANOTHER_BRANCH
+// // SERVER GET ANOTHER_BRANCH
 server.get("/branchName", async (req, res) => {
   // bringing in a database file aqui.
   const branchName = await db("ANOTHER_BRANCH");
@@ -21,3 +21,5 @@ server.get("/branchName", async (req, res) => {
     res.status(500).json({ message: "ay dios mios" });
   }
 });
+
+module.exports = server;
