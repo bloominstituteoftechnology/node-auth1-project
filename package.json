@@ -20,7 +20,9 @@
   "homepage": "https://github.com/miklo88/node-auth1-project#readme",
   "dependencies": {
     "bcrypt": "^3.0.7",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
+    "helmet": "^3.21.2",
     "knex": "^0.20.8",
     "node-sass": "^4.13.0",
     "sqlite3": "^4.1.1"

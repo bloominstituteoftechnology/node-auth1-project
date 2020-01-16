@@ -1,8 +1,7 @@
 const express = require("express");
 // const db = require("../../data/dbconfig");
-// SERVER
+// SERVER EXPRESS
 const server = express();
-
 // Hashing a password with bcryptjs. it is a npm i.
 const bcrypt = require("bcryptjs");
 // to hash a password
@@ -23,14 +22,6 @@ server.post("/api/register", async (req, res) => {
   // bringing in a database file aqui.
   // const branchName = await db("ANOTHER_BRANCH");
   let { username, password } = req.body;
-  //   try {
-  //     res.status(200).json({
-  //       message: "Register in this form!"
-  //     });
-  //   } catch (error) {
-  //     res.status(500).json({ message: "ay dios mios Register" });
-  //   }
-  // });
   try {
     URLSearchParams.findBy({ username })
       .first()
@@ -41,11 +32,11 @@ server.post("/api/register", async (req, res) => {
         } else {
           // we will return 401 if the password or username are invalid
           // we don't want to let attackers know when they have a good username
-          res.status(401).json({ message: "You shall not pass!" });
+          res.status(401).json({ message: "eat my shorts attackers!" });
         }
       });
   } catch (error) {
-    res.status(500).json({ message: "You shall not pass!" });
+    res.status(500).json({ message: "ay dio mio missed it." });
   }
 });
 
@@ -66,8 +57,6 @@ server.post("/api/login", async (req, res) => {
 //////////////////////////////// GET USER /api/users
 // If the user is logged in, respond with an array of all the users contained in the database. If the user is not logged in repond with the correct status code and the message: 'You shall not pass!'.
 server.get("/api/user", async (req, res) => {
-  // bringing in a database file aqui.
-  // const branchName = await db("ANOTHER_BRANCH");
   try {
     res.status(200).json({
       message: "welcome to a new api user"
