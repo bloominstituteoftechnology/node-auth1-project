@@ -40,7 +40,7 @@ server.post("/api/login", async (req, res) => {
   // const branchName = await db("ANOTHER_BRANCH");
   try {
     res.status(200).json({
-      message: "Register in this form!"
+      message: "Register in this Login!"
     });
   } catch (error) {
     res.status(500).json({ message: "ay dios mios Login" });
@@ -55,7 +55,7 @@ server.get("/api/user", async (req, res) => {
   // const branchName = await db("ANOTHER_BRANCH");
   try {
     res.status(200).json({
-      message: "welcome to a new branch"
+      message: "welcome to a new api user"
     });
   } catch (error) {
     res.status(500).json({ message: "ay dios mios User" });
