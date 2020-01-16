@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/miklo88/node-auth1-project#readme",
   "dependencies": {
+    "bcrypt": "^3.0.7",
     "express": "^4.17.1",
     "knex": "^0.20.8",
     "node-sass": "^4.13.0",
