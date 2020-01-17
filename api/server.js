@@ -1,7 +1,13 @@
 const express = require("express");
+const helmet = require("helmet");
+const cors = require("cors");
 // const db = require("../../data/dbconfig");
 // SERVER EXPRESS
 const server = express();
+// MIDDLEWARE
+server.use(helmet());
+server.use(express.json());
+server.use(cors());
 // Hashing a password with bcryptjs. it is a npm i.
 const bcrypt = require("bcryptjs");
 // to hash a password
@@ -9,6 +15,7 @@ const credentials = req.body;
 const hash = bcrypt.hashSync(credentials.password, 14);
 credentials.password = hash;
 // move on to save the user.
+
 //////////////////////////////// SERVER API
 server.get("/", (req, res) => {
   res.status(200).json({
@@ -22,6 +29,7 @@ server.post("/api/register", async (req, res) => {
   // bringing in a database file aqui.
   // const branchName = await db("ANOTHER_BRANCH");
   let { username, password } = req.body;
+
   try {
     URLSearchParams.findBy({ username })
       .first()
