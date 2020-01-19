@@ -6,7 +6,7 @@ module.exports = {
     client: "sqlite3",
     // location of the db
     connection: {
-      filename: ".data/auth.db3"
+      filename: "./data/user.db3"
     },
     // necessary when using sqlite3 .
     useNullAsDefault: true,
