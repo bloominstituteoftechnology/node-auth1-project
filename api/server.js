@@ -4,19 +4,19 @@ const cors = require("cors");
 
 // ROUTES
 const authRouter = require("../auth/auth-router");
-const authUsers = require("../users/users-router");
+const usersRouter = require("../users/users-router");
 
 // SERVER EXPRESS
 const server = express();
 
 // MIDDLEWARE
 server.use(helmet());
-server.use(express.json());
 server.use(cors());
+server.use(express.json());
 
 //  MAS ROUTES
 server.use("/auth", authRouter);
-server.user("/users", authUsers);
+server.use("/users", usersRouter);
 
 //////////////////////////////// SERVER API
 server.get("/", (req, res, next) => {
