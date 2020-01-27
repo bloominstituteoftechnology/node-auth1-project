@@ -1,12 +1,10 @@
 const express = require('express');
 
 const configureMiddleware = require('./configure-middleware.js');
-
+const apiRouter = require('./api-router.js');
 const server = express();
 
 configureMiddleware(server); // connecting all middlewares in 1 fell swoop
+server.use('/api', apiRouter);
 
-server.get("/", (req,res)=>{
-    res.json(`Api is working`)
-})
 module.exports = server;
