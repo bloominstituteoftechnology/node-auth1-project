@@ -17,7 +17,8 @@
   "devDependencies": {},
   "scripts": {
     "server": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "resetDB": "npx knex migrate:latest && npx knex seed:run"
   },
   "repository": {
     "type": "git",
