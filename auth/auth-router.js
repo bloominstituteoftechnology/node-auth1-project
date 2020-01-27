@@ -1,9 +1,6 @@
 const router = require('express').Router();
 const Users = require('../users/users-model.js');
 
-router.get("/", (req,res)=>{
-    res.json(`Api is working`)
-})
 router.post('/register', (req, res) => {
   const { username, password } = req.body;
   Users.add(user)
