@@ -1,7 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
-const cookieParser = require('cookie-parse');
+const cookieParser = require('cookie-parser');
 
 module.exports = server => {
   server.use(helmet());
