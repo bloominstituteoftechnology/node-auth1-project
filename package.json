@@ -1,0 +1,30 @@
+{
+  "name": "node-auth1-project",
+  "version": "1.0.0",
+  "description": "- Authentication.\r - Express Middleware.\r - Password Hashing.\r - Sessions\r - Cookies",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Apiyo4/node-auth1-project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Apiyo4/node-auth1-project/issues"
+  },
+  "homepage": "https://github.com/Apiyo4/node-auth1-project#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "helmet": "^3.21.2",
+    "knex": "^0.20.8",
+    "sqlite3": "^4.1.1",
+    "uuid": "^3.4.0"
+  }
+}
