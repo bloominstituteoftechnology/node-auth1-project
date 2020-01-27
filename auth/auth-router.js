@@ -3,6 +3,8 @@ const bcrypt = require("bcryptjs");
 
 const Users = require("../users/users-model.js");
 
+const restricted = require("../auth/auth-middleware");
+
 //POST for creating a new user
 router.post("/register", (req, res) => {
   let user = req.body;
@@ -39,7 +41,7 @@ router.post("/login", (req, res) => {
 });
 
 //GET for a full list of users
-router.get("/users", (req, res) => {
+router.get("/users", restricted, (req, res) => {
   Users.find()
     .then(userList => {
       res.status(200).json({ userList });
