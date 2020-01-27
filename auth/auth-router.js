@@ -5,7 +5,7 @@ const Users = require("../users/users-model.js");
 
 const restricted = require("../auth/auth-middleware");
 
-//POST for creating a new user
+//POST for creating a new user -- tested and working
 router.post("/register", (req, res) => {
   let user = req.body;
 
@@ -22,7 +22,7 @@ router.post("/register", (req, res) => {
     });
 });
 
-//POST for logging in
+//POST for logging in -- tested and working
 router.post("/login", (req, res) => {
   let { username, password } = req.body;
 
