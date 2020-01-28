@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const Users = require('../users/users-model.js');
-const restricted = require('../auth/restricted-middleware');
 
 
 router.post('/register', (req, res) => {
@@ -27,7 +26,6 @@ router.post('/login', (req, res) => {
   Users.findBy({ username })
     .first()
     .then(user => {
-     
       if (user && bcrypt.compareSync(password, user.password)) {
         req.session.loggedInUser = user;
         res.status(200).json({ message: `Welcome ${user.username}!` });
@@ -39,16 +37,5 @@ router.post('/login', (req, res) => {
       res.status(500).json(error);
     });
 });
-router.get('/users', (req, res) => {
-  Users.find()
-   const name = req.session.user.name
-    .then(users => {
-      res.json(users, name);
-    })
-    .catch(err => res.send(err));
-});
-
-module.exports = router;
-
 
 module.exports = router;

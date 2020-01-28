@@ -1,4 +1,4 @@
-module.exports = (req, res, next) => {
+const restricted = (req, res, next) => {
     if (req.session.loggedInUser) {
       next();
     } else {
@@ -7,3 +7,4 @@ module.exports = (req, res, next) => {
       });
     }
   };
+  module.exports = restricted;
