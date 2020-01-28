@@ -3,7 +3,7 @@ module.exports = (req, res, next) => {
       next();
     } else {
       res.status(400).json({
-        message: 'no cookie, OR cookie without a valid session id in the monkey'
+        message: 'Please login to get a cookie'
       });
     }
   };

@@ -13,7 +13,7 @@ module.exports = server => {
    name: 'monkey',         
    secret: 'keep it secret',
    cookie: {
-    maxAge: 1000 * 60,
+    maxAge: 1000 * 60 *5,
     secure: false,     
     httpOnly: false,       
   },
