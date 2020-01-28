@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const Users = require('../users/users-model.js');
+const restricted = require('../auth/restricted-middleware');
+
 
 router.post('/register', (req, res) => {
   const { username, password } = req.body;
@@ -37,5 +39,16 @@ router.post('/login', (req, res) => {
       res.status(500).json(error);
     });
 });
+router.get('/users', (req, res) => {
+  Users.find()
+   const name = req.session.user.name
+    .then(users => {
+      res.json(users, name);
+    })
+    .catch(err => res.send(err));
+});
+
+module.exports = router;
+
 
 module.exports = router;
