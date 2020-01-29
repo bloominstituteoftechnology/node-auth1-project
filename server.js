@@ -5,6 +5,7 @@ const KnexSessionStore = require("connect-session-knex")(session);
 const configureMiddleware = require('./config-mid');
 const router = require('./router');
 const authRouter = require('./authRouter')
+const dbConnection = require('./data/db-config')
 
 const server = express();
 
