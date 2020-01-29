@@ -20,8 +20,9 @@ router.post('/login', (req, res) =>{
     const {username, password} = req.body;
     user.findByUsername({username, password: bcrypt.hashSync(password, 9)})
         .then(id =>{
-            if(user && bcrypt.compareSync(password, user.password))
-            res.status(200).json({message: 'user successfully logged in', id});
+            if(user && bcrypt.compareSync(password, user.password)){
+            res.session.user = user;
+            res.status(200).json({message: 'user successfully logged in', id});}
          else {
             res.status(400).json({message: 'hmm, something is wrong', id});
         }
