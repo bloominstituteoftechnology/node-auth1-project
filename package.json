@@ -1,0 +1,31 @@
+{
+  "name": "auth1-project",
+  "version": "1.0.0",
+  "description": "auth1",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Toniddarden/node-auth1-project.git"
+  },
+  "keywords": [],
+  "author": "Toni Darden",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Toniddarden/node-auth1-project/issues"
+  },
+  "homepage": "https://github.com/Toniddarden/node-auth1-project#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.17.1",
+    "helmet": "^3.21.2",
+    "knex": "^0.20.9",
+    "sqlite3": "^4.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
