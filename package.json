@@ -1,0 +1,25 @@
+{
+  "name": "auth-ii-guided",
+  "version": "1.0.0",
+  "description": "Authentication Sprint Guided Project",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Lambda School",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-session-knex": "^1.5.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "helmet": "^3.21.2",
+    "knex": "^0.20.4",
+    "sqlite3": "^4.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
