@@ -1,11 +1,27 @@
 const router = require("express").Router();
 
-const authMiddle = require("../middleware/auth-req-middleware");
+const Users = require("./user-model");
+const bcrypt = require("bcryptjs");
+
+router.post("/", (req, res) => {
+  let { username, password } = req.body;
+  Users.findBy({ username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(password, user.password)) {
+        req.session.loggedin = true;
+        res.status(200).json({
+          message: `Welcome ${user.username}!`
+        });
+      } else {
+        res.status(401).json({ message: "Invalid Credentials" });
+      }
+    })
+    .catch(error => {
+      res.status(500).json(error);
+    });
+});
 
 
-router.post('/', authMiddle, (req, res) => {
-    let {username} = req.headers;
-    res.status(200).json({message: `welcome back ${username} your login api is working go to the register router and create a new user for a friend`})
-})
 
 module.exports = router;
