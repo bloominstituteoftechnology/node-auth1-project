@@ -14,7 +14,7 @@ function findById(id) {
 }
 
 function find() {
-  return db("user").select("id", "username", "passowrd");
+  return db("users").select("id", "username", "password");
 }
 
 function findBy(filter) {
