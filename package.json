@@ -1,0 +1,27 @@
+{
+  "name": "auth1-project",
+  "version": "1.0.0",
+  "description": "## Topics",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arashhaji/node-auth1-project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arashhaji/node-auth1-project/issues"
+  },
+  "homepage": "https://github.com/arashhaji/node-auth1-project#readme",
+  "dependencies": {
+    "bcrypt": "^4.0.0",
+    "express": "^4.17.1",
+    "knex": "^0.20.10",
+    "nodemon": "^2.0.2",
+    "sqlite3": "^4.1.1"
+  }
+}
