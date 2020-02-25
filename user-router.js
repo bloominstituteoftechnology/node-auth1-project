@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
+
+
+
 const restricted = require("./auth/restMiddleware");
 const Users = require("./users/users-model");
 
@@ -27,6 +30,9 @@ router.post("/login", (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
+        req.session.loggedIn = true;
+        req.session.user = user;
+
         res.status(200).json({ message: `Welcome ${user.username}!` });
       } else {
         res.status(401).json({ errorMessage: "invalid credntials" });
@@ -45,4 +51,17 @@ router.get("/", restricted, (req, res) => {
     .catch(err => res.send(err));
 });
 
+router.get('/logout', (req, res) => {
+  if(req.session) {
+    req.session.destroy(err => {
+      if(err) {
+        res.json({ message: 'welp, it seems like you might be stuck here.'})
+      }else{
+        res.sendStatus(200).end({ message: 'bye!'});
+      }
+    })
+  }else{
+    res.status(200).json({ message: 'were you sitting outside this whole time?'})
+  }
+})
 module.exports = router;
