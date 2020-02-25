@@ -29,7 +29,7 @@ router.post('/login', (req, res) => {
     console.log(username);
     if (username && password){
         
-        Users.find(username).first()
+        Users.findBy(username).first()
             .then(user => {
                 console.log(user)
                 if (user && bcrypt.compareSync(password, user.password)) {
