@@ -1,7 +1,7 @@
 const express = require("express");
 
-const usersRouter = "../users/users-router";
-const registerRouter = "../register/registerRouter";
+const usersRouter = require("../users/usersRouter");
+const registerRouter = require("../register/registerRouter");
 const loginRouter = require("../login/loginRouter");
 
 const router = express.Router();
