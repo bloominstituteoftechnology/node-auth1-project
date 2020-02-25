@@ -1,10 +1,13 @@
+// Bridge between server and client
+
 const db = require("../database/dbConfig.js");
 
 module.exports = {
   add,
   find,
   findBy,
-  findById
+  findById,
+  getby
 };
 
 function find() {
@@ -32,4 +35,8 @@ function findById(id) {
     .select("id", "username")
     .where({ id })
     .first();
+}
+
+function getby(filter) {
+  return db("users").where(filter);
 }
