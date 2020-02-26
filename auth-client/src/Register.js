@@ -4,21 +4,21 @@ import './App.css';
 import axios from "./axiosWithAuth";
 
 function App() {
-  const [login, setLogin] = useState({
+  const [register, setRegister] = useState({
     username: "",
     password: "",
   });
 
   const handleChange = e => {
-    setLogin({
-      ...login,
+    setRegister({
+      ...register,
       [e.target.name]: e.target.value,
     });
   };
 
   const onSubmit = e => {
     e.preventDefault();
-    axios().post("http://localhost:5000/login/", login)
+    axios().post("http://localhost:5000/register/", register)
       .then(result => {
         console.log(result);
         // localStorage.setItem("ID", result.data.id);
@@ -38,8 +38,8 @@ function App() {
     <div className="App">
       <form onSubmit={onSubmit}>
         <input type='text' placeholder='Username' name='username' onChange={handleChange}/>
-        <input type='text' placeholder='Password' name='password' onChange={handleChange}/>
-        <button>Login</button>
+        <input type='password' placeholder='Password' name='password' onChange={handleChange}/>
+        <button>Register</button>
       </form>
     </div>
   );

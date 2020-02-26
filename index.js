@@ -1,14 +1,17 @@
 const express = require('express');
 const server = express();
+const CORS = require("cors");
+const bcrypt = require('bcryptjs');
 
 server.use(express.json());
+server.use(CORS());
 
 const database = require('./data/db.js');
 
 server.get('/users/', (req, res) => {
 
-    database.getTasks().then(cars => {
-        res.status(200).json(cars);
+    database.getUsers().then(users => {
+        res.status(200).json(users);
     }).catch(err => {
 
         console.log(err);
@@ -20,14 +23,15 @@ server.get('/users/', (req, res) => {
 
 server.post('/register/', (req, res) => {
 
-    // console.log(req.body);
+    console.log(bcrypt.hashSync(req.body.password, 14));
 
-    database.addProject(req.body).then(result => {
+    database.addUser(req.body.username, bcrypt.hashSync(req.body.password, 14)).then(result => {
 
         console.log(result);
-        database.getProjectById(result.id).then(project => {
-            res.status(201).json({project});
-        });
+        res.status(200).json({user_id: result.id});
+        // database.getProjectById(result.id).then(project => {
+        //     res.status(201).json({project});
+        // });
 
     }).catch(err => {
 
@@ -40,61 +44,40 @@ server.post('/register/', (req, res) => {
 
 server.post('/login/', (req, res) => {
 
-    // console.log(req.body);
+    database.getUserByName(req.body.username).then(user => {
 
-    database.addResource(req.body).then(result => {
+        console.log(user);
+        
+        if (user === undefined || !bcrypt.compareSync(req.body.password, user.password)) {
+            return res.status(401).json({ error: 'Incorrect credentials' });
+        }
 
-        console.log(result);
-        database.getResourceById(result.id).then(resource => {
-            res.status(201).json({resource});
-        });
-
-    }).catch(err => {
-
-        console.log(err);
-        res.status(500).json({error: 'There was an error while saving the resource to the database!'});
-
-    });
-
-});
-
-server.post('/task/', (req, res) => {
-
-    // console.log(req.body);
-
-    database.addTask(req.body).then(result => {
-
-        console.log(result);
-        database.getTaskById(result.id).then(task => {
-            res.status(201).json({task});
-        });
+        res.status(200).json({response: 'Login succesfull!'});
 
     }).catch(err => {
 
         console.log(err);
-        res.status(500).json({error: 'There was an error while saving the task to the database!'});
-
+        res.status(500).json({error: 'Error attempting to login!'});
+    
     });
 
-});
 
-
-
-server.post('/project/resource', (req, res) => {
 
     // console.log(req.body);
 
-    database.addTask(req.body).then(result => {
+    // database.addResource(req.body).then(result => {
 
-        console.log(result);
-        res.status(201).json({result});
+    //     console.log(result);
+    //     database.getResourceById(result.id).then(resource => {
+    //         res.status(201).json({resource});
+    //     });
 
-    }).catch(err => {
+    // }).catch(err => {
 
-        console.log(err);
-        res.status(500).json({error: 'There was an error while saving the resource to the project.'});
+    //     console.log(err);
+    //     res.status(500).json({error: 'There was an error while saving the resource to the database!'});
 
-    });
+    // });
 
 });
 
