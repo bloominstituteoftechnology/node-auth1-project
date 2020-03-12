@@ -37,10 +37,25 @@ router.post("/login", async (req, res, next) => {
                 message: "INVALID CREDENTIALS"
             })
         }
-        res.json({message: "Welcome user"})
+        req.session.user = user;
+        res.status(200).json({message: "Welcome user"})
 
     }catch(err) {
         next(err);
+    }
+})
+
+router.get('/logout', (req, res) => {
+    if(req.session) {
+        req.session.destroy(err => {
+            if(err) {
+                res.json({message: "We're sorry, but an error has occurred"})
+            }else {
+                res.status(200).json({message: 'You have been logged out!'})
+            }
+        })
+    }else {
+        res.status(200).json({message: "You weren't even logged in, dude."})
     }
 })
 

@@ -8,30 +8,35 @@ function restrict() {
     }
 
     return async (req, res, next) => {
-        try{
-            const { username, password } = req.headers
-            //make sure the values are not empty
-            if(!username || !password) {
-                return res.status(401).json(authError);
-            }
+        // try{
+        //     const { username, password } = req.headers
+        //     //make sure the values are not empty
+        //     if(!username || !password) {
+        //         return res.status(401).json(authError);
+        //     }
             
-            const user = await Users.findBy({ username }).first()
-            //make sure the user exists
-             if(!user) {
-                 res.status(401).json(authError)
-             }
+        //     const user = await Users.findBy({ username }).first()
+        //     //make sure the user exists
+        //      if(!user) {
+        //          res.status(401).json(authError)
+        //      }
 
-             const passwordValid = await bcrypt.compare(password, user.password)
-             //make sure the password is correct
-             if(!passwordValid) {
-                 return res.status(401).json(authError)
-             }
+        //      const passwordValid = await bcrypt.compare(password, user.password)
+        //      //make sure the password is correct
+        //      if(!passwordValid) {
+        //          return res.status(401).json(authError)
+        //      }
 
-             //if we've made it this far the user is authenticated!
-             next()
+        //      //if we've made it this far the user is authenticated!
+        //      next()
 
-        }catch(err) {
-            next(err);
+        // }catch(err) {
+        //     next(err);
+        // }
+        if(req.session && req.session.user) {
+            next ()
+        }else {
+            res.status(400).json(authError);
         }
     }
 }
