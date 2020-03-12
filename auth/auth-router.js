@@ -5,8 +5,8 @@ const router = express.Router();
 
 router.post('/register', async (req, res, next) => {
 	try {
-		const { username, password } = req.body;
-		const user = Users.findByFilter('username', username).first();
+		const { username } = req.body;
+		const user = await Users.findBy({ username }).first();
 		if (user) {
 			return res.status(409).json({
 				message: 'Username is taken'
@@ -21,8 +21,9 @@ router.post('/register', async (req, res, next) => {
 router.post('/login', async (req, res, next) => {
 	try {
 		const { username, password } = req.body;
-		const user = Users.findByFilter('username', username).first();
+		const user = await Users.findBy({ username }).first();
 		const passwordValid = await bcrypt.compare(password, user.password);
+		console.log(passwordValid);
 
 		if (!user || !passwordValid) {
 			return res.status(401).json({

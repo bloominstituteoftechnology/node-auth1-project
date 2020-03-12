@@ -8,11 +8,12 @@ function restrict() {
 		};
 		try {
 			const { username, password } = req.headers;
-			if (!username || password) {
+			if (!username || !password) {
 				return res.status(401).json(error);
 			}
-
-			const user = await Users.findByFilter({ username }).first();
+			console.log('Checkpoint1');
+			const user = await Users.findBy({ username }).first();
+			console.log('Checkpoint2');
 			if (!user) {
 				return res.status(401).json(error);
 			}
@@ -21,6 +22,8 @@ function restrict() {
 			if (!passwordValid) {
 				return res.status(401).json(error);
 			}
+			console.log('Checkpoint3');
+			next();
 		} catch (err) {
 			next(err);
 		}
