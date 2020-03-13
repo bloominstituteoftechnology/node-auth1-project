@@ -1,0 +1,26 @@
+{
+	"name": "auth1-project",
+	"version": "1.0.0",
+	"description": "authorize user to login and see a list of users",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"server": "nodemon index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Romair0/node-auth1-project.git"
+	},
+	"author": "Ramy",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/Romair0/node-auth1-project/issues"
+	},
+	"homepage": "https://github.com/Romair0/node-auth1-project#readme",
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"express": "^4.17.1",
+		"knex": "^0.20.11",
+		"sqlite3": "^4.1.1"
+	}
+}
