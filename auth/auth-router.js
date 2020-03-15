@@ -25,7 +25,8 @@ router.post("/register", async (req, res, next) => {
 router.post("/login", async (req, res, next) => {
 	try {
 		const { username, password } = req.body
-		const user = await Users.findBy({ username }).first()
+        const user = await Users.findBy({ username })
+        .first()
 		// const hash = await bcrypt.hash(password, 10)
 
 		// since bcrypt hashes generate different results due to the salting,
@@ -39,7 +40,7 @@ router.post("/login", async (req, res, next) => {
 				message: "Invalid Credentials",
 			})
 		}
-
+        req.session.user = user;
 		res.json({
 			message: `Welcome ${user.username}!`,
 		})

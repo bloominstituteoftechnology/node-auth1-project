@@ -13,28 +13,27 @@ function restrict(){
 
     return async (req, res, next) => {
         try {
-            const { username, password } = req.headers
-            // make sure the values aren't empty but writing an if statement
-            // if there is no username of password
-            // then return a 401 status
-            if (!username || !password) {
-                return res.status(401).json(authError)
-            }
+            // const { username, password } = req.headers
+            // // make sure the values aren't empty but writing an if statement
+            // // if there is no username of password
+            // // then return a 401 status
+            // if (!username || !password) {
+            //     return res.status(401).json(authError)
+            // }
 
-            // next thing we need to do is get the user from the database
-            // import user's model up top
-            const user = await Users.findBy({ username }).first()
+            // // next thing we need to do is get the user from the database
+            // // import user's model up top
+            // const user = await Users.findBy({ username }).first()
 
-            // make sure the user exists
-            //if that user is undefined, return an error
-            if (!user){
-                return res.status(401).json(authError)
-            }
+            // // make sure the user exists
+            // //if that user is undefined, return an error
+            // if (!user){
+            //     return res.status(401).json(authError)
+            // }
 
-            const passwordValid = await bcrypt.compare(password, user.password)
+            //const passwordValid = await bcrypt.compare(password, user.password)
 
-            // make sure the password is correct
-            if (!passwordValid) {
+            if (!req.session || !req.session.user) {
                 return res.status(401).json(authError)
             }
 
