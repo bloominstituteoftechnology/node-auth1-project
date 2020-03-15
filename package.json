@@ -1,7 +1,7 @@
 {
   "name": "node-auth1-project",
   "version": "1.0.0",
-  "description": "## Topics",
+  "description": "authentication",
   "main": "index.js",
   "scripts": {
     "server": "nodemon index.js",
