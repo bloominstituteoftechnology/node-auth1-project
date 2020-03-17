@@ -20,8 +20,10 @@
   "dependencies": {
     "bcrypt": "^4.0.1",
     "bcryptjs": "^2.4.3",
+    "connect-session-knex": "^1.6.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-session": "^1.17.0",
     "helmet": "^3.21.3",
     "knex": "^0.20.11",
     "sqlite3": "^4.1.1"
