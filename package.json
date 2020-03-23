@@ -1,0 +1,17 @@
+{
+  "name": "node-auth1-project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/karkisunil1200/node-auth1-project.git",
+  "author": "Sunil Karki <karkisunil1200@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "server": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "knex": "^0.20.13",
+    "nodemon": "^2.0.2",
+    "sqlite3": "^4.1.1"
+  }
+}
