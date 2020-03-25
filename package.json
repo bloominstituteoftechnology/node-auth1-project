@@ -4,24 +4,25 @@
   "description": "- Authentication.\r - Express Middleware.\r - Password Hashing.\r - Sessions\r - Cookies",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "server": "nodemon index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/derekdyer0309/node-auth1-project.git"
+    "url": "git+https://github.com/mastaryan/node-auth1-project.git"
   },
   "author": "Lambda",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/derekdyer0309/node-auth1-project/issues"
+    "url": "https://github.com/mastaryan/node-auth1-project/issues"
   },
-  "homepage": "https://github.com/derekdyer0309/node-auth1-project#readme",
+  "homepage": "https://github.com/mastaryan/node-auth1-project#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "helmet": "^3.22.0",
-    "knex": "^0.20.13",
+    "helmet": "^3.21.2",
+    "knex": "^0.20.10",
     "sqlite3": "^4.1.1"
   },
   "devDependencies": {
