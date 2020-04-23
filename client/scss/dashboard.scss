@@ -1,0 +1,25 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  &__container {
+    align-self: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__item {
+    flex: 0 0 40%;
+    padding: 1rem 2rem;
+    background-color: $color-tertiary;
+    margin: 2%;
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    color: $color-white;
+  }
+}

@@ -1,0 +1,80 @@
+.heading-primary {
+  color: $color-primary;
+  font-size: 4rem;
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.heading-secondary {
+  color: $color-white;
+  font-size: 3rem;
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background-color: $color-primary;
+  padding: 1.5rem 6rem;
+}
+
+.btn {
+  font-size: 2.5rem;
+  padding: 0.8rem 2.5rem;
+  border-radius: 2.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  background-color: $color-secondary;
+  color: $color-white;
+  transition: all 0.2s;
+
+  &:hover {
+    outline: none;
+    transform: scale(1.2);
+  }
+}
+
+.btn-inline {
+  text-decoration: none;
+  font-size: 2.5rem;
+  padding: 1rem 2rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: block;
+  transition: all 0.2s;
+  color: $color-secondary;
+
+  &:hover {
+    transform: scale(1.2) rotate(-5deg);
+  }
+}
+
+.error {
+  color: red;
+  font-size: 1.5rem;
+  text-transform: capitalize;
+}
+
+.btn-logout {
+}
+
+.nabBar {
+  background-color: $color-secondary;
+  padding: 1.2rem 3rem;
+  color: $color-white;
+  font-size: 1.8rem;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+
+  &__item {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      transform: scale(1.1);
+      text-transform: uppercase;
+    }
+  }
+}
