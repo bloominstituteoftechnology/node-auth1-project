@@ -1,0 +1,33 @@
+{
+  "name": "auth1-project",
+  "version": "1.0.0",
+  "description": "node-auth1-project for Lambda School",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ccsmith13/node-auth1-project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ccsmith13/node-auth1-project/issues"
+  },
+  "homepage": "https://github.com/ccsmith13/node-auth1-project#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-session-knex": "^1.6.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "helmet": "^3.21.3",
+    "knex": "^0.20.15",
+    "sqlite3": "^4.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
