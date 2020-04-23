@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/anatulea/node-auth1-project#readme",
   "dependencies": {
+    "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "connect-session-knex": "^1.6.0",
     "cors": "^2.8.5",
@@ -28,6 +29,7 @@
     "helmet": "^3.22.0",
     "knex": "^0.21.0",
     "nodemon": "^2.0.3",
+    "reactstrap": "^8.4.1",
     "session": "^0.1.0",
     "sqlite3": "^4.1.1"
   },
