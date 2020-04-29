@@ -4,7 +4,7 @@
   "description": "## Topics",
   "main": "index.js",
   "scripts": {
-    "server": "nodemon -r dotenv/config index.js"
+    "server": "nodemon -r dotenv/config index.js" 
   },
   "repository": {
     "type": "git",
