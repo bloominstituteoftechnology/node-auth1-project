@@ -1,14 +1,18 @@
 const express = require("express");
-const db = require("../data/db-config");
+const Users = require("./users-model");
 
 const router = express.Router();
 
-router.get("/", async (req, res, next) => {
-  try {
-    res.json(await db("users"));
-  } catch (err) {
-    next(err);
-  }
+router.get("/", (req, res) => {
+  Users.find()
+    .then((users) => {
+      res.json(users);
+    })
+    .catch((err) => {
+      res.status(500).json({
+        errorMessage: "Ooops! Something went wrong",
+      });
+    });
 });
 
 module.exports = router;
