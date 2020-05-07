@@ -1,12 +1,14 @@
 const express = require("express");
-const userRouter = require("./routers/users-router");
+const welcomeRouter = require("./routers/welcome-router");
+const usersRouter = require("./routers/users-router");
 
 const server = express();
 const port = process.env.PORT || 5000;
 
 server.use(express.json());
 
-server.use("/welcome", userRouter);
+server.use("/welcome", welcomeRouter);
+server.use("/users", usersRouter);
 
 server.use((err, res, req, next) => {
   console.log(err);

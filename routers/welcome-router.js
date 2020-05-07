@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get("/", async (req, res, next) => {
   try {
-    res.json(await db("users"));
+    res.status(200).send(`<h1>Welcome</h1>`);
   } catch (err) {
     next(err);
   }
