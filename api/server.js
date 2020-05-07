@@ -10,7 +10,7 @@ const knex = require("../database/dbConfig.js");
 const server = express();
 
 const sessionConfig = {
-  name: "monster",
+  name: "Authorize Me",
   secret: "keep it secret, keep it safe!",
   resave: false,
   saveUninitialized: true, 
@@ -35,7 +35,7 @@ server.use("/api/auth", authRouter);
 server.use("/api/users", restricted, usersRouter);
 
 server.get("/", (req, res) => {
-  res.json({ api: "up" });
+  res.json({ api: "Welcome" });
 });
 
 module.exports = server; 
