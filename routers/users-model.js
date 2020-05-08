@@ -16,11 +16,11 @@ function findBy(filter) {
 }
 
 async function add(user) {
-  const [id] = await blur("users").insert(user, "id");
+  const [id] = await db("users").insert(user, "id");
 
-  return findBy(id);
+  return findById(id);
 }
 
-function findById() {
-  return db("users").where({ id }).first();
+function findById(id) {
+  return db("users").where({ id }).select("id", "username").first();
 }
