@@ -44,10 +44,11 @@ router.post("/login", (req, res) => {
           // we can save information about the client inside the session (req.session)
           req.session.loggedIn = true;
           req.session.user = user;
+          req.session.username = user.username;
 
-          res.status(200).json({ message: "Welcome to our API" });
+          res.status(200).json({ message: `Welcome to our API ${user.username}` });
         } else {
-          res.status(401).json({ message: "Invalid credentials" });
+          res.status(401).json({ message: "You shall not pass" });
         }
       })
       .catch(error => {
