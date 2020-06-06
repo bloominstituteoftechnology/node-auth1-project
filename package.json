@@ -1,0 +1,31 @@
+{
+  "name": "auth1-project",
+  "version": "1.0.0",
+  "description": "auth1 project",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RSibaja88/node-auth1-project.git"
+  },
+  "author": "rodrigo-sibaja",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RSibaja88/node-auth1-project/issues"
+  },
+  "homepage": "https://github.com/RSibaja88/node-auth1-project#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "helmet": "^3.22.0",
+    "knex": "^0.21.1",
+    "morgan": "^1.10.0",
+    "sqlite3": "^4.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
