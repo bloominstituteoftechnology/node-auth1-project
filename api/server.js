@@ -11,7 +11,7 @@ const sessionConfig = {
     name: 'anyNameforSession',
     secret: 'AnySecret',
     cookie: {
-        maxAge: 600000, //Milliseconds
+        maxAge: 60000, //Milliseconds
         secure: false, // should be true in production
         httpOnly: true //only for Http use
     },
@@ -25,7 +25,7 @@ const sessionConfig = {
             tablename: "sessions",
             sidfieldname: "sid",
             createtable: true,
-            clearInterval: 600000
+            clearInterval: 60000
         }
     )
 }
@@ -37,10 +37,6 @@ server.use(cors());
 server.use(session(sessionConfig));
 
 server.use('/api/users', userRouter)
-
-
-
-
 
 server.get("/", (req, res) => {
     res.send('Server is Running...');

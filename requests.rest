@@ -1,0 +1,23 @@
+POST  http://localhost:5000/api/users/Register
+Content-Type: application/json
+
+    {
+        "username": "Elham",
+        "password": "Elham"
+    }
+#######################################################
+
+POST http://localhost:5000/api/users/Login
+Content-Type: application/json
+
+    {
+        "username": "Hamid",
+        "password": "Hamid"
+    }
+#######################################################
+GET http://localhost:5000/api/Users
+
+
+#######################################################
+
+DELETE http://localhost:5000/api/Users/Logout
