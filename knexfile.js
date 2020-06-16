@@ -1,9 +1,17 @@
 // Update with your config settings.
+require("dotenv").config();
+
+const localPg = "postgresql://postgres@localhost/auth";
+const pgConnection = process.env.DATABASE_URL || localPg;
+// if using a local postgres server,
+// please create the database manually,
+// Knex will not create it autmatically
 
 module.exports = {
 
   development: {
     client: 'sqlite3',
+    useNullAsDefault: true,
     connection: {
       filename: './data/auth.db3'
     },
