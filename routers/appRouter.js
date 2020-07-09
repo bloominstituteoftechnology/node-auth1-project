@@ -78,16 +78,34 @@ server.post("/login", async (req, res, next) => {
     
     try {
         const {username, password} = req.body
-        const user = await modelRouter.findUserBy({username}).first
+        const user = await modelRouter.findUserBy({username}).first()
 
         if(!user) {
-            return res.status(401)
+            return res.status(401).json({
+                message:"Username or Password is incorrect"
+            })
         }
+
+        const passwordChecker = await bcrypt.compare(password, user.password)
+
+        if(!passwordChecker) {
+            return res.status(401).json({
+                message:"Username or Password is incorrect"
+            })
+        }
+
+        req.session.user = user
+
+        res.json({
+            message:`Welcome ${user.username}, you're logged in. `
+        })
+
     } catch (error) {
         next(error)
     }
-
 })
+
+
 
 //export your router
 module.exports = server;

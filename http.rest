@@ -18,6 +18,17 @@ POST http://localhost:8001/users
 Content-Type: application/json
 
 {
-    "username":"user2",
+    "username":"Els",
+    "password":"password2"
+}
+
+###
+
+//Loggin in
+POST http://localhost:8001/login
+Content-Type: application/json
+
+{
+    "username":"Els",
     "password":"password2"
 }
