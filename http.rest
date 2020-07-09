@@ -1,0 +1,23 @@
+// Test Router ✅
+GET http://localhost:8001/api
+
+###
+
+// Test Seed Data ✅
+GET http://localhost:8001/api/data
+
+###
+
+// Test session ✅
+GET http://localhost:8001/users
+
+###
+
+// Add new User
+POST http://localhost:8001/users
+Content-Type: application/json
+
+{
+    "username":"user2",
+    "password":"password2"
+}
