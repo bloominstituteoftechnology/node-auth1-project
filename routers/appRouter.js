@@ -4,6 +4,7 @@ const RouterModel = require("./modelRouter")
 const bcrypt = require("bcryptjs")
 const blockUser = require("../middleware/blockUser");
 const modelRouter = require("./modelRouter");
+const { json } = require("express");
 
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
@@ -20,31 +21,30 @@ server.get("/api", async (req, res, next) => {
 // GET Test Seed Data & Model ✅
 server.get("/api/data", async (req, res, next) => {
   try {
-    const data = await RouterModel.getUser()
+    const data = await RouterModel.findUserById()
     res.status(200).json({ data: data });
   } catch (error) {
     next(error);
   }
 });
 
-// GET BY ID
-server.get("api/:id", async(req, res, next) => {
-    const {id} = req.params.id
-    try {
-        await RouterModel.findUserById(id)
-        .then(user => {
-            res.json(user)
-        })
-        .catch(err => console.log(err))
-    } catch (error) {
-        next(error)
-    }
-})
 
 // Test session ✅
 server.get("/users", blockUser(), async (req, res, next) => {
     try {
         res.json(await RouterModel.getUser())
+    } catch (error) {
+        next(error)
+    }
+})
+
+
+// GET BY :id ✅
+server.get("/users/:id", async (req, res, next) => {
+    try {
+        const id = req.params.id
+        res.json(await RouterModel.findUserById(id))
+
     } catch (error) {
         next(error)
     }
@@ -74,6 +74,7 @@ server.post('/users', async (req, res, next) => {
     }
 })
 
+// Loggin IN User ✅
 server.post("/login", async (req, res, next) => {
     
     try {
@@ -103,6 +104,21 @@ server.post("/login", async (req, res, next) => {
     } catch (error) {
         next(error)
     }
+})
+
+// Logging out complete ✅
+server.get("/logout", async (req, res, next) => {
+	try {
+		req.session.destroy((err) => {
+			if (err) {
+				next(err)
+			} else {
+				res.status(204).end()
+			}
+		})
+	} catch (err) {
+		next(err)
+	}
 })
 
 

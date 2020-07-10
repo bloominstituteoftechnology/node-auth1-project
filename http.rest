@@ -3,11 +3,6 @@ GET http://localhost:8001/api
 
 ###
 
-// Test Seed Data ✅
-GET http://localhost:8001/api/data
-
-###
-
 // Test session ✅
 GET http://localhost:8001/users
 
@@ -18,17 +13,23 @@ POST http://localhost:8001/users
 Content-Type: application/json
 
 {
-    "username":"Els",
+    "username":"Laur",
     "password":"password2"
 }
 
 ###
 
-//Loggin in
+//Logging in
 POST http://localhost:8001/login
 Content-Type: application/json
 
 {
-    "username":"Els",
+    "username":"Laur",
     "password":"password2"
 }
+
+###
+
+// Logging Out
+
+GET http://localhost:8001/logout

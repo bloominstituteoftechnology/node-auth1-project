@@ -5,8 +5,9 @@ function blockUser() {
     return async (req, res, next) => {
         try {
             if(!req.session || !req.session.user) {
-                res.status(401).json({message:"User Does not Exist"})
+                res.status(401).json({message:"Please Log On first"})
             }
+            next()
         } catch (error) {
             next(error)
         }

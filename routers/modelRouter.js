@@ -10,14 +10,14 @@ async function addUser(user) {
 	return findUserById(id)
 }
 
+function findUser() {
+    return db("users").select("id", "username")
+}
+
 function findUserBy(filter) {
 	return db("users")
 		.select("id", "username", "password")
 		.where(filter)
-}
-
-function findUser() {
-	return db("users").select("id", "username")
 }
 
 function findUserById(id) {
