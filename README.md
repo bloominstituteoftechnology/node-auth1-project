@@ -1,7 +1,7 @@
 # Authentication Project
 
 ## Topics
-
+...
 - Authentication.
 - Express Middleware.
 - Password Hashing.
