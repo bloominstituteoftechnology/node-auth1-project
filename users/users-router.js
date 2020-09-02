@@ -36,4 +36,34 @@ router.post("/register", async (req, res, next) => {
 	}
 })
 
+// LOGIN
+router.post("/login", async (req, res, next) => {
+	try {
+		const { username, password } = req.body
+		const user = await Users.findBy({ username }).first()
+		
+		if (!user) {
+			return res.status(401).json({
+				message: "Invalid Credentials",
+			})
+		}
+
+		// compare pw from request body to hash stored in db (returns true/false)
+		const passwordValid = await bcrypt.compare(password, user.password)
+
+		// if they don't match, return with error
+		if (!passwordValid) {
+			return res.status(401).json({
+				message: "Invalid Credentials",
+			})
+		}
+
+		res.json({
+			message: `Welcome ${user.username}!`,
+		})
+	} catch(err) {
+		next(err)
+	}
+})
+
 module.exports = router
