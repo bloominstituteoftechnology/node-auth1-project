@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/vishalicious213/15.1-node-auth1-project#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
     "knex": "^0.21.5",
     "nodemon": "^2.0.4",

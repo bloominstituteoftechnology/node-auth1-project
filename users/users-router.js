@@ -1,5 +1,6 @@
 const express = require('express')
 const Users = require('./users-model')
+const bcrypt = require('bcryptjs')
 
 const router = express.Router()
 
@@ -26,7 +27,7 @@ router.post("/register", async (req, res, next) => {
 
 		const newUser = await Users.add({
 			username,
-			password,
+			password: await bcrypt.hash(password, 14),
 		})
 
 		res.status(201).json(newUser)
