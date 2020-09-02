@@ -1,0 +1,20 @@
+{
+  "name": "15.1-node-auth1-project",
+  "version": "1.0.0",
+  "description": "- Authentication.\r - Express Middleware.\r - Password Hashing.\r - Sessions\r - Cookies",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vishalicious213/15.1-node-auth1-project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vishalicious213/15.1-node-auth1-project/issues"
+  },
+  "homepage": "https://github.com/vishalicious213/15.1-node-auth1-project#readme"
+}
