@@ -58,6 +58,11 @@ router.post("/login", async (req, res, next) => {
 			})
 		}
 
+        // if it didn't error out, create new session for user
+        // need to install express-session & connect-session-knex for next line
+        // (connect-session-knex configured in server.js)
+		req.session.user = user
+
 		res.json({
 			message: `Welcome ${user.username}!`,
 		})
