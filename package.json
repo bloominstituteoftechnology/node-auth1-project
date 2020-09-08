@@ -24,6 +24,7 @@
     "connect-session-knex": "^1.7.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-session": "^1.17.1",
     "helmet": "^4.1.0",
     "sqlite3": "^5.0.0"
   },

@@ -2,8 +2,9 @@ const express = require('express')
 const Users = require('./users-model')
 const router = express.Router()
 const bcrypt = require('bcryptjs')
+const usersMiddleware = require('./users-middleware')
 
-router.get("/users", async (req, res, next) => {
+router.get("/users", usersMiddleware.restrict(), async (req, res, next) => {
     try {
         res.json(await Users.find())
     } catch(err) {
@@ -56,6 +57,9 @@ router.post("/login", async (req, res, next) => {
                 message: "Invalid credentials"
             })
         }
+
+        //create a new session for the user
+        req.session.user = user
 
         res.json({
             message: `Welcome ${user.username}`
