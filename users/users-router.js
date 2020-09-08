@@ -1,6 +1,7 @@
 const express = require('express')
 const Users = require('./users-model')
 const router = express.Router()
+const bcrypt = require('bcryptjs')
 
 router.get("/users", async (req, res, next) => {
     try {
@@ -10,26 +11,27 @@ router.get("/users", async (req, res, next) => {
     }
 })
 
-router.post('/users', async (req, res, next) => {
-    try {
-        const { username, password } = req.body
-        const user = await Users.findBy({ username })
+router.post("/users", async (req, res, next) => {
+	try {
+		const { username, password } = req.body
+		const user = await Users.findBy({ username }).first()
 
-        if (user) {
-            return res.status(409).json({
-                message: "The username has already been taken"
-            })
-        }
+		if (user) {
+			return res.status(409).json({
+				message: "Username is already taken",
+			})
+		}
 
-        const newUser = await Users.add({
+		const newUser = await Users.add({
             username,
-            password,
-        })
-        
-        res.status(201).json(newUser)
-    } catch (err) {
-        next(err)
-    }
+            //hash the password with a time complexity of '10'
+			password: await bcrypt.hash(password, 13)
+		})
+
+		res.status(201).json(newUser)
+	} catch(err) {
+		next(err)
+	}
 })
 
 router.post("/login", async (req, res, next) => {
@@ -43,8 +45,20 @@ router.post("/login", async (req, res, next) => {
             })
         }
 
+        //check that the password is valid here.
+        //compare the plain text password from the request body
+        //to the hash we have stored in the database. returns true or false
+        const passwordValid = await bcrypt.compare(password, user.password)
+
+        //check if hash of request body password matches the hash we already have
+        if(!passwordValid) {
+            return res.status(401).json({
+                message: "Invalid credentials"
+            })
+        }
+
         res.json({
-            message: `Welcome ${user.usersname}`
+            message: `Welcome ${user.username}`
         })
     } catch(err) {
         next(err)
