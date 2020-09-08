@@ -32,24 +32,23 @@ router.post('/users', async (req, res, next) => {
     }
 })
 
+router.post("/login", async (req, res, next) => {
+    try {
+        const {username, password} = req.body
+        const user = await Users.findBy({ username }).first()
 
+        if (!user) {
+            return res.status(401).json({
+                message: "Username or Password is incorrect"
+            })
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        res.json({
+            message: `Welcome ${user.usersname}`
+        })
+    } catch(err) {
+        next(err)
+    }
+})
 
 module.exports = router
