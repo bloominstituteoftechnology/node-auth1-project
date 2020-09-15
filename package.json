@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/ashley-bergsma/node-auth1-project#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "helmet": "^4.1.1",
