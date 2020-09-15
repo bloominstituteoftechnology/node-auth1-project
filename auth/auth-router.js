@@ -36,5 +36,20 @@ router.post("/login", (req, res) => {
         }); 
 }); 
 
+//* GET req to log the user out *// 
+router.get("/logout", (req, res) => {
+    if (req.session) {
+        req.session.destroy(error => {
+            if (error) {
+                res.json({ message: "You can checkout but you can never leave" }); 
+            } else {
+                res.status(200).json({ message: "You'll be back" }); 
+            }
+        })
+    } else {
+        res.status(200).json({ message: "How did you even get here to begin with?" }); 
+    }
+}); 
+
 //* router export *// 
 module.exports = router; 
