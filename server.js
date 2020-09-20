@@ -8,7 +8,7 @@ server.get("/", (req, res)=>{
 });
 
 //routing
-const userRoutes = require("./users/usersRouter");
-server.use("/api/users", userRoutes);
+const authRoutes = require("./auth/authRouter");
+server.use("/api/", authRoutes);
 
 module.exports = server;
