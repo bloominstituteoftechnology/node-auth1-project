@@ -1,6 +1,20 @@
 const express = require("express");
 const server = express();
+const session = require("express-session")
 
+sessionConfig = {
+    name: "asessname",
+    secret: "as;lfj349iwhaakeshrhwafw9hfskdfh289",
+    cookie: {
+        maxAge: 1 * 24 * 60 * 60 * 1000,
+        secure: true
+    },
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false
+}
+
+server.use(session(sessionConfig));
 server.use(express.json());
 
 server.get("/", (req, res)=>{
