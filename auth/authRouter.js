@@ -24,6 +24,7 @@ router.post("/login", (req, res)=>{
     db("users").where({email: email}).first().then(user=>{
         if(!user) return res.status(401).json({message: "You shall not pass!"});
         if(!bcrypt.compareSync(password, user.password)) return res.status(401).json({message: "You shall not pass!"});
+        req.session.user = user;
         res.status(200).json({message: "Logged in"});
     }).catch(err=>{
         console.log(err);
