@@ -1,18 +1,22 @@
-# Authentication Project
+# Introduction to Authentication Module Project
 
-## Topics
-
-- Authentication.
-- Express Middleware.
-- Password Hashing.
-- Sessions
-- Cookies
-
-## Description
+## Introduction
 
 Use `Node.js`, `Express` and `Knex` to build an API that provides **Register** and **Login** functionality using `SQLite` to store _User_ information. Make sure the password is not stored as plain text.
 
-## Assignment
+## Instructions
+
+### Task 1: Set Up The Project With Git
+
+Follow these steps to set up and work on your project:
+
+- [ ] Create a forked copy of this project.
+- [ ] Clone your OWN version of the repository (Not Lambda's by mistake!).
+- [ ] Create a new branch: git checkout -b `<firstName-lastName>`.
+- [ ] Implement the project on your newly created `<firstName-lastName>` branch, committing changes regularly.
+- [ ] Push commits: git push -u origin `<firstName-lastName>`.
+
+### Task 2: Minimum Viable Product
 
 Complete the following endpoints:
 
@@ -24,7 +28,14 @@ Complete the following endpoints:
 
 Add support for **sessions** and **cookies**, use them to keep a record of logged in users across requests.
 
-## Stretch Problem
+### Task 3: Stretch Goals
 
 - Write a piece of **global** middleware that ensures a user is logged in when accessing _any_ route prefixed by `/api/users`.
 - Build a React application that implements components to register, login and view a list of users. Gotta keep sharpening your React skills.
+
+## Submission format
+
+Follow these steps for completing your project.
+
+- [ ] Submit a pull request to merge <firstName-lastName> Branch into master (student's  Repo). **Please don't merge your own pull request**
+
