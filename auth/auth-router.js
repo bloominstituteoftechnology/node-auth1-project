@@ -3,6 +3,7 @@ const users = require('../users/users-model.js');
 const bcrypt = require('bcryptjs');
 
 
+
 // api/auth/register
 router.post('/register', async (req, res, next) => {
     let user = req.body;
@@ -27,6 +28,7 @@ router.post('/login', async (req, res, next) => {
 
     try {
         if (user && bcrypt.compareSync(password, user.password)) {
+            req.session.user = user; //if logged in, create a session object
             res.status(200).json({message: `You're logged in under the username ${user.username}`})
         } else {
             next({apiCode:401, apiMessage:'You shall not pass'})
@@ -36,6 +38,20 @@ router.post('/login', async (req, res, next) => {
         next({apiCode:500, apiMessage:'error logging in', ...err})
     }
 })
+
+router.get('/logout', (req, res, next) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                next({apiCode:400, apiMessage:'error logging out', ...err});
+            } else {
+                res.send('goodbye')
+            }
+        });
+    } else {
+        res.send('already logged out');
+    }
+});
 
 
 
