@@ -1,5 +1,3 @@
-const server = require("./server");
-
 const thisServer = require("./server");
 
 thisServer.get("/", (req, res) => {
