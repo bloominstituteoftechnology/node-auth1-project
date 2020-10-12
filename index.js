@@ -1,5 +1,8 @@
-const thisServer = require("./server");
+const server = require("./Api/server");
 
-thisServer.get("/", (req, res) => {
-  res.status(200).json({ Data: "WORKING" });
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
+  console.log(`API LISTENING ON ${PORT}`);
 });
+module.exports = server;
