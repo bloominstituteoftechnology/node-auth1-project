@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/mitchellwright/node-auth1-project#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "knex": "^0.21.7",
