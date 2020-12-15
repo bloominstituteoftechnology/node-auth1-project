@@ -71,7 +71,8 @@ router.post("/login", checkPayload, checkUsernameExists, (req,res) => {
         const verified = bcrypt.compareSync(req.body.password, req.userData.password)
     
         if(verified){
-            console.log("we should save a session for this user.")
+            req.session.user = req.userData; //where the magic happens im told.
+            res.json(`Welcome back, ${req.userData.username}`)
         } else {
             res.status(401).json({ message: "bad credentials."})
         }
@@ -81,9 +82,20 @@ router.post("/login", checkPayload, checkUsernameExists, (req,res) => {
     }
 })
 
-router.post("/logout", (req,res) => {
-    console.log("goodbye")
-})
+router.get('/logout', (req, res) => {
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) {
+          res.json('you can not leave')
+        }
+        else {
+          res.json('goodbye')
+        }
+      })
+    } else {
+      res.json('there was no session')
+    }
+  })
 
 
 module.exports = router;
