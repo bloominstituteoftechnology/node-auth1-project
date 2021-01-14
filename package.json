@@ -1,0 +1,22 @@
+{
+	"private": true,
+	"scripts": {
+		"server": "nodemon index.js",
+		"start": "node index.js"
+	},
+	"devDependencies": {
+		"dotenv": "^8.2.0",
+		"nodemon": "^2.0.4"
+	},
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"connect-session-knex": "^2.0.0",
+		"cors": "^2.8.5",
+		"express": "^4.17.1",
+		"express-session": "^1.17.1",
+		"helmet": "^4.1.1",
+		"knex": "^0.21.12",
+		"session": "^0.1.0",
+		"sqlite3": "^5.0.0"
+	}
+}
