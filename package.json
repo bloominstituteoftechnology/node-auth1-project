@@ -1,0 +1,33 @@
+{
+  "name": "node-auth1-project",
+  "version": "1.0.0",
+  "description": "## Introduction",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon index.js",
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jet110390/node-auth1-project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jet110390/node-auth1-project/issues"
+  },
+  "homepage": "https://github.com/Jet110390/node-auth1-project#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-session-knex": "^2.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "knex": "^0.21.15",
+    "sqlite3": "^4.2.0"
+  }
+}
