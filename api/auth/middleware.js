@@ -1,7 +1,8 @@
 function validateSession() {
     return function (req, res, next) {
-        if (req.originalUrl !== '/api/auth/users') {
-            next();
+        console.log(req.path);
+        if (req.path === '/api/auth/login' || req.path === '/api/auth/login') {
+            return next();
         }
 
         if (!req.session || !req.session.user) {
@@ -9,6 +10,7 @@ function validateSession() {
                 message: "Invalid session"
             });
         }
+
         next();
     }
 }

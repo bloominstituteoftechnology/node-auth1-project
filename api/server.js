@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const session = require('express-session');
 
+const validateSession = require('./auth/middleware');
 const authRouter = require('./auth/router');
 
 const server = express();
@@ -23,6 +24,7 @@ server.use(session({
 server.use(helmet());
 server.use(cors());
 server.use(express.json());
+server.use(validateSession());
 
 // ROUTERS //
 server.use('/api/auth', authRouter);
