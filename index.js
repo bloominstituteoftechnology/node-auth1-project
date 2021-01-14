@@ -6,7 +6,7 @@ const cors = require("cors")
 const session = require("express-session")
 const KnexSessionStore = require("connect-session-knex")(session)
 const db = require("./database/config")
-
+const usersRouter = require('./users/user-router')
 
 const server = express()
 const port = process.env.PORT || 4000
@@ -14,6 +14,7 @@ const port = process.env.PORT || 4000
 server.use(helmet())
 server.use(cors())
 server.use(express.json())
+
 server.use(session({
     resave:false,
     saveUninitialized: false,
@@ -23,6 +24,8 @@ server.use(session({
         createable: true,
     })
 }))
+
+server.use('/api', usersRouter)
 
 server.use((err, req, res, next) => {
 	console.log(err)
