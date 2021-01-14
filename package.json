@@ -1,0 +1,26 @@
+{
+  "name": "auth1-project",
+  "version": "1.0.0",
+  "description": "Use `Node.js`, `Express` and `Knex` to build an API that provides **Register** and **Login** functionality using `SQLite` to store _User_ information. Make sure the password is not stored as plain text.",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leachtucker/node-auth1-project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leachtucker/node-auth1-project/issues"
+  },
+  "homepage": "https://github.com/leachtucker/node-auth1-project#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "knex": "^0.21.15"
+  }
+}
