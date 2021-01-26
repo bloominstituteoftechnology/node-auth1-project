@@ -1,0 +1,32 @@
+{
+  "name": "node-auth1-project",
+  "version": "1.0.0",
+  "description": "## Introduction",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon index.js",
+    "start": "npm start index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Benaiah-Varner-LambdaProjects/node-auth1-project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Benaiah-Varner-LambdaProjects/node-auth1-project/issues"
+  },
+  "homepage": "https://github.com/Benaiah-Varner-LambdaProjects/node-auth1-project#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "helmet": "^4.4.1",
+    "knex": "^0.21.16",
+    "nodemon": "^2.0.7",
+    "sqlite3": "^4.2.0"
+  }
+}
