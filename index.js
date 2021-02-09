@@ -1,12 +1,12 @@
 const server = require('./api/server');
 
+const PORT = 2000;
 
-const PORT = process.env.PORT || 5002;
+server.get('/api', (req, res)=>{
 
-
-
-server.listen(PORT, ()=>{
-    console.log(`****SERVER IS RUNNING ON PORT : ${PORT}****`)
+    res.json({message: 'Hello'})
 })
 
-
+server.listen(PORT, ()=>{
+    console.log(`Server is listening on PORT : ${PORT}`)
+})
