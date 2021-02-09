@@ -61,17 +61,26 @@ server.post('/api/register', async (req, res, next)=>{
 
 //POST -- log in user
 
-server.post('/api/login', (req, res, next)=>{
+server.post('/api/login', async (req, res, next)=>{
+    const {Username, Password} = req.body
+    const user = await  Users.findByUsername({Username})
 
-    const user = Users.findBy(req.body.Username).first()
+    .then(user=>{
 
-    if (user){
+        const credentials = user[0]
         
-        res.status(200).json({user: user})
-    }else{
-        res.status(400).json({message: `Invalid credentials`})
-    }
+        const passwordsMatch = bcrypt.compareSync(Password, credentials.Password)
 
+        if(user && passwordsMatch){
+            
+            res.status(200).json({message: `Welcome back ${credentials.Username}`})
+        }else{
+            res.status(400).json({messsage: `Log in failed. Credentials are invalid.`})
+        }
+    })
+    .catch(err=>{
+        res.status(400).json({message: `Login failed. Check credentials or make sure user account exists.`})
+    })
     
 })
 

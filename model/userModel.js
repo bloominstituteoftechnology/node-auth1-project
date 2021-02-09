@@ -1,12 +1,13 @@
 const db = require('../data/dbConfig');
 
 module.exports = {
-    findBy,
-    insert
+    findByUsername,
+    insert,
+
 }
 
 
-async function findBy(filter){
+async function findByUsername(filter){
     console.log(filter)
     return await db('Users')
     .select('id','Username', 'Password')
