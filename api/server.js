@@ -51,10 +51,22 @@ server.post('/api/register', async (req, res, next)=>{
 
 //POST -- log in user
 
-server.post('/api/login', (req, res)=>{
-    
-    const loggedUser = req.body
+server.post('/api/login', async (req, res, next)=>{
+    const { Username, Password } = req.body
+    const user = await db.findBy({Username}).first()
 
+    try{
+        
+       
+            res.json({message: user })
+        
+
+    }catch (err){
+
+        next(err)
+
+
+    }
     
 })
 
