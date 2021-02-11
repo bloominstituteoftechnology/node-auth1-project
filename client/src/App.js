@@ -1,25 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react'
 
-function App() {
+//imports
+import { BrowserRouter as Router } from 'react-router'
+
+//components
+import Login from './Compoments/LogIn';
+import User from './Compoments/User';
+
+//context
+import { appContext } from './context/appContext';
+
+export default function App() {
+
+
+  const [loggedIn, setLoggedIn ] = useState(false)
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <appContext.Provider  value ={{
+      loggedIn: loggedIn,
+      setLoggedIn: setLoggedIn
+    }}>
+      <div className = 'App'>
+          {
+              !loggedIn?
+              <Login/>:
+              <User/>
+          }
+      </div>
+    </appContext.Provider>
+  )
 }
-
-export default App;

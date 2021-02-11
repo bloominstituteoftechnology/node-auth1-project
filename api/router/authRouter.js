@@ -22,7 +22,7 @@ router.get('/logout', restricted(), (req, res)=>{
         if(err){
             res.status(200).json({$ERR: err})
         }else{
-            res.status(200).json({message: `session has been destroyed`})
+            res.status(200).json({message: `session has been destroyed `})
         }
     })
     

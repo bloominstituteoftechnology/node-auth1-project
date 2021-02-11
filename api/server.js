@@ -18,8 +18,8 @@ const sessionConfig = {
         secure: false ,//true in production
         httpOnly: true
     },
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     store: new KnexSessionStore({
         knex: require('../data/dbConfig'),
         table: 'sessions',
