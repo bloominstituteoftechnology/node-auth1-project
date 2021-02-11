@@ -3,7 +3,8 @@ const router = express.Router()
 const bcrypt = require('bcryptjs')
 
 //db
-const Users = require('../../model/userModel')
+const Users = require('../../model/userModel');
+const session = require('express-session');
 
 module.exports = router;
 
@@ -49,7 +50,8 @@ router.post('/login', async (req, res, next)=>{
         user = user[0];
         
         if (user && bcrypt.compareSync(password, user.password) ){
-            res.status(200).json({message: `Welcome back ${user.username}`, user: user})
+            req.session.user = user;
+            res.status(200).json({message: `Welcome back ${user.username}`, user: user, session: req.session})
     
         }else{
             res.status(400).json({1:authError})

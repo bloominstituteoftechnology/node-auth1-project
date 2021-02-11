@@ -13,7 +13,7 @@ const sessionConfig = {
     name:'no-session',
     secret: 'keep it secret keep it safe',
     cookie:{
-        maxAge: 2000 *30,
+        maxAge: 60 * 60 * 1000,
         secure: false ,//true in production
         httpOnly: true
     },
@@ -22,7 +22,13 @@ const sessionConfig = {
 }
 
 //middlewares
-server.use(express.json(), helmet(), cors(), logger('short'), session(sessionConfig))
+server.use(
+    express.json(), 
+    helmet(), 
+    cors(), 
+    logger('short'), 
+    session(sessionConfig)
+    );
 
 //routers
 server.use('/api/', guestRouter)
