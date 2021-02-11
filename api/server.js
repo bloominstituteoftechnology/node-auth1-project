@@ -6,6 +6,7 @@ const logger = require('morgan')
 const session = require('express-session')
 const guestRouter = require('./router/guestRouter');
 const authRouter = require('./router/authRouter');
+const KnexSessionStore = require('connect-session-knex')(session);
 
 
 //sessionConfig 
@@ -18,7 +19,14 @@ const sessionConfig = {
         httpOnly: true
     },
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: new KnexSessionStore({
+        knex: require('../data/dbConfig'),
+        table: 'sessions',
+        sidfieldname: 'sid',
+        createtable: true,
+        clearInterval: 60 * 60 * 1000
+    })
 }
 
 //middlewares
