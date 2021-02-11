@@ -1,11 +1,12 @@
+const express = require('express');
 
 const session = require('express-session'); //might need this code
 
 const knexSessionStore = require('connect-session-knex')(session); //might need this code
 
-const express = require('express');
 
-const loggedInCheck = require('./auth/logged-in-check-middleware.js'); //might need this code
+
+const loggedInCheck = require('./auth/logged-in-checked-middleware.js'); //might need this code
 
 
 
@@ -18,8 +19,8 @@ const authRouter = require("./auth/auth-router.js");
 const server = express();
 
 const sessionConfig = {
-    name: 'sksession',
-    secret: 'myspeshulsecret',
+    name: 'monkey',
+    secret: 'super secret',
     cookie: {
       maxAge: 1000 * 60 * 60,
       secure: false, // should be true in production
@@ -30,7 +31,7 @@ const sessionConfig = {
   
     store: new knexSessionStore(
       {
-        knex: require("../database/connection.js"),
+        knex: require("../data/connection.js"),
         tablename: "sessions",
         sidfieldname: "sid",
         createtable: true,
