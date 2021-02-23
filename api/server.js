@@ -20,7 +20,7 @@ const config ={
   resave:false,
   saveUnitialized:false,
   store: new KnexSessionStore({
-    knex:require("../database/connection.js"),
+    knex:require('../data/db-config'),
     tablename:"sessions",
     sidfieldname:"sid",
     createTable:true,

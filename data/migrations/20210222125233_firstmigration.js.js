@@ -7,14 +7,14 @@ exports.up = function(knex) {
   })
   .createTable('users', tbl =>{
       tbl.increments();
-      tbl.string('username', 130).notNullable().unique.index();
+      tbl.string('username', 130).notNullable().unique().index();
       tbl.string('password', 260).notNullable();
-      tbl.integer('role')
+      tbl
+        .integer("role")
         .unsigned()
-        .reference('roles.id')
-        .inTable('roles')
-        .onDelete('RESTRICT')
-        .onUpdate('CASCADE');
+        .references("roles.id")
+        .onDelete("RESTRICT")
+        .onUpdate("CASCADE");
   })
 };
 
