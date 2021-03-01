@@ -22,7 +22,7 @@ function findById(user_id) {
 /**
   resolves to the newly inserted user { user_id, username }
  */
-async function add(user) {
+function add(user) {
 
 }
 
