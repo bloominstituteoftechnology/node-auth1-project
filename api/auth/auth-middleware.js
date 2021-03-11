@@ -12,7 +12,7 @@ function restricted() {
   return async (req, res, next) => {
     try {
       if(!req.session || !req.session.user) {
-        return res.status(403).JSON({error: "You must be logged in before you can access this page"})
+        return res.status(403).json({error: "You must be logged in before you can access this page"})
       } else {
         next()
       }
@@ -33,8 +33,8 @@ function restricted() {
 function checkUsernameFree() {
   return async (req, res, next) => {
     try {
-      const checkUserName = await findBy(req.body.username)
-      if(checkUserName) {
+      const checkUserName = await findBy({username: req.body.username})
+      if(checkUserName.length >= 1) {
         res.status(422).json({error: "username taken"})
       } else {
         next()
@@ -56,8 +56,8 @@ function checkUsernameFree() {
 function checkUsernameExists() {
   return async (req, res, next) => {
     try {
-      const checkUsernameInDB = await findBy(req.body.username)
-      if(!checkUserNameInBD) {
+      const checkUsernameInDB = await findBy({username: req.body.username})
+      if(checkUsernameInDB.length < 1) {
         res.status(401).json({error: "Invalid credentials"})
       } else {
         next()
@@ -77,10 +77,12 @@ function checkUsernameExists() {
   }
 */
 function checkPasswordLength() {
-  if(!req.body.password || req.body.password.length < 3) {
-    res.status(422).json({error: "Password must be longer than 3 chars"})
-  } else {
-    next()
+  return (req, res, next) => {
+    if(!req.body.password || req.body.password.length < 3) {
+      res.status(422).json({error: "Password must be longer than 3 chars"})
+    } else {
+      next()
+    }
   }
 }
 

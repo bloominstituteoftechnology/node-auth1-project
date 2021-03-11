@@ -1,13 +1,19 @@
 const express = require("express")
-const users = require("./users-model")
-const bcrypt = require("becrypt")
+const users = require("../users/users-model")
+const bcrypt = require("bcryptjs")
 const {checkUsernameFree, checkUsernameExists, checkPasswordLength} = require("./auth-middleware")
 
 const router = express.Router()
 
 router.post("/api/auth/register", checkPasswordLength(), checkUsernameFree(), async (req, res, next) => {
   try {
-    res.status(200).json(await users.add(req.body))
+    const {username, password} = req.body
+    const pw = await bcrypt.hash(password, 12)
+    const newUser = await users.add({
+      username, 
+      password: pw
+    })
+    res.status(200).json(newUser)
   } catch (err) {
     next(err)
   }
@@ -18,14 +24,13 @@ router.post("/api/auth/login", checkUsernameExists(), async (req, res, next) => 
     const {username, password} = req.body
     const user = await users.findBy({username}).first()
     const validatePassword = await bcrypt.compare(password, user.password)
-
     if(!validatePassword) {
       return res.status(401).json({error: "Invalid credentials"})
     } else {
-      res.session.user = user
+      req.session.user = user
       res.json({message: `welcome ${user.username}`})
     }
-  } catch (err) {
+  } catch (err){
     next(err)
   }
 })
@@ -35,7 +40,7 @@ router.get("/logout", async(req, res, next) => {
     if(!req.session || !req.session.user) {
       res.status(200).json({error: "no session"})
     } else {
-      res.session.destroy((err) => {
+      req.session.destroy((err) => {
         if(err) {
           next(err)
         } else {

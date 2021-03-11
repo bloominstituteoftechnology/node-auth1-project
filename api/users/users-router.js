@@ -1,6 +1,6 @@
 const express = require("express")
 const users = require("./users-model")
-const bcrypt = require("becrypt")
+const bcrypt = require("bcryptjs")
 const {restricted} = require("../auth/auth-middleware")
 
 const router = express.Router()
@@ -33,8 +33,7 @@ const router = express.Router()
 
 router.get("/api/users", restricted(), async (req, res, next) => {
   try {
-    const users = await users.find()
-    res.json(users)
+    res.json(await users.find())
   } catch (err) {
     next(err)
   }

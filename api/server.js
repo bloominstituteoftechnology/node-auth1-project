@@ -27,6 +27,7 @@ server.use(express.json());
 server.use(cors());
 server.use(session({
   resave: false,
+  saveUninitialized: false,
   secret: process.env.SECRET || "please store your secret phrase in the env file and label it SECRET",
   store: new sessionStore({
     knex: db,
