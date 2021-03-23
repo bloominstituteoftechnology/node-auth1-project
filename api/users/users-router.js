@@ -1,5 +1,21 @@
 // Require the `restricted` middleware from `auth-middleware.js`. You will need it here!
 
+const express = require('express')
+const users = require('./users-model')
+const bcrypt = require('bcrypt.js')
+const { restricted } = require('../auth/auth-middleware')
+
+const router = express.Router
+
+router.get('/api/users', restricted(), async (req, res, next) => {
+  try {
+    res.json(await users.find())
+  } catch (err) {
+    next(err)
+  }
+})
+
+module.exports = router
 
 /**
   [GET] /api/users
