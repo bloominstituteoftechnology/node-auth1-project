@@ -1,8 +1,9 @@
 const express = require('express')
 const bcrypt = require('bcryptjs') // used for hashing passwords
 const router = express.Router()
-const User = require('../users/users-model') // model function for users
-
+const Users = require('../users/users-model') // model function for users
+const {restricted, checkUsernameFree, checkUsernameExists, checkPasswordLength} = require('./auth-middleware')
+// const { userParams } = require('../../data/db-config')
 
 // Require `checkUsernameFree`, `checkUsernameExists` and `checkPasswordLength`
 // middleware functions from `auth-middleware.js`. You will need them here!
@@ -31,6 +32,17 @@ const User = require('../users/users-model') // model function for users
   }
  */
 
+  router.post('/register', checkUsernameFree, checkPasswordLength, async (req, res, next) => {
+    const { username, password } = req.body;
+    const hash = bcrypt.hashSync(password, 10);
+    const userToRegister = { username, password: hash };
+  
+    try {
+      const newUser = await Users.add(userToRegister);
+      res.status(200).json(newUser);
+    } catch(err) {
+      next(err) }
+  });
 
 /**
   2 [POST] /api/auth/login { "username": "sue", "password": "1234" }

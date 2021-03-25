@@ -11,7 +11,7 @@ router.get('/', restricted,  (req,res) => {
       res.status(200).json(users)
     })
     .catch(err => {
-      res.json({message: 'err getting users'})
+      res.status(401).json({message: 'You shall not pass!'})
     })
 })
 
