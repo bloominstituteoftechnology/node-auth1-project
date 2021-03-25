@@ -1,3 +1,9 @@
+const express = require('express')
+const bcrypt = require('bcryptjs') // used for hashing passwords
+const router = express.Router()
+const User = require('../users/users-model') // model function for users
+
+
 // Require `checkUsernameFree`, `checkUsernameExists` and `checkPasswordLength`
 // middleware functions from `auth-middleware.js`. You will need them here!
 
@@ -61,3 +67,4 @@
 
  
 // Don't forget to add the router to the `exports` object so it can be required in other modules
+module.exports = router;
