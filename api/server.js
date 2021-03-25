@@ -3,7 +3,9 @@ const helmet = require("helmet");
 const cors = require("cors");
 const session = require('express-session'); // added
 const KnexSessionStore = require('connect-session-knex')(session); 
-
+const server = express();
+const usersRouter = require('./users/users-router')
+const authRouter = require('./auth/auth-router');
 /**
   Do what needs to be done to support sessions with the `express-session` package!
   To respect users' privacy, do NOT send them a cookie unless they log in.
@@ -17,7 +19,7 @@ const KnexSessionStore = require('connect-session-knex')(session);
   or you can use a session store like `connect-session-knex`.
  */
 
-const server = express();
+
 server.use(session({
   name: "chocolatechip",
   secret: "lol",
@@ -41,14 +43,16 @@ server.use(helmet());
 server.use(express.json());
 server.use(cors());
 
-const usersRouter = require('./users/users-router')
-const authRouter = require('./auth/auth-router');
-
 server.use('/api/auth', authRouter);
 server.use('/api/users', usersRouter);
 
 server.get("/", (req, res) => {
-  res.json({ api: "up" });
+  if (req.headers.cookie === 'chocolatechip'){
+    res.json('Welcome Back')
+  } else {
+    res.set('Set-Cookie', 'chocolatechip')
+    res.json('I do not recognize you')
+  }
 });
 
 server.use((err, req, res, next) => { // eslint-disable-line
