@@ -31,19 +31,19 @@ There are two possible ways to submit your project. Your instructor should have 
 
 Write the following user access functions inside `api/users/users-model.js`:
 
-- [ ] `find`
-- [ ] `findBy`
-- [ ] `findById`
-- [ ] `add`
+- [ X] `find`
+- [ X] `findBy`
+- [ X] `findById`
+- [ X] `add`
 
 #### 2B - Middleware Functions
 
 Write the following auth middlewares inside `api/auth/auth-middleware.js`:
 
-- [ ] `restricted`
-- [ ] `checkUsernameFree`
-- [ ] `checkPasswordLength`
-- [ ] `checkUsernameExists`
+- [X ] `restricted`
+- [X ] `checkUsernameFree`
+- [ X] `checkPasswordLength`
+- [ X] `checkUsernameExists`
 
 #### 2C - Endpoints
 
