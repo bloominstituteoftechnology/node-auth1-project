@@ -57,6 +57,21 @@ const {checkUsernameFree, checkUsernameExists, checkPasswordLength} = require('.
   }
  */
 
+  router.post('/login',checkUsernameExists, (req, res, next)=> {
+    const { username, password } = req.body;
+    Users.findBy({username})
+      .first()
+      .then(user => {
+        if (user && bcrypt.compareSync(password,user.password)) {
+          req.session.user = user
+          res.json(`welcome back ${req.session.user.username}!`)
+        } else {
+          res.status(401).json('Invalid credentials')
+        }
+      })
+      .catch(next)
+  })
+
 
 /**
   3 [GET] /api/auth/logout
@@ -73,6 +88,20 @@ const {checkUsernameFree, checkUsernameExists, checkPasswordLength} = require('.
     "message": "no session"
   }
  */
+
+  router.get('/logout', (req,res,next)=>{
+    if (req.session && req.session.user) {
+      req.session.destroy(err => {
+        if (err) {
+          res.json('error trying to logout')
+        } else {
+          res.status(200).json({message: "logged out"})
+        }
+      })
+    } else {
+      res.status(200).json({message: "no session"})
+    }
+  })
 
  
 // Don't forget to add the router to the `exports` object so it can be required in other modules
