@@ -9,7 +9,8 @@ const Users = require('../users/users-model')
   }
 */
 function restricted(req,res,next) {
-  if (req.sessions && req.sessions.user) {
+  console.log(req.session)
+  if (req.session && req.session.user) {
     next()
   } else {
     res.status(401).json({
@@ -29,7 +30,7 @@ function restricted(req,res,next) {
 async function checkUsernameFree(req,res,next) {
 
   const user = await Users.findBy({username: req.body.username})
-  if (user && user.username) {
+  if (user.length > 0) {
     res.status(422).json({message: "Username taken"})
   } else {
     next()

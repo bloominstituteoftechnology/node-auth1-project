@@ -30,13 +30,13 @@ const {checkUsernameFree, checkUsernameExists, checkPasswordLength} = require('.
  */
 
   router.post('/register', checkUsernameFree, checkPasswordLength, async (req, res, next) => {
-    const { username, password } = req.body;
-    const hash = bcrypt.hashSync(password, 10);
-    const userToRegister = { username, password: hash };
   
     try {
+      const { username, password } = req.body;
+      const hash = await bcrypt.hashSync(password, 10);
+      const userToRegister = { username, password: hash };
       const newUser = await Users.add(userToRegister);
-      res.status(200).json(newUser);
+      res.status(201).json(newUser);
     } catch(err) {
       next(err) }
   });
@@ -64,9 +64,9 @@ const {checkUsernameFree, checkUsernameExists, checkPasswordLength} = require('.
       .then(user => {
         if (user && bcrypt.compareSync(password,user.password)) {
           req.session.user = user
-          res.json(`welcome back ${req.session.user.username}!`)
+          res.status(200).json({message: `Welcome ${req.session.user.username}!`})
         } else {
-          res.status(401).json('Invalid credentials')
+          res.status(401).json({message: "Invalid credentials"})
         }
       })
       .catch(next)
