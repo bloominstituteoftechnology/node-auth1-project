@@ -2,6 +2,7 @@
   resolves to an ARRAY with all users, each user having { user_id, username }
  */
 function find() {
+  return db("users").select("id", "username", ) .orderBy("id");
 
 }
 
@@ -9,6 +10,7 @@ function find() {
   resolves to an ARRAY with all users that match the filter condition
  */
 function findBy(filter) {
+  return db("users").where(filter).orderBy("id");
 
 }
 
@@ -16,6 +18,7 @@ function findBy(filter) {
   resolves to the user { user_id, username } with the given user_id
  */
 function findById(user_id) {
+  
 
 }
 
