@@ -27,6 +27,18 @@ router.post('/login', checkUsernameExists, (req, res, next) => {
   }
 })
 
+router.get('/logout', (req, res, next) => {
+  if (req.session.user) {
+    req.session.destroy(err => {
+      err
+        ? next({ message: err.message }) // not sure when this would ever run. unessacary?
+        : res.status(200).json({ message: 'logged out' })
+    }) // async
+  } else {
+    next({ message: 'no session', status: 200 })
+  }
+})
+
 module.exports = router
 
 // Require `checkUsernameFree`, `checkUsernameExists` and `checkPasswordLength`
