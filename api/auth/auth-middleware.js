@@ -16,8 +16,10 @@ module.exports = {
   checkPasswordLength
 }
 
-function restricted() {
-  
+function restricted(req, res, next) {
+  req.session.user
+    ? next()
+    : next({ message: 'You shall not pass!', status: 401 })
 }
 
 /*
