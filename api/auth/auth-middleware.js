@@ -17,7 +17,7 @@ module.exports = {
 }
 
 function restricted() {
-
+  
 }
 
 /*
@@ -43,8 +43,14 @@ async function checkUsernameFree(req, res, next) {
     "message": "Invalid credentials"
   }
 */
-function checkUsernameExists() {
-
+async function checkUsernameExists(req, res, next) {
+  const [user] = await findUsersBy({ username: req.body.username })
+  if(user){
+    req.user = user
+    next()
+  } else {
+    next({ status: 401, message: 'Invalid credentials' })
+  }
 }
 
 /*

@@ -9,11 +9,22 @@ const {
 
 const { add: addUser } = require('../users/users-model.js')
 
-router.post('/register', checkPasswordLength, checkUsernameFree, async (req, res, next) => {
+router.post('/register', checkPasswordLength, checkUsernameFree, async (req, res) => {
   const { username, password } = req.body
   const hash = bcrypt.hashSync(password, 12)
   const user = await addUser({ username, password: hash })
   res.status(200).json(user)
+})
+
+router.post('/login', checkUsernameExists, (req, res, next) => {
+  const { user } = req
+  if(bcrypt.compareSync(req.body.password, user.password)){
+    req.session.user = user
+    // res.status(204)
+    res.status(200).json({ message: `Welcome ${user.username}`})
+  } else {
+    next({ status: 401, message: 'Invalid credentials' })
+  }
 })
 
 module.exports = router
