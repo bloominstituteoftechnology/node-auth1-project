@@ -12,18 +12,18 @@ There are two possible ways to submit your project. Your instructor should have 
 
 #### Option A - Codegrade
 
-- [ ] Fork and clone the repository.
-- [ ] Open the assignment in Canvas and click on the "Set up git" option.
-- [ ] Follow instructions to set up Codegrade's Webhook and Deploy Key.
-- [ ] Push your first commit: `git commit --allow-empty -m "first commit" && git push`.
-- [ ] Check to see that Codegrade has accepted your git submission.
+- [x] Fork and clone the repository.
+- [x] Open the assignment in Canvas and click on the "Set up git" option.
+- [x] Follow instructions to set up Codegrade's Webhook and Deploy Key.
+- [x] Push your first commit: `git commit --allow-empty -m "first commit" && git push`.
+- [x] Check to see that Codegrade has accepted your git submission.
 
 #### Option B - Pull Request
 
-- [ ] Fork and clone the repository.
-- [ ] Implement your project in a `firstname-lastname` branch.
-- [ ] Create a pull request of `firstname-lastname` against your `main` branch.
-- [ ] Open the assignment in Canvas and submit your pull request.
+- [x] Fork and clone the repository.
+- [x] Implement your project in a `firstname-lastname` branch.
+- [x] Create a pull request of `firstname-lastname` against your `main` branch.
+- [x] Open the assignment in Canvas and submit your pull request.
 
 ### Task 2: Minimum Viable Product
 
@@ -31,19 +31,19 @@ There are two possible ways to submit your project. Your instructor should have 
 
 Write the following user access functions inside `api/users/users-model.js`:
 
-- [ ] `find`
-- [ ] `findBy`
-- [ ] `findById`
-- [ ] `add`
+- [x] `find`
+- [x] `findBy`
+- [x] `findById`
+- [x] `add`
 
 #### 2B - Middleware Functions
 
 Write the following auth middlewares inside `api/auth/auth-middleware.js`:
 
-- [ ] `restricted`
-- [ ] `checkUsernameFree`
-- [ ] `checkPasswordLength`
-- [ ] `checkUsernameExists`
+- [x] `restricted`
+- [x] `checkUsernameFree`
+- [x] `checkPasswordLength`
+- [x] `checkUsernameExists`
 
 #### 2C - Endpoints
 
@@ -51,10 +51,10 @@ Authentication will be tracked using sessions and cookies. See `api/server.js` f
 
 Write the following endpoints. The first one belongs inside `api/users/users-router.js` and the rest inside `api/auth/auth-router.js`:
 
-- [ ] `[GET] /api/users`
-- [ ] `[POST] /api/auth/register`
-- [ ] `[POST] /api/auth/login`
-- [ ] `[GET] /api/auth/logout`
+- [x] `[GET] /api/users`
+- [x] `[POST] /api/auth/register`
+- [x] `[POST] /api/auth/login`
+- [x] `[GET] /api/auth/logout`
 
 #### Users Schema
 
