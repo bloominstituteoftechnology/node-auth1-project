@@ -5,6 +5,7 @@ const session = require("express-session")
 const KnexSessionStore = require("connect-session-knex")(session)
 
 const usersRouter = require("./users/users-router")
+const authRouter = require("./auth/auth-router")
 
 /**
   Do what needs to be done to support sessions with the `express-session` package!
@@ -26,6 +27,7 @@ server.use(express.json());
 server.use(cors());
 
 server.use(usersRouter)
+server.use(authRouter)
 
 server.get("/", (req, res) => {
   res.json({ api: "up" });
