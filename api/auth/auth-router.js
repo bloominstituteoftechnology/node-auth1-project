@@ -31,16 +31,21 @@ const mw = require("./auth-middleware")
   }
  */
 router.post("/api/auth/register", mw.checkUsernameFree(), mw.checkPasswordLength(), async (req, res, next) => {
-    const { username, password } = req.body
-    const registerUser = await db.add({
-      username,
-      password: await bcrypt.hash(password, 14),
-    })
+try {
+  const { username, password } = req.body
+  const registerUser = await db.add({
+    username,
+    password: await bcrypt.hash(password, 14),
+  })
     if (registerUser) {
       res.status(201).json(registerUser)
-    } else {
+  
+  } else {
       res.status(401).json({message: "Unable to register user"})
-    }
+  }
+  } catch(err) {
+    next(err)
+  }
 })
 
 /**
@@ -58,7 +63,25 @@ router.post("/api/auth/register", mw.checkUsernameFree(), mw.checkPasswordLength
     "message": "Invalid credentials"
   }
  */
+router.post("/api/auth/login", mw.checkPasswordLength(), mw.checkUsernameExists(), async (req, res, next) => {
+try {
+  const { username, password } = req.body
+  const user = await db.findBy({username}).first()
+  const passwordValid = await bcrypt.compare(password, user.password)
+    if (passwordValid) {
+      req.session.user = user
+      res.status(200).json({message: `Welcome ${user.username}`})
+    
+    } else {
+      return res.status(401).json({message: "Invalid Credentials"})
+    }
 
+  } catch(err) {
+    next(err)
+  }
+})
+
+  
 
 /**
   3 [GET] /api/auth/logout
