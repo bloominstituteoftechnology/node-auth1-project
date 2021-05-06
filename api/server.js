@@ -1,29 +1,31 @@
-const express = require("express");
-const helmet = require("helmet");
-const cors = require("cors");
+const express = require("express")
+const helmet = require("helmet")
+const cors = require("cors")
 const session = require("express-session")
 const KnexSessionStore = require("connect-session-knex")(session)
 const db = require("../data/db-config")
 const usersRouter = require("./users/users-router")
 const authRouter = require("./auth/auth-router")
 
-const server = express();
+const server = express()
 
-server.use(helmet());
-server.use(express.json());
-server.use(cors());
+server.use(helmet())
+server.use(cors())
+server.use(express.json())
 server.use(session({
   resave: false,
   saveUninitialized: false,
-  secret: "k9gePCk12hali318883",
+  secret: "chocolatechip",
   store: new KnexSessionStore({
     knex: db,
-    createtable: true
+    createtable: true,
   }),
   name: 'chocolatechip'
 }))
-server.use(usersRouter)
+
 server.use(authRouter)
+server.use(usersRouter)
+
 
 server.get("/", (req, res) => {
   res.json({ api: "up" });

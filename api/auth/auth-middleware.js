@@ -1,3 +1,4 @@
+const dbConfig = require("../../data/db-config")
 const { findBy } = require("../users/users-model")
 
 function restricted() {
@@ -7,8 +8,9 @@ function restricted() {
         return res.status(401).json({
           message: "You shall not pass!"
         })
+      } else {
+          next()
       }
-      next()
     } catch(err) {
         next(err)
     }
@@ -25,6 +27,8 @@ function checkUsernameFree() {
         return res.status(422).json({
           message: "Username taken"
         })
+      } else {
+        next()
       }
     } catch(err) {
         next(err)
@@ -35,7 +39,12 @@ function checkUsernameFree() {
 function checkUsernameExists() {
   return async (req, res, next) => {
     try {
-      if(!req.body.username){
+      const { username } = req.body
+      const user = await findBy({ username })
+      if(user){
+        req.user = user
+        next()
+      } else {
         res.status(401).json({
           message: "Invalid credentials"
         })
@@ -49,10 +58,12 @@ function checkUsernameExists() {
 function checkPasswordLength() {
   return (req, res, next) => {
     try {
-      if(!req.body.password || req.body.password.length <= 3){
+      if(!req.body.password || req.body.password.length < 4){
         res.status(422).json({
           message: "Password must be longer than 3 chars"
         })
+      } else {
+        next()
       }
     } catch(err){
         next(err)
