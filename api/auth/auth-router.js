@@ -38,7 +38,7 @@ try {
     password: await bcrypt.hash(password, 14),
   })
     if (registerUser) {
-      res.status(201).json(registerUser)
+      res.status(200).json(registerUser)
   
   } else {
       res.status(401).json({message: "Unable to register user"})
