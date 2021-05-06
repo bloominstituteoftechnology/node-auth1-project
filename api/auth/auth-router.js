@@ -98,7 +98,24 @@ try {
     "message": "no session"
   }
  */
+router.get("/api/auth/logout", async (req, res, next) => {
+try {
+  if (!req.session || !req.session.user) {
+    return res.status(200).json({message: "no session"})
+  } else {
+      req.session.destroy(err => {
+        if (err) {
+          next(err)
+        } else {
+          res.status(200).json({message: "logged out!"})
+        }}
+      )}
+      } catch(err) {
+        next(err)
+    }
+})
 
+  
  
 // Don't forget to add the router to the `exports` object so it can be required in other modules
 module.exports = router
