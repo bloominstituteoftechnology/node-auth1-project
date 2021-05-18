@@ -30,5 +30,13 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LambdaSchool/node-auth1-project.git"
-  }
+  },
+  "description": "Use `Node.js`, `Express` and `Knex` to build an API that provides register, login and logout functionality.",
+  "bugs": {
+    "url": "https://github.com/LambdaSchool/node-auth1-project/issues"
+  },
+  "homepage": "https://github.com/LambdaSchool/node-auth1-project#readme",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
