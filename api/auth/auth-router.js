@@ -11,13 +11,14 @@ router.post('/register', (req, res, next) => {
    8,
  )
 })
+
 router.post('/login', (req, res, next) => {
 
 })
 router.get('/logout', (req, res, next) => {
  
 })
-
+module.exports = {router}
 /**
   1 [POST] /api/auth/register { "username": "sue", "password": "1234" }
 
