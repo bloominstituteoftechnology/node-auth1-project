@@ -1,6 +1,10 @@
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
+const bcrypt = require('bcryptjs');
+const session = require('express-session');
+const server = express();
+
 
 /**
   Do what needs to be done to support sessions with the `express-session` package!
@@ -14,12 +18,26 @@ const cors = require("cors");
   The session can be persisted in memory (would not be adecuate for production)
   or you can use a session store like `connect-session-knex`.
  */
+const sessionConfig = {
+  name: 'chocolatechip',
+  secret: 'horcruxes',
+  cookie: {
+    maxAge: 1000 * 30,
+    secure: false,  //true: would be for production
+    httpOnly: true,
+  },
+  resave: false,
+  saveUninitialized: false
+};
 
-const server = express();
 
 server.use(helmet());
 server.use(express.json());
 server.use(cors());
+server.use(session(sessionConfig));
+server.use(bcrypt()); //Do we need this to get access to the bcrypt for the server??
+
+
 
 server.get("/", (req, res) => {
   res.json({ api: "up" });
