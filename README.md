@@ -3,7 +3,7 @@
 ## Introduction
 
 Use `Node.js`, `Express` and `Knex` to build an API that provides register, login and logout functionality.
-
+[x-checked dependency installs]
 ## Instructions
 
 ### Task 1: Project Setup
@@ -20,10 +20,10 @@ There are two possible ways to submit your project. Your instructor should have 
 
 #### Option B - Pull Request
 
-- [ ] Fork and clone the repository.
-- [ ] Implement your project in a `firstname-lastname` branch.
-- [ ] Create a pull request of `firstname-lastname` against your `main` branch.
-- [ ] Open the assignment in Canvas and submit your pull request.
+- [ x] Fork and clone the repository.
+- [ x] Implement your project in a `firstname-lastname` branch.
+- [ x] Create a pull request of `firstname-lastname` against your `main` branch.
+- [ x] Open the assignment in Canvas and submit your pull request.
 
 ### Task 2: Minimum Viable Product
 
@@ -31,10 +31,10 @@ There are two possible ways to submit your project. Your instructor should have 
 
 Write the following user access functions inside `api/users/users-model.js`:
 
-- [ ] `find`
-- [ ] `findBy`
-- [ ] `findById`
-- [ ] `add`
+- [x ] `find`
+- [x ] `findBy`
+- [x ] `findById`
+- [x ] `add`
 
 #### 2B - Middleware Functions
 
@@ -68,6 +68,7 @@ The database `auth.db3` includes a single `users` table:
 
 #### Notes
 
+##* Note to Lambda: the testing environment seems to consistently be incorrectly set up.
 - Run tests locally executing `npm test`.
 - The project comes with `migrate`, `rollback` and `seed` scripts in case you need to reset the database.
 - You are welcome to create additional files but **do not move or rename existing files** or folders.
