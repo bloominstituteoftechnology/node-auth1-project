@@ -37,7 +37,8 @@ server.use(cors());
 server.use(session(sessionConfig));
 server.use(bcrypt()); //Do we need this to get access to the bcrypt for the server??
 
-
+server.use('/api/auth', authRouter);
+server.use('/api/users', usersRouter);
 
 server.get("/", (req, res) => {
   res.json({ api: "up" });

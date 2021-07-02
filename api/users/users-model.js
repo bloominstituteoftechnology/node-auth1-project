@@ -8,8 +8,6 @@
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const db = require('./../../data/db-config.js'); //unsure if the path is set correctly
 
 /**
@@ -37,26 +35,7 @@ async function findBy(username) {
   
 }
 
- async function findBy(user_id) { 
-   const currentUser = await db("users as us")          //Here we're selecting the user_id and usernames from the users table
-       .select('us.user_id', 'us.username')
-     let returnedObject = {
-       user_id: currentUser[0].user_id,
-       username: currentUser[0].username,             //Here we're setting up what our returned object will be
-     } 
-     if(currentUser[0].user_id){
-       returnedObject.users = thisUser.map(user => {     //Then here we're saying to map through the array of users which match the user_id we passed in
-         return{
-           user_id: users.user_id,
-           username: users.username,
-           
-         }
-      })
-      
-     }
 
-    return returnedObject; 
-  }
 /**
  [x] resolves to the user { user_id, username } with the given user_id
  */
