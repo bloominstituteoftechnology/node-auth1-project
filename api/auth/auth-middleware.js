@@ -1,4 +1,3 @@
-const db = require("../../data/db-config.js")
 const Users = require("../users/users-model.js")
 
 const restricted = (req, res, next) => {

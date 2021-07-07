@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../users/users-model.js");
+const Users = require("../users/users-model.js");
 const bcrypt = require("bcryptjs")
 const {checkUsernameFree, checkUsernameExists, checkPasswordLength} = require("./auth-middleware.js")
 // Require `checkUsernameFree`, `checkUsernameExists` and `checkPasswordLength`
@@ -66,3 +66,4 @@ const {checkUsernameFree, checkUsernameExists, checkPasswordLength} = require(".
 
  
 // Don't forget to add the router to the `exports` object so it can be required in other modules
+module.exports = router
