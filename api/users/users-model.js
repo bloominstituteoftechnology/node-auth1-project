@@ -26,9 +26,10 @@ const findById = (user_id) => {
 /**
   resolves to the newly inserted user { user_id, username }
  */
-function add(user) {
-
+async function add(user) {
+  const [id] = await db("users").insert(user, "id")
+  return findById(id)
 }
 
 // Don't forget to add these to the `exports` object so they can be required in other modules
-module.exports = { find, findBy}
+module.exports = { find, findBy, findById, add}
