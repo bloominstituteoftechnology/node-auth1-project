@@ -13,7 +13,7 @@ function find() {
 const findBy = (filter) => {
   return db("users")
     .where(filter)
-    .orderBy("user_id")
+    // .orderBy("user_id")
 }
 
 /**

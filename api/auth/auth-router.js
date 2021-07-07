@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs")
 const {checkPayload, checkUsernameFree, checkUsernameExists, checkPasswordLength} = require("./auth-middleware.js")
 
 
-router.post("/register", checkUsernameFree, checkPasswordLength, async (req, res) => {
+router.post("/register", checkUsernameFree, checkPasswordLength, async (req, res) => { 
   try {
     const hash = bcrypt.hashSync(req.body.password, 10)
     const newUser = await User.add({username: req.body.username, password: hash})
@@ -18,9 +18,11 @@ router.post("/register", checkUsernameFree, checkPasswordLength, async (req, res
 
 router.post("/login", checkPayload, checkUsernameExists, (req, res) => {
   try {
-    const verifiedUser = bcrypt.compareSync(req.body.username, req.userData.password)
+    console.log(req.userData)
+    const verifiedUser = bcrypt.compareSync(req.body.password, req.userData.password)
     if (verifiedUser) {
-      res.json(`Welcome ${req.body.username}!`)
+      req.session.user = req.userData
+      res.status(200).json(`Welcome ${req.userData.username}!`)
     } else {
       res.status(401).json("Invalid credentials")
     }
@@ -30,22 +32,18 @@ router.post("/login", checkPayload, checkUsernameExists, (req, res) => {
   }
 })
 
-/**
-  3 [GET] /api/auth/logout
-
-  response for logged-in users:
-  status 200
-  {
-    "message": "logged out"
+router.get("/logout", (req, res) => {
+  if(req.session.user) {
+    req.session.destroy(e => {
+      if(e) {
+        res.status(400).json(`Cannot log out ${e.message}`)
+      } else {
+        res.status(200).json("logged out")
+      }
+    })
+  } else {
+    res.status(200).json("no session")
   }
+})
 
-  response for not-logged-in users:
-  status 200
-  {
-    "message": "no session"
-  }
- */
-
- 
-// Don't forget to add the router to the `exports` object so it can be required in other modules
 module.exports = router

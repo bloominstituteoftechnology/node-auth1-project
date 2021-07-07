@@ -1,10 +1,10 @@
 const Users = require("../users/users-model.js")
 
 const restricted = (req, res, next) => {
-  if (!req.session) {
-    res.status(401).json("Unauthorized access attempted")
-  } else {
+  if (req.session && req.session.user) {
     next()
+  } else {
+    res.status(401).json("You shall not pass!")
   }
 }
 
@@ -48,7 +48,7 @@ const checkUsernameExists = async(req, res, next) => {
 const checkPasswordLength = (req, res, next) => {
   try{
     if (!req.body.password || req.body.password.length <= 3) {
-      res.status(422).json("Password must be longer than 3 char")
+      res.status(422).json("must be longer than 3 char")
     } else {
       next()
     }
@@ -58,7 +58,6 @@ const checkPasswordLength = (req, res, next) => {
   }
 }
 
-// Don't forget to add these to the `exports` object so they can be required in other modules
 module.exports = {
   restricted,
   checkPayload,
