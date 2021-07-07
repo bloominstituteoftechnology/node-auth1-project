@@ -37,14 +37,6 @@ const checkUsernameExists = async(req, res, next) => {
   }
 }
 
-/*
-  If password is missing from req.body, or if it's 3 chars or shorter
-
-  status 422
-  {
-    "message": "Password must be longer than 3 chars"
-  }
-*/
 const checkPasswordLength = (req, res, next) => {
   try{
     if (!req.body.password || req.body.password.length <= 3) {

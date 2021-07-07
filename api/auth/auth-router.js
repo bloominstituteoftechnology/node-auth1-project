@@ -1,3 +1,8 @@
+const express = require("express");
+const router = express.Router();
+const User = require("../users/users-model.js");
+const bcrypt = require("bcryptjs")
+const {checkUsernameFree, checkUsernameExists, checkPasswordLength} = require("./auth-middleware.js")
 // Require `checkUsernameFree`, `checkUsernameExists` and `checkPasswordLength`
 // middleware functions from `auth-middleware.js`. You will need them here!
 
