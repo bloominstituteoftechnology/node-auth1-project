@@ -45,7 +45,7 @@ router.post(
         password: await bcrypt.hash(password, 10),
       });
 
-      res.status(201).json(newUser);
+      res.status(200).json(newUser);
     } catch (err) {
       next(err);
     }
