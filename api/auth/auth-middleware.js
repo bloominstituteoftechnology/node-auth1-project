@@ -1,3 +1,5 @@
+const User = require('../users/users-model.js');
+
 module.exports = {
   restricted,
   checkUsernameFree,
@@ -13,8 +15,14 @@ module.exports = {
     "message": "You shall not pass!"
   }
 */
-function restricted() {
-
+function restricted(req, res, next) {
+  if (!req.session.user) {
+    res.status(401).send({
+      message: 'You shall not pass!'
+    })
+  } else {
+    next()
+  }
 }
 
 /*
@@ -25,8 +33,20 @@ function restricted() {
     "message": "Username taken"
   }
 */
-function checkUsernameFree() {
+const checkUsernameFree = async (req, res, next) => {
+  try{
+    const username = req.body.username;
+    const rows = await User.findBy({username:username}) 
 
+    if (rows.length === 0) {
+      next();
+    } else {
+      res.status(422).json({ message: "Username taken"})
+    }
+
+  } catch(err) {
+    res.status(500).json( `Server error: ${err.message}` )
+  }
 }
 
 /*
@@ -37,7 +57,21 @@ function checkUsernameFree() {
     "message": "Invalid credentials"
   }
 */
-function checkUsernameExists() {
+const checkUsernameExists = async (req, res, next) => {
+  try{
+    const username = req.body.username;
+    const rows = await User.findBy({username:username}) 
+
+    if (rows.length) {
+      req.userData = rows[0];
+      next();
+    } else {
+      res.status(401).json({ message: "Invalid credentials"})
+    }
+
+  } catch(err) {
+    res.status(500).json( `Server error: ${err.message}` )
+  }
 
 }
 
@@ -49,8 +83,17 @@ function checkUsernameExists() {
     "message": "Password must be longer than 3 chars"
   }
 */
-function checkPasswordLength() {
-
+const checkPasswordLength = async (req, res, next) => {
+  try {
+    const password = req.body.password;
+    if (password.length < 3) {
+      res.status(422).json({ message: "Password must be longer than 3 chars" })
+    } else {
+      next()
+    }
+  } catch (err) {
+    res.status(500).json( `Server error: ${err.message}` )
+  }
 }
 
 // Don't forget to add these to the `exports` object so they can be required in other modules
