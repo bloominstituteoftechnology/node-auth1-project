@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Use `Node.js`, `Express` and `Knex` to build an API that provides register, login and logout functionality.
+Use `Node.js`, `Express` and `Knex` to build an API that provides register, login and logout functionality
 
 ## Instructions
 
