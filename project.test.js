@@ -17,7 +17,7 @@ afterAll(async () => {
 
 it('sanity check', () => {
   expect(true).not.toBe(false)
-})
+})  
 
 describe('server.js', () => {
   describe('[POST] /api/auth/login', () => {
