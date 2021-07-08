@@ -7,11 +7,11 @@ const User = require("../users/users-model.js");
     "message": "You shall not pass!"
   }
 */
-function restricted(req, res, next) {
-  if(!req.body.username || !req.body.password){
-    res.status(401).json("Invalid credentials, you shall not pass!")
-  } else {
+const restricted = (req,res,next)=>{
+  if(req.session && req.session.user){
     next()
+  }else{
+    res.status(401).json("Unauthorized")
   }
 }
 
