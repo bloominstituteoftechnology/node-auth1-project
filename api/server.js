@@ -11,7 +11,7 @@ const weatherRouter = require("../weather/weather-router");
 //global middleware
 server.use(express.json(), helmet(), cors(), morgan("dev"));
 
-//GET
+//GET endpoints---->
 server.use("/", welcomeRouter);
 server.use("/api/weather", weatherRouter);
 

@@ -4,7 +4,7 @@ const router = require("express").Router();
 
 router.get("/", (req, res) => {
   const requestOptions = {
-    headers: { accept: "application/json" },
+    headers: { Accept: "application/json" },
   };
 
   axios
@@ -13,7 +13,7 @@ router.get("/", (req, res) => {
       console.log(response.data);
       let maps = response.data.consolidated_weather.map((item) => {
         console.log("item---->", item);
-        return item.humidity;
+        return item;
       });
       res.status(200).json(maps);
     })
