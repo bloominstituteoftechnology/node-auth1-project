@@ -1,7 +1,11 @@
 /**
   resolves to an ARRAY with all users, each user having { user_id, username }
  */
+
+  const db = require("../../data/db-config")
+
 function find() {
+return db("users").select("user_id", "username").orderBy("user_id")
 
 }
 
@@ -9,7 +13,7 @@ function find() {
   resolves to an ARRAY with all users that match the filter condition
  */
 function findBy(filter) {
-
+return db("users").where(filter).orderBy("user_id")
 }
 
 /**
