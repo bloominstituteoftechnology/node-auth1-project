@@ -8,22 +8,7 @@ Use `Node.js`, `Express` and `Knex` to build an API that provides register, logi
 
 ### Task 1: Project Setup
 
-There are two possible ways to submit your project. Your instructor should have communicated which method to use for this project during the Guided Project and in your cohort's Slack channel. If you are still unsure, reach out to Lambda Staff.
-
-#### Option A - Codegrade
-
-- [ ] Fork and clone the repository.
-- [ ] Open the assignment in Canvas and click on the "Set up git" option.
-- [ ] Follow instructions to set up Codegrade's Webhook and Deploy Key.
-- [ ] Push your first commit: `git commit --allow-empty -m "first commit" && git push`.
-- [ ] Check to see that Codegrade has accepted your git submission.
-
-#### Option B - Pull Request
-
-- [ ] Fork and clone the repository.
-- [ ] Implement your project in a `firstname-lastname` branch.
-- [ ] Create a pull request of `firstname-lastname` against your `main` branch.
-- [ ] Open the assignment in Canvas and submit your pull request.
+Your instructor should have communicated which method to use for this project during the Guided Project and in your cohort's Slack channel. If you are still unsure, reach out to Lambda Staff.
 
 ### Task 2: Minimum Viable Product
 
@@ -71,7 +56,7 @@ The database `auth.db3` includes a single `users` table:
 - Run tests locally executing `npm test`.
 - The project comes with `migrate`, `rollback` and `seed` scripts in case you need to reset the database.
 - You are welcome to create additional files but **do not move or rename existing files** or folders.
-- Do not alter your `package.json` file except to install extra libraries or add extra scripts.
+- Do not alter your `package.json` file except to install extra libraries or add extra scripts. Do not update existing libraries.
 - In your solution, it is essential that you follow best practices and produce clean and professional results.
 - Schedule time to review, refine, and assess your work.
 - Perform basic professional polishing including spell-checking and grammar-checking on your work.

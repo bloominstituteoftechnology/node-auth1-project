@@ -10,14 +10,14 @@
     "seed": "knex seed:run"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.24",
+    "@types/jest": "^27.0.1",
     "cross-env": "^7.0.3",
-    "eslint": "^7.30.0",
+    "eslint": "^7.32.0",
     "jest": "^26.6.3",
     "knex-cleaner": "^1.3.1",
     "nodemon": "^2.0.12",
     "set-cookie-parser": "^2.4.8",
-    "supertest": "^6.1.3"
+    "supertest": "^6.1.5"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
