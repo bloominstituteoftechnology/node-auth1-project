@@ -6,8 +6,16 @@
     "message": "You shall not pass!"
   }
 */
-function restricted() {
+function restricted(req, res, next) {
+  if (res.session.user) {
+    next();
+  } else {
+    next({
+      message: 'You shall not pass!',
+      status: 401
+    });
 
+  }
 }
 
 /*
@@ -18,7 +26,7 @@ function restricted() {
     "message": "Username taken"
   }
 */
-function checkUsernameFree() {
+function checkUsernameFree(req, res, next) {
 
 }
 
@@ -30,7 +38,7 @@ function checkUsernameFree() {
     "message": "Invalid credentials"
   }
 */
-function checkUsernameExists() {
+function checkUsernameExists(req, res, next) {
 
 }
 
@@ -42,7 +50,7 @@ function checkUsernameExists() {
     "message": "Password must be longer than 3 chars"
   }
 */
-function checkPasswordLength() {
+function checkPasswordLength(req, res, next) {
 
 }
 
