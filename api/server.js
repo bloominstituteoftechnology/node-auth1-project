@@ -2,7 +2,6 @@ const path = require("path");
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
-
 const session = require("express-session");
 const KnexSessionStore = require("connect-session-knex")(session);
 const knex = require("../data/db-config");
@@ -41,7 +40,6 @@ server.use(
       maxAge: 100 * 60 * 10,
       secure: false,
       httpOnly: false,
-      // sameSite: 'none'
     },
   })
 );
