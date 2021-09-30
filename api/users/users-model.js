@@ -4,7 +4,6 @@ const db = require("../../data/db-config");
  */
 function find() {
   return db("users").select("user_id", "username");
-  // .orderby("id");
 }
 
 /**
@@ -12,7 +11,6 @@ function find() {
  */
 function findBy(filter) {
   return db("users").where(filter);
-  // .orderBy("id");
 }
 
 /**
@@ -33,7 +31,6 @@ async function add(user) {
   return findById(id);
 }
 
-// Don't forget to add these to the `exports` object so they can be required in other modules
 module.exports = {
   find,
   findBy,
