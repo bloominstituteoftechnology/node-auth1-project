@@ -2,7 +2,7 @@
 
 // const express = require('express')
 const router = require('express').Router()
-
+const {restricted} = require('../auth/auth-middleware')
 
 /**
   [GET] /api/users
@@ -27,7 +27,7 @@ const router = require('express').Router()
   }
  */
 
-  router.get('/', (req, res, next) => { // counting on there being an error handling middleware
+  router.get('/', restricted, (req, res, next) => { // counting on there being an error handling middleware
     res.json('users')
   })
 
