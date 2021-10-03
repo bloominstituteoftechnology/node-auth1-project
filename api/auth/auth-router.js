@@ -91,7 +91,19 @@ const {
  */
 
   router.get('/logout', (req,res,next) => {
-    res.json('logout')
+
+    if (req.session.user) {
+      req.session.destroy( err => {
+        if (err) {
+          next()
+        } else {
+          res.json({message: "no session"})
+        }
+      })
+    } else {
+      res.json({message: "no session" }) //no status again cuz default 200 
+    }
+    //res.json('logout')
   })
 
  
