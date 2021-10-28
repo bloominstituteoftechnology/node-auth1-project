@@ -25,9 +25,15 @@ const { restricted } =  require('../auth/auth-middleware')
     "message": "You shall not pass!"
   }
  */
-router.get('/', restricted,(req,res,next)=>{
-  res.json('users')
+router.get('/', restricted, async(req,res,next)=>{
+  try{
+    const users = await User.find()
+    res.json(users)
+  } catch (error){
+    next(error)
+  }
 })
+
 
 // Don't forget to add the router to the `exports` object so it can be required in other modules
 module.exports = router;
