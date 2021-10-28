@@ -4,7 +4,7 @@
 const router = require('express').Router();
 
 const { 
-  checkUserFree,
+checkUsernameFree,
 checkUsernameExists,
 checkPasswordLength,
 } = require('./auth-middleware')
@@ -30,7 +30,7 @@ checkPasswordLength,
     "message": "Password must be longer than 3 chars"
   }
  */
-router.post('/register', (req,res,next) =>{
+router.post('/register', checkPasswordLength, checkUsernameFree, (req,res,next) =>{
   res.json('register')
 })
 
@@ -49,7 +49,7 @@ router.post('/register', (req,res,next) =>{
     "message": "Invalid credentials"
   }
  */
-router.post('/login', (req,res,next) =>{
+router.post('/login', checkUsernameExists,(req,res,next) =>{
   res.json('login')
 })
 
