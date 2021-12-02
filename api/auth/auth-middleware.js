@@ -1,3 +1,5 @@
+const model = require('../users/users-model')
+
 /*
   If the user does not have a session saved in the server
 
@@ -6,8 +8,12 @@
     "message": "You shall not pass!"
   }
 */
-function restricted() {
-
+const restricted = (req, res, next) => {
+  if(req.session && req.session.user) {
+    next()
+  }else{
+    res.status(401).json('You shall not pass')
+  }
 }
 
 /*
