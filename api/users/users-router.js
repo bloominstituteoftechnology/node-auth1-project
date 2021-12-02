@@ -1,12 +1,22 @@
 // Require the `restricted` middleware from `auth-middleware.js`. You will need it here!
+const express = require('express');
+const { restricted } = require('../auth/auth-middleware.js');
+const router = express.Router();
+const User = require("./users-model.js");
+
+router.get("/", restricted, (req, res) => {
+  User.find()
+  .then(users => {
+    res.status(200).json(users)
+  })
+})
 
 
+module.exports = router
 /**
   [GET] /api/users
-
   This endpoint is RESTRICTED: only authenticated clients
   should have access.
-
   response:
   status 200
   [
@@ -16,7 +26,6 @@
     },
     // etc
   ]
-
   response on non-authenticated:
   status 401
   {
