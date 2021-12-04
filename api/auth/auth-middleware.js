@@ -53,3 +53,9 @@ function checkPasswordLength() {
 }
 
 // Don't forget to add these to the `exports` object so they can be required in other modules
+module.exports = {
+  restricted,
+  checkUsernameFree,
+  checkUsernameExists,
+  checkPasswordLength
+}
