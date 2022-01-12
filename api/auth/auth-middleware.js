@@ -6,8 +6,12 @@
     "message": "You shall not pass!"
   }
 */
-function restricted() {
-
+function restricted(req,res,next) {
+  if(req.session && req.session.user){
+    next()
+  } else {
+    res.status(401).json("You shall not pass")
+  }
 }
 
 /*
@@ -46,4 +50,10 @@ function checkPasswordLength() {
 
 }
 
+module.exports = {
+  restricted,
+  checkUsernameFree,
+  checkUsernameExists,
+  checkPasswordLength
+}
 // Don't forget to add these to the `exports` object so they can be required in other modules
