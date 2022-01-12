@@ -4,6 +4,7 @@ const router = require ('express').Router() // router is a function that returns
 //const restricted = require('./auth-middleware.js') // will check if the user is logged in
 
 const { restricted } = require('../auth/auth-middleware') // will check if the user is logged in
+const User = require('../users/users-model.js') // will check if the user is logged in
 
 /**
   [GET] /api/users
@@ -28,9 +29,15 @@ const { restricted } = require('../auth/auth-middleware') // will check if the u
   }
  */
 
-  router.get('/', restricted, (req, res, next) => {
+  router.get('/', restricted, async  (req, res, next) => {
     //res.send('Welcome to the users API!') // only one res per route
-    res.json('users')
+    //res.json('users')
+    try { // try to find the user in the database
+      const users = await User.find()
+      res.json(users)
+    } catch (err) {
+      next(err)
+    } // if there is an error, call next with the error
   })
 
 
