@@ -1,3 +1,6 @@
+const res = require('express/lib/response');
+const db = require('../../data/db-config')
+
 /*
   If the user does not have a session saved in the server
 
@@ -22,8 +25,19 @@ function restricted(req,res,next) {
     "message": "Username taken"
   }
 */
-function checkUsernameFree() {
-
+function checkUsernameFree(req, res, next) {
+  const {username} = req.body;
+  db
+    .select('username')
+    .from('users')
+    .where("username", username)
+    .then(user => {
+      if(user){
+        res.status(422).json({message: 'Username taken'})
+      } else {
+        next()
+      }
+    })
 }
 
 /*
@@ -34,8 +48,19 @@ function checkUsernameFree() {
     "message": "Invalid credentials"
   }
 */
-function checkUsernameExists() {
-
+function checkUsernameExists(req, res, next) {
+  const {username} = req.body;
+  db
+    .select('username')
+    .from('users')
+    .where("username", username)
+    .then(user => {
+      if(!user){
+        res.status(401).json({message: 'Invalid credentials'})
+      } else {
+        next()
+      }
+    })
 }
 
 /*
@@ -47,7 +72,10 @@ function checkUsernameExists() {
   }
 */
 function checkPasswordLength() {
-
+  const {password} = req.body;
+  if(!password || password.length <= 3){
+    res.status(422).json({message: 'Password must be longer than 3 chars'})
+  }
 }
 
 module.exports = {
