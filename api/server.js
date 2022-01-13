@@ -22,7 +22,7 @@ server.use(express.json());
 server.use(cors());
 
 server.get("/", (req, res) => {
-  res.json({ api: "up" });
+  res.json({ api: "api up" });
 });
 
 server.use((err, req, res, next) => { // eslint-disable-line
