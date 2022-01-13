@@ -6,10 +6,11 @@
     "message": "You shall not pass!"
   }
 */
+
 function restricted(req, res, next) {
   console.log('restricted function in auth-middleware.js')
   next()
-}
+  }
 
 /*
   If the username in req.body already exists in the database
