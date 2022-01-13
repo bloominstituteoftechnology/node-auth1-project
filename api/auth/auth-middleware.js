@@ -29,7 +29,7 @@ async function checkUsernameFree(req, res, next) {
       next()
     }
     else {
-      next ({ "message": "Username taken"  })
+      next ({ message: "Username taken", status: 422 })
     }
     } catch (error) {
       //res.status(500).json({message: 'Something went wrong'})
@@ -46,8 +46,20 @@ async function checkUsernameFree(req, res, next) {
     "message": "Invalid credentials"
   }
 */
-function checkUsernameExists(req, res, next) {
-  next()
+async function checkUsernameExists(req, res, next) {
+    try {
+      const users = await User.findBy({ username: req.body.username })
+      if (users.length) {
+        next()
+      }
+      else {
+        next ({ message: "Invalid credentials", status: 401 })
+      }
+      } catch (error) {
+        //res.status(500).json({message: 'Something went wrong'})
+        next(error) //error handling middleware in server.js, if there was none
+        //it would use express's default error handling middleware and send back a 500/Internal Server Error
+      }
 }
 
 /*
