@@ -1,7 +1,11 @@
 const express = require("express");
 const helmet = require("helmet");
+const session = require("express-session");
 const cors = require("cors");
+const KnexSessionStore = require("connect-session-knex")(session)
 
+const usersRouter = require('./users/users-router.js')
+const authRouter = require('./auth/auth-router.js')
 /**
   Do what needs to be done to support sessions with the `express-session` package!
   To respect users' privacy, do NOT send them a cookie unless they log in.

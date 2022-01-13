@@ -1,4 +1,4 @@
-const res = require('express/lib/response');
+const Users = require('../users/users-model')
 const db = require('../../data/db-config')
 
 /*
@@ -26,16 +26,12 @@ function restricted(req,res,next) {
   }
 */
 function checkUsernameFree(req, res, next) {
-  const {username} = req.body;
-  db
-    .select('username')
-    .from('users')
-    .where("username", username)
+  Users.findBy({username: req.body.username})
     .then(user => {
-      if(user){
-        res.status(422).json({message: 'Username taken'})
-      } else {
+      if(!user.length){
         next()
+      } else {
+        res.status(422).json({message: 'Username taken'})
       }
     })
 }
@@ -50,15 +46,13 @@ function checkUsernameFree(req, res, next) {
 */
 function checkUsernameExists(req, res, next) {
   const {username} = req.body;
-  db
-    .select('username')
-    .from('users')
-    .where("username", username)
-    .then(user => {
-      if(!user){
-        res.status(401).json({message: 'Invalid credentials'})
-      } else {
+  Users.findBy({username: req.body.username})
+    .then(users => {
+      if(users.length){
+        req.userData = users[0]
         next()
+      } else {
+        res.status(401).json({message: 'Invalid credentials'})
       }
     })
 }
