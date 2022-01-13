@@ -10,9 +10,13 @@ const User = require('../users/users-model')
 */
 
 function restricted(req, res, next) {
-  console.log('restricted function in auth-middleware.js')
-  next()
+  if (req.session.user) {
+    next()
+  } else {
+    next({ message: "You shall not pass!" })
+    console.log('restricted function in auth-middleware.js')
   }
+}
 
 /*
   If the username in req.body already exists in the database
