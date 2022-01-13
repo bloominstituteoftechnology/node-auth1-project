@@ -4,14 +4,14 @@
 //start with the router
 
 const router = require('express').Router()
+const bycrypt = require('bcryptjs')
+const User = require('../users/users-model')
 
 const {
   checkUsernameFree,
   checkUsernameExists,
   checkPasswordLength
 } = require('./auth-middleware')
-
-
 
 /**
   1 [POST] /api/auth/register { "username": "sue", "password": "1234" }
@@ -36,8 +36,18 @@ const {
   }
  */
 
-router.post('/register', checkUsernameFree, checkPasswordLength, (req, res) => {
-  res.json('register')
+router.post('/register', checkUsernameFree, checkPasswordLength, (req, res, next) => {
+  //res.json('register')
+  const { username, password } = req.body
+  const hash = bycrypt.hashSync(password, 10) // this is 2^10 rounds of hashing
+
+  User.add({ username, password: hash })
+    .then(saved => {
+      res.status(201).json(saved)
+    })
+    .catch(error => {
+      next(error)
+    })
 })
 
 
@@ -59,6 +69,7 @@ router.post('/register', checkUsernameFree, checkPasswordLength, (req, res) => {
 
   router.post('/login', checkUsernameExists, (req, res) => {
     res.json('login')
+ 
   })
 
 
