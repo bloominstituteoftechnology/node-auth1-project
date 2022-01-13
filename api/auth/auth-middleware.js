@@ -1,3 +1,5 @@
+const User = require('../users/users-model')
+
 /*
   If the user does not have a session saved in the server
 
@@ -20,8 +22,20 @@ function restricted(req, res, next) {
     "message": "Username taken"
   }
 */
-function checkUsernameFree(req, res, next) {
-  next()
+async function checkUsernameFree(req, res, next) {
+  try {
+    const users = await User.findBy({ username: req.body.username })
+    if (!users.length) {
+      next()
+    }
+    else {
+      next ({ "message": "Username taken"  })
+    }
+    } catch (error) {
+      //res.status(500).json({message: 'Something went wrong'})
+      next(error) //error handling middleware in server.js, if there was none
+      //it would use express's default error handling middleware and send back a 500/Internal Server Error
+    }
 }
 
 /*
