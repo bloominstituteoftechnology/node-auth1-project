@@ -67,10 +67,19 @@ router.post('/register', checkUsernameFree, checkPasswordLength, (req, res, next
   }
  */
 
-  router.post('/login', checkUsernameExists, (req, res) => {
-    res.json('login')
- 
+  router.post('/login', checkUsernameExists, (req, res, next) => {
+    //res.json('login')
+    const { username, password } = req.body
+    if (bycrypt.compareSync(password, req.user.password) ) {
+      //make it so that the user is logged in
+      req.session.user = req.user
+      res.status(200).json({ message: `Welcome ${username}!` })
+    } else {
+      next({ status: 401, message: "Invalid credentials" })
+    }
   })
+
+
 
 
 /**
