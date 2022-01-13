@@ -21,13 +21,42 @@ const authRouter = require('./auth/auth-router.js')
 
 const server = express();
 
+const config = {
+  name:"chocolatechip",
+  secret: "keep it secret, keep it safe",
+  cookie:{
+    maxAge: 1000 * 60 * 60,
+    secure:false,
+    httpOnly: true
+  },
+  resave:false,
+  saveUnitialized:false,
+  store: new KnexSessionStore({
+    knex:require("../database/db-config.js"),
+    tablename:"sessions",
+    sidfieldname:"sid",
+    createTable:true,
+    clearInterval:1000 * 60 * 60
+  })
+}
+
+
 server.use(helmet());
+server.use(express.static(path.join(__dirname, '../client')))
 server.use(express.json());
+server.use(session(config));
 server.use(cors());
+
+server.use('/api/users', usersRouter)
+server.use('/api/auth', authRouter)
 
 server.get("/", (req, res) => {
   res.json({ api: "up" });
 });
+
+server.use('*', (req, res, next) => {
+  next({ status: 404, message: 'not found!' })
+})
 
 server.use((err, req, res, next) => { // eslint-disable-line
   res.status(err.status || 500).json({
