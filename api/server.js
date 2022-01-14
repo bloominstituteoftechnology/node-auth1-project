@@ -1,6 +1,7 @@
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
+const sessions = require('express-session')
 
 //routers
 const authRouter = require('./auth/auth-router')
@@ -18,12 +19,23 @@ const userRouter = require('./users/users-router')
   or you can use a session store like `connect-session-knex`.
  */
 
+const sess = {
+  name: 'sessionLogin',
+  secret: 'babebraham lincoln',
+  cookie: {
+    maxAge: 1000,
+    httpOnly: true,
+  },
+  resave: false,
+  saveUnitialized: false
+  }
+
 const server = express();
 
 server.use(helmet());
 server.use(express.json());
 server.use(cors());
-
+server.use(sessions(sess))
 server.use('/api/auth', authRouter)
 server.use('/api/users', userRouter)
 
