@@ -1,7 +1,11 @@
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
+const sessions = require('express-session')
 
+//routers
+const authRouter = require('./auth/auth-router')
+const userRouter = require('./users/users-router')
 /**
   Do what needs to be done to support sessions with the `express-session` package!
   To respect users' privacy, do NOT send them a cookie unless they log in.
@@ -15,11 +19,26 @@ const cors = require("cors");
   or you can use a session store like `connect-session-knex`.
  */
 
+const sess = {
+  name: 'sessionLogin',
+  secret: 'babebraham lincoln',
+  cookie: {
+    maxAge: 1000,
+    httpOnly: true,
+  },
+  resave: false,
+  saveUnitialized: false
+  }
+
 const server = express();
 
 server.use(helmet());
 server.use(express.json());
 server.use(cors());
+server.use(sessions(sess))
+server.use('/api/auth', authRouter)
+server.use('/api/users', userRouter)
+
 
 server.get("/", (req, res) => {
   res.json({ api: "up" });
