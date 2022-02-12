@@ -14,26 +14,25 @@ function find() {
 function findBy(filter) {
   return db('users')
   .where(filter)
-  .orderBy('user_id')
-  .first()
+  // .orderBy('user_id')
+  // .first()
 }
 
 /**
   resolves to the user { user_id, username } with the given user_id
  */
-function findById(user_id) {
+async function findById(user_id) {
   return db('users')
-  .select('user_id', 'username')
-  .where('user_id', user_id)
-  .first()
+    .where({ user_id })
+    .first()
 }
 
 /**
   resolves to the newly inserted user { user_id, username }
  */
-async function add(user) {
-  const [ id ] = await db('users').insert(user)
-  return findById( id )
+function add(user) {
+  const [id] = db('users').insert(user)
+  return findById(id)
 }
 
 // Don't forget to add these to the `exports` object so they can be required in other modules

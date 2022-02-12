@@ -25,15 +25,15 @@ const User = require('./users-model')
     "message": "You shall not pass!"
   }
  */
-router.get('/', restricted, (req, res, next) => {
-  User.find()
-  .then(users => {
-    res.json(users)
-  })
-  .catch(err => {
-    next(err)
-  })
+router.get('/', restricted, async (req, res, next) => {
+  try {
+    const users = await Users.find()
+    res.status(200).send(users);
+  } catch(err) {
+    res.status(401).json('You shall not pass!')
+  }
 })
+
 
 // Don't forget to add the router to the `exports` object so it can be required in other modules
 module.exports = router

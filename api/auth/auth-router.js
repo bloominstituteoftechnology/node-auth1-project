@@ -31,15 +31,15 @@ const {
     "message": "Password must be longer than 3 chars"
   }
  */
-router.post('register', checkPasswordLength, checkUsernameFree, (req, res, next) => {
-  const { username, password } = req.body
-  const hash = bcrypt.hashSync(password, 8)
+router.post('/register', checkUsernameFree, checkPasswordLength, async (req, res, next) => {
+  try {
+    const hash = bcrypt.hashSync(req.body.password, 10)
+    const newUser = await User.add({username: req.body.username, password: hash})
+    res.status(201).json(newUser)
 
-  User.add({ username, password: hash })
-  .then(registered => {
-    res.status(201).json(registered)
-  })
-  .catch(next)
+  } catch(err) {
+    res.status(500).json(`Server error: ${err}`)
+  }
 })
 
 /**
@@ -57,7 +57,7 @@ router.post('register', checkPasswordLength, checkUsernameFree, (req, res, next)
     "message": "Invalid credentials"
   }
  */
-router.post('login', checkUsernameExists, (req, res, next) => {
+router.post('/login', checkUsernameExists, (req, res, next) => {
   const { password } = req.body
   if(bcrypt.compareSync(password, req.user.password)){
     req.session.user = req.user
@@ -87,8 +87,18 @@ router.post('login', checkUsernameExists, (req, res, next) => {
     "message": "no session"
   }
  */
-router.get('logout', (req, res, next) => {
-  res.json('logout')
+router.post('/logout', (req, res, next) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.json('cannot log out')
+      } else {
+        res.json('logged out')
+      }
+    })
+  } else {
+    res.json("no session exists")
+  }
 })
  
 // Don't forget to add the router to the `exports` object so it can be required in other modules
