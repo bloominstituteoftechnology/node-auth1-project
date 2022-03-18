@@ -22,10 +22,12 @@
   "dependencies": {
     "@vscode/sqlite3": "5.0.7",
     "bcryptjs": "^2.4.3",
+    "connect-session-knex": "^2.1.1",
     "cors": "^2.8.5",
     "express": "^4.17.3",
+    "express-session": "^1.17.2",
     "helmet": "^5.0.2",
-    "knex": "^1.0.3"
+    "knex": "^1.0.4"
   },
   "repository": {
     "type": "git",
